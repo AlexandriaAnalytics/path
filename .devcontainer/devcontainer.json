@@ -1,6 +1,6 @@
 // https://aka.ms/devcontainer.json
 {
-	"name": "Existing Docker Compose (Extend)",
+	"name": "Sinapsis - Path",
 	"dockerComposeFile": [
 		"../docker-compose.yml"
 	],
@@ -10,6 +10,7 @@
 		"vscode": {
 			"extensions": [
 				"mikestead.dotenv",
+				"bmewburn.vscode-intelephense-client",
 				"amiralizadeh9480.laravel-extra-intellisense",
 				"ryannaddy.laravel-artisan",
 				"onecentlin.laravel5-snippets",
