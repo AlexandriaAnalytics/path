@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institute extends Model
@@ -13,8 +14,13 @@ class Institute extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id',
+        'name',
     ];
+
+    public function exams(): HasMany
+    {
+        return $this->hasMany(Exam::class);
+    }
 
     public function user(): BelongsToMany
     {
