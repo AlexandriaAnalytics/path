@@ -27,7 +27,7 @@ class Institute extends Model
         return $this->hasMany(Exam::class);
     }
 
-    public function user(): BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }
