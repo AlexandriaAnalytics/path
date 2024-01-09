@@ -14,7 +14,12 @@ class Institute extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'type',
         'name',
+    ];
+
+    protected $casts = [
+        'type' => \App\Enums\InstituteType::class,
     ];
 
     public function exams(): HasMany
