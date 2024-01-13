@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Country;
+use App\Enums\UserStatus;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Filament\Resources\CandidateResource\RelationManagers;
 use App\Models\Candidate;
@@ -23,7 +25,19 @@ class CandidateResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('First name')
+                Forms\Components\TextInput::make('First name'),
+                Forms\Components\TextInput::make('Last name'),
+                Forms\Components\TextInput::make('Slug'),
+                Forms\Components\Select::make('Country')
+                    ->options(Country::getOptions())
+                    ->searchable(),
+                Forms\Components\TextInput::make('Address'),
+                Forms\Components\TextInput::make('Phone'),
+                Forms\Components\TextInput::make('Cbu'),
+                Forms\Components\TextInput::make('Cuil'),
+                Forms\Components\DatePicker::make('Birth date'),
+                Forms\Components\Select::make('Status')
+                    ->options(UserStatus::getOptions()),
             ]);
     }
 
