@@ -22,7 +22,7 @@ class Candidate extends Model
         'birth_date',
         'status',
         'id_created_by'
-    ]
+    ];
 
     public function institute() : BelongsTo {
         return $this->belongsTo(Institute::class);

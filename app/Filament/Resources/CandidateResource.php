@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ExamResource\Pages;
-use App\Filament\Resources\ExamResource\RelationManagers;
-use App\Models\Exam;
+use App\Filament\Resources\CandidateResource\Pages;
+use App\Filament\Resources\CandidateResource\RelationManagers;
+use App\Models\Candidate;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ExamResource extends Resource
+class CandidateResource extends Resource
 {
-    protected static ?string $model = Exam::class;
+    protected static ?string $model = Candidate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -23,7 +23,7 @@ class ExamResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('First name')
             ]);
     }
 
@@ -34,17 +34,14 @@ class ExamResource extends Resource
                 //
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -59,18 +56,9 @@ class ExamResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExams::route('/'),
-            'create' => Pages\CreateExam::route('/create'),
-            'view' => Pages\ViewExam::route('/{record}'),
-            'edit' => Pages\EditExam::route('/{record}/edit'),
+            'index' => Pages\ListCandidates::route('/'),
+            'create' => Pages\CreateCandidate::route('/create'),
+            'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }
