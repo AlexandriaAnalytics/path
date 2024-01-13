@@ -31,4 +31,8 @@ class Institute extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function candidates() : HasMany {
+        return $this->hasMany(Candidate::class);
+    }
 }

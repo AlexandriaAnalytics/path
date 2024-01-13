@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Candidates extends Model
+class Candidate extends Model
 {
     use HasFactory;
 
@@ -22,4 +23,8 @@ class Candidates extends Model
         'status',
         'id_created_by'
     ]
+
+    public function institute() : BelongsTo {
+        return $this->belongsTo(Institute::class);
+    }
 }
