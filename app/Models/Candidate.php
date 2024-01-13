@@ -21,10 +21,11 @@ class Candidate extends Model
         'cuil',
         'birth_date',
         'status',
-        'id_created_by'
+        'institute_id'
     ];
 
-    public function institute() : BelongsTo {
+    public function institute(): BelongsTo
+    {
         return $this->belongsTo(Institute::class);
     }
 }

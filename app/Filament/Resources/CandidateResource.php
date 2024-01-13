@@ -8,12 +8,15 @@ use App\Filament\Resources\CandidateResource\Pages;
 use App\Filament\Resources\CandidateResource\RelationManagers;
 use App\Models\Candidate;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class CandidateResource extends Resource
 {
@@ -25,19 +28,22 @@ class CandidateResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('First name'),
-                Forms\Components\TextInput::make('Last name'),
-                Forms\Components\TextInput::make('Slug'),
-                Forms\Components\Select::make('Country')
+                Forms\Components\TextInput::make('first_name'),
+                Forms\Components\TextInput::make('last_name'),
+                Forms\Components\TextInput::make('slug'),
+                Forms\Components\Select::make('id_country')
+                    ->label('Country')
                     ->options(Country::getOptions())
                     ->searchable(),
-                Forms\Components\TextInput::make('Address'),
-                Forms\Components\TextInput::make('Phone'),
-                Forms\Components\TextInput::make('Cbu'),
-                Forms\Components\TextInput::make('Cuil'),
-                Forms\Components\DatePicker::make('Birth date'),
-                Forms\Components\Select::make('Status')
+                Forms\Components\TextInput::make('address'),
+                Forms\Components\TextInput::make('phone'),
+                Forms\Components\TextInput::make('cbu'),
+                Forms\Components\TextInput::make('cuil'),
+                Forms\Components\DatePicker::make('birth_date'),
+                Forms\Components\Select::make('status')
                     ->options(UserStatus::getOptions()),
+                Hidden::make('institute_id')
+                    ->default(Auth::user()->institute_id),
             ]);
     }
 
@@ -45,13 +51,21 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('id'),
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label('Full name')
+                    ->formatStateUsing(function ($state, Candidate $candidate) {
+                        return $candidate->first_name . ' ' . $candidate->last_name;
+                    }),
+                Tables\Columns\TextColumn::make('institute.name')
+                    ->label('Instutite'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
