@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\ExamResource\Pages;
-use App\Filament\Resources\ExamResource\RelationManagers;
+use App\Filament\Admin\Resources\ExamResource\Pages;
+use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
@@ -20,7 +20,9 @@ class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Exam Management';
+
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     public static function form(Form $form): Form
     {
