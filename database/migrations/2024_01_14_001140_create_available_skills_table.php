@@ -14,9 +14,14 @@ class CreateAvailableSkillsTable extends Migration
     public function up()
     {
         Schema::create('available_skills', function (Blueprint $table) {
-            $table->increments('id_available_skill');
-            $table->unsignedInteger('id_exam');
-            $table->unsignedInteger('id_skill');
+            $table->id();
+
+            $table->foreignId('exam_id')
+                ->constrained();
+
+            $table->foreignId('skill_id')
+                ->constrained();
+
             $table->timestamps();
         });
     }

@@ -18,9 +18,10 @@ class CreateLevelsTable extends Migration
             $table->double('price');
             $table->string('slug');
             $table->text('modules')->nullable();
-            $table->timestamps();
             $table->unsignedInteger('tier')->nullable();
             $table->double('complete_price');
+
+            $table->timestamps();
         });
     }
 

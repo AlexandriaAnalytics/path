@@ -13,9 +13,14 @@ class CreateAvailableLevelsTable extends Migration
     public function up()
     {
         Schema::create('available_levels', function (Blueprint $table) {
-            $table->id('id_available_level');
-            $table->unsignedInteger('id_exam');
-            $table->unsignedInteger('id_level');
+            $table->id();
+
+            $table->foreignId('exam_id')
+                ->constrained();
+
+            $table->foreignId('level_id')
+                ->constrained();
+
             $table->timestamps();
         });
     }

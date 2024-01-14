@@ -14,7 +14,7 @@ class Candidate extends Model
         'first_name',
         'last_name',
         'slug',
-        'id_country',
+        'country',
         'address',
         'phone',
         'cbu',

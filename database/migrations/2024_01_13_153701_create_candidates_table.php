@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
+
             $table->string('first_name');
             $table->string('last_name');
             $table->string('slug');
@@ -23,7 +24,10 @@ return new class extends Migration
             $table->string('cuil');
             $table->date('birth_date');
             $table->string('status');
-            $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
+            $table->foreignId('institute_id')
+                ->constrained('institutes')
+                ->cascadeOnDelete();
+
             $table->timestamps();
         });
     }
