@@ -7,7 +7,6 @@ use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -43,8 +42,6 @@ class ExamResource extends Resource
                     ->relationship(titleAttribute: 'skill_name'),
                 Forms\Components\Textarea::make('comments')
                     ->columnSpanFull(),
-                Hidden::make('institute_id')
-                    ->default(Auth::user()->institute_id)
             ]);
     }
 

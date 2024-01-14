@@ -7,7 +7,6 @@ use App\Enums\UserStatus;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use Filament\Forms;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -39,8 +38,6 @@ class CandidateResource extends Resource
                 Forms\Components\DatePicker::make('birth_date'),
                 Forms\Components\Select::make('status')
                     ->options(UserStatus::values()),
-                Hidden::make('institute_id')
-                    ->default(Auth::user()->institute_id),
             ]);
     }
 
