@@ -60,8 +60,8 @@ class Evaluation extends Model
      * * Get the User that owns the Evaluation.
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user()
+    public function candidate()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id_user');
+        return $this->belongsTo(Candidate::class, 'id_user', 'id_user');
     }
 }

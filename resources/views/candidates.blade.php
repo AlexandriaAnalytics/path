@@ -1,4 +1,4 @@
-<form action="" method="post">
+<form action="{{ route('evaluations.confirm') }}" method="post">
     @csrf
     <input type="hidden" name="exam_id" value="{{ $exam }}">
     <table class="table">

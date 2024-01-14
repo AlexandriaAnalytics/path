@@ -35,4 +35,9 @@ class Exam extends Model
     {
         return $this->belongsToMany(Skill::class, 'available_skills', 'id_exam', 'id_skill');
     }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'id_exam', 'id_exam');
+    }
 }
