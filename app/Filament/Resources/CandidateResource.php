@@ -5,17 +5,13 @@ namespace App\Filament\Resources;
 use App\Enums\Country;
 use App\Enums\UserStatus;
 use App\Filament\Resources\CandidateResource\Pages;
-use App\Filament\Resources\CandidateResource\RelationManagers;
 use App\Models\Candidate;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 
 class CandidateResource extends Resource
@@ -31,9 +27,10 @@ class CandidateResource extends Resource
                 Forms\Components\TextInput::make('first_name'),
                 Forms\Components\TextInput::make('last_name'),
                 Forms\Components\TextInput::make('slug'),
-                Forms\Components\Select::make('id_country')
+                Forms\Components\Select::make('country')
                     ->label('Country')
-                    ->options(Country::getOptions())
+                    ->options(Country::class)
+                    ->enum(Country::class)
                     ->searchable(),
                 Forms\Components\TextInput::make('address'),
                 Forms\Components\TextInput::make('phone'),
@@ -41,7 +38,7 @@ class CandidateResource extends Resource
                 Forms\Components\TextInput::make('cuil'),
                 Forms\Components\DatePicker::make('birth_date'),
                 Forms\Components\Select::make('status')
-                    ->options(UserStatus::getOptions()),
+                    ->options(UserStatus::values()),
                 Hidden::make('institute_id')
                     ->default(Auth::user()->institute_id),
             ]);

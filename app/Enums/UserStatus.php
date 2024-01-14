@@ -2,26 +2,13 @@
 
 namespace App\Enums;
 
-use BenSampo\Enum\Enum;
-
-/**
- * @method static static OptionOne()
- * @method static static OptionTwo()
- * @method static static OptionThree()
- */
-final class UserStatus extends Enum
+enum UserStatus: string
 {
-    const BLOCKED =   0;
-    const OptionTwo =   1;
-    const OptionThree = 2;
-    const OptionFour = 3;
+    case Locked = 'locked';
+    case Active = 'active';
 
-    public static function getOptions()
+    public static function values(): array
     {
-        $options = [];
-        foreach (self::getValues() as $value) {
-            $options[$value] = $value;
-        }
-        return $options;
+        return array_column(self::cases(), 'value');
     }
 }
