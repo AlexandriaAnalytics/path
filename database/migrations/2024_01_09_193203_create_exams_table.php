@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('institute_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
+            $table->string('exam_session_name');
+            $table->date('scheduled_date');
+            $table->string('type');
+            $table->integer('maximum_number_of_candidates');
+            $table->string('comments');
+            $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
