@@ -45,14 +45,17 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('exam_session_name'),
+                Tables\Columns\TextColumn::make('scheduled_date'),
+                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('maximum_number_of_candidates'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
