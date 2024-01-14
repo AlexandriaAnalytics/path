@@ -17,13 +17,16 @@ class ViewExam extends ViewRecord
     {
         $refererUrl = Request::header('referer');
         $route = Route::getRoutes()->match(Request::create($refererUrl, 'GET'));
-        $param = $route->parameter('tenant');
+        $institute = $route->parameter('tenant');
+        $exam = $route->parameter('record');
 
-        $candidates = Candidate::where('institute_id', $param)->get();
+        $candidates = Candidate::where('institute_id', $institute)->get();
         return [
             Actions\EditAction::make(),
             Actions\Action::make('assign_candidates')
-                ->modalContent(view('candidates')->with('candidates', $candidates))
+                ->modalContent(view('candidates', ['users' => $candidates, 'exam' => $exam]))
+                ->modalSubmitAction(false)
+                ->modalCancelAction(false)
         ];
     }
 }
