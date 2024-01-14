@@ -14,6 +14,11 @@ class Exam extends Model
 
     protected $fillable = [
         'institute_id',
+        'exam_session_name',
+        'scheduled_date',
+        'type',
+        'maximum_number_of_candidates',
+        'comments'
     ];
 
     public function institute(): BelongsTo
