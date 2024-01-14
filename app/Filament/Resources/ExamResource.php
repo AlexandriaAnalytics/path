@@ -6,12 +6,14 @@ use App\Filament\Resources\ExamResource\Pages;
 use App\Filament\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class ExamResource extends Resource
 {
@@ -24,16 +26,18 @@ class ExamResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('exam_session_name'),
-                Forms\Components\DatePicker::make('sheduled_date'),
+                Forms\Components\DatePicker::make('scheduled_date'),
                 Forms\Components\Select::make('type')
                     ->options([
-                        'Online',
-                        'On-site'
+                        'online' => 'Online',
+                        'on-site' => 'On-site'
                     ]),
                 Forms\Components\TextInput::make('maximum_number_of_candidates')
                     ->numeric(),
                 Forms\Components\Textarea::make('comments')
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
+                Hidden::make('institute_id')
+                    ->default(Auth::user()->institute_id)
             ]);
     }
 
