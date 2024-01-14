@@ -17,4 +17,9 @@ class Level extends Model
         'tier',
         'complete_price'
     ];
+
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class, 'available_levels');
+    }
 }

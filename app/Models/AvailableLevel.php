@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Models\Exam;
 use App\Models\Level;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class AvailableLevel extends Model
+class AvailableLevel extends Pivot
 {
     /**
      * * User primary key.

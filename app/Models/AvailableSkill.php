@@ -5,8 +5,9 @@ namespace App\Models;
 use App\Models\Exam;
 use App\Models\Skill;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class AvailableSkill extends Model
+class AvailableSkill extends Pivot
 {
     /**
      * * User primary key.

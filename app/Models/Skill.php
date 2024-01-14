@@ -12,4 +12,9 @@ class Skill extends Model
     protected $fillable = [
         'skill_name',
     ];
+
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class, 'available_levels');
+    }
 }

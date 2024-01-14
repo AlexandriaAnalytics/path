@@ -25,4 +25,14 @@ class Exam extends Model
     {
         return $this->belongsTo(Institute::class);
     }
+
+    public function levels()
+    {
+        return $this->belongsToMany(Level::class, 'available_levels', 'id_exam', 'id_level');
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'available_skills', 'id_exam', 'id_skill');
+    }
 }

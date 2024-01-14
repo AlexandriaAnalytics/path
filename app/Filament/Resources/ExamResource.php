@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Level;
 
 class ExamResource extends Resource
 {
@@ -34,6 +35,10 @@ class ExamResource extends Resource
                     ]),
                 Forms\Components\TextInput::make('maximum_number_of_candidates')
                     ->numeric(),
+                Forms\Components\CheckboxList::make('levels')
+                    ->relationship(titleAttribute: 'name'),
+                Forms\Components\CheckboxList::make('skills')
+                    ->relationship(titleAttribute: 'skill_name'),
                 Forms\Components\Textarea::make('comments')
                     ->columnSpanFull(),
                 Hidden::make('institute_id')
