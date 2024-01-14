@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Exam;
-use App\Models\Skills;
+use App\Models\Skill;
 use Illuminate\Database\Eloquent\Model;
 
 class AvailableSkill extends Model
@@ -38,6 +38,6 @@ class AvailableSkill extends Model
      */
     public function skill()
     {
-        return $this->belongsTo(Skills::class, 'id_skill', 'id_skill');
+        return $this->belongsTo(Skill::class, 'id_skill', 'id_skill');
     }
 }
