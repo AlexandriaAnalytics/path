@@ -23,7 +23,17 @@ class ExamResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('exam_session_name'),
+                Forms\Components\DatePicker::make('sheduled_date'),
+                Forms\Components\Select::make('type')
+                    ->options([
+                        'Online',
+                        'On-site'
+                    ]),
+                Forms\Components\TextInput::make('maximum_number_of_candidates')
+                    ->numeric(),
+                Forms\Components\Textarea::make('comments')
+                    ->columnSpanFull()
             ]);
     }
 
