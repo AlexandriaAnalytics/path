@@ -15,6 +15,6 @@ class Skill extends Model
 
     public function exams()
     {
-        return $this->belongsToMany(Exam::class, 'available_levels');
+        return $this->belongsToMany(Exam::class, 'available_skills');
     }
 }
