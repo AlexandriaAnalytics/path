@@ -14,12 +14,14 @@ class CreateLevelsTable extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->double('price');
+
             $table->string('slug');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->decimal('price', 12, 2);
+            $table->decimal('complete_price', 12, 2);
             $table->text('modules')->nullable();
             $table->unsignedInteger('tier')->nullable();
-            $table->double('complete_price');
 
             $table->timestamps();
         });
