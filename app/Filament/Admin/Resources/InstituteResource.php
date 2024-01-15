@@ -26,6 +26,7 @@ class InstituteResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->hint('Full name of the institute')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('type')

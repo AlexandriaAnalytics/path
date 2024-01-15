@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ExamResource\Pages;
+namespace App\Filament\Admin\Resources\ExamResource\Pages;
 
-use App\Filament\Resources\ExamResource;
+use App\Filament\Admin\Resources\ExamResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
