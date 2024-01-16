@@ -10,7 +10,7 @@ class Skill extends Model
     use HasFactory;
 
     protected $fillable = [
-        'skill_name',
+        'name',
     ];
 
     public function exams()
