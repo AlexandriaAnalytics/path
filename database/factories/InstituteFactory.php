@@ -17,7 +17,8 @@ class InstituteFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->company,
+            'type' => fake()->randomElement(\App\Enums\InstituteType::values()),
+            'name' => fake()->company(),
         ];
     }
 }
