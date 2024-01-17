@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Institute>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Skill>
  */
-class InstituteFactory extends Factory
+class SkillFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,8 +18,7 @@ class InstituteFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => fake()->randomElement(\App\Enums\InstituteType::values()),
-            'name' => fake()->company(),
+            'name' => Str::upper(fake()->randomLetter()),
         ];
     }
 }

@@ -39,7 +39,7 @@ class ExamResource extends Resource
                 Forms\Components\CheckboxList::make('levels')
                     ->relationship(titleAttribute: 'name'),
                 Forms\Components\CheckboxList::make('skills')
-                    ->relationship(titleAttribute: 'skill_name'),
+                    ->relationship(titleAttribute: 'name'),
                 Forms\Components\Textarea::make('comments')
                     ->columnSpanFull(),
             ]);
