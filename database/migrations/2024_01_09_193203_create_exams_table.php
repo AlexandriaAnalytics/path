@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('exam_session_name');
             $table->date('scheduled_date');
             $table->string('type');
-            $table->integer('maximum_number_of_candidates');
+            $table->integer('maximum_number_of_students');
             $table->string('comments');
             $table->foreignId('institute_id')
                 ->constrained('institutes')

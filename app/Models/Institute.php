@@ -33,8 +33,8 @@ class Institute extends Model
             ->withTimestamps();
     }
 
-    public function candidates(): HasMany
+    public function students(): HasMany
     {
-        return $this->hasMany(Candidate::class);
+        return $this->hasMany(Student::class);
     }
 }

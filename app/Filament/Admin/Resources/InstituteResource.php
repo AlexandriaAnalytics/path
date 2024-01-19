@@ -85,7 +85,7 @@ class InstituteResource extends Resource
     {
         return [
             RelationManagers\UsersRelationManager::class,
-            RelationManagers\CandidatesRelationManager::class,
+            RelationManagers\StudentsRelationManager::class,
         ];
     }
 

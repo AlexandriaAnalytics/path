@@ -5,12 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Candidate extends Model
+class Student extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
+        'institute_id',
         'first_name',
         'last_name',
         'slug',
@@ -21,7 +24,6 @@ class Candidate extends Model
         'cuil',
         'birth_date',
         'status',
-        'institute_id'
     ];
 
     public function institute(): BelongsTo

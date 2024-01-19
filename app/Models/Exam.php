@@ -17,7 +17,7 @@ class Exam extends Model
         'exam_session_name',
         'scheduled_date',
         'type',
-        'maximum_number_of_candidates',
+        'maximum_number_of_students',
         'comments'
     ];
 

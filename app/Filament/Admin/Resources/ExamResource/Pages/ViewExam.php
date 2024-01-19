@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\ExamResource\Pages;
 
 use App\Filament\Admin\Resources\ExamResource;
-use App\Models\Candidate;
+use App\Models\Student;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Request;
@@ -19,11 +19,11 @@ class ViewExam extends ViewRecord
         $route = Route::getRoutes()->match(Request::create($refererUrl, 'GET'));
         $param = $route->parameter('tenant');
 
-        $candidates = Candidate::where('institute_id', $param)->get();
+        $students = Student::where('institute_id', $param)->get();
         return [
             Actions\EditAction::make(),
-            Actions\Action::make('assign_candidates')
-                ->modalContent(view('candidates')->with('candidates', $candidates))
+            Actions\Action::make('assign_students')
+                ->modalContent(view('students')->with('students', $students))
         ];
     }
 }

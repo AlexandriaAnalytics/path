@@ -4,8 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Enums\Country;
 use App\Enums\UserStatus;
-use App\Filament\Resources\CandidateResource\Pages;
-use App\Models\Candidate;
+use App\Filament\Resources\StudentResource\Pages;
+use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
-class CandidateResource extends Resource
+class StudentResource extends Resource
 {
-    protected static ?string $model = Candidate::class;
+    protected static ?string $model = Student::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -48,8 +48,8 @@ class CandidateResource extends Resource
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('first_name')
                     ->label('Full name')
-                    ->formatStateUsing(function ($state, Candidate $candidate) {
-                        return $candidate->first_name . ' ' . $candidate->last_name;
+                    ->formatStateUsing(function ($state, Student $student) {
+                        return $student->first_name . ' ' . $student->last_name;
                     }),
                 Tables\Columns\TextColumn::make('institute.name')
                     ->label('Instutite'),
@@ -78,9 +78,9 @@ class CandidateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCandidates::route('/'),
-            'create' => Pages\CreateCandidate::route('/create'),
-            'edit' => Pages\EditCandidate::route('/{record}/edit'),
+            'index' => Pages\ListStudents::route('/'),
+            'create' => Pages\CreateStudent::route('/create'),
+            'edit' => Pages\EditStudent::route('/{record}/edit'),
         ];
     }
 }

@@ -34,7 +34,7 @@ class ExamResource extends Resource
                         'online' => 'Online',
                         'on-site' => 'On-site'
                     ]),
-                Forms\Components\TextInput::make('maximum_number_of_candidates')
+                Forms\Components\TextInput::make('maximum_number_of_students')
                     ->numeric(),
                 Forms\Components\CheckboxList::make('levels')
                     ->relationship(titleAttribute: 'name'),
@@ -52,7 +52,7 @@ class ExamResource extends Resource
                 Tables\Columns\TextColumn::make('exam_session_name'),
                 Tables\Columns\TextColumn::make('scheduled_date'),
                 Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('maximum_number_of_candidates'),
+                Tables\Columns\TextColumn::make('maximum_number_of_students'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
