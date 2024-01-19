@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -84,6 +85,7 @@ class InstituteResource extends Resource
     {
         return [
             RelationManagers\UsersRelationManager::class,
+            RelationManagers\StudentsRelationManager::class,
         ];
     }
 

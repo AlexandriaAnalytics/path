@@ -8,15 +8,12 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
-        "barryvdh/laravel-dompdf": "^2.0",
-        "carlos-meneses/laravel-mpdf": "^2.1",
+        "php": "^8.2",
         "filament/filament": "^3.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
-        "laravel/tinker": "^2.8",
-        "spatie/laravel-pdf": "^1.1"
+        "laravel/tinker": "^2.8"
     },
     "require-dev": {
         "doctrine/dbal": "^3.7",
