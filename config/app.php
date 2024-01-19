@@ -170,6 +170,7 @@ return [
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\Filament\ManagementPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -184,7 +185,8 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'Example' => App\Facades\Example::class,
+        // 'Example' => App\Facades\Example::class,\
+        'PDF' => Mccarlosen\LaravelMpdf\Facades\LaravelMpdf::class 
     ])->toArray(),
 
 ];
