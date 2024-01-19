@@ -2,10 +2,8 @@
 
 namespace App\Models;
 
-use App\Casts\ExamModules;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -36,6 +34,12 @@ class Exam extends Model
     public function levels(): BelongsToMany
     {
         return $this->belongsToMany(Level::class)
+            ->withTimestamps();
+    }
+
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(Student::class)
             ->withTimestamps();
     }
 }

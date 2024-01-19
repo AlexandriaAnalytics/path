@@ -48,11 +48,9 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('first_name')
                     ->label('Full name')
-                    ->formatStateUsing(function ($state, Student $student) {
+                    ->formatStateUsing(function (Student $student) {
                         return $student->first_name . ' ' . $student->last_name;
                     }),
-                Tables\Columns\TextColumn::make('institute.name')
-                    ->label('Instutite'),
             ])
             ->filters([
                 //
