@@ -27,42 +27,55 @@ class ExamResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('exam_session_name')
-                    ->required()
-                    ->autofocus()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('scheduled_date')
-                    ->native(false)
-                    ->seconds(false)
-                    ->minutesStep(5)
-                    ->required()
-                    ->minDate(now()),
-                Forms\Components\Select::make('type')
-                    ->options(\App\Enums\ExamType::class)
-                    ->native(false)
-                    ->required()
-                    ->enum(\App\Enums\ExamType::class),
-                Forms\Components\TextInput::make('maximum_number_of_students')
-                    ->numeric(),
-                Forms\Components\CheckboxList::make('levels')
-                    ->relationship(titleAttribute: 'name'),
-                Forms\Components\RichEditor::make('comments')
-                    ->columnSpanFull(),
-                Forms\Components\Repeater::make('modules')
-                    ->addActionLabel('Add module')
+                Forms\Components\Section::make('Details')
                     ->columns(2)
                     ->schema([
+                        Forms\Components\TextInput::make('exam_session_name')
+                            ->required()
+                            ->autofocus()
+                            ->maxLength(255),
+                        Forms\Components\DateTimePicker::make('scheduled_date')
+                            ->native(false)
+                            ->seconds(false)
+                            ->minutesStep(5)
+                            ->required()
+                            ->minDate(now()),
                         Forms\Components\Select::make('type')
-                            ->options(\App\Enums\Module::class)
+                            ->options(\App\Enums\ExamType::class)
                             ->native(false)
                             ->required()
-                            ->distinct()
-                            ->enum(\App\Enums\Module::class),
-                        Forms\Components\TextInput::make('price')
-                            ->prefix('$')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
+                            ->enum(\App\Enums\ExamType::class),
+                        Forms\Components\TextInput::make('maximum_number_of_students')
+                            ->numeric(),
+                        Forms\Components\RichEditor::make('comments')
+                            ->columnSpanFull(),
+                    ]),
+                Forms\Components\Section::make('Modules and Levels')
+                    ->collapsible()
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('levels')
+                            ->relationship(titleAttribute: 'name')
+                            ->native(false)
+                            ->multiple()
+                            ->searchable()
+                            ->preload(),
+                        Forms\Components\Repeater::make('modules')
+                            ->addActionLabel('Add module')
+                            ->columns(2)
+                            ->schema([
+                                Forms\Components\Select::make('type')
+                                    ->options(\App\Enums\Module::class)
+                                    ->native(false)
+                                    ->required()
+                                    ->distinct()
+                                    ->enum(\App\Enums\Module::class),
+                                Forms\Components\TextInput::make('price')
+                                    ->prefix('$')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(0),
+                            ]),
                     ]),
             ]);
     }
