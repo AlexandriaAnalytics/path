@@ -61,10 +61,6 @@ class InstituteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->multiple()
-                    ->options(\App\Enums\InstituteType::class)
-                    ->native(false),
                 Tables\Filters\TrashedFilter::make()
                     ->native(false),
             ])
