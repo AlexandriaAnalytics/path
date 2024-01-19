@@ -17,7 +17,26 @@ class ExamFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'institute_id' => \App\Models\Institute::factory(),
+            'exam_session_name' => fake()->word(),
+            'scheduled_date' => fake()->date(),
+            'type' => null,
+            'maximum_number_of_students' => fake()->numberBetween(1, 100),
+            'comments' => fake()->optional()->sentence(),
+            'modules' => [
+                [
+                    'type' => \App\Enums\Module::Listening,
+                    'price' => fake()->numberBetween(1, 100),
+                ],
+                [
+                    'type' => \App\Enums\Module::ReadingAndWriting,
+                    'price' => fake()->numberBetween(1, 100),
+                ],
+                [
+                    'type' => \App\Enums\Module::Speaking,
+                    'price' => fake()->numberBetween(1, 100),
+                ],
+            ],
         ];
     }
 }

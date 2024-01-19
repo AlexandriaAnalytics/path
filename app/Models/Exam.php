@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Casts\ExamModules;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Exam extends Model
@@ -12,27 +14,28 @@ class Exam extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $attributes = [
+        'modules' => '[]',
+    ];
+
     protected $fillable = [
-        'institute_id',
         'exam_session_name',
         'scheduled_date',
         'type',
         'maximum_number_of_students',
-        'comments'
+        'comments',
+        'modules',
     ];
 
-    public function institute(): BelongsTo
-    {
-        return $this->belongsTo(Institute::class);
-    }
+    protected $casts = [
+        'modules' => 'array',
+        'scheduled_date' => 'datetime',
+        'type' => \App\Enums\ExamType::class,
+    ];
 
-    public function levels()
+    public function levels(): BelongsToMany
     {
-        return $this->belongsToMany(Level::class);
-    }
-
-    public function skills()
-    {
-        return $this->belongsToMany(Skill::class);
+        return $this->belongsToMany(Level::class)
+            ->withTimestamps();
     }
 }

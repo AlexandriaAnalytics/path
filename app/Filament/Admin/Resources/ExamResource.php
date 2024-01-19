@@ -27,21 +27,43 @@ class ExamResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('exam_session_name'),
-                Forms\Components\DatePicker::make('scheduled_date'),
+                Forms\Components\TextInput::make('exam_session_name')
+                    ->required()
+                    ->autofocus()
+                    ->maxLength(255),
+                Forms\Components\DateTimePicker::make('scheduled_date')
+                    ->native(false)
+                    ->seconds(false)
+                    ->minutesStep(5)
+                    ->required()
+                    ->minDate(now()),
                 Forms\Components\Select::make('type')
-                    ->options([
-                        'online' => 'Online',
-                        'on-site' => 'On-site'
-                    ]),
+                    ->options(\App\Enums\ExamType::class)
+                    ->native(false)
+                    ->required()
+                    ->enum(\App\Enums\ExamType::class),
                 Forms\Components\TextInput::make('maximum_number_of_students')
                     ->numeric(),
                 Forms\Components\CheckboxList::make('levels')
                     ->relationship(titleAttribute: 'name'),
-                Forms\Components\CheckboxList::make('skills')
-                    ->relationship(titleAttribute: 'name'),
-                Forms\Components\Textarea::make('comments')
+                Forms\Components\RichEditor::make('comments')
                     ->columnSpanFull(),
+                Forms\Components\Repeater::make('modules')
+                    ->addActionLabel('Add module')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('type')
+                            ->options(\App\Enums\Module::class)
+                            ->native(false)
+                            ->required()
+                            ->distinct()
+                            ->enum(\App\Enums\Module::class),
+                        Forms\Components\TextInput::make('price')
+                            ->prefix('$')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0),
+                    ]),
             ]);
     }
 
