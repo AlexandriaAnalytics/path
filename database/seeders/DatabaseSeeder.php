@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\User::factory()
             ->has(
-                Institute::factory()
+                Institute::factory(3)
                     ->hasStudents(10),
             )
             ->create([
