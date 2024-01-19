@@ -35,7 +35,8 @@ class StudentsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                //
+                Tables\Actions\CreateAction::make()
+                    ->label('Create'),
             ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),

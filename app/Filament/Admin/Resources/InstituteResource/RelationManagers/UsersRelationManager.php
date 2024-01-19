@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 
 use App\Filament\Admin\Resources\UserResource;
+use App\Models\User;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -29,7 +30,12 @@ class UsersRelationManager extends RelationManager
             )
             ->headerActions([
                 Tables\Actions\AttachAction::make()
+                    ->label('Add existing')
                     ->recordSelectSearchColumns(['name', 'email'])
+                    ->after(fn () => $this->getOwnerRecord()->touch()),
+                Tables\Actions\CreateAction::make()
+                    ->label('Create')
+                    ->after(fn () => $this->getOwnerRecord()->touch()),
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),

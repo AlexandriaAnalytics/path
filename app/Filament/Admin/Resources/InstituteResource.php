@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
+use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,8 +28,7 @@ class InstituteResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->hint('Full name of the institute')
-                    ->required()
+                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
                 Forms\Components\Select::make('type')
                     ->required()
@@ -43,7 +43,8 @@ class InstituteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->placeholder('(unnamed)'),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter(),

@@ -22,6 +22,17 @@ class Institute extends Model
         'type' => \App\Enums\InstituteType::class,
     ];
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (Institute $institute): void {
+            if ($institute->name == null) {
+                $institute->name = $institute->users()->first()?->name;
+            }
+        });
+    }
+
     public function exams(): HasMany
     {
         return $this->hasMany(Exam::class);
