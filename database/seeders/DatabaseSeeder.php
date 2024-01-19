@@ -18,8 +18,6 @@ class DatabaseSeeder extends Seeder
             LevelSeeder::class,
         ]);
 
-        // \App\Models\User::factory(10)->create();
-
         \App\Models\User::factory()
             ->has(
                 Institute::factory(3)
@@ -29,5 +27,13 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
+
+        \App\Models\Exam::factory(10)
+            ->create();
+
+        \App\Models\Institute::factory(10)
+            ->hasStudents(10)
+            ->hasUsers(3)
+            ->create();
     }
 }
