@@ -4,18 +4,16 @@ namespace App\Filament\Resources\ExamResource\Pages;
 
 use App\Filament\Resources\ExamResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Database\Eloquent\Builder;
-use App\Models\Exam;
+use Filament\Resources\Pages\EditRecord;
 
-class ViewExam extends ViewRecord
+class EditExam extends EditRecord
 {
     protected static string $resource = ExamResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\DeleteAction::make(),
         ];
     }
 }
