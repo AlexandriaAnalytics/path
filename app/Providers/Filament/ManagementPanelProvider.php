@@ -27,7 +27,9 @@ class ManagementPanelProvider extends PanelProvider
             ->default()
             ->id('management')
             ->path('management')
-            ->login()
+            ->login(
+                \App\Filament\Pages\Auth\Login::class
+            )
             ->colors([
                 'primary' => Color::Blue,
             ])

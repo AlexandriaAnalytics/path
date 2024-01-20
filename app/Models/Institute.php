@@ -29,10 +29,12 @@ class Institute extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withTimestamps();
     }
 
-    public function candidates() : HasMany {
-        return $this->hasMany(Candidate::class);
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
     }
 }

@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Resources\ExamResource\Pages;
-use App\Filament\Resources\ExamResource\RelationManagers;
+use App\Filament\Admin\Resources\ExamResource\Pages;
+use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use Filament\Tables\Actions\Action;
 use Filament\Forms;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -20,29 +19,51 @@ class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Exam Management';
+
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('exam_session_name'),
-                Forms\Components\DatePicker::make('scheduled_date'),
+                Forms\Components\TextInput::make('exam_session_name')
+                    ->required()
+                    ->autofocus()
+                    ->maxLength(255),
+                Forms\Components\DateTimePicker::make('scheduled_date')
+                    ->native(false)
+                    ->seconds(false)
+                    ->minutesStep(5)
+                    ->required()
+                    ->minDate(now()),
                 Forms\Components\Select::make('type')
-                    ->options([
-                        'online' => 'Online',
-                        'on-site' => 'On-site'
-                    ]),
-                Forms\Components\TextInput::make('maximum_number_of_candidates')
+                    ->options(\App\Enums\ExamType::class)
+                    ->native(false)
+                    ->required()
+                    ->enum(\App\Enums\ExamType::class),
+                Forms\Components\TextInput::make('maximum_number_of_students')
                     ->numeric(),
                 Forms\Components\CheckboxList::make('levels')
                     ->relationship(titleAttribute: 'name'),
-                Forms\Components\CheckboxList::make('skills')
-                    ->relationship(titleAttribute: 'skill_name'),
-                Forms\Components\Textarea::make('comments')
+                Forms\Components\RichEditor::make('comments')
                     ->columnSpanFull(),
-                Hidden::make('institute_id')
-                    ->default(Auth::user()->institute_id)
+                Forms\Components\Repeater::make('modules')
+                    ->addActionLabel('Add module')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\Select::make('type')
+                            ->options(\App\Enums\Module::class)
+                            ->native(false)
+                            ->required()
+                            ->distinct()
+                            ->enum(\App\Enums\Module::class),
+                        Forms\Components\TextInput::make('price')
+                            ->prefix('$')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0),
+                    ]),
             ]);
     }
 
@@ -53,7 +74,7 @@ class ExamResource extends Resource
                 Tables\Columns\TextColumn::make('exam_session_name'),
                 Tables\Columns\TextColumn::make('scheduled_date'),
                 Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('maximum_number_of_candidates'),
+                Tables\Columns\TextColumn::make('maximum_number_of_students'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

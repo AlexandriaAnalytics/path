@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -26,6 +27,7 @@ class InstituteResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->hint('Full name of the institute')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('type')
@@ -83,6 +85,7 @@ class InstituteResource extends Resource
     {
         return [
             RelationManagers\UsersRelationManager::class,
+            RelationManagers\StudentsRelationManager::class,
         ];
     }
 

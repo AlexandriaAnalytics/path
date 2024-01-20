@@ -17,6 +17,10 @@ class LevelResource extends Resource
 {
     protected static ?string $model = Level::class;
 
+    protected static ?string $navigationGroup = 'Exam Management';
+
+    protected static ?string $navigationParentItem = 'Exams';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

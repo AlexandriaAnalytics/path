@@ -14,13 +14,31 @@ class CreateLevelsTable extends Migration
     {
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->double('price');
+
             $table->string('slug');
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->decimal('price', 12, 2);
+            $table->decimal('complete_price', 12, 2);
             $table->text('modules')->nullable();
-            $table->timestamps();
             $table->unsignedInteger('tier')->nullable();
-            $table->double('complete_price');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('exam_level', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('exam_id')
+                ->constrained('exams')
+                ->cascadeOnDelete();
+
+            $table->foreignId('level_id')
+                ->constrained('levels')
+                ->cascadeOnDelete();
+
+            $table->timestamps();
         });
     }
 
@@ -30,6 +48,7 @@ class CreateLevelsTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('exam_level');
         Schema::dropIfExists('levels');
     }
 }

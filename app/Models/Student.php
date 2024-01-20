@@ -5,24 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Candidate extends Model
+class Student extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
+        'institute_id',
         'first_name',
         'last_name',
         'slug',
-        'id_country',
+        'country',
         'address',
         'phone',
         'cbu',
         'cuil',
         'birth_date',
         'status',
-        'institute_id'
     ];
+
+    public function exams(): BelongsToMany
+    {
+        return $this->belongsToMany(Exam::class)
+            ->withTimestamps();
+    }
 
     public function institute(): BelongsTo
     {
