@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\ExcelController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +24,5 @@ Route::get('/download/candidate',  [DownloadController::class, 'downloadCandidat
 Route::get('/prueba', function () {
     return view('example');
 });
+
+Route::get('/users-excel',[ExcelController::class, 'export']);

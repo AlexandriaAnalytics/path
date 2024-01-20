@@ -171,6 +171,7 @@ return [
         App\Providers\Filament\ManagementPanelProvider::class,
         App\Providers\RouteServiceProvider::class,
         Mccarlosen\LaravelMpdf\LaravelMpdfServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ])->toArray(),
 
     /*
