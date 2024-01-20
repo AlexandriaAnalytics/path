@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\ExamResource\Pages;
 
 use App\Filament\Resources\ExamResource;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Exam;
+use App\Models\Student;
 
 class ViewExam extends ViewRecord
 {
@@ -15,7 +16,9 @@ class ViewExam extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Action::make('Assign Students')
+                ->modalHeading('Assign Students to Exam') // Optional modal heading
+                ->icon('heroicon-o-user-group'), // Optional icon
         ];
     }
 }
