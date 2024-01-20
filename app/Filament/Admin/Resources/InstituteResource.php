@@ -35,6 +35,9 @@ class InstituteResource extends Resource
                     ->options(\App\Enums\InstituteType::class)
                     ->enum(\App\Enums\InstituteType::class)
                     ->native(false),
+                Forms\Components\TextInput::make('files_url')
+                    ->type('url')
+                    ->helperText('The URL to the institute\'s files.'),
             ]);
     }
 

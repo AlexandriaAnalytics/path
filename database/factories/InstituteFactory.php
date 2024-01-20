@@ -19,6 +19,7 @@ class InstituteFactory extends Factory
         return [
             'type' => fake()->randomElement(\App\Enums\InstituteType::values()),
             'name' => fake()->company(),
+            'files_url' => fake()->url(),
         ];
     }
 }

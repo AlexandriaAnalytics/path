@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->string('type')->index();
             $table->string('name')->nullable();
+            $table->string('files_url')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

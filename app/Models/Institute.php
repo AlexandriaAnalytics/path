@@ -16,6 +16,7 @@ class Institute extends Model
     protected $fillable = [
         'type',
         'name',
+        'files_url',
     ];
 
     protected $casts = [
