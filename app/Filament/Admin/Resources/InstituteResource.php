@@ -30,6 +30,35 @@ class InstituteResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
+                Forms\Components\Select::make('user_owner')
+                ->required()
+                ->relationship('users', 'name')
+                ->placeholder('Select a user')
+                ->preload()
+                ->searchable()
+                ->createOptionForm([
+                            Forms\Components\TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('email')
+                                ->required()
+                                ->email()
+                                ->unique('users', 'email')
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('password')
+                                ->required()
+                                ->password()
+                                ->confirmed()
+                                ->minLength(8)
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('password_confirmation')
+                                ->required()
+                                ->password()
+                                ->minLength(8)
+                                ->maxLength(255),
+                        
+                ])
+                ,
                 Forms\Components\Select::make('type')
                     ->required()
                     ->options(\App\Enums\InstituteType::class)
@@ -37,7 +66,7 @@ class InstituteResource extends Resource
                     ->native(false),
                 Forms\Components\TextInput::make('files_url')
                     ->type('url')
-                    ->helperText('The URL to the institute\'s files.'),
+                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
             ]);
     }
 

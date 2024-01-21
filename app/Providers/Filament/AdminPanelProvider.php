@@ -26,6 +26,8 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
+            ->brandLogo(asset('images/logo/01-regular.png'))
+            ->brandLogoHeight('5rem')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
             ->colors([
                 'primary' => Color::Blue,
