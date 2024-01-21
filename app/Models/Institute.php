@@ -16,11 +16,23 @@ class Institute extends Model
     protected $fillable = [
         'type',
         'name',
+        'files_url',
     ];
 
     protected $casts = [
         'type' => \App\Enums\InstituteType::class,
     ];
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (Institute $institute): void {
+            if ($institute->name == null) {
+                $institute->name = $institute->users()->first()?->name;
+            }
+        });
+    }
 
     public function exams(): HasMany
     {
@@ -29,7 +41,7 @@ class Institute extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
+        return $this->belongsToMany(User::class, 'institute_user')
             ->withTimestamps();
     }
 

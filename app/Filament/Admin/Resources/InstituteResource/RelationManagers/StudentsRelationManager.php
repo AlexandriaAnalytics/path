@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 
 use App\Filament\Resources\StudentResource;
+use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -22,6 +23,30 @@ class StudentsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return StudentResource::table($table);
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label('Full name')
+                    ->formatStateUsing(function (Student $student) {
+                        return $student->first_name . ' ' . $student->last_name;
+                    }),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Create'),
+            ])
+            ->actions([
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->paginated([5, 10, 25])
+            ->defaultPaginationPageOption(5);
     }
 }
