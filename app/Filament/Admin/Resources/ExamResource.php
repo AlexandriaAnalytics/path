@@ -84,10 +84,10 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('exam_session_name'),
-                Tables\Columns\TextColumn::make('scheduled_date'),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('maximum_number_of_students'),
+                Tables\Columns\TextColumn::make('exam_session_name')->sortable(),
+                Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
+                Tables\Columns\TextColumn::make('type')->sortable(),
+                Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

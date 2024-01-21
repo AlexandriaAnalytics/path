@@ -75,12 +75,15 @@ class InstituteResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->sortable()
                     ->placeholder('(unnamed)'),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
+                    ->sortable()
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('files_url')
                     ->label('Files URL')
+                    ->sortable()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
