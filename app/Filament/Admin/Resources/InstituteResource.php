@@ -26,46 +26,33 @@ class InstituteResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
-                    ->maxLength(255),
-                Forms\Components\Select::make('user_owner')
-                    ->required()
-                    ->relationship('users', 'name')
-                    ->placeholder('Select a user')
-                    ->preload()
-                    ->searchable()
-                    ->createOptionForm([
+                Forms\Components\Section::make('Information')
+                    ->columnSpan(2)
+                    ->schema([
                         Forms\Components\TextInput::make('name')
-                            ->required()
+                            ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        Forms\Components\Select::make('type')
                             ->required()
-                            ->email()
-                            ->unique('users', 'email')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('password')
-                            ->required()
-                            ->password()
-                            ->confirmed()
-                            ->minLength(8)
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('password_confirmation')
-                            ->required()
-                            ->password()
-                            ->minLength(8)
-                            ->maxLength(255),
-
+                            ->options(\App\Enums\InstituteType::class)
+                            ->enum(\App\Enums\InstituteType::class)
+                            ->native(false),
                     ]),
-                Forms\Components\Select::make('type')
-                    ->required()
-                    ->options(\App\Enums\InstituteType::class)
-                    ->enum(\App\Enums\InstituteType::class)
-                    ->native(false),
-                Forms\Components\TextInput::make('files_url')
-                    ->type('url')
-                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
+                Forms\Components\Section::make('Administration')
+                    ->collapsible()
+                    ->collapsed()
+                    ->columnSpan(1)
+                    ->schema([
+                        Forms\Components\TextInput::make('files_url')
+                            ->type('url')
+                            ->url()
+                            ->helperText('URL to shared web folder, such as Dropbox, OneDrive, etc.'),
+                        Forms\Components\Toggle::make('can_add_candidates')
+                            ->default(true)
+                            ->helperText('If enabled, the institute will be able to add candidates to exams.'),
+                    ]),
             ]);
     }
 

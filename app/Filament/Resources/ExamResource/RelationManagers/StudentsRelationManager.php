@@ -7,6 +7,7 @@ use App\Models\Student;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -32,7 +33,21 @@ class StudentsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->label('Add Candidate')
                     ->recordSelectSearchColumns(['first_name', 'last_name'])
-                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant())),
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
+                    ->disabled(fn () => !Filament::getTenant()->can_add_candidates)
+                    ->before(function (Tables\Actions\AttachAction $action) {
+                        if (!Filament::getTenant()->can_add_candidates) {
+                            Notification::make()
+                                ->warning()
+                                ->title('This institute cannot add candidates to exams')
+                                ->body('Please contact the system administrator.')
+                                ->persistent()
+                                ->send();
+
+                            $action->cancel();
+                        }
+                    })
+                    ->attachAnother(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -17,10 +17,15 @@ class Institute extends Model
         'type',
         'name',
         'files_url',
+        'can_add_candidates',
     ];
 
     protected $casts = [
         'type' => \App\Enums\InstituteType::class,
+    ];
+
+    protected $attributes = [
+        'can_add_candidates' => true,
     ];
 
     public static function boot(): void
@@ -41,7 +46,7 @@ class Institute extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'institute_user')
+        return $this->belongsToMany(User::class)
             ->withTimestamps();
     }
 

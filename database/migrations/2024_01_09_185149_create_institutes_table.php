@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type')->index();
             $table->string('name')->nullable();
             $table->string('files_url')->nullable();
+            $table->boolean('can_add_candidates');
 
             $table->timestamps();
             $table->softDeletes();
