@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/evaluations/confirm', 'EvaluationController@confirm')->name('evaluations.confirm');
+Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');

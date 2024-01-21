@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('maximum_number_of_students');
             $table->string('comments')->nullable();
             $table->json('modules');
+            $table->foreignId('institute_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();
