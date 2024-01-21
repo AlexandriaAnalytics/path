@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 
 class StudentResource extends Resource
 {
@@ -85,6 +86,10 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('address'),
+                Tables\Columns\TextColumn::make('cbu'),
+                Tables\Columns\TextColumn::make('cuil'),
+                Tables\Columns\TextColumn::make('birth_date'),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
