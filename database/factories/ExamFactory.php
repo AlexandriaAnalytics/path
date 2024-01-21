@@ -17,7 +17,7 @@ class ExamFactory extends Factory
     public function definition(): array
     {
         return [
-            'exam_session_name' => str(fake()->word())->title(),
+            'session_name' => str(fake()->word())->title(),
             'scheduled_date' => fake()->date(),
             'type' => fake()->randomElement(\App\Enums\ExamType::values()),
             'maximum_number_of_students' => fake()->numberBetween(1, 100),

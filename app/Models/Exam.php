@@ -17,7 +17,7 @@ class Exam extends Model
     ];
 
     protected $fillable = [
-        'exam_session_name',
+        'session_name',
         'scheduled_date',
         'type',
         'maximum_number_of_students',
@@ -40,6 +40,7 @@ class Exam extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'candidates')
+            ->using(Candidate::class)
             ->withTimestamps();
     }
 

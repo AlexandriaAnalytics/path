@@ -2,25 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Candidate extends Model
+class Candidate extends Pivot
 {
-    use HasFactory;
+    public $incrementing = true;
 
-    protected $fillable = [
-        'id_student',
-        'id_exam',
-    ];
+    protected $table = 'candidates';
 
-    public function exam()
+    protected $fillable = [];
+
+    public function student(): BelongsTo
     {
-        return $this->belongsTo(Exam::class, 'id_exam', 'id_exam');
+        return $this->belongsTo(Student::class);
     }
 
-    public function student()
+    public function exam(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'id_student', 'id_student');
+        return $this->belongsTo(Exam::class);
     }
 }

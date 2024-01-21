@@ -30,7 +30,7 @@ class ExamResource extends Resource
                 Forms\Components\Section::make('Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('exam_session_name')
+                        Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
                             ->maxLength(255),
@@ -85,7 +85,7 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('exam_session_name')->sortable(),
+                Tables\Columns\TextColumn::make('session_name')->sortable(),
                 Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
                 Tables\Columns\TextColumn::make('type')->sortable(),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),

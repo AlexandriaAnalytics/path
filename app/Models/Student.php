@@ -31,6 +31,7 @@ class Student extends Model
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'candidates')
+            ->using(Candidate::class)
             ->withTimestamps();
     }
 
@@ -42,10 +43,5 @@ class Student extends Model
     public function evaluations()
     {
         return $this->hasMany(Evaluation::class, 'id_user', 'id_user');
-    }
-
-    public function candidates()
-    {
-        return $this->hasMany(Candidate::class, 'id_student', 'id_student');
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
 
-            $table->string('exam_session_name');
+            $table->string('session_name');
             $table->timestamp('scheduled_date');
             $table->string('type');
             $table->integer('maximum_number_of_students');
