@@ -31,34 +31,33 @@ class InstituteResource extends Resource
                     ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
                 Forms\Components\Select::make('user_owner')
-                ->required()
-                ->relationship('users', 'name')
-                ->placeholder('Select a user')
-                ->preload()
-                ->searchable()
-                ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('email')
-                                ->required()
-                                ->email()
-                                ->unique('users', 'email')
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('password')
-                                ->required()
-                                ->password()
-                                ->confirmed()
-                                ->minLength(8)
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('password_confirmation')
-                                ->required()
-                                ->password()
-                                ->minLength(8)
-                                ->maxLength(255),
-                        
-                ])
-                ,
+                    ->required()
+                    ->relationship('users', 'name')
+                    ->placeholder('Select a user')
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->required()
+                            ->email()
+                            ->unique('users', 'email')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->required()
+                            ->password()
+                            ->confirmed()
+                            ->minLength(8)
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->required()
+                            ->password()
+                            ->minLength(8)
+                            ->maxLength(255),
+
+                    ]),
                 Forms\Components\Select::make('type')
                     ->required()
                     ->options(\App\Enums\InstituteType::class)
@@ -80,6 +79,9 @@ class InstituteResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter(),
+                Tables\Columns\TextColumn::make('files_url')
+                    ->label('Files URL')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
