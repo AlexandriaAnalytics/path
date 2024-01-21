@@ -37,15 +37,15 @@ class StudentResource extends Resource
                     ->placeholder('last name'),
 
                 Select::make('country')
-                ->options(Country::values())
-                ->displayUsingLabels()
-                ->placeholder('Select Country')
-                ->required(),
+                    ->options(Country::values())
+                    ->displayUsingLabels()
+                    ->placeholder('Select Country')
+                    ->required(),
 
                 TextInput::make('address')
                     ->autofocus()
                     ->placeholder('address'),
-                
+
                 TextInput::make('phone')
                     ->autofocus()
                     ->placeholder('phone'),
@@ -59,16 +59,16 @@ class StudentResource extends Resource
                     ->autofocus()
                     ->placeholder('cuil')
                     ->required(),
-                
+
                 TextInput::make('birth_date')
                     ->autofocus()
                     ->type('date')
                     ->required(),
 
                 Select::make('status')
-                ->options(['active' => 'active', 'inactive' => 'inactive'])
-                ->displayUsingLabels()
-                ->placeholder('Select Status')
+                    ->options(['active' => 'active', 'inactive' => 'inactive'])
+                    ->displayUsingLabels()
+                    ->placeholder('Select Status')
             ]);
     }
 
@@ -95,6 +95,9 @@ class StudentResource extends Resource
                     ->options(['active' => 'active', 'inactive' => 'inactive'])
                     ->label('Status')
                     ->placeholder('Select Status'),
+                Tables\Filters\SelectFilter::make('institute_id')
+                    ->relationship('institute', 'name')
+                    ->label('Intitute')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -117,7 +120,7 @@ class StudentResource extends Resource
     {
         return [
             'index' => ListStudents::route('/'),
-//            'create' => CreateStudent::route('/create'),
+            //            'create' => CreateStudent::route('/create'),
             //'edit' => EditSt//Pages\EditStudent::route('/{record}/edit'),
         ];
     }
