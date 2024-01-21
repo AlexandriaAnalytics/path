@@ -3,11 +3,11 @@
 namespace App\Providers\Filament;
 
 use App\Models\Institute;
-use App\Settings\GeneralSettings;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationItem;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -40,16 +40,17 @@ class ManagementPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->navigationItems([
-                NavigationItem::make('Files')
-                    ->icon('heroicon-o-document-text')
-                    ->url(fn (GeneralSettings $settings): ?string => $settings->client_link, shouldOpenInNewTab: true)
-                    ->hidden(fn (GeneralSettings $settings): bool => !$settings->client_link),
-            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
+            ])
+            ->tenantMenuItems([
+                MenuItem::make()
+                    ->label('Institute Files')
+                    ->icon('heroicon-o-folder')
+                    ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
+                    ->visible(fn () => Filament::getTenant()->files_url != null),
             ])
             ->middleware([
                 EncryptCookies::class,
