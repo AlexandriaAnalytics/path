@@ -42,4 +42,14 @@ class Exam extends Model
         return $this->belongsToMany(Student::class)
             ->withTimestamps();
     }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'id_exam', 'id_exam');
+    }
+
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class, 'id_exam', 'id_exam');
+    }
 }
