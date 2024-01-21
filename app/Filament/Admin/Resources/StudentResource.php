@@ -86,10 +86,10 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('address'),
-                Tables\Columns\TextColumn::make('cbu'),
-                Tables\Columns\TextColumn::make('cuil'),
-                Tables\Columns\TextColumn::make('birth_date'),
+                Tables\Columns\TextColumn::make('address')->sortable(),
+                Tables\Columns\TextColumn::make('cbu')->sortable(),
+                Tables\Columns\TextColumn::make('cuil')->sortable(),
+                Tables\Columns\TextColumn::make('birth_date')->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
