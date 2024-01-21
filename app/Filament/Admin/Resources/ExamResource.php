@@ -52,6 +52,7 @@ class ExamResource extends Resource
                     ]),
                 Forms\Components\Section::make('Modules and Levels')
                     ->collapsible()
+                    ->collapsed()
                     ->columns(2)
                     ->schema([
                         Forms\Components\Select::make('levels')
@@ -93,6 +94,7 @@ class ExamResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -108,7 +110,7 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ExamResource\RelationManagers\StudentsRelationManager::class,
         ];
     }
 
