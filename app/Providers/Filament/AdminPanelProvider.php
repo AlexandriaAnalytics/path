@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\Category;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -39,14 +40,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Settings'),
+                NavigationGroup::make()
                     ->label('Corporate'),
                 NavigationGroup::make()
                     ->label('Exam Management'),
                 NavigationGroup::make()
                     ->label('User Management'),
-                NavigationGroup::make()
-                    ->label('Settings')
-                    ->icon('heroicon-o-cog-6-tooth'),
 
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
