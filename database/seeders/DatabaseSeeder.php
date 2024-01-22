@@ -31,14 +31,14 @@ class DatabaseSeeder extends Seeder
         User::factory()
             ->has(
                 Institute::factory(3)
-                    ->has(
-                        Student::factory(10)
-                            ->hasAttached($exams->random(3)),
-                    )
                     ->afterCreating(function (Institute $institute, User $user): void {
                         $institute->owner()->associate($user);
                         $institute->save();
                     })
+                    ->has(
+                        Student::factory(10)
+                            ->hasAttached($exams->random(3)),
+                    )
 
             )
             ->create([
@@ -50,15 +50,15 @@ class DatabaseSeeder extends Seeder
         User::factory(10)
             ->has(
                 Institute::factory(3)
+                    ->afterCreating(function (Institute $institute): void {
+                        $institute->owner()->associate(User::all()->random());
+                        $institute->save();
+                    })
                     ->has(
                         Student::factory(10)
                             ->hasAttached($exams->random(3)),
                     )
             )
-            ->afterCreating(function (Institute $institute, User $user): void {
-                $institute->owner()->associate(User::all()->random());
-                $institute->save();
-            })
             ->create();
     }
 }
