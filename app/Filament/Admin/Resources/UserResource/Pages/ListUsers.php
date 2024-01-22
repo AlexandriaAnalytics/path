@@ -18,6 +18,7 @@ class ListUsers extends ListRecords
             Actions\Action::make('download')
                 ->label('Download Users')
                 ->color('success')
+                ->outlined()
                 ->url('/users-excel')
         ];
     }
