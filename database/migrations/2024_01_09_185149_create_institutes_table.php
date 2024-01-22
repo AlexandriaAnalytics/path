@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->string('name')->nullable();
             $table->string('files_url')->nullable();
-            $table->foreignId('institute_type_id')->nullable()->constrained('institute_types')->cascadeOnDelete();
+            $table->foreignId('institute_type_id')->constrained('institute_types')->cascadeOnDelete();
             $table->foreignId('owner_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -26,11 +26,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('institute_id')
-                ->constrained()
+                ->constrained('institutes')
                 ->cascadeOnDelete();
 
             $table->foreignId('user_id')
-                ->constrained()
+                ->constrained('users')
                 ->cascadeOnDelete();
 
             $table->timestamps();

@@ -26,32 +26,27 @@ class Institute extends Model
     public static function boot(): void
     {
         parent::boot();
+       /*
         static::creating(function (Institute $institute): void {
             Log::info('Creating institute', ['institute' => $institute->toArray()]);
 
             if ($institute->name == null && $institute->owner) {
                 $institute->name = $institute->owner->name . ' s`Institute';
             }
-            if ($institute->owner) {
-                $institute->users()->syncWithoutDetaching([$institute->owner->id]);
+        });
+*/
+        static::created(function (Institute $institute): void {
+            Log::info('Created institute', ['institute' => $institute->toArray()]);
+            if ($institute->name == null && isset($institute->owner)) {
+                $institute->name = $institute->owner->name . ' s`Institute';
             }
+            if ($institute->owner) 
+                $institute->users()->sync([$institute->owner->id]);
+            else
+                $institute->users()->detach();
+            $institute->save();
         });
 
-        static::updating(function (Institute $institute): void {
-            Log::info('Updating institute', ['institute' => $institute->toArray()]);
-
-            if ($institute->isDirty('owner_id')) {
-                $currentUsers = $institute->users()->allRelatedIds()->toArray();
-
-                if ($institute->getOriginal('owner_id')) {
-                    $currentUsers = array_diff($currentUsers, [$institute->getOriginal('owner_id')]);
-                }
-
-                $currentUsers[] = $institute->owner->id;
-
-                $institute->users()->sync($currentUsers);
-            }
-        });
     }
 
     public function exams(): HasMany
@@ -65,9 +60,9 @@ class Institute extends Model
             ->withTimestamps();
     }
 
-    public function instituteType(): BelongsTo
+    public function instituteType(): HasOne
     {
-        return $this->belongsTo(InstituteType::class);
+        return $this->hasOne(InstituteType::class);
     }
 
     public function students(): HasMany
