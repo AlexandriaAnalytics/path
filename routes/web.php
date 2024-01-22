@@ -31,5 +31,5 @@ Route::get('/users-excel',[ExcelController::class, 'export']);
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
-Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
+Route::post('/candidates/confirm', [\App\Http\Controllers\CandidateController::class, 'confirm'])->name('candidates.confirm');
 
