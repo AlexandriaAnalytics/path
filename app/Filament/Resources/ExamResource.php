@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Admin\Resources\ExamResource as AdminExamResource;
 use App\Filament\Resources\ExamResource\Pages;
 use App\Filament\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
@@ -23,66 +24,21 @@ class ExamResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('exam_session_name')
-                    ->required()
-                    ->autofocus()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('scheduled_date')
-                    ->native(false)
-                    ->seconds(false)
-                    ->minutesStep(5)
-                    ->required()
-                    ->minDate(now()),
-                Forms\Components\Select::make('type')
-                    ->options(\App\Enums\ExamType::class)
-                    ->native(false)
-                    ->required()
-                    ->enum(\App\Enums\ExamType::class),
-                Forms\Components\TextInput::make('maximum_number_of_students')
-                    ->numeric(),
-                Forms\Components\CheckboxList::make('levels')
-                    ->relationship(titleAttribute: 'name'),
-                Forms\Components\RichEditor::make('comments')
-                    ->columnSpanFull(),
-                Forms\Components\Repeater::make('modules')
-                    ->addActionLabel('Add module')
-                    ->columns(2)
-                    ->schema([
-                        Forms\Components\Select::make('type')
-                            ->options(\App\Enums\Module::class)
-                            ->native(false)
-                            ->required()
-                            ->distinct()
-                            ->enum(\App\Enums\Module::class),
-                        Forms\Components\TextInput::make('price')
-                            ->prefix('$')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0),
-                    ]),
-            ]);
+        return AdminExamResource::form($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('exam_session_name')->sortable(),
-                Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
-                Tables\Columns\TextColumn::make('type')->sortable(),
-                Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),
-            ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
+        return AdminExamResource::table($table)
+            ->actions([
+                Tables\Actions\ViewAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\StudentsRelationManager::class,
         ];
     }
 

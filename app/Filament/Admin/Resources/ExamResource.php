@@ -30,7 +30,7 @@ class ExamResource extends Resource
                 Forms\Components\Section::make('Details')
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('exam_session_name')
+                        Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
                             ->maxLength(255),
@@ -52,8 +52,21 @@ class ExamResource extends Resource
                     ]),
                 Forms\Components\Section::make('Modules and Levels')
                     ->collapsible()
+                    ->collapsed()
                     ->columns(2)
                     ->schema([
+                        Forms\Components\TextInput::make('minimum_age')
+                            ->suffix('years')
+                            ->required()
+                            ->lt('maximum_age')
+                            ->numeric()
+                            ->minValue(0),
+                        Forms\Components\TextInput::make('maximum_age')
+                            ->suffix('years')
+                            ->required()
+                            ->gt('minimum_age')
+                            ->numeric()
+                            ->minValue(0),
                         Forms\Components\Select::make('levels')
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
@@ -84,7 +97,7 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('exam_session_name')->sortable(),
+                Tables\Columns\TextColumn::make('session_name')->sortable(),
                 Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
                 Tables\Columns\TextColumn::make('type')->sortable(),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),
@@ -93,6 +106,7 @@ class ExamResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -108,7 +122,7 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ExamResource\RelationManagers\StudentsRelationManager::class,
         ];
     }
 

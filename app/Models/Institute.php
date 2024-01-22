@@ -23,6 +23,10 @@ class Institute extends Model
         'owner_id',
     ];
 
+    protected $attributes = [
+        'can_add_candidates' => true,
+    ];
+
     public static function boot(): void
     {
         parent::boot();
@@ -56,7 +60,7 @@ class Institute extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'institute_user')
+        return $this->belongsToMany(User::class)
             ->withTimestamps();
     }
 
