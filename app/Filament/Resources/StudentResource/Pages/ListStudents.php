@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\StudentResource\Pages;
 
+use App\Filament\Imports\StudentImporter;
 use App\Filament\Resources\StudentResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -13,6 +14,8 @@ class ListStudents extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\ImportAction::make()
+                ->importer(StudentImporter::class),
             Actions\CreateAction::make(),
         ];
     }
