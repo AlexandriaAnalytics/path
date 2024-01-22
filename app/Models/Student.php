@@ -28,6 +28,14 @@ class Student extends Model
         'status',
     ];
 
+    protected $casts = [
+        'country' => \App\Enums\Country::class,
+    ];
+
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     public function firstName(): Attribute
     {
         return Attribute::make(
