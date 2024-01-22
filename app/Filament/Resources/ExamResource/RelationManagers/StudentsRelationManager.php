@@ -36,12 +36,35 @@ class StudentsRelationManager extends RelationManager
                     ->recordSelectSearchColumns(['first_name', 'last_name'])
                     ->recordSelectOptionsQuery(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
                     ->disabled(fn () => !Filament::getTenant()->can_add_candidates)
-                    ->before(function (Tables\Actions\AttachAction $action) {
+                    ->before(function (Tables\Actions\AttachAction $action, Student $record) {
                         if (!Filament::getTenant()->can_add_candidates) {
                             Notification::make()
                                 ->warning()
                                 ->title('This institute cannot add candidates to exams')
                                 ->body('Please contact the system administrator.')
+                                ->persistent()
+                                ->send();
+
+                            $action->cancel();
+                        }
+
+                        $studentAge = $record->birth_date->floatDiffInYears($this->getOwnerRecord()->scheduled_date);
+                        if ($this->getOwnerRecord()->minimum_age > $studentAge) {
+                            Notification::make()
+                                ->warning()
+                                ->title('This student is too young for this exam')
+                                ->body('The minimum age for this exam is ' . $this->getOwnerRecord()->minimum_age . ' years old (at the time of the exam).')
+                                ->persistent()
+                                ->send();
+
+                            $action->cancel();
+                        }
+
+                        if ($this->getOwnerRecord()->maximum_age < $studentAge) {
+                            Notification::make()
+                                ->warning()
+                                ->title('This student is too old for this exam')
+                                ->body('The maximum age for this exam is ' . $this->getOwnerRecord()->maximum_age . ' years old (at the time of the exam).')
                                 ->persistent()
                                 ->send();
 
