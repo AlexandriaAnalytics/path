@@ -47,10 +47,21 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')
-                    ->label('Full name')
-                    ->formatStateUsing(function (Student $student) {
-                        return $student->first_name . ' ' . $student->last_name;
-                    }),
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('last_name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('country')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('address')->sortable(),
+                Tables\Columns\TextColumn::make('cbu')->sortable(),
+                Tables\Columns\TextColumn::make('cuil')->sortable(),
+                Tables\Columns\TextColumn::make('birth_date')->sortable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
                 //

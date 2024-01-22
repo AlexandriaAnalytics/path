@@ -31,6 +31,7 @@ class InstituteResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
+
                 Forms\Components\Select::make('owner')
                     ->required()
                     ->label('owner')
@@ -77,6 +78,7 @@ class InstituteResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->sortable()
                     ->placeholder('(unnamed)'),
 
                 Tables\Columns\TextColumn::make('owner.name')
@@ -90,7 +92,12 @@ class InstituteResource extends Resource
                 //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
+                    ->sortable()
                     ->alignCenter(),
+                Tables\Columns\TextColumn::make('files_url')
+                    ->label('Files URL')
+                    ->sortable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
