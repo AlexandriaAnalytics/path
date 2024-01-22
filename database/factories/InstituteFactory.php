@@ -17,6 +17,7 @@ class InstituteFactory extends Factory
     public function definition(): array
     {
         return [
+            'owner_id' => \App\Models\User::factory(),
             'institute_type_id' => \App\Models\InstituteType::all()->random()->id,
             'name' => fake()->company(),
             'files_url' => fake()->url(),
