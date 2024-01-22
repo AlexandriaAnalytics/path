@@ -46,8 +46,6 @@ class AdminPanelProvider extends PanelProvider
                     ->label('User Management'),
                 NavigationGroup::make()
                     ->label('Settings')
-                    ->icon('heroicon-o-cog-6-tooth'),
-
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([

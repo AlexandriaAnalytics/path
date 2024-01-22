@@ -15,3 +15,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
+// Route::get('/auth/login/candidate', LoginCand)

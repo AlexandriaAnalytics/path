@@ -6,6 +6,9 @@ use Filament\Support\Colors\Color;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
+/**
+    @deprecated Use InstituteType model instead.
+*/
 enum InstituteType: string implements HasColor, HasLabel
 {
     case AffiliateMember = 'affiliate_member';
