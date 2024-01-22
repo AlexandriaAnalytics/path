@@ -20,6 +20,7 @@ class Institute extends Model
         'files_url',
         'institute_type_id',
         'owner_id',
+        'can_add_candidates',
     ];
 
     protected $attributes = [
@@ -29,19 +30,18 @@ class Institute extends Model
     public static function boot(): void
     {
         parent::boot();
-       
+
         static::created(function (Institute $institute): void {
             Log::info('Created institute', ['institute' => $institute->toArray()]);
             if ($institute->name == null && isset($institute->owner)) {
                 $institute->name = $institute->owner->name . ' s`Institute';
             }
-            if ($institute->owner) 
+            if ($institute->owner)
                 $institute->users()->sync([$institute->owner->id]);
             else
                 $institute->users()->detach();
             $institute->save();
         });
-
     }
 
     public function exams(): HasMany

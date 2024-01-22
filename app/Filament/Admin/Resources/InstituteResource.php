@@ -29,26 +29,34 @@ class InstituteResource extends Resource
         return $form
             ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
-                    ->maxLength(255),
-
-                Forms\Components\Select::make('owner_id')
-                    ->required()
-                    ->label('owner')
-                    ->relationship('owner', 'name')
-                    ->placeholder('Select a user')
-                    ->preload()
-                    ->searchable()
-                    ->createOptionForm([
+                Forms\Components\Section::make('Information')
+                    ->schema([
                         Forms\Components\TextInput::make('name')
                             ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                             ->maxLength(255),
-                        Forms\Components\Select::make('type')
+
+                        Forms\Components\Select::make('owner_id')
                             ->required()
-                            ->options(\App\Enums\InstituteType::class)
-                            ->enum(\App\Enums\InstituteType::class)
-                            ->native(false),
+                            ->label('owner')
+                            ->relationship('owner', 'name')
+                            ->placeholder('Select a user')
+                            ->preload()
+                            ->searchable()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->required()
+                                    ->options(\App\Enums\InstituteType::class)
+                                    ->enum(\App\Enums\InstituteType::class)
+                                    ->native(false),
+                            ]),
+                        Forms\Components\Select::make('institute_type_id')
+                            ->required()
+                            ->label('type')
+                            ->relationship('instituteType', 'name')
+                            ->native(true),
                     ]),
                 Forms\Components\Section::make('Administration')
                     ->collapsible()
@@ -63,14 +71,6 @@ class InstituteResource extends Resource
                             ->default(true)
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                     ]),
-                Forms\Components\Select::make('institute_type_id')
-                    ->required()
-                    ->label('type')
-                    ->relationship('instituteType', 'name')
-                    ->native(true),
-                Forms\Components\TextInput::make('files_url')
-                    ->type('url')
-                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
             ]);
     }
 
