@@ -3,23 +3,22 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Enums\Country;
-use App\Filament\Admin\Resources\StudentResource\Pages\CreateStudent;
 use App\Filament\Admin\Resources\StudentResource\Pages\ListStudents;
-use App\Filament\Admin\Resources\StudentResource\RelationManagers;
 use App\Models\Student;
-use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
+
     protected static ?string $navigationGroup = 'Corporate';
     protected static ?string $navigationIcon = 'heroicon-m-user-group';
 
@@ -27,48 +26,67 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('first_name')
-                    ->autofocus()
-                    ->required()
-                    ->placeholder('first name'),
-                TextInput::make('last_name')
-                    ->autofocus()
-                    ->required()
-                    ->placeholder('last name'),
-
-                Select::make('country')
-                ->options(Country::values())
-                ->displayUsingLabels()
-                ->placeholder('Select Country')
-                ->required(),
-
-                TextInput::make('address')
-                    ->autofocus()
-                    ->placeholder('address'),
-                
-                TextInput::make('phone')
-                    ->autofocus()
-                    ->placeholder('phone'),
-
-                TextInput::make('cbu')
-                    ->autofocus()
-                    ->placeholder('cbu')
-                    ->required(),
-
-                TextInput::make('cuil')
-                    ->autofocus()
-                    ->placeholder('cuil')
-                    ->required(),
-                
-                TextInput::make('birth_date')
-                    ->autofocus()
-                    ->type('date')
-                    ->required(),
-
-                Select::make('status')
-                ->options(['active' => 'active', 'inactive' => 'inactive'])
-                ->displayUsingLabels()
-                ->placeholder('Select Status')
+                Components\Section::make('Personal Information')
+                    ->columns(2)
+                    ->schema([
+                        Components\TextInput::make('first_name')
+                            ->label('First Name')
+                            ->required()
+                            ->placeholder('John'),
+                        Components\TextInput::make('last_name')
+                            ->label('Last Name')
+                            ->required()
+                            ->placeholder('Doe'),
+                        Components\Select::make('institute_id')
+                            ->label('Institute')
+                            ->relationship('institute', 'name')
+                            ->searchable()
+                            ->native(false)
+                            ->required(),
+                        Components\TextInput::make('phone')
+                            ->autofocus()
+                            ->placeholder('0118-999-881-999-119-725-3'),
+                        Components\TextInput::make('national_id')
+                            ->label('National ID')
+                            ->placeholder('20-12345678-9')
+                            ->mask('99-99999999-9')
+                            ->autofocus()
+                            ->required(),
+                        Components\TextInput::make('birth_date')
+                            ->autofocus()
+                            ->type('date')
+                            ->required(),
+                    ]),
+                Components\Section::make('Address')
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        Components\Select::make('country')
+                            ->label('Country')
+                            ->searchable()
+                            ->required()
+                            ->options(Country::class)
+                            ->enum(Country::class)
+                            ->native(false),
+                        Components\TextInput::make('address')
+                            ->autofocus()
+                            ->placeholder('Evergreen Terrace 742'),
+                    ]),
+                Components\Section::make('Additional Information')
+                    ->columns(2)
+                    ->collapsible()
+                    ->collapsed()
+                    ->schema([
+                        Components\TextInput::make('cbu')
+                            ->label('CBU')
+                            ->autofocus()
+                            ->placeholder('1234567890123456789012')
+                            ->required(),
+                        Components\Select::make('status')
+                            ->label('Status')
+                            ->options(['active' => 'active', 'inactive' => 'inactive'])
+                            ->placeholder('Select Status')
+                    ]),
             ]);
     }
 
@@ -76,26 +94,39 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('last_name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('country')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable()
-                    ->sortable(),
-
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('full_name')
+                            ->getStateUsing(fn (Student $record) => $record->first_name . ' ' . $record->last_name)
+                            ->weight(FontWeight::Bold),
+                        Tables\Columns\TextColumn::make('institute.name')
+                            ->numeric(),
+                    ]),
+                ]),
+                Tables\Columns\Layout\Panel::make([
+                    Tables\Columns\Layout\Split::make([
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->icon('heroicon-o-clock')
+                            ->description('Registered at')
+                            ->date('Y-m-d H:i:s'),
+                    ]),
+                ])->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options(['active' => 'active', 'inactive' => 'inactive'])
-                    ->label('Status')
-                    ->placeholder('Select Status'),
+                Tables\Filters\SelectFilter::make('institute_id')
+                    ->label('Institute')
+                    ->relationship('institute', 'name')
+                    ->native(false)
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        DateConstraint::make('created_at')
+                            ->label('Registered at'),
+                    ]),
             ])
+            ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -117,7 +148,7 @@ class StudentResource extends Resource
     {
         return [
             'index' => ListStudents::route('/'),
-//            'create' => CreateStudent::route('/create'),
+            //            'create' => CreateStudent::route('/create'),
             //'edit' => EditSt//Pages\EditStudent::route('/{record}/edit'),
         ];
     }

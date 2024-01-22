@@ -8,6 +8,7 @@ use App\Models\Candidate;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,7 +24,12 @@ class CandidateResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('exam_id')
+                    ->relationship('exam', 'id')
+                    ->required(),
+                Forms\Components\Select::make('student_id')
+                    ->relationship('student', 'id')
+                    ->required(),
             ]);
     }
 
@@ -31,18 +37,39 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\Layout\Stack::make([
+                        Tables\Columns\TextColumn::make('full_name')
+                            ->getStateUsing(fn (Candidate $record) => $record->student->first_name . ' ' . $record->student->last_name)
+                            ->weight(FontWeight::Bold),
+                        Tables\Columns\TextColumn::make('student.institute.name')
+                            ->numeric(),
+                    ]),
+                    Tables\Columns\TextColumn::make('exam.session_name')
+                        ->numeric(),
+                ]),
+                Tables\Columns\Layout\Panel::make([
+                    Tables\Columns\Layout\Split::make([
+                        Tables\Columns\TextColumn::make('id')
+                            ->icon('heroicon-o-user')
+                            ->label('Candidate ID')
+                            ->description('Candidate ID')
+                            ->sortable()
+                            ->numeric(),
+                        Tables\Columns\TextColumn::make('created_at')
+                            ->icon('heroicon-o-clock')
+                            ->description('Registered at')
+                            ->date('Y-m-d H:i:s'),
+                    ]),
+                ])->collapsible(),
             ])
             ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Filters\SelectFilter::make('exam')
+                    ->relationship('exam', 'session_name')
+                    ->multiple()
+                    ->native(false)
+                    ->preload()
+                    ->placeholder('All exams'),
             ]);
     }
 
@@ -57,8 +84,9 @@ class CandidateResource extends Resource
     {
         return [
             'index' => Pages\ListCandidates::route('/'),
-            'create' => Pages\CreateCandidate::route('/create'),
-            'edit' => Pages\EditCandidate::route('/{record}/edit'),
+            // 'create' => Pages\CreateCandidate::route('/create'),
+            // 'view' => Pages\ViewCandidate::route('/{record}'),
+            // 'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
     }
 }

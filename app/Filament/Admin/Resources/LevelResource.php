@@ -42,11 +42,11 @@ class LevelResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('price'),
-                Tables\Columns\TextColumn::make('modules'),
-                Tables\Columns\TextColumn::make('tier'),
-                Tables\Columns\TextColumn::make('complete_price'),
+                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('price')->sortable(),
+                Tables\Columns\TextColumn::make('modules')->sortable(),
+                Tables\Columns\TextColumn::make('tier')->sortable(),
+                Tables\Columns\TextColumn::make('complete_price')->sortable(),
             ])
             ->filters([
                 //

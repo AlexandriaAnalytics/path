@@ -18,6 +18,7 @@ class StudentFactory extends Factory
     {
         return [
             'institute_id' => \App\Models\Institute::factory(),
+            'national_id' => fake()->numerify('##-########-#'),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'slug' => fake()->slug(),
@@ -25,7 +26,6 @@ class StudentFactory extends Factory
             'address' => fake()->address(),
             'phone' => fake()->phoneNumber(),
             'cbu' => fake()->bankAccountNumber(),
-            'cuil' => fake()->numerify('##-########-#'),
             'birth_date' => fake()->date(),
             'status' => 'active',
         ];

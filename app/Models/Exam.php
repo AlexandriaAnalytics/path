@@ -17,12 +17,14 @@ class Exam extends Model
     ];
 
     protected $fillable = [
-        'exam_session_name',
+        'session_name',
         'scheduled_date',
         'type',
         'maximum_number_of_students',
         'comments',
         'modules',
+        'minimum_age',
+        'maximum_age',
     ];
 
     protected $casts = [
@@ -39,7 +41,18 @@ class Exam extends Model
 
     public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class)
+        return $this->belongsToMany(Student::class, 'candidates')
+            ->using(Candidate::class)
             ->withTimestamps();
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'id_exam', 'id_exam');
+    }
+
+    public function candidates()
+    {
+        return $this->hasMany(Candidate::class, 'id_exam', 'id_exam');
     }
 }

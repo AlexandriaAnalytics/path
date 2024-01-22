@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class Student extends Model
 
     protected $fillable = [
         'institute_id',
+        'national_id',
         'first_name',
         'last_name',
         'slug',
@@ -22,19 +24,38 @@ class Student extends Model
         'address',
         'phone',
         'cbu',
-        'cuil',
         'birth_date',
         'status',
     ];
 
+    public function firstName(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => ucwords($value),
+        );
+    }
+
+    public function lastName(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => ucwords($value),
+        );
+    }
+
     public function exams(): BelongsToMany
     {
-        return $this->belongsToMany(Exam::class)
+        return $this->belongsToMany(Exam::class, 'candidates')
+            ->using(Candidate::class)
             ->withTimestamps();
     }
 
     public function institute(): BelongsTo
     {
         return $this->belongsTo(Institute::class);
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class, 'id_user', 'id_user');
     }
 }
