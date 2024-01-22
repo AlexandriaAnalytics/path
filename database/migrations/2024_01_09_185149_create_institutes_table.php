@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('institutes', function (Blueprint $table) {
             $table->id();
 
-            $table->string('type')->index();
             $table->string('name')->nullable();
             $table->string('files_url')->nullable();
-
+            $table->foreignId('institute_type_id')->nullable()->constrained('institute_types')->cascadeOnDelete();
+            $table->foreignId('owner_id')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

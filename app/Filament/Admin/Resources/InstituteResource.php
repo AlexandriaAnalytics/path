@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
+use App\Filament\admin\Resources\UserResource\Pages\ViewUser;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
@@ -30,9 +31,11 @@ class InstituteResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
-                Forms\Components\Select::make('user_owner')
+
+                Forms\Components\Select::make('owner')
                     ->required()
-                    ->relationship('users', 'name')
+                    ->label('owner')
+                    ->relationship('owner', 'name')
                     ->placeholder('Select a user')
                     ->preload()
                     ->searchable()
@@ -58,11 +61,11 @@ class InstituteResource extends Resource
                             ->maxLength(255),
 
                     ]),
-                Forms\Components\Select::make('type')
+                Forms\Components\Select::make('instituteType')
                     ->required()
-                    ->options(\App\Enums\InstituteType::class)
-                    ->enum(\App\Enums\InstituteType::class)
-                    ->native(false),
+                    ->label('type')
+                    ->relationship('instituteType', 'name')
+                    ->native(true),
                 Forms\Components\TextInput::make('files_url')
                     ->type('url')
                     ->helperText('The URL to web folder like Dropbox, One, etc.'),
@@ -77,7 +80,17 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('(unnamed)'),
-                Tables\Columns\TextColumn::make('type')
+
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
+                    ->placeholder('(no owner)'),
+
+                Tables\Columns\TextColumn::make('files_url')
+                    ->placeholder('(no url)')
+                    ->searchable()
+                    ->sortable(),
+                //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
+                Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
                     ->alignCenter(),

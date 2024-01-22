@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\InstituteResource\Pages;
 
-use App\Enums\InstituteType;
+use App\Models\InstituteType;
 use App\Filament\Admin\Resources\InstituteResource;
 use Filament\Actions;
 use Filament\Resources\Components;
@@ -27,15 +27,15 @@ class ListInstitutes extends ListRecords
 
     public function getTabs(): array
     {
-        $instituteTypes = collect(InstituteType::cases());
+        
 
         // Create tabs for each institute type.
         return [
             'All' => Components\Tab::make(),
-            ...$instituteTypes->mapWithKeys(fn (InstituteType $instituteType) => [
-                $instituteType->value => Components\Tab::make()
-                    ->label($instituteType->getLabel())
-                    ->modifyQueryUsing(fn ($query) => $query->whereType($instituteType)),
+            ...InstituteType::all()->mapWithKeys(fn (InstituteType $instituteType) => [
+                $instituteType->name => Components\Tab::make()
+                    ->label($instituteType->name)
+                    ->modifyQueryUsing(fn ($query) => $query->where('institute_type_id', $instituteType->id)),
             ]),
         ];
     }
