@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\User;
+use App\Models\Candidate;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -17,7 +17,10 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
      */
     public function collection()
     {
-        return User::select('name', 'email')->get();
+        return Candidate::select('students.first_name', 'exams.session_name as exam_session')
+        ->join('students', 'students.id', '=', 'candidates.student_id')
+        ->join('exams', 'exams.id', '=', 'candidates.exam_id')
+        ->get();
     }
 
     /**
@@ -25,7 +28,7 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Name', 'Mail'];
+        return ['First Name', 'Exam Session'];
     }
 
     /**
@@ -54,7 +57,7 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
             ],
             'fill' => [
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '000000'], // Color de fondo negro
+                'startColor' => ['rgb' => '000000'], 
             ],
         ]);
 
