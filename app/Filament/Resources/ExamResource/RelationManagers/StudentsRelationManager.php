@@ -29,6 +29,7 @@ class StudentsRelationManager extends RelationManager
     {
         return StudentResource::table($table)
             ->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->last_name)
+            ->modifyQueryUsing(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
             ->headerActions([
                 Tables\Actions\AttachAction::make()
                     ->label('Add Candidate')
@@ -42,6 +43,15 @@ class StudentsRelationManager extends RelationManager
                                 ->title('This institute cannot add candidates to exams')
                                 ->body('Please contact the system administrator.')
                                 ->persistent()
+                                ->send();
+
+                            $action->cancel();
+                        }
+
+                        if ($this->getOwnerRecord()->max_candidates <= $this->getOwnerRecord()->students()->count()) {
+                            Notification::make()
+                                ->warning()
+                                ->title('This exam has reached its maximum number of candidates')
                                 ->send();
 
                             $action->cancel();
