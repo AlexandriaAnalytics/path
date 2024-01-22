@@ -28,6 +28,20 @@ class Student extends Model
         'status',
     ];
 
+    public function firstName(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => ucwords($value),
+        );
+    }
+
+    public function lastName(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => ucwords($value),
+        );
+    }
+
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'candidates')
