@@ -16,12 +16,13 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Carbon;
 
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
     protected static ?string $navigationGroup = 'Corporate';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-m-user-group';
 
     public static function form(Form $form): Form
     {
@@ -37,15 +38,15 @@ class StudentResource extends Resource
                     ->placeholder('last name'),
 
                 Select::make('country')
-                ->options(Country::values())
-                ->displayUsingLabels()
-                ->placeholder('Select Country')
-                ->required(),
+                    ->options(Country::values())
+                    ->displayUsingLabels()
+                    ->placeholder('Select Country')
+                    ->required(),
 
                 TextInput::make('address')
                     ->autofocus()
                     ->placeholder('address'),
-                
+
                 TextInput::make('phone')
                     ->autofocus()
                     ->placeholder('phone'),
@@ -59,16 +60,16 @@ class StudentResource extends Resource
                     ->autofocus()
                     ->placeholder('cuil')
                     ->required(),
-                
+
                 TextInput::make('birth_date')
                     ->autofocus()
                     ->type('date')
                     ->required(),
 
                 Select::make('status')
-                ->options(['active' => 'active', 'inactive' => 'inactive'])
-                ->displayUsingLabels()
-                ->placeholder('Select Status')
+                    ->options(['active' => 'active', 'inactive' => 'inactive'])
+                    ->displayUsingLabels()
+                    ->placeholder('Select Status')
             ]);
     }
 
@@ -85,6 +86,10 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('address')->sortable(),
+                Tables\Columns\TextColumn::make('cbu')->sortable(),
+                Tables\Columns\TextColumn::make('cuil')->sortable(),
+                Tables\Columns\TextColumn::make('birth_date')->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
@@ -95,6 +100,9 @@ class StudentResource extends Resource
                     ->options(['active' => 'active', 'inactive' => 'inactive'])
                     ->label('Status')
                     ->placeholder('Select Status'),
+                Tables\Filters\SelectFilter::make('institute_id')
+                    ->relationship('institute', 'name')
+                    ->label('Intitute')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -117,7 +125,7 @@ class StudentResource extends Resource
     {
         return [
             'index' => ListStudents::route('/'),
-//            'create' => CreateStudent::route('/create'),
+            //            'create' => CreateStudent::route('/create'),
             //'edit' => EditSt//Pages\EditStudent::route('/{record}/edit'),
         ];
     }
