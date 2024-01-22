@@ -16,7 +16,8 @@ return new class extends Migration
 
             $table->string('name')->nullable();
             $table->string('files_url')->nullable();
-            
+            $table->boolean('can_add_candidates');
+
             $table->foreignId('institute_type_id')->constrained('institute_types')->cascadeOnDelete();
             $table->foreignId('owner_id')->nullable()->constrained('users')->cascadeOnDelete();
 
