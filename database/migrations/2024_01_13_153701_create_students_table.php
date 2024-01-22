@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->string('cbu');
-            $table->string('cuil');
+            $table->string('national_id', 32);
             $table->date('birth_date');
             $table->string('status');
 
