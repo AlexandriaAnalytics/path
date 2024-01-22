@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
+use App\Filament\admin\Resources\UserResource\Pages\ViewUser;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
@@ -79,6 +80,7 @@ class InstituteResource extends Resource
                     ->placeholder('(unnamed)'),
 
                 Tables\Columns\TextColumn::make('owner.name')
+                    ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)'),
 
                 Tables\Columns\TextColumn::make('files_url')

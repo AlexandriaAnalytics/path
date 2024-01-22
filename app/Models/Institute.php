@@ -36,6 +36,22 @@ class Institute extends Model
                 $institute->users()->syncWithoutDetaching([$institute->owner->id]);
             }
         });
+
+        static::updating(function (Institute $institute): void {
+            Log::info('Updating institute', ['institute' => $institute->toArray()]);
+
+            if ($institute->isDirty('owner_id')) {
+                $currentUsers = $institute->users()->allRelatedIds()->toArray();
+
+                if ($institute->getOriginal('owner_id')) {
+                    $currentUsers = array_diff($currentUsers, [$institute->getOriginal('owner_id')]);
+                }
+
+                $currentUsers[] = $institute->owner->id;
+
+                $institute->users()->sync($currentUsers);
+            }
+        });
     }
 
     public function exams(): HasMany
