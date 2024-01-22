@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Filament\Resources\CandidateResource\RelationManagers;
 use App\Models\Candidate;
@@ -29,48 +30,12 @@ class CandidateResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                //
-            ]);
+        return AdminCandidateResource::form($form);
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                Tables\Columns\TextColumn::make('student.first_name')
-                    ->label('Name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student.last_name')
-                    ->label('Last Name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('student.cuil')
-                    ->label('Cuil')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('exam.session_name')
-                    ->label('Exam')
-                    ->searchable()
-                    ->sortable(),
-            ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('exam')
-                    ->label('Exam')
-                    ->relationship('exam', 'session_name')
-                    ->searchable()
-                    ->preload(),
-            ])
-            ->recordUrl(
-                fn (Candidate $candidate) => StudentResource::getUrl('view', ['record' => $candidate->student]),
-            )
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+        return AdminCandidateResource::table($table);
     }
 
     public static function getRelations(): array
