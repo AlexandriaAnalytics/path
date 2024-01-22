@@ -33,7 +33,7 @@ class InstituteResource extends Resource
                     ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
 
-                Forms\Components\Select::make('owner')
+                Forms\Components\Select::make('owner_id')
                     ->required()
                     ->label('owner')
                     ->relationship('owner', 'name')
@@ -63,7 +63,7 @@ class InstituteResource extends Resource
                             ->default(true)
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                     ]),
-                Forms\Components\Select::make('instituteType')
+                Forms\Components\Select::make('institute_type_id')
                     ->required()
                     ->label('type')
                     ->relationship('instituteType', 'name')
@@ -83,7 +83,7 @@ class InstituteResource extends Resource
                     ->sortable()
                     ->placeholder('(unnamed)'),
 
-                Tables\Columns\TextColumn::make('owner.name')
+                Tables\Columns\TextColumn::make('owner_id')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)'),
 
