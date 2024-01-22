@@ -35,6 +35,11 @@ class DatabaseSeeder extends Seeder
                         Student::factory(10)
                             ->hasAttached($exams->random(3)),
                     )
+                    ->afterCreating(function (Institute $institute, User $user): void {
+                        $institute->owner()->associate($user);
+                        $institute->save();
+                    })
+
             )
             ->create([
                 'name' => 'Test User',
@@ -50,6 +55,10 @@ class DatabaseSeeder extends Seeder
                             ->hasAttached($exams->random(3)),
                     )
             )
+            ->afterCreating(function (Institute $institute, User $user): void {
+                $institute->owner()->associate(User::all()->random());
+                $institute->save();
+            })
             ->create();
     }
 }
