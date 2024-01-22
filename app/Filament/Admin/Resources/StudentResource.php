@@ -9,7 +9,10 @@ use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
 
 class StudentResource extends Resource
@@ -111,14 +114,20 @@ class StudentResource extends Resource
                 ])->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options(['active' => 'active', 'inactive' => 'inactive'])
-                    ->label('Status')
-                    ->placeholder('Select Status'),
                 Tables\Filters\SelectFilter::make('institute_id')
+                    ->label('Institute')
                     ->relationship('institute', 'name')
-                    ->label('Intitute')
+                    ->native(false)
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        DateConstraint::make('created_at')
+                            ->label('Registered at'),
+                    ]),
             ])
+            ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
