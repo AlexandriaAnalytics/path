@@ -83,7 +83,7 @@ class InstituteResource extends Resource
                     ->sortable()
                     ->placeholder('(unnamed)'),
 
-                Tables\Columns\TextColumn::make('owner_id')
+                Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)'),
 
