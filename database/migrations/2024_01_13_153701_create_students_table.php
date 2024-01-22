@@ -25,24 +25,12 @@ return new class extends Migration
             $table->string('address');
             $table->string('phone');
             $table->string('cbu');
-            $table->string('cuil');
+            $table->string('national_id', 32);
             $table->date('birth_date');
             $table->string('status');
 
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('exam_student', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('exam_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
-            $table->foreignId('student_id')
-                ->constrained()
-                ->cascadeOnDelete();
         });
     }
 
@@ -51,7 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exam_student');
         Schema::dropIfExists('students');
     }
 };

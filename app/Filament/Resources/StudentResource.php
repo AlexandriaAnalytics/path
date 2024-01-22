@@ -35,7 +35,7 @@ class StudentResource extends Resource
                 Forms\Components\TextInput::make('address'),
                 Forms\Components\TextInput::make('phone'),
                 Forms\Components\TextInput::make('cbu'),
-                Forms\Components\TextInput::make('cuil'),
+                Forms\Components\TextInput::make('national_id'),
                 Forms\Components\DatePicker::make('birth_date'),
                 Forms\Components\Select::make('status')
                     ->options(UserStatus::values()),
@@ -57,7 +57,7 @@ class StudentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('address')->sortable(),
                 Tables\Columns\TextColumn::make('cbu')->sortable(),
-                Tables\Columns\TextColumn::make('cuil')->sortable(),
+                Tables\Columns\TextColumn::make('national_id')->sortable(),
                 Tables\Columns\TextColumn::make('birth_date')->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
@@ -90,6 +90,7 @@ class StudentResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudent::route('/create'),
             'edit' => Pages\EditStudent::route('/{record}/edit'),
+            'view' => Pages\ViewStudent::route('/{record}'),
         ];
     }
 }
