@@ -30,15 +30,7 @@ class Institute extends Model
     public static function boot(): void
     {
         parent::boot();
-       /*
-        static::creating(function (Institute $institute): void {
-            Log::info('Creating institute', ['institute' => $institute->toArray()]);
-
-            if ($institute->name == null && $institute->owner) {
-                $institute->name = $institute->owner->name . ' s`Institute';
-            }
-        });
-*/
+       
         static::created(function (Institute $institute): void {
             Log::info('Created institute', ['institute' => $institute->toArray()]);
             if ($institute->name == null && isset($institute->owner)) {
@@ -64,9 +56,9 @@ class Institute extends Model
             ->withTimestamps();
     }
 
-    public function instituteType(): HasOne
+    public function instituteType(): BelongsTo
     {
-        return $this->hasOne(InstituteType::class);
+        return $this->belongsTo(InstituteType::class);
     }
 
     public function students(): HasMany
