@@ -3,9 +3,11 @@
 namespace App\Providers\Filament;
 
 use App\Models\Institute;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -27,6 +29,8 @@ class ManagementPanelProvider extends PanelProvider
             ->default()
             ->id('management')
             ->path('management')
+            ->brandLogo(asset('images/logo/01-regular.png'))
+            ->brandLogoHeight('5rem')
             ->login(
                 \App\Filament\Pages\Auth\Login::class
             )
@@ -42,6 +46,13 @@ class ManagementPanelProvider extends PanelProvider
             ->widgets([
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
+            ])
+            ->tenantMenuItems([
+                MenuItem::make()
+                    ->label('Institute Files')
+                    ->icon('heroicon-o-folder')
+                    ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
+                    ->visible(fn () => Filament::getTenant()->files_url != null),
             ])
             ->middleware([
                 EncryptCookies::class,

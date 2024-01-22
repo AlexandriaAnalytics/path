@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Institute extends Model
 {
@@ -14,13 +17,26 @@ class Institute extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'type',
         'name',
+        'files_url',
+        'institute_type_id',
+        'owner_id',
     ];
 
-    protected $casts = [
-        'type' => \App\Enums\InstituteType::class,
-    ];
+    public static function boot(): void
+    {
+        parent::boot();
+        static::creating(function (Institute $institute): void {
+            Log::info('Creating institute', ['institute' => $institute->toArray()]);
+
+            if ($institute->name == null && $institute->owner) {
+                $institute->name = $institute->owner->name . ' s`Institute';
+            }
+            if ($institute->owner) {
+                $institute->users()->syncWithoutDetaching([$institute->owner->id]);
+            }
+        });
+    }
 
     public function exams(): HasMany
     {
@@ -29,12 +45,22 @@ class Institute extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)
+        return $this->belongsToMany(User::class, 'institute_user')
             ->withTimestamps();
+    }
+
+    public function instituteType(): BelongsTo
+    {
+        return $this->belongsTo(InstituteType::class);
     }
 
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

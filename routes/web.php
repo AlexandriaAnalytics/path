@@ -26,3 +26,6 @@ Route::get('/prueba', function () {
 });
 
 Route::get('/users-excel',[ExcelController::class, 'export']);
+Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
+Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
+// Route::get('/auth/login/candidate', LoginCand)

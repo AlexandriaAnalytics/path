@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
+use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,14 +28,45 @@ class InstituteResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->hint('Full name of the institute')
-                    ->required()
+                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                     ->maxLength(255),
-                Forms\Components\Select::make('type')
+                Forms\Components\Select::make('owner')
                     ->required()
-                    ->options(\App\Enums\InstituteType::class)
-                    ->enum(\App\Enums\InstituteType::class)
-                    ->native(false),
+                    ->label('owner')
+                    ->relationship('owner', 'name')
+                    ->placeholder('Select a user')
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->required()
+                            ->email()
+                            ->unique('users', 'email')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->required()
+                            ->password()
+                            ->confirmed()
+                            ->minLength(8)
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password_confirmation')
+                            ->required()
+                            ->password()
+                            ->minLength(8)
+                            ->maxLength(255),
+
+                    ]),
+                Forms\Components\Select::make('instituteType')
+                    ->required()
+                    ->label('type')
+                    ->relationship('instituteType', 'name')
+                    ->native(true),
+                Forms\Components\TextInput::make('files_url')
+                    ->type('url')
+                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
             ]);
     }
 
@@ -43,8 +75,18 @@ class InstituteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('type')
+                    ->searchable()
+                    ->placeholder('(unnamed)'),
+
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->placeholder('(no owner)'),
+
+                Tables\Columns\TextColumn::make('files_url')
+                    ->placeholder('(no url)')
+                    ->searchable()
+                    ->sortable(),
+                //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
+                Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -61,10 +103,6 @@ class InstituteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->multiple()
-                    ->options(\App\Enums\InstituteType::class)
-                    ->native(false),
                 Tables\Filters\TrashedFilter::make()
                     ->native(false),
             ])
