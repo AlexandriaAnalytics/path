@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
+use App\Filament\admin\Resources\UserResource\Pages\ViewUser;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
@@ -28,9 +29,18 @@ class InstituteResource extends Resource
         return $form
             ->columns(3)
             ->schema([
-                Forms\Components\Section::make('Information')
-                    ->columnSpan(2)
-                    ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
+                    ->maxLength(255),
+
+                Forms\Components\Select::make('owner')
+                    ->required()
+                    ->label('owner')
+                    ->relationship('owner', 'name')
+                    ->placeholder('Select a user')
+                    ->preload()
+                    ->searchable()
+                    ->createOptionForm([
                         Forms\Components\TextInput::make('name')
                             ->helperText('If omitted, the name will be generated from the first user added to the institute.')
                             ->maxLength(255),
@@ -53,6 +63,14 @@ class InstituteResource extends Resource
                             ->default(true)
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                     ]),
+                Forms\Components\Select::make('instituteType')
+                    ->required()
+                    ->label('type')
+                    ->relationship('instituteType', 'name')
+                    ->native(true),
+                Forms\Components\TextInput::make('files_url')
+                    ->type('url')
+                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
             ]);
     }
 
@@ -64,7 +82,17 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('(unnamed)'),
-                Tables\Columns\TextColumn::make('type')
+
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
+                    ->placeholder('(no owner)'),
+
+                Tables\Columns\TextColumn::make('files_url')
+                    ->placeholder('(no url)')
+                    ->searchable()
+                    ->sortable(),
+                //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
+                Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
                     ->alignCenter(),

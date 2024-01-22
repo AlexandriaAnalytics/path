@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "cviebrock/eloquent-sluggable": "10",
         "filament/filament": "^3.1",
         "filament/spatie-laravel-settings-plugin": "^3.2",
         "guzzlehttp/guzzle": "^7.2",
