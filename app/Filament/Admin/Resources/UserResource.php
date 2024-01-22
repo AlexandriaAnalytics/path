@@ -72,7 +72,7 @@ class UserResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                    Tables\Actions\BulkAction::make('export')->action(fn()=> redirect()->route('/download/candidate'))
+                    Tables\Actions\BulkAction::make('download')->action(fn()=> redirect('/download/candidate'))
                 ]),
             ]);
     }
