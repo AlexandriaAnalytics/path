@@ -88,18 +88,14 @@ class InstituteResource extends Resource
                     ->placeholder('(no owner)'),
 
                 Tables\Columns\TextColumn::make('files_url')
+                    ->url(fn ($record) => $record->files_url)
                     ->placeholder('(no url)')
                     ->searchable()
                     ->sortable(),
-                //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
                     ->alignCenter(),
-                Tables\Columns\TextColumn::make('files_url')
-                    ->label('Files URL')
-                    ->sortable()
-                    ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
