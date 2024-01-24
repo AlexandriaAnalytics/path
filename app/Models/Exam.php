@@ -23,8 +23,6 @@ class Exam extends Model
         'maximum_number_of_students',
         'comments',
         'modules',
-        'minimum_age',
-        'maximum_age',
     ];
 
     protected $casts = [

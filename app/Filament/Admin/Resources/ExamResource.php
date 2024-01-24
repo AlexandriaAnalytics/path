@@ -55,18 +55,6 @@ class ExamResource extends Resource
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('minimum_age')
-                            ->suffix('years')
-                            ->required()
-                            ->lt('maximum_age')
-                            ->numeric()
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('maximum_age')
-                            ->suffix('years')
-                            ->required()
-                            ->gt('minimum_age')
-                            ->numeric()
-                            ->minValue(0),
                         Forms\Components\Select::make('levels')
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
