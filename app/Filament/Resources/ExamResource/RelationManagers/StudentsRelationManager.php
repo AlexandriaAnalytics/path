@@ -36,7 +36,7 @@ class StudentsRelationManager extends RelationManager
                 Tables\Actions\AttachAction::make()
                     ->label('Add candidates')
                     ->recordSelect(
-                        fn (Select $select) => $select->placeholder('Select a student'),
+                        fn (Select $select) => $select->placeholder('Select a student')->multiple(),
                     )
 
             ])
