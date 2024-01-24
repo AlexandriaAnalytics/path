@@ -34,9 +34,17 @@ class StudentsRelationManager extends RelationManager
             ->modifyQueryUsing(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
             ->headerActions([
                 Tables\Actions\AttachAction::make()
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('status', 1))
                     ->label('Add candidates')
                     ->recordSelect(
-                        fn (Select $select) => $select->placeholder('Select a student')->multiple(),
+                        fn (Select $select) => $select
+                            ->placeholder('Select a student')
+                            ->multiple()
+                            ->options(
+                                Student::where('status', 1)->get()->mapWithKeys(function ($student) {
+                                    return [$student->id => $student->first_name . ' ' . $student->last_name];
+                                })
+                            )
                     )
 
             ])
