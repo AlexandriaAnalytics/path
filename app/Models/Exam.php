@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Exam extends Model
@@ -41,16 +42,17 @@ class Exam extends Model
     {
         return $this->belongsToMany(Student::class, 'candidates')
             ->using(Candidate::class)
+            ->withPivot(['id', 'modules'])
             ->withTimestamps();
     }
 
-    public function evaluations()
+    public function evaluations(): HasMany
     {
-        return $this->hasMany(Evaluation::class, 'id_exam', 'id_exam');
+        return $this->hasMany(Evaluation::class);
     }
 
-    public function candidates()
+    public function candidates(): HasMany
     {
-        return $this->hasMany(Candidate::class, 'id_exam', 'id_exam');
+        return $this->hasMany(Candidate::class);
     }
 }

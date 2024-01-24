@@ -22,6 +22,9 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
+            $table->json('modules')
+                ->comment('The modules the student is taking for this exam.');
+
             $table->timestamps();
         });
     }
