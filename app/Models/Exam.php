@@ -26,7 +26,7 @@ class Exam extends Model
     ];
 
     protected $casts = [
-        'modules' => 'array',
+        'modules' => \App\Casts\ExamModules::class,
         'scheduled_date' => 'datetime',
         'type' => \App\Enums\ExamType::class,
     ];
