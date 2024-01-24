@@ -110,7 +110,7 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ExamResource\RelationManagers\StudentsRelationManager::class,
+            ExamResource\RelationManagers\CandidatesRelationManager::class,
         ];
     }
 
