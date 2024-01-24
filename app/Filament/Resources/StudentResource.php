@@ -54,14 +54,16 @@ class StudentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('country')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('address')->sortable(),
-                Tables\Columns\TextColumn::make('cbu')->sortable(),
-                Tables\Columns\TextColumn::make('national_id')->sortable(),
-                Tables\Columns\TextColumn::make('birth_date')->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('address')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('cbu')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('national_id')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('birth_date')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -74,7 +76,12 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->toggleColumnsTriggerAction(
+                fn (Tables\Actions\Action $action) => $action
+                    ->button()
+                    ->label('Toggle columns'),
+            );
     }
 
     public static function getRelations(): array
