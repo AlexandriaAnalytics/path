@@ -31,4 +31,19 @@ class DownloadController extends Controller {
         return $pdf->download('downloaded_pdf_' . $id . '.pdf');
     }
 
+    public function generateQrCode($id)
+{
+    $candidate = Candidate::find($id);
+
+    if (!$candidate) {
+        abort(404, 'Candidate not found');
+    }
+
+    $data = [
+        'candidate' => $candidate,
+    ];
+
+    return view('qrCandidate', $data);
+}
+
 } 
