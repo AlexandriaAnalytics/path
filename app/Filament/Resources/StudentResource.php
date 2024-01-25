@@ -40,12 +40,6 @@ class StudentResource extends Resource
                 Forms\Components\DatePicker::make('birth_date'),
                 Forms\Components\Select::make('status')
                     ->options(UserStatus::values()),
-                Forms\Components\Select::make('modules')
-                    ->relationship(titleAttribute: 'name')
-                    ->native(false)
-                    ->multiple()
-                    ->searchable()
-                    ->preload(),
 
             ]);
     }

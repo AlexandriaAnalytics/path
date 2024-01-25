@@ -89,16 +89,6 @@ class StudentResource extends Resource
                             ->label('Status')
                             ->options(['active' => 'active', 'inactive' => 'inactive'])
                             ->placeholder('Select Status')
-                    ]),
-                Components\Section::make('Academic Information')
-                    ->collapsible()
-                    ->schema([
-                        Components\Select::make('modules')
-                            ->relationship(titleAttribute: 'name')
-                            ->native(false)
-                            ->multiple()
-                            ->searchable()
-                            ->preload(),
                     ])
             ]);
     }
