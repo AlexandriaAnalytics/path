@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Enums\Country;
-use App\Filament\Admin\Resources\StudentResource\Pages\ListStudents;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -11,6 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
@@ -94,23 +95,13 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\Layout\Split::make([
-                    Tables\Columns\Layout\Stack::make([
-                        Tables\Columns\TextColumn::make('full_name')
-                            ->getStateUsing(fn (Student $record) => $record->first_name . ' ' . $record->last_name)
-                            ->weight(FontWeight::Bold),
-                        Tables\Columns\TextColumn::make('institute.name')
-                            ->numeric(),
-                    ]),
+                ...static::getStudentColumns(),
+                ColumnGroup::make('Institute', [
+                    TextColumn::make('institute.name')
+                        ->searchable()
+                        ->sortable(),
                 ]),
-                Tables\Columns\Layout\Panel::make([
-                    Tables\Columns\Layout\Split::make([
-                        Tables\Columns\TextColumn::make('created_at')
-                            ->icon('heroicon-o-clock')
-                            ->description('Registered at')
-                            ->date('Y-m-d H:i:s'),
-                    ]),
-                ])->collapsible(),
+                ...static::getMetadataColumns(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('institute_id')
@@ -147,9 +138,47 @@ class StudentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListStudents::route('/'),
-            //            'create' => CreateStudent::route('/create'),
-            //'edit' => EditSt//Pages\EditStudent::route('/{record}/edit'),
+            'index' => StudentResource\Pages\ListStudents::route('/'),
+            // 'create' => StudentResource\Pages\CreateStudent::route('/create'),
+            'edit' => StudentResource\Pages\EditStudent::route('/{record}/edit'),
+            'view' => StudentResource\Pages\ViewStudent::route('/{record}'),
+        ];
+    }
+
+    public static function getStudentColumns(): array
+    {
+        return [
+            ColumnGroup::make('Personal Information', [
+                TextColumn::make('national_id')
+                    ->label('National ID')
+                    ->searchable(isIndividual: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('first_name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('last_name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('birth_date')
+                    ->date()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ]),
+        ];
+    }
+
+    public static function getMetadataColumns(): array
+    {
+        return [
+            ColumnGroup::make('Metadata', [
+                TextColumn::make('created_at')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ]),
         ];
     }
 }
