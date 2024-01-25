@@ -88,6 +88,22 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('impersonate')
+                    ->label('Impersonate')
+                    ->icon('heroicon-o-finger-print')
+                    ->requiresConfirmation()
+                    ->modalHeading('Log in as this user?')
+                    ->modalDescription('Are you sure you want to log in as this user? You will be logged out of your current session.')
+                    ->modalSubmitActionLabel('Yes, I am sure')
+                    ->action(function (User $user) {
+                        // Save the current user's ID to the session so we can log them back in later.
+                        session()->put('impersonator_id', auth()->id());
+
+                        auth()->login($user);
+
+                        return redirect()
+                            ->to(route('filament.management.tenant'));
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
