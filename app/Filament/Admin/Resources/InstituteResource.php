@@ -90,7 +90,6 @@ class InstituteResource extends Resource
                     ->sortable()
                     ->placeholder('(unnamed)')
                     ->toggleable(),
-
                 Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)')
@@ -146,12 +145,7 @@ class InstituteResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ])
-            ->toggleColumnsTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
-                    ->button()
-                    ->label('Toggle columns'),
-            );
+            ]);
     }
 
     public static function getRelations(): array
