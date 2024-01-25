@@ -135,49 +135,51 @@
     <main class="container mx-auto">
         <section class="data">
             <article class="form">
-                <p>Nombre: Romeo</p>
+                <p>{{$candidate ->id}}</p>
+            </article>
+            
+            <article class="form">
+            <p>{{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</p>
+            </article>
+            
+
+            <article class="form">
+                <p>{{$candidate->student->birth_date}}</p>
             </article>
 
             <article class="form">
-                <p>candidate number: 189</p>
+                <p>{{$candidate->student->country}}</p>
             </article>
 
-            <article class="form">
-                <p>id: 189</p>
-            </article>
 
-            <article class="form">
-                <p>Date of birth: 22/10/1998</p>
-            </article>
+            
+            {{-- <article class="form">
+                <p>Level </p>
+            </article> --}}
 
-            <article class="form">
-                <p>Level: 1</p>
-            </article>
-
-            <article class="form">
+            {{-- <article class="form">
                 <p>Type of certificate </p>
-            </article>
+            </article> --}}
 
+            {{-- <article class="form">
+                <p>Modules/p>
+            </article> --}}
+            
             <article class="form">
-                <p>Modules</p>
+                <p>{{$candidate->exam->scheduled_date}}</p>
             </article>
-
+            
             <article class="form">
-                <p>Scheduled for</p>
+                <p>{{$candidate->exam->session_name}}</p>
             </article>
-
-
+            
             <article class="form">
-                <p>Exams sessions name</p>
+                <p>{{$candidate->exam->type}}</p>
             </article>
-
-            <article class="form">
-                <p>Exams type</p>
-            </article>
-
+            
             <article class="form-description">
-                <p>Description: is great student</p>
-            </article> 
+                <p>{{$candidate->exam->comments}}</p>
+            </article>
 
         </section>
     </main>

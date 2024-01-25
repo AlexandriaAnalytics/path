@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
 use Illuminate\Http\Request;
 
 class CandidateController extends Controller
@@ -26,5 +27,20 @@ class CandidateController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function show($id)
+    {
+        $candidate = Candidate::with(['student', 'exam'])->find($id);
+
+        if (!$candidate) {
+            abort(404, 'Candidate not found');
+        }
+
+        $data = [
+            'candidate' => $candidate,
+        ];
+
+        return view('example', $data);
     }
 }
