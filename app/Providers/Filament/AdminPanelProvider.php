@@ -40,16 +40,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('Settings'),
-                NavigationGroup::make()
                     ->label('Corporate'),
                 NavigationGroup::make()
                     ->label('Exam Management'),
                 NavigationGroup::make()
                     ->label('User Management'),
                 NavigationGroup::make()
-                    ->label('Settings'),
-
+                    ->label('Settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsible()
+                    ->collapsed(),
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
