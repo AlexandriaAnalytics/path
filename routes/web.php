@@ -23,7 +23,7 @@ Route::get('/', function () {
 });
 
 Route::get('/download/candidate',  [DownloadController::class, 'downloadCandidate']);
-Route::get('/download-candidate/{id}', 'DownloadController@downloadCandidateById');
+Route::get('/download-candidate/{id}', [DownloadController::class, 'downloadCandidateById']);
 
 Route::get('/prueba', function () {
     return view('example');
