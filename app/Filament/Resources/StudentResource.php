@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Country;
 use App\Enums\UserStatus;
+use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Models\Student;
 use Filament\Forms;
@@ -16,7 +17,7 @@ class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static ?string $navigationGroup = 'Exam Management';
 
@@ -46,29 +47,14 @@ class StudentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('last_name')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('country')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('address')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('cbu')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('national_id')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('birth_date')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...AdminStudentResource::getStudentColumns(),
+                ...AdminStudentResource::getMetadataColumns(),
             ])
             ->filters([
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -76,18 +62,13 @@ class StudentResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->toggleColumnsTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
-                    ->button()
-                    ->label('Toggle columns'),
-            );
+            ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            StudentResource\RelationManagers\ExamsRelationManager::class,
         ];
     }
 

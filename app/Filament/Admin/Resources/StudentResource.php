@@ -101,11 +101,7 @@ class StudentResource extends Resource
                         ->searchable()
                         ->sortable(),
                 ]),
-                TextColumn::make('created_at')
-                    ->label('Registered at')
-                    ->sortable()
-                    ->date('Y-m-d H:i:s')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...static::getMetadataColumns(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('institute_id')
@@ -165,6 +161,22 @@ class StudentResource extends Resource
                     ->sortable(),
                 TextColumn::make('birth_date')
                     ->date()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ]),
+        ];
+    }
+
+    public static function getMetadataColumns(): array
+    {
+        return [
+            ColumnGroup::make('Metadata', [
+                TextColumn::make('created_at')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->date()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]),
         ];

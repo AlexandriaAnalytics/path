@@ -31,33 +31,7 @@ class CandidateResource extends Resource
         return $form
             ->schema([
                 ...static::getStudentFields(),
-                Fieldset::make('Exam')
-                    ->schema([
-                        Select::make('exam_id')
-                            ->label('Exam')
-                            ->placeholder('Select an exam')
-                            ->options(Exam::all()->pluck('session_name', 'id'))
-                            ->searchable()
-                            ->reactive()
-                            ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
-                        Select::make('modules')
-                            ->multiple()
-                            ->required()
-                            ->live()
-                            ->options(function (callable $get) {
-                                $examId = $get('exam_id');
-
-                                if (!$examId) {
-                                    return [];
-                                }
-
-                                return Exam::query()
-                                    ->whereId($examId)
-                                    ->first()
-                                    ->modules
-                                    ->flatMap(fn ($module) => [$module['type']->value => "{$module['type']->getLabel()} (\${$module['price']})"]);
-                            }),
-                    ]),
+                ...static::getExamFields(),
             ]);
     }
 
@@ -191,6 +165,40 @@ class CandidateResource extends Resource
                 TextColumn::make('exam.session_name')
                     ->label('Session Name'),
             ]),
+        ];
+    }
+
+    public static function getExamFields(): array
+    {
+        return [
+            Fieldset::make('Exam')
+                ->schema([
+                    Select::make('exam_id')
+                        ->label('Exam')
+                        ->placeholder('Select an exam')
+                        ->options(Exam::all()->pluck('session_name', 'id'))
+                        ->searchable()
+                        ->reactive()
+                        ->required()
+                        ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
+                    Select::make('modules')
+                        ->multiple()
+                        ->required()
+                        ->live()
+                        ->options(function (callable $get) {
+                            $examId = $get('exam_id');
+
+                            if (!$examId) {
+                                return [];
+                            }
+
+                            return Exam::query()
+                                ->whereId($examId)
+                                ->first()
+                                ->modules
+                                ->flatMap(fn ($module) => [$module['type']->value => "{$module['type']->getLabel()} (\${$module['price']})"]);
+                        }),
+                ]),
         ];
     }
 }

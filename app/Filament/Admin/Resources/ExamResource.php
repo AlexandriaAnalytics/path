@@ -85,10 +85,21 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('session_name')->sortable(),
-                Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
-                Tables\Columns\TextColumn::make('type')->sortable(),
-                Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),
+                Tables\Columns\TextColumn::make('session_name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('scheduled_date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('maximum_number_of_students')
+                    ->label('Max. Students')
+                    ->alignEnd()
+                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

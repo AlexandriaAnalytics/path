@@ -28,12 +28,7 @@ class StudentsRelationManager extends RelationManager
         return $table
             ->columns([
                 ...StudentResource::getStudentColumns(),
-                TextColumn::make('created_at')
-                    ->label('Registered at')
-                    ->sortable()
-                    ->description('Registered at')
-                    ->date('Y-m-d H:i:s')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...StudentResource::getMetadataColumns(),
             ])
             ->filters([
                 //
