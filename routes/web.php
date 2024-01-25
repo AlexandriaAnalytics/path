@@ -37,5 +37,16 @@ Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
-Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
+Route::post('/candidates/confirm', [CandidateController::class, 'confirm'])->name('candidates.confirm');
 
+Route::post('management/auth/logout', function () {
+    if (session('impersonator_id')) {
+        auth()->loginUsingId(session('impersonator_id'));
+
+        session()->forget('impersonator_id');
+
+        return redirect()->route('filament.admin.pages.dashboard');
+    }
+
+    return redirect()->route('filament.management.auth.logout');
+})->name('auth.logout');
