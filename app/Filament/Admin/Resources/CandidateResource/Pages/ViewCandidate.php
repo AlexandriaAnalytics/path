@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
 use Filament\Actions;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;

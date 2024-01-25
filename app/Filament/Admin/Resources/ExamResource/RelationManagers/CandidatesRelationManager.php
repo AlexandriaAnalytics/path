@@ -3,44 +3,50 @@
 namespace App\Filament\Admin\Resources\ExamResource\RelationManagers;
 
 use App\Filament\Admin\Resources\CandidateResource;
-use App\Filament\Admin\Resources\StudentResource;
-use App\Models\Candidate;
-use App\Models\Student;
-use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Actions;
-use Filament\Tables\Actions\AttachAction;
-use Filament\Tables\Columns\ColumnGroup;
-use Filament\Tables\Columns\Layout\Panel;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class CandidatesRelationManager extends RelationManager
 {
     protected static string $relationship = 'candidates';
 
-    public function form(Form $form): Form
-    {
-        return CandidateResource::form($form);
-    }
-
     public function table(Table $table): Table
     {
-        return CandidateResource::table($table)
-            ->heading('Candidates')
+        return $table
+            ->columns([
+                ...CandidateResource::getCandidateColumns(),
+                ...CandidateResource::getInstituteColumns(),
+                ...CandidateResource::getStudentColumns(),
+            ])
+            ->headerActions([
+                CreateAction::make()
+                    ->createAnother(false)
+                    ->form([
+                        ...CandidateResource::getStudentFields(),
+                        Select::make('modules')
+                            ->multiple()
+                            ->required()
+                            ->options(fn () => $this->getOwnerRecord()->modules->flatMap(fn ($module) => [$module['type']->value => "{$module['type']->getLabel()} (\${$module['price']})"])),
+                    ]),
+            ])
+            ->actions([
+                ViewAction::make()
+                    ->url(fn (Model $record) => CandidateResource::getUrl('view', [$record])),
+                DeleteAction::make(),
+            ])
             ->filters([
                 SelectFilter::make('institute_id')
                     ->label('Institute')
-                    ->placeholder('All Institutes')
-                    ->relationship('institute', 'name')
-                    ->native(false)
-                    ->preload()
+                    ->relationship('student.institute', 'name')
+                    ->searchable()
                     ->multiple()
-                    ->searchable(),
+                    ->preload(),
             ]);
     }
 }
