@@ -27,9 +27,10 @@ Route::get('/prueba', function () {
 });
 
 Route::get('/users-excel',[ExcelController::class, 'export']);
+Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
-Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
+// Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
 
