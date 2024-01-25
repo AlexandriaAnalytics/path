@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Enums\Country;
+use App\Enums\Module;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -88,6 +89,16 @@ class StudentResource extends Resource
                             ->options(['active' => 'active', 'inactive' => 'inactive'])
                             ->placeholder('Select Status')
                     ]),
+                Components\Section::make('Academic Information')
+                    ->collapsible()
+                    ->schema([
+                        Components\Select::make('modules')
+                            ->relationship(titleAttribute: 'name')
+                            ->native(false)
+                            ->multiple()
+                            ->searchable()
+                            ->preload(),
+                    ])
             ]);
     }
 

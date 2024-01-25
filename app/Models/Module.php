@@ -22,4 +22,10 @@ class Module extends Model
         return $this->belongsToMany(Exam::class, 'available_modules')
             ->withTimestamps();
     }
+
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(Student::class, 'module_student')
+            ->withTimestamps();
+    }
 }
