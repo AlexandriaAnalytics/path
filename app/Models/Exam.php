@@ -38,6 +38,12 @@ class Exam extends Model
             ->withTimestamps();
     }
 
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class)
+            ->withTimestamps();
+    }
+
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'candidates')
