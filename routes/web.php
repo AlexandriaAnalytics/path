@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ExcelController;
+use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,10 +23,13 @@ Route::get('/', function () {
 });
 
 Route::get('/download/candidate',  [DownloadController::class, 'downloadCandidate']);
+Route::get('/download-candidate/{id}', 'DownloadController@downloadCandidateById');
 
 Route::get('/prueba', function () {
     return view('example');
 });
+
+Route::get('/prueba/{id}', [CandidateController::class, 'show']);
 
 Route::get('/users-excel',[ExcelController::class, 'export']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
@@ -32,5 +37,5 @@ Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
-// Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
+Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
 
