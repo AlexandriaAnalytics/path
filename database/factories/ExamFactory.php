@@ -22,20 +22,6 @@ class ExamFactory extends Factory
             'type' => fake()->randomElement(\App\Enums\ExamType::values()),
             'maximum_number_of_students' => fake()->numberBetween(1, 100),
             'comments' => fake()->optional()->sentence(),
-            'modules' => [
-                [
-                    'type' => \App\Enums\Module::Listening,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-                [
-                    'type' => \App\Enums\Module::ReadingAndWriting,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-                [
-                    'type' => \App\Enums\Module::Speaking,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-            ],
         ];
     }
 }
