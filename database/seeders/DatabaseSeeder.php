@@ -25,6 +25,10 @@ class DatabaseSeeder extends Seeder
             LevelSeeder::class,
         ]);
 
+        $this->call([
+            ModuleSeeder::class,
+        ]);
+
         $exams = Exam::factory(10)
             ->create();
 
