@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ExcelController;
 use Illuminate\Support\Facades\Route;
@@ -31,5 +32,5 @@ Route::get('/users-excel',[ExcelController::class, 'export']);
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
-Route::post('/candidates/confirm', 'CandidateController@confirm')->name('candidates.confirm');
+Route::post('/candidates/confirm', [CandidateController::class, 'confirm'])->name('candidates.confirm');
 
