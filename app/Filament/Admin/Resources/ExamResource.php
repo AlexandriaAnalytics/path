@@ -61,23 +61,13 @@ class ExamResource extends Resource
                             ->multiple()
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Repeater::make('modules')
-                            ->addActionLabel('Add module')
-                            ->columns(2)
-                            ->schema([
-                                Forms\Components\Select::make('type')
-                                    ->options(\App\Enums\Module::class)
-                                    ->native(false)
-                                    ->required()
-                                    ->distinct()
-                                    ->enum(\App\Enums\Module::class),
-                                Forms\Components\TextInput::make('price')
-                                    ->prefix('$')
-                                    ->required()
-                                    ->numeric()
-                                    ->minValue(0),
-                            ]),
-                    ]),
+                        Forms\Components\Select::make('modules')
+                            ->relationship(titleAttribute: 'name')
+                            ->native(false)
+                            ->multiple()
+                            ->searchable()
+                            ->preload(),
+                    ])
             ]);
     }
 

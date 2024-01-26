@@ -2,10 +2,15 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Casts\ExamModules;
+use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
+use App\Models\AvailableModule;
 use App\Models\Candidate;
 use App\Models\Exam;
+use App\Models\ExamModule;
 use App\Models\Institute;
+use App\Models\Module;
 use App\Models\Student;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -34,6 +39,11 @@ class CandidateResource extends Resource
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
+                Select::make('status')
+                    ->options(\App\Enums\UserStatus::class)
+                    ->native(false)
+                    ->required()
+                    ->enum(\App\Enums\UserStatus::class),
             ]);
     }
 
@@ -110,7 +120,12 @@ class CandidateResource extends Resource
 
                             return Student::query()
                                 ->whereInstituteId($instituteId)
-                                ->pluck('first_name', 'id');
+                                ->select(['first_name', 'last_name', 'id']) // Seleccionar first_name y last_name
+                                ->get()
+                                ->mapWithKeys(function ($student) {
+                                    return [$student->id => "{$student->first_name} {$student->last_name}"];
+                                })
+                                ->all();
                         })
                 ]),
         ];
@@ -125,9 +140,9 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                // TextColumn::make('payment_status')
-                //     ->label('Payment Status')
-                //     ->badge(),
+                TextColumn::make('payment_status')
+                    ->label('Payment Status')
+                    ->badge(),
             ]),
         ];
     }
@@ -199,11 +214,10 @@ class CandidateResource extends Resource
                                 return [];
                             }
 
-                            return Exam::query()
-                                ->whereId($examId)
-                                ->first()
-                                ->modules
-                                ->flatMap(fn ($module) => [$module['type']->value => "{$module['type']->getLabel()} (\${$module['price']})"]);
+                            return ExamModule::query()
+                                ->whereExamId($examId)
+                                ->join('modules', 'modules.id', '=', 'exam_module.module_id')
+                                ->pluck('modules.name', 'modules.id');
                         }),
                 ]),
         ];

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('type');
             $table->integer('maximum_number_of_students');
             $table->string('comments')->nullable();
-            $table->json('modules');
 
             $table->timestamps();
             $table->softDeletes();

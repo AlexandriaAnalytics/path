@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Enums\Country;
+use App\Enums\Module;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -88,7 +89,7 @@ class StudentResource extends Resource
                             ->label('Status')
                             ->options(['active' => 'active', 'inactive' => 'inactive'])
                             ->placeholder('Select Status')
-                    ]),
+                    ])
             ]);
     }
 

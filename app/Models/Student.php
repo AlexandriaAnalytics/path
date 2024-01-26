@@ -62,9 +62,4 @@ class Student extends Model
     {
         return $this->belongsTo(Institute::class);
     }
-
-    public function evaluations()
-    {
-        return $this->hasMany(Evaluation::class, 'id_user', 'id_user');
-    }
 }
