@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class CandidateExam extends Pivot
 {
+    protected $table = 'candidate_exam';
+
     protected $fillable = [
         'examsession_id',
         'candidate_id',

@@ -26,7 +26,7 @@ class ExamSession extends Model
 
     public function candidates(): BelongsToMany
     {
-        return $this->belongsToMany(Candidate::class, 'candidate_exam', 'candidate_id', 'examsession_id')
+        return $this->belongsToMany(Candidate::class, 'candidate_exam', 'examsession_id', 'candidate_id')
             ->withTimestamps();
     }
 }

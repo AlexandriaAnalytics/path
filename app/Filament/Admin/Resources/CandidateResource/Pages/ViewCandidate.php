@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\Candidate;
 use App\Models\ExamSession;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -67,10 +68,14 @@ class ViewCandidate extends ViewRecord
                         ->options(ExamSession::query()->pluck('session_name', 'id'))
                         ->required(),
                 ])
-            /*->action(function (array $data, Post $record): void {
-                    $record->author()->associate($data['authorId']);
+                ->action(function (array $data, Candidate $record): void {
+                    $candidateId = $record->getKey();
+                    $examSessionId = $data['examsession_id'];
+                    $examSession = ExamSession::findOrFail($examSessionId);
+                    $record->examSessions()->attach($examSession, ['candidate_id' => $candidateId, 'examsession_id' => $examSessionId]);
+
                     $record->save();
-                })*/
+                }),
         ];
     }
 }

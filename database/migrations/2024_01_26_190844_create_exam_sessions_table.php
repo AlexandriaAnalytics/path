@@ -22,7 +22,7 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('canditate_exam', function (Blueprint $table) {
+        Schema::create('candidate_exam', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('candidate_id')

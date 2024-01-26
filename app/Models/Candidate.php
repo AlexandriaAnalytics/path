@@ -42,9 +42,9 @@ class Candidate extends Pivot
             ->withTimestamps();
     }
 
-    public function examSessions(): BelongsToMany
+    public function examsessions(): BelongsToMany
     {
-        return $this->belongsToMany(ExamSession::class, 'candidate_exam', 'candidate_id', 'examsession_id')
+        return $this->belongsToMany(ExamSession::class, 'candidate_exam', 'examsession_id', 'candidate_id')
             ->withTimestamps();
     }
 }
