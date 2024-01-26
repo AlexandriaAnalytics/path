@@ -15,15 +15,10 @@ class ListCandidates extends ListRecords
         return [
             Actions\CreateAction::make(),
             Actions\Action::make('download')
-                ->label('Download Candidate')
+                ->label('Download Excel')
                 ->color('success')
                 ->outlined()
                 ->url('/users-excel'),
-                Actions\Action::make('download')
-                ->label('Download Candidate')
-                ->color('danger')
-                ->outlined()
-                ->url('/download/candidate')
 
         ];
     }
