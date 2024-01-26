@@ -140,9 +140,15 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('payment_status')
+                TextColumn::make('status')
                     ->label('Payment Status')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (UserStatus $state): string => match ($state) {
+                        UserStatus::Cancelled => 'gray',
+                        UserStatus::Unpaid => 'danger',
+                        UserStatus::Paid => 'success',
+                        UserStatus::PaymentWithDraw => 'warning',
+                    })
             ]),
         ];
     }
