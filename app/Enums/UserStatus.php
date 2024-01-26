@@ -4,8 +4,10 @@ namespace App\Enums;
 
 enum UserStatus: string
 {
-    case Locked = 'locked';
-    case Active = 'active';
+    case Cancelled = 'cancelled';
+    case Unpaid = 'unpain';
+    case Paid = 'paid';
+    case PaymentWithDraw = 'paymentwithdraw';
 
     public static function values(): array
     {
