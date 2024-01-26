@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -52,7 +53,10 @@ class ExamSessionResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('session_name'),
+                TextColumn::make('scheduled_date')
+                    ->dateTime(),
+                TextColumn::make('module.name')
             ])
             ->filters([
                 //
