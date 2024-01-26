@@ -16,9 +16,11 @@ class Level extends Model
         'name',
         'price',
         'slug',
+        'minimum_age',
+        'maximum_age',
         'modules',
         'tier',
-        'complete_price'
+        'complete_price',
     ];
 
     public function exams(): BelongsToMany

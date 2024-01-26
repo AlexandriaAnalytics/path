@@ -55,18 +55,6 @@ class ExamResource extends Resource
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('minimum_age')
-                            ->suffix('years')
-                            ->required()
-                            ->lt('maximum_age')
-                            ->numeric()
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('maximum_age')
-                            ->suffix('years')
-                            ->required()
-                            ->gt('minimum_age')
-                            ->numeric()
-                            ->minValue(0),
                         Forms\Components\Select::make('levels')
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
@@ -97,10 +85,21 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('session_name')->sortable(),
-                Tables\Columns\TextColumn::make('scheduled_date')->sortable(),
-                Tables\Columns\TextColumn::make('type')->sortable(),
-                Tables\Columns\TextColumn::make('maximum_number_of_students')->sortable(),
+                Tables\Columns\TextColumn::make('session_name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('scheduled_date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('maximum_number_of_students')
+                    ->label('Max. Students')
+                    ->alignEnd()
+                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
@@ -122,7 +121,7 @@ class ExamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            ExamResource\RelationManagers\StudentsRelationManager::class,
+            ExamResource\RelationManagers\CandidatesRelationManager::class,
         ];
     }
 
