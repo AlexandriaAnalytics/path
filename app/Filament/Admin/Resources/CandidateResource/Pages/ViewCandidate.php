@@ -23,7 +23,7 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('id')
                             ->label('No.')
                             ->numeric(),
-                        TextEntry::make('modules')
+                        TextEntry::make('modules.name')
                             ->label('Modules'),
                     ]),
                 Fieldset::make('Student')
