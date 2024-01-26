@@ -23,9 +23,6 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->json('modules')
-                ->comment('The modules the student is taking for this exam.');
-
             $table->enum('status', UserStatus::values())->default(UserStatus::Unpaid);
 
             $table->timestamps();

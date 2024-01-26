@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Candidate extends Pivot
@@ -16,18 +17,14 @@ class Candidate extends Pivot
     protected $fillable = [
         'exam_id',
         'student_id',
-        'modules',
         'status',
     ];
 
     protected $casts = [
-        'modules' => StudentModules::class,
         'status' => UserStatus::class,
     ];
 
-    protected $attributes = [
-        'modules' => '[]',
-    ];
+    protected $attributes = [];
 
     public function student(): BelongsTo
     {
@@ -37,5 +34,11 @@ class Candidate extends Pivot
     public function exam(): BelongsTo
     {
         return $this->belongsTo(Exam::class);
+    }
+
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class, 'candidate_module', 'candidate_id', 'module_id')
+            ->withTimestamps();
     }
 }

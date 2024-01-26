@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-use App\Models\Student;
+use App\Models\Candidate;
 use App\Models\Module;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ModuleStudent extends Pivot
+class CandidateModule extends Pivot
 {
     protected $fillable = [
-        'student_id',
+        'candidate_id',
         'module_id',
     ];
 
-    public function student()
+    public function candidate()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Candidate::class);
     }
 
     public function module()

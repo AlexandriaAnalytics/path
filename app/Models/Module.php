@@ -19,13 +19,13 @@ class Module extends Model
 
     public function exams(): BelongsToMany
     {
-        return $this->belongsToMany(Exam::class, 'available_modules')
+        return $this->belongsToMany(Exam::class, 'exam_module')
             ->withTimestamps();
     }
 
-    public function students(): BelongsToMany
+    public function candidates(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class, 'module_student')
+        return $this->belongsToMany(Candidate::class, 'candidate_module', 'candidate_id', 'module_id')
             ->withTimestamps();
     }
 }

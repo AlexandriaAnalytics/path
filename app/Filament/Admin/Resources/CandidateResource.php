@@ -7,11 +7,13 @@ use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Models\AvailableModule;
 use App\Models\Candidate;
+use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
 use App\Models\Institute;
 use App\Models\Module;
 use App\Models\Student;
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -28,6 +30,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CandidateResource extends Resource
 {
@@ -152,7 +155,7 @@ class CandidateResource extends Resource
                         UserStatus::PaymentWithDraw => 'warning',
                     }),
                 //select con los modulos del candidate
-                //SelectColumn::make('modules')
+                // TextColumn::make('modules')
             ]),
         ];
     }
@@ -217,18 +220,19 @@ class CandidateResource extends Resource
                         ->multiple()
                         ->required()
                         ->live()
+                        ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(function (callable $get) {
                             $examId = $get('exam_id');
 
                             if (!$examId) {
                                 return [];
                             }
-
                             return ExamModule::query()
                                 ->whereExamId($examId)
                                 ->join('modules', 'modules.id', '=', 'exam_module.module_id')
                                 ->pluck('modules.name', 'modules.id');
-                        }),
+                        })
+                        ->preload()
                 ]),
         ];
     }
