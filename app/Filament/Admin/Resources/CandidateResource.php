@@ -125,9 +125,9 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                // TextColumn::make('payment_status')
-                //     ->label('Payment Status')
-                //     ->badge(),
+                TextColumn::make('payment_status')
+                    ->label('Payment Status')
+                    ->badge(),
             ]),
         ];
     }
