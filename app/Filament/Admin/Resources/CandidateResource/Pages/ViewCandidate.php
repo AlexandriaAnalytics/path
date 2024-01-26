@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
 use App\Models\Candidate;
+use App\Models\CandidateModule;
 use App\Models\ExamSession;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -63,9 +64,35 @@ class ViewCandidate extends ViewRecord
             Actions\DeleteAction::make(),
             Action::make('Assign exam session')
                 ->form([
+                    Select::make('module')
+                        ->required()
+                        ->live()
+                        ->options(function (Candidate $record) {
+                            $candidateId = $record->getKey();
+
+                            if (!$candidateId) {
+                                return [];
+                            }
+                            return CandidateModule::query()
+                                ->whereCandidateId($candidateId)
+                                ->join('modules', 'modules.id', '=', 'candidate_module.module_id')
+                                ->pluck('modules.name', 'modules.id');
+                        })
+                        ->preload()
+                        ->afterStateUpdated(fn (callable $set) => $set('examsession_id', null)),
                     Select::make('examsession_id')
                         ->label('Exam Session')
-                        ->options(ExamSession::query()->pluck('session_name', 'id'))
+                        ->options(function (callable $get) {
+                            $moduleId = $get('module');
+
+                            if (!$moduleId) {
+                                return [];
+                            }
+
+                            return ExamSession::query()
+                                ->where('module_id', $moduleId)
+                                ->pluck('session_name', 'id');
+                        })
                         ->required(),
                 ])
                 ->action(function (array $data, Candidate $record): void {
