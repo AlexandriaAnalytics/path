@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Casts\ExamModules;
+use App\Enums\Module;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Models\AvailableModule;
@@ -11,7 +12,6 @@ use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
 use App\Models\Institute;
-use App\Models\Module;
 use App\Models\Student;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
@@ -154,8 +154,8 @@ class CandidateResource extends Resource
                         UserStatus::Paid => 'success',
                         UserStatus::PaymentWithDraw => 'warning',
                     }),
-                //select con los modulos del candidate
                 TextColumn::make('modules.name')
+                    ->label('Modules')
                     ->badge()
             ]),
         ];
