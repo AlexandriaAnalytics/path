@@ -21,6 +21,20 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('canditate_exam', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('candidate_id')
+                ->constrained('candidates')
+                ->cascadeOnDelete();
+
+            $table->foreignId('examsession_id')
+                ->constrained('examsessions')
+                ->cascadeOnDelete();
+
+            $table->timestamps();
+        });
     }
 
     /**
@@ -28,6 +42,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('candidate_exam');
         Schema::dropIfExists('exam_sessions');
     }
 };

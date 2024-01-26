@@ -3,7 +3,10 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\ExamSession;
 use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -55,7 +58,19 @@ class ViewCandidate extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+
             Actions\DeleteAction::make(),
+            Action::make('Assign exam session')
+                ->form([
+                    Select::make('examsession_id')
+                        ->label('Exam Session')
+                        ->options(ExamSession::query()->pluck('session_name', 'id'))
+                        ->required(),
+                ])
+            /*->action(function (array $data, Post $record): void {
+                    $record->author()->associate($data['authorId']);
+                    $record->save();
+                })*/
         ];
     }
 }
