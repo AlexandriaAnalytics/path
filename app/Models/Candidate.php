@@ -17,6 +17,7 @@ class Candidate extends Pivot
         'exam_id',
         'student_id',
         'modules',
+        'status',
     ];
 
     protected $casts = [

@@ -6,7 +6,7 @@ use App\Models\Exam;
 use App\Models\Module;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class AvailableModule extends Pivot
+class ExamModule extends Pivot
 {
     protected $fillable = [
         'exam_id',

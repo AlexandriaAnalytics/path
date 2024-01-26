@@ -5,7 +5,7 @@ namespace App\Enums;
 enum UserStatus: string
 {
     case Cancelled = 'cancelled';
-    case Unpaid = 'unpain';
+    case Unpaid = 'unpaid';
     case Paid = 'paid';
     case PaymentWithDraw = 'paymentwithdraw';
 
