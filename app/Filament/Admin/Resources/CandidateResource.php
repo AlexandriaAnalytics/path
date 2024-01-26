@@ -21,7 +21,9 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -148,7 +150,9 @@ class CandidateResource extends Resource
                         UserStatus::Unpaid => 'danger',
                         UserStatus::Paid => 'success',
                         UserStatus::PaymentWithDraw => 'warning',
-                    })
+                    }),
+                //select con los modulos del candidate
+                //SelectColumn::make('modules')
             ]),
         ];
     }
