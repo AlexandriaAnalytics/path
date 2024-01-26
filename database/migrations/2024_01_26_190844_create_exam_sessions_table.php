@@ -30,7 +30,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->foreignId('examsession_id')
-                ->constrained('examsessions')
+                ->constrained('exam_sessions')
                 ->cascadeOnDelete();
 
             $table->timestamps();
