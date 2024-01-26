@@ -35,20 +35,6 @@ class CreateModulesTable extends Migration
 
             $table->timestamps();
         });
-
-        Schema::create('module_student', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('student_id')
-                ->constrained('students')
-                ->cascadeOnDelete();
-
-            $table->foreignId('module_id')
-                ->constrained('modules')
-                ->cascadeOnDelete();
-
-            $table->timestamps();
-        });
     }
 
     /**
@@ -58,7 +44,6 @@ class CreateModulesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('exam_module');
-        Schema::dropIfExists('student_module');
         Schema::dropIfExists('modules');
     }
 }

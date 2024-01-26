@@ -62,10 +62,4 @@ class Student extends Model
     {
         return $this->belongsTo(Institute::class);
     }
-
-    public function modules(): BelongsToMany
-    {
-        return $this->belongsToMany(Module::class)
-            ->withTimestamps();
-    }
 }
