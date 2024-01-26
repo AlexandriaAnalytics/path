@@ -6,6 +6,9 @@ use App\Filament\Admin\Resources\ExamSessionResource\Pages;
 use App\Filament\Admin\Resources\ExamSessionResource\RelationManagers;
 use App\Models\ExamSession;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -25,7 +28,23 @@ class ExamSessionResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('session_name')
+                    ->required()
+                    ->autofocus()
+                    ->maxLength(255),
+                DateTimePicker::make('scheduled_date')
+                    ->native(false)
+                    ->seconds(false)
+                    ->minutesStep(5)
+                    ->required()
+                    ->minDate(now()),
+                Select::make('module_id')
+                    ->label('Module')
+                    ->relationship('module', 'name')
+                    ->searchable()
+                    ->native(false)
+                    ->preload()
+                    ->required()
             ]);
     }
 

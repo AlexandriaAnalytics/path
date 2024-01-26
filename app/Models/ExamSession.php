@@ -14,7 +14,8 @@ class ExamSession extends Model
 
     protected $fillable = [
         'session_name',
-        'scheduled_date'
+        'scheduled_date',
+        'module_id'
     ];
 
     public function module(): BelongsTo
