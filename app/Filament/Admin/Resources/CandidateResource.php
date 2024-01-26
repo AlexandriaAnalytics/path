@@ -155,7 +155,8 @@ class CandidateResource extends Resource
                         UserStatus::PaymentWithDraw => 'warning',
                     }),
                 //select con los modulos del candidate
-                // TextColumn::make('modules')
+                TextColumn::make('modules.name')
+                    ->badge()
             ]),
         ];
     }
