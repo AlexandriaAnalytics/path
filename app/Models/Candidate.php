@@ -41,4 +41,10 @@ class Candidate extends Pivot
         return $this->belongsToMany(Module::class, 'candidate_module', 'candidate_id', 'module_id')
             ->withTimestamps();
     }
+
+    public function examSessions(): BelongsToMany
+    {
+        return $this->belongsToMany(ExamSession::class, 'candidate_exam', 'candidate_id', 'examsession_id')
+            ->withTimestamps();
+    }
 }
