@@ -30,7 +30,7 @@ class StudentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return StudentResource::table($table)
-            ->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->last_name)
+            /*->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->last_name)
             ->modifyQueryUsing(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
             ->headerActions([
                 Tables\Actions\AttachAction::make()
@@ -51,7 +51,7 @@ class StudentsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DetachAction::make(),
-            ]);
+            ])*/;
     }
 
     public function isReadOnly(): bool
