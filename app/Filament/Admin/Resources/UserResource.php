@@ -6,12 +6,15 @@ use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -25,17 +28,25 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
+                Fieldset::make('User Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->autofocus(),
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('password')
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255)
+                            ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->hiddenOn(['view']),
+                    ]),
             ]);
     }
 
@@ -43,10 +54,21 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')->sortable()
-                    ->searchable(),
+                ColumnGroup::make('User Information', [
+                    Tables\Columns\TextColumn::make('name')
+                        ->sortable()
+                        ->searchable(),
+                    Tables\Columns\TextColumn::make('email')
+                        ->sortable()
+                        ->searchable(),
+                ]),
+                ColumnGroup::make('Institutes', [
+                    Tables\Columns\TextColumn::make('institutes_count')
+                        ->label('Institute Count')
+                        ->counts('institutes')
+                        ->alignEnd()
+                        ->toggleable(isToggledHiddenByDefault: true),
+                ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -66,13 +88,29 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('impersonate')
+                    ->label('Impersonate')
+                    ->icon('heroicon-o-finger-print')
+                    ->requiresConfirmation()
+                    ->modalHeading('Log in as this user?')
+                    ->modalDescription('Are you sure you want to log in as this user? You will be logged out of your current session.')
+                    ->modalSubmitActionLabel('Yes, I am sure')
+                    ->action(function (User $user) {
+                        // Save the current user's ID to the session so we can log them back in later.
+                        session()->put('impersonator_id', auth()->id());
+
+                        auth()->login($user);
+
+                        return redirect()
+                            ->to(route('filament.management.tenant'));
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                    Tables\Actions\BulkAction::make('download')->action(fn()=> redirect('/download/candidate'))
+                    Tables\Actions\BulkAction::make('download')->action(fn () => redirect('/download/candidate'))
                 ]),
             ]);
     }
@@ -80,7 +118,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\InstitutesRelationManager::class,
         ];
     }
 

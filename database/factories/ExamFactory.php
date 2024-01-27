@@ -20,24 +20,8 @@ class ExamFactory extends Factory
             'session_name' => str(fake()->word())->title(),
             'scheduled_date' => fake()->date(),
             'type' => fake()->randomElement(\App\Enums\ExamType::values()),
-            'minimum_age' => $minimumAge = fake()->numberBetween(1, 90),
-            'maximum_age' => fake()->numberBetween($minimumAge, 99),
             'maximum_number_of_students' => fake()->numberBetween(1, 100),
             'comments' => fake()->optional()->sentence(),
-            'modules' => [
-                [
-                    'type' => \App\Enums\Module::Listening,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-                [
-                    'type' => \App\Enums\Module::ReadingAndWriting,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-                [
-                    'type' => \App\Enums\Module::Speaking,
-                    'price' => fake()->numberBetween(1, 100),
-                ],
-            ],
         ];
     }
 }

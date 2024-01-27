@@ -54,6 +54,12 @@ class ManagementPanelProvider extends PanelProvider
                     ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
                     ->visible(fn () => Filament::getTenant()->files_url != null),
             ])
+            ->userMenuItems([
+                'logout' => MenuItem::make()
+                    ->label('Logout')
+                    ->icon('heroicon-o-arrow-left-end-on-rectangle')
+                    ->url(fn (): string => route('auth.logout')),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

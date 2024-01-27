@@ -2,12 +2,14 @@
 
 namespace App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 
-use App\Filament\Resources\StudentResource;
+use App\Filament\Admin\Resources\InstituteResource;
+use App\Filament\Admin\Resources\StudentResource;
 use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,11 +27,8 @@ class StudentsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('first_name')
-                    ->label('Full name')
-                    ->formatStateUsing(function (Student $student) {
-                        return $student->first_name . ' ' . $student->last_name;
-                    }),
+                ...StudentResource::getStudentColumns(),
+                ...StudentResource::getMetadataColumns(),
             ])
             ->filters([
                 //

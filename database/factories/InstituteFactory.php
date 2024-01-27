@@ -20,6 +20,9 @@ class InstituteFactory extends Factory
             'institute_type_id' => \App\Models\InstituteType::all()->random()->id,
             'name' => fake()->company(),
             'files_url' => fake()->url(),
+            'phone' => fake()->phoneNumber(),
+            'email' => fake()->unique()->safeEmail(),
+            'address' => fake()->address()
         ];
     }
 }
