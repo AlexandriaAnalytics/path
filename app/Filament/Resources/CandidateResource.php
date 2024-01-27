@@ -6,6 +6,7 @@ use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -68,6 +69,10 @@ class CandidateResource extends Resource
                     ->label('QR Code')
                     ->icon('heroicon-o-qr-code')
                     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ViewAction::make(),
                 DeleteAction::make(),
             ])

@@ -23,7 +23,7 @@ Route::get('/', function () {
 });
 
 Route::get('/download/candidate',  [DownloadController::class, 'downloadCandidate']);
-Route::get('/download-candidate/{id}', [DownloadController::class, 'downloadCandidateById']);
+Route::get('/download-candidate/{id}', [DownloadController::class, 'downloadCandidateById'])->name('candidate.download-pdf');
 Route::get('/view-qr/{id}', [DownloadController::class, 'generateQrCode'])->name('candidate.view');
 
 Route::get('/prueba', function () {
@@ -32,12 +32,12 @@ Route::get('/prueba', function () {
 
 Route::get('/prueba/{id}', [CandidateController::class, 'show']);
 
-Route::get('/users-excel',[ExcelController::class, 'export']);
+Route::get('/users-excel', [ExcelController::class, 'export']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
-Route::get('/candidate', fn(): string => 'Candidate Login')->name('candidate'); 
+Route::get('/candidate', fn (): string => 'Candidate Login')->name('candidate');
 Route::post('/candidates/confirm', [CandidateController::class, 'confirm'])->name('candidates.confirm');
 
 Route::post('management/auth/logout', function () {

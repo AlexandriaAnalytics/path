@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap" rel="stylesheet">
 
     <style>
-        @page {
-            margin: 0cm 0cm;
-        }
-
         body {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
@@ -86,7 +81,7 @@
 </head>
 
 <body>
-    <header class="bg-blue-800 text-white rounded-br-full">
+    {{-- <header class="bg-blue-800 text-white rounded-br-full">
         <nav class="container-nav">
             <article class="logo">
                 <img src="{{ asset('images/logo/02-white.png') }}" alt="logo" class="logo-img">
@@ -104,7 +99,7 @@
                 </div>
             </article>
         </nav>
-    </header>
+    </header> --}}
     <main class="container mx-auto">
         <section class="data">
             <article class="form">

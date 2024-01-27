@@ -69,6 +69,10 @@ class CandidateResource extends Resource
                     ->label('QR Code')
                     ->icon('heroicon-o-qr-code')
                     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
