@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             InstituteTypeSeeder::class,
+            PaymentMethodSeeder::class,
+            CountrySeeder::class,
         ]);
 
         $this->call([
@@ -61,4 +63,6 @@ class DatabaseSeeder extends Seeder
             )
             ->create();
     }
+
+    
 }
