@@ -3,26 +3,31 @@
 namespace App\Exports;
 
 use App\Models\Candidate;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class CandidateByIdExport implements FromCollection, WithHeadings, WithMapping, WithStyles
+class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithStyles
 {
-    private $id;
+    use Exportable;
 
-    public function __construct($id)
-    {
-        $this->id = $id;
+    public function __construct(
+        private Collection $candidate_ids,
+    ) {
     }
 
-    public function collection()
+    public function query()
     {
-        return Candidate::where('id', $this->id)->get();
+        return Candidate::query()
+            ->whereIn('id', $this->candidate_ids)
+            ->with('student')
+            ->with('exam');
     }
 
     public function headings(): array

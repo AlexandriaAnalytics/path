@@ -9,7 +9,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class DownloadController extends Controller {
     public function downloadCandidate() {
         $data = []; 
-        $html = view('example', $data)->render(); 
+        $html = view('candidate-pdf', $data)->render(); 
 
         $pdf = PDF::loadHTML($html);
         return $pdf->download('downloaded_pdf.pdf');
@@ -26,10 +26,10 @@ class DownloadController extends Controller {
             'candidate' => $candidate,
         ];
 
-        $html = view('example', $data)->render();
+        $html = view('candidate-pdf', $data)->render();
 
         $pdf = PDF::loadHTML($html);
-        return $pdf->download('downloaded_pdf_' . $id . '.pdf');
+        return $pdf->stream('downloaded_pdf_' . $id . '.pdf');
     }
 
     public function generateQrCode($id) {
@@ -45,7 +45,7 @@ class DownloadController extends Controller {
             'candidate' => $candidate,
             'qrCode' => $qrCode,
         ];
-        $html = view('example_with_qr', $data)->render();
+        $html = view('qrCandidate', $data)->render();
 
         $pdf = PDF::loadHTML($html);
 
