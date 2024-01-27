@@ -253,7 +253,12 @@ class CandidateResource extends Resource
                     Select::make('exam_id')
                         ->label('Exam')
                         ->placeholder('Select an exam')
-                        ->options(Exam::all()->pluck('session_name', 'id'))
+                        ->options(function () {
+                            $exams = Exam::with('candidates')->get()->filter(function ($exam) {
+                                return $exam->candidates->count() < $exam->maximum_number_of_students;
+                            })->pluck('session_name', 'id');
+                            return $exams;
+                        })
                         ->searchable()
                         ->reactive()
                         ->required()
