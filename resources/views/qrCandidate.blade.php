@@ -31,7 +31,7 @@
     <table>
         <tr>
             <td class="qr-code-cell">
-                {!! $qrCode !!}
+                {!! QrCode::size(100)->generate(route('candidate.view', [$candidate])); !!}
             </td>
             <td class="data-cell">
                 <p>{{ $candidate->id}}</p>

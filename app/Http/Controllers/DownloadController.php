@@ -45,7 +45,7 @@ class DownloadController extends Controller {
             'candidate' => $candidate,
             'qrCode' => $qrCode,
         ];
-        $html = view('example_with_qr', $data)->render();
+        $html = view('qrCandidate', $data)->render();
 
         $pdf = PDF::loadHTML($html);
 

@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
@@ -58,6 +59,10 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('qr-code')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ViewAction::make(),
                 DeleteAction::make(),
             ])

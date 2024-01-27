@@ -14,6 +14,7 @@ use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
@@ -59,6 +60,12 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
+            ])
+            ->actions([
+                Action::make('qr-code')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
