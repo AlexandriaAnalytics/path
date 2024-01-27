@@ -4,6 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+
     "content-hash": "2ce3e6993a483ca0be1957e72775e573",
     "packages": [
         {
@@ -864,6 +865,7 @@
                 }
             ],
             "time": "2024-01-21T14:53:34+00:00"
+
         },
         {
             "name": "dasprid/enum",
@@ -1085,6 +1087,7 @@
         },
         {
             "name": "doctrine/dbal",
+
             "version": "3.8.0",
             "source": {
                 "type": "git",
@@ -1194,6 +1197,7 @@
                     "type": "tidelift"
                 }
             ],
+
             "time": "2024-01-25T21:44:02+00:00"
         },
         {
@@ -1755,6 +1759,7 @@
         },
         {
             "name": "filament/actions",
+
             "version": "v3.2.15",
             "source": {
                 "type": "git",
@@ -1804,6 +1809,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:42:37+00:00"
         },
         {
@@ -1869,6 +1875,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:42:40+00:00"
         },
         {
@@ -1925,6 +1932,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:42:33+00:00"
         },
         {
@@ -1976,6 +1984,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:42:37+00:00"
         },
         {
@@ -2032,6 +2041,7 @@
         },
         {
             "name": "filament/spatie-laravel-settings-plugin",
+
             "version": "v3.2.15",
             "source": {
                 "type": "git",
@@ -2079,6 +2089,7 @@
         },
         {
             "name": "filament/support",
+
             "version": "v3.2.15",
             "source": {
                 "type": "git",
@@ -2132,6 +2143,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:43:18+00:00"
         },
         {
@@ -2185,6 +2197,7 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
+
             "time": "2024-01-26T12:43:15+00:00"
         },
         {
@@ -3959,6 +3972,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/livewire/livewire/zipball/ab0baed58b774dde8e0ddbab1bbfd5b3d6334a82",
                 "reference": "ab0baed58b774dde8e0ddbab1bbfd5b3d6334a82",
+
                 "shasum": ""
             },
             "require": {
@@ -4012,6 +4026,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
+
                 "source": "https://github.com/livewire/livewire/tree/v3.4.2"
             },
             "funding": [
@@ -5234,6 +5249,7 @@
             "time": "2020-10-15T08:29:30+00:00"
         },
         {
+
             "name": "phenx/php-font-lib",
             "version": "0.5.5",
             "source": {
