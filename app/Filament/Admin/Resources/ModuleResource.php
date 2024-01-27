@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\InstituteTypeResource\Pages;
-use App\Filament\Admin\Resources\InstituteTypeResource\RelationManagers;
-use App\Models\InstituteType;
+use App\Filament\Admin\Resources\ModuleResource\Pages;
+use App\Filament\Admin\Resources\ModuleResource\RelationManagers;
+use App\Models\Module;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,19 +13,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class InstituteTypeResource extends Resource
+class ModuleResource extends Resource
 {
-    protected static ?string $model = InstituteType::class;
-    protected static ?string $navigationGroup = 'Settings';
-    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $model = Module::class;
+
+    protected static ?string $navigationGroup = 'Corporate';
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\TextInput::make('name'),
+                Forms\Components\TextInput::make('price')
+                    ->numeric(),
             ]);
     }
 
@@ -33,9 +35,8 @@ class InstituteTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('price')->sortable(),
             ])
             ->filters([
                 //
@@ -60,9 +61,9 @@ class InstituteTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInstituteTypes::route('/'),
-            'create' => Pages\CreateInstituteType::route('/create'),
-            'edit' => Pages\EditInstituteType::route('/{record}/edit'),
+            'index' => Pages\ListModules::route('/'),
+            'create' => Pages\CreateModule::route('/create'),
+            'edit' => Pages\EditModule::route('/{record}/edit'),
         ];
     }
 }

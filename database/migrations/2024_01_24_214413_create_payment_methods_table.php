@@ -11,17 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exams', function (Blueprint $table) {
+        Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
-
-            $table->string('session_name');
-            $table->timestamp('scheduled_date');
-            $table->string('type');
-            $table->integer('maximum_number_of_students');
-            $table->string('comments')->nullable();
-
+            $table->string('name', 40)->unique();
+            $table->string('slug', 50);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exams');
+        Schema::dropIfExists('payment_methods');
     }
 };

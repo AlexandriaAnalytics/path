@@ -2,30 +2,29 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\InstituteTypeResource\Pages;
-use App\Filament\Admin\Resources\InstituteTypeResource\RelationManagers;
-use App\Models\InstituteType;
+use App\Filament\Admin\Resources\PaymentMethodResource\Pages;
+use App\Filament\Admin\Resources\PaymentMethodResource\RelationManagers;
+use App\Models\PaymentMethod;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class InstituteTypeResource extends Resource
+class PaymentMethodResource extends Resource
 {
-    protected static ?string $model = InstituteType::class;
+    protected static ?string $model = PaymentMethod::class;
     protected static ?string $navigationGroup = 'Settings';
-    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                //
             ]);
     }
 
@@ -33,7 +32,7 @@ class InstituteTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
             ])
@@ -60,9 +59,9 @@ class InstituteTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInstituteTypes::route('/'),
-            'create' => Pages\CreateInstituteType::route('/create'),
-            'edit' => Pages\EditInstituteType::route('/{record}/edit'),
+            'index' => Pages\ListPaymentMethods::route('/'),
+            'create' => Pages\CreatePaymentMethod::route('/create'),
+            'edit' => Pages\EditPaymentMethod::route('/{record}/edit'),
         ];
     }
 }
