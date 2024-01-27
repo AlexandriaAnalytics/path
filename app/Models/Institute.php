@@ -21,6 +21,9 @@ class Institute extends Model
         'institute_type_id',
         'owner_id',
         'can_add_candidates',
+        'email',
+        'phone',
+        'address'
     ];
 
     protected $attributes = [

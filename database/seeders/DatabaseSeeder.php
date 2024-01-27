@@ -19,10 +19,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             InstituteTypeSeeder::class,
+            PaymentMethodSeeder::class,
+            CountrySeeder::class,
         ]);
 
         $this->call([
             LevelSeeder::class,
+        ]);
+
+        $this->call([
+            ModuleSeeder::class,
         ]);
 
         $exams = Exam::factory(10)
@@ -61,4 +67,6 @@ class DatabaseSeeder extends Seeder
             )
             ->create();
     }
+
+    
 }

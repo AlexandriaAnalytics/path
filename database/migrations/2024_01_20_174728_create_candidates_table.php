@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->foreignId('student_id')
                 ->constrained()
                 ->cascadeOnDelete();
+
+            $table->enum('status', UserStatus::values())->default(UserStatus::Unpaid);
 
             $table->timestamps();
         });

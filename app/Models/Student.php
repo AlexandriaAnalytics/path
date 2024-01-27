@@ -54,16 +54,12 @@ class Student extends Model
     {
         return $this->belongsToMany(Exam::class, 'candidates')
             ->using(Candidate::class)
+            ->withPivot(['id', 'modules'])
             ->withTimestamps();
     }
 
     public function institute(): BelongsTo
     {
         return $this->belongsTo(Institute::class);
-    }
-
-    public function evaluations()
-    {
-        return $this->hasMany(Evaluation::class, 'id_user', 'id_user');
     }
 }

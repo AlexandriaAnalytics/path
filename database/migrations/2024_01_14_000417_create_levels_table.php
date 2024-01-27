@@ -22,6 +22,8 @@ class CreateLevelsTable extends Migration
             $table->decimal('complete_price', 12, 2);
             $table->text('modules')->nullable();
             $table->unsignedInteger('tier')->nullable();
+            $table->decimal('minimum_age', 3, 1);
+            $table->decimal('maximum_age', 3, 1);
 
             $table->timestamps();
             $table->softDeletes();

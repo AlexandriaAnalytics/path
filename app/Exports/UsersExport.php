@@ -47,7 +47,6 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
             ],
         ]);
 
-        // Establecer el ancho de la celda A1
         $sheet->getColumnDimension('A')->setWidth(30);
 
         

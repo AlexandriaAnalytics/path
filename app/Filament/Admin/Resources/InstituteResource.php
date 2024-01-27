@@ -58,6 +58,13 @@ class InstituteResource extends Resource
                             ->relationship('instituteType', 'name')
                             ->native(true),
                     ]),
+                Forms\Components\TextInput::make('address')
+                    ->required(),
+                Forms\Components\TextInput::make('phone')
+                    ->required(),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required(),
                 Forms\Components\Section::make('Administration')
                     ->collapsible()
                     ->collapsed()
@@ -81,25 +88,36 @@ class InstituteResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->placeholder('(unnamed)'),
-
+                    ->placeholder('(unnamed)')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
-                    ->placeholder('(no owner)'),
-
+                    ->placeholder('(no owner)')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('address')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('phone')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('files_url')
+                    ->url(fn ($record) => $record->files_url)
+                    ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
-                    ->sortable(),
-                //->url(fn (Institute $institute) => Pages\ViewInstitute::route($institute)),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
-                    ->alignCenter(),
-                Tables\Columns\TextColumn::make('files_url')
-                    ->label('Files URL')
-                    ->sortable()
-                    ->wrap(),
+                    ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
