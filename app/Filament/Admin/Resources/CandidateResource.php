@@ -8,6 +8,7 @@ use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Models\AvailableModule;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
@@ -25,6 +26,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -154,9 +156,48 @@ class CandidateResource extends Resource
                         UserStatus::Paid => 'success',
                         UserStatus::PaymentWithDraw => 'warning',
                     }),
-                TextColumn::make('modules.name')
+                /*SelectColumn::make('modules')
                     ->label('Modules')
-                    ->badge()
+                    ->options(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $arrayModules = [];
+                        foreach ($modules as $module) {
+                            $arrayModules[] = $module->name;
+                        }
+                        return $arrayModules;
+                    })*/
+                /* TextColumn::make('modules.name')
+                    ->listWithLineBreaks()
+                    ->bulleted() */
+                IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    })
             ]),
         ];
     }
