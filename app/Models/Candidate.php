@@ -17,6 +17,7 @@ class Candidate extends Pivot
     protected $fillable = [
         'exam_id',
         'student_id',
+        'candidate_number',
         'status',
     ];
 
@@ -25,6 +26,19 @@ class Candidate extends Pivot
     ];
 
     protected $attributes = [];
+
+    private static int $candidate_counter = 0;
+
+    public static function boot(): void
+    {
+        parent::boot();
+        static::created(function(Candidate $candidate){
+            Candidate::$candidate_counter++;
+            $candidate_number = strval(10000000 + Candidate::$candidate_counter);
+            $candidate->candidate_number = $candidate_number;
+            $candidate->save();
+        });
+    }
 
     public function student(): BelongsTo
     {

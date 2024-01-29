@@ -9,6 +9,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use App\Filament\Candidate\Pages\Template\CandidateDahboard;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -20,6 +21,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class CandidatePanelProvider extends PanelProvider
 {
+
+
+
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -31,7 +35,7 @@ class CandidatePanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Candidate/Resources'), for: 'App\\Filament\\Candidate\\Resources')
             ->discoverPages(in: app_path('Filament/Candidate/Pages'), for: 'App\\Filament\\Candidate\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                CandidateDahboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Candidate/Widgets'), for: 'App\\Filament\\Candidate\\Widgets')
             ->widgets([
