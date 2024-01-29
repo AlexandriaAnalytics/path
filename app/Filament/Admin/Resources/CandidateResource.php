@@ -2,12 +2,12 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Casts\ExamModules;
-use App\Enums\Module;
 use App\Enums\UserStatus;
+use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Models\AvailableModule;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
@@ -22,16 +22,19 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -92,6 +95,10 @@ class CandidateResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new CandidateByIdExport($records->pluck('id')))->download('candidates.xlsx')),
                     DeleteBulkAction::make(),
                 ]),
             ]);
@@ -103,7 +110,6 @@ class CandidateResource extends Resource
             //
         ];
     }
-
     public static function getPages(): array
     {
         return [
@@ -169,9 +175,48 @@ class CandidateResource extends Resource
                         UserStatus::Paid => 'success',
                         UserStatus::PaymentWithDraw => 'warning',
                     }),
-                TextColumn::make('modules.name')
+                /*SelectColumn::make('modules')
                     ->label('Modules')
-                    ->badge()
+                    ->options(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $arrayModules = [];
+                        foreach ($modules as $module) {
+                            $arrayModules[] = $module->name;
+                        }
+                        return $arrayModules;
+                    })*/
+                /* TextColumn::make('modules.name')
+                    ->listWithLineBreaks()
+                    ->bulleted() */
+                IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    })
             ]),
         ];
     }
@@ -227,7 +272,12 @@ class CandidateResource extends Resource
                     Select::make('exam_id')
                         ->label('Exam')
                         ->placeholder('Select an exam')
-                        ->options(Exam::all()->pluck('session_name', 'id'))
+                        ->options(function () {
+                            $exams = Exam::with('candidates')->get()->filter(function ($exam) {
+                                return $exam->candidates->count() < $exam->maximum_number_of_students;
+                            })->pluck('session_name', 'id');
+                            return $exams;
+                        })
                         ->searchable()
                         ->reactive()
                         ->required()
