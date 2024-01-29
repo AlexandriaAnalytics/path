@@ -20,7 +20,7 @@ class Login extends BaseLogin
             
                 Action::make('candidate')
                 ->label('Go to Candidate Login')
-                ->url(route('candidate'))
+                ->url(route('candidate.login'))
                 ->link()->color('primary'),
         ];
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ExcelController;
+use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
-Route::get('/candidate', fn (): string => 'Candidate Login')->name('candidate');
+Route::get('/candidate', LoginCandidate::class)->name('candidate.login');
 Route::post('/candidates/confirm', [CandidateController::class, 'confirm'])->name('candidates.confirm');
 
 Route::post('management/auth/logout', function () {
