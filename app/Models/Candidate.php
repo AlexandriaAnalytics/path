@@ -26,18 +26,6 @@ class Candidate extends Pivot
         'status' => UserStatus::class,
     ];
 
-    public static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function (Candidate $candidate) {
-            DB::transaction(function () use ($candidate) {
-                $candidate->candidate_number = Candidate::max('candidate_number') + 1;
-                $candidate->save();
-            });
-        });
-    }
-
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
