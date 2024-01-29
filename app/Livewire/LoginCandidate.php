@@ -23,7 +23,7 @@ class LoginCandidate extends Component
         }
         // add $candidate to session
         session(['candidate' => $candidate]);
-        return redirect()->route('filament.candidate.pages.dashboard');
+        return redirect()->route('filament.candidate.pages.candidate-dahboard');
     }
 
     public function render()
