@@ -21,8 +21,11 @@ use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\SelectColumn;
@@ -74,6 +77,18 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
+            ])
+            ->actions([
+                Action::make('qr-code')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                ViewAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
