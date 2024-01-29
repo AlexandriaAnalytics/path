@@ -298,7 +298,7 @@ class CandidateResource extends Resource
                                 ->join('modules', 'modules.id', '=', 'exam_module.module_id')
                                 ->pluck('modules.name', 'modules.id');
                         })
-                        ->preload()
+                        ->preload(),
                 ]),
         ];
     }
