@@ -3,8 +3,10 @@
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ExcelController;
+use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
+use Maatwebsite\Excel\Row;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +39,14 @@ Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
-Route::get('/candidate', fn (): string => 'Candidate Login')->name('candidate');
-Route::post('/candidates/confirm', [CandidateController::class, 'confirm'])->name('candidates.confirm');
+Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
+
+Route::get('/candidate/logout', function(){
+    //clean all session
+    session()->flush();
+    return redirect()->route('candidate.login');
+})->name('candidate.logout');
+
 
 Route::post('management/auth/logout', function () {
     if (session('impersonator_id')) {

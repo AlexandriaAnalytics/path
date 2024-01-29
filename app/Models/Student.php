@@ -17,6 +17,7 @@ class Student extends Model
     protected $fillable = [
         'institute_id',
         'national_id',
+        'country_id',
         'first_name',
         'last_name',
         'slug',
@@ -50,6 +51,11 @@ class Student extends Model
         );
     }
 
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'candidates')
@@ -61,5 +67,10 @@ class Student extends Model
     public function institute(): BelongsTo
     {
         return $this->belongsTo(Institute::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'country_id');
     }
 }
