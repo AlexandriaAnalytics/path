@@ -1,55 +1,54 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Exports\CandidateByIdExport;
-use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
-use App\Filament\Resources\CandidateResource\Pages;
+use App\Casts\ExamModules;
+use App\Enums\Module;
+use App\Enums\UserStatus;
+use App\Filament\Admin\Resources\CandidateResource\Pages;
+use App\Models\AvailableModule;
 use App\Models\Candidate;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Facades\Filament;
+use App\Models\CandidateModule;
+use App\Models\Exam;
+use App\Models\ExamModule;
+use App\Models\Institute;
+use App\Models\Student;
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\Column as ColumnsColumn;
+use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CandidateResource extends Resource
 {
-    protected static bool $isScopedToTenant = false;
-
     protected static ?string $model = Candidate::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
-
-    protected static ?string $navigationGroup = 'Exam Management';
+    protected static ?string $navigationGroup = 'Corporate';
+    protected static ?string $navigationIcon = 'heroicon-m-academic-cap';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Fieldset::make('Student')
-                    ->schema([
-                        Select::make('student_id')
-                            ->relationship(
-                                name: 'student',
-                                titleAttribute: 'first_name',
-                                modifyQueryUsing: fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()),
-                            )
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                    ]),
-                ...AdminCandidateResource::getExamFields(),
+                ...static::getStudentFields(),
+                ...static::getExamFields(),
+                Select::make('status')
+                    ->options(\App\Enums\UserStatus::class)
+                    ->native(false)
+                    ->required()
+                    ->enum(\App\Enums\UserStatus::class),
             ]);
     }
 
@@ -57,36 +56,30 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                ...AdminCandidateResource::getCandidateColumns(),
-                ...AdminCandidateResource::getStudentColumns(),
-                ...AdminCandidateResource::getExamColumns(),
+                ...static::getCandidateColumns(),
+                ...static::getStudentColumns(),
+                ...static::getInstituteColumns(),
+                ...static::getExamColumns(),
             ])
             ->filters([
-                //
-            ])
-            ->actions([
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                Action::make('pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                ViewAction::make(),
-                DeleteAction::make(),
+                SelectFilter::make('institute_id')
+                    ->label('Institute')
+                    ->relationship('student.institute', 'name')
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
+                SelectFilter::make('exam_id')
+                    ->label('Exam')
+                    ->relationship('exam', 'session_name')
+                    ->searchable()
+                    ->multiple()
+                    ->preload(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('export-excel')
-                        ->label('Download as Excel')
-                        ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new CandidateByIdExport($records->pluck('id')))->download('candidates.xlsx')),
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->paginated([5, 10, 25])
-            ->defaultPaginationPageOption(5);
+            ]);
     }
 
     public static function getRelations(): array
@@ -100,12 +93,148 @@ class CandidateResource extends Resource
     {
         return [
             'index' => Pages\ListCandidates::route('/'),
-            'create' => Pages\CreateCandidate::route('/create'),
+            // 'create' => Pages\CreateCandidate::route('/create'),
+            'view' => Pages\ViewCandidate::route('/{record}'),
+            // 'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
     }
 
-    public static function getEloquentQuery(): Builder
+    public static function getStudentFields(): array
     {
-        return parent::getEloquentQuery()->whereHas('student', fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()));
+        return [
+            Fieldset::make('Student')
+                ->schema([
+                    Select::make('institute_id')
+                        ->label('Institute')
+                        ->placeholder('Select an institute')
+                        ->options(Institute::all()->pluck('name', 'id'))
+                        ->searchable()
+                        ->reactive()
+                        ->afterStateUpdated(fn (callable $set) => $set('student_id', null)),
+                    Select::make('student_id')
+                        ->label('Student')
+                        ->placeholder('Select a student')
+                        ->searchable()
+                        ->live()
+                        ->options(function (callable $get) {
+                            $instituteId = $get('institute_id');
+
+                            if (!$instituteId) {
+                                return [];
+                            }
+
+                            return Student::query()
+                                ->whereInstituteId($instituteId)
+                                ->select(['first_name', 'last_name', 'id']) // Seleccionar first_name y last_name
+                                ->get()
+                                ->mapWithKeys(function ($student) {
+                                    return [$student->id => "{$student->first_name} {$student->last_name}"];
+                                })
+                                ->all();
+                        })
+                ]),
+        ];
+    }
+
+    public static function getCandidateColumns(): array
+    {
+        return [
+            ColumnGroup::make('Candidate', [
+                TextColumn::make('id')
+                    ->label('Candidate No.')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric(),
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (UserStatus $state): string => match ($state) {
+                        UserStatus::Cancelled => 'gray',
+                        UserStatus::Unpaid => 'danger',
+                        UserStatus::Paid => 'success',
+                        UserStatus::PaymentWithDraw => 'warning',
+                    }),
+                TextColumn::make('modules.name')
+                    ->label('Modules')
+                    ->badge()
+            ]),
+        ];
+    }
+
+    public static function getStudentColumns(): array
+    {
+        return [
+            ColumnGroup::make('Student', [
+                TextColumn::make('student.national_id')
+                    ->label('National ID')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('student.first_name')
+                    ->label('First Name')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.last_name')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+            ]),
+        ];
+    }
+
+    public static function getInstituteColumns(): array
+    {
+        return [
+            ColumnGroup::make('Institute', [
+                TextColumn::make('student.institute.name')
+                    ->label('Institute Name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ]),
+        ];
+    }
+
+    public static function getExamColumns(): array
+    {
+        return [
+            ColumnGroup::make('Exam', [
+                TextColumn::make('exam.session_name')
+                    ->label('Session Name'),
+            ]),
+        ];
+    }
+
+    public static function getExamFields(): array
+    {
+        return [
+            Fieldset::make('Exam')
+                ->schema([
+                    Select::make('exam_id')
+                        ->label('Exam')
+                        ->placeholder('Select an exam')
+                        ->options(Exam::all()->pluck('session_name', 'id'))
+                        ->searchable()
+                        ->reactive()
+                        ->required()
+                        ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
+                    Select::make('modules')
+                        ->multiple()
+                        ->required()
+                        ->live()
+                        ->relationship(name: 'modules', titleAttribute: 'name')
+                        ->options(function (callable $get) {
+                            $examId = $get('exam_id');
+
+                            if (!$examId) {
+                                return [];
+                            }
+                            return ExamModule::query()
+                                ->whereExamId($examId)
+                                ->join('modules', 'modules.id', '=', 'exam_module.module_id')
+                                ->pluck('modules.name', 'modules.id');
+                        })
+                        ->preload()
+                ]),
+        ];
     }
 }
