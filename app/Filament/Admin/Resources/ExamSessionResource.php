@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\Resources\ExamResource\RelationManagers\CandidatesRelationManager;
 use App\Filament\Admin\Resources\ExamSessionResource\Pages;
 use App\Filament\Admin\Resources\ExamSessionResource\RelationManagers;
 use App\Models\ExamSession;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,6 +64,7 @@ class ExamSessionResource extends Resource
                 //
             ])
             ->actions([
+                ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -74,7 +77,7 @@ class ExamSessionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CandidatesRelationManager::class,
         ];
     }
 
@@ -82,6 +85,7 @@ class ExamSessionResource extends Resource
     {
         return [
             'index' => Pages\ListExamSessions::route('/'),
+            'view' => Pages\ViewExamSession::route('/{record}'),
             'create' => Pages\CreateExamSession::route('/create'),
             'edit' => Pages\EditExamSession::route('/{record}/edit'),
         ];

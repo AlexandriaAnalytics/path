@@ -136,6 +136,7 @@ class CandidateResource extends Resource
                         ->label('Student')
                         ->placeholder('Select a student')
                         ->searchable()
+                        ->preload()
                         ->live()
                         ->options(function (callable $get) {
                             $instituteId = $get('institute_id');
@@ -281,6 +282,7 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->reactive()
                         ->required()
+                        ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
                     Select::make('modules')
                         ->multiple()

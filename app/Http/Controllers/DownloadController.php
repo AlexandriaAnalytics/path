@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Candidate;
@@ -6,16 +7,19 @@ use Illuminate\Http\Request;
 use PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-class DownloadController extends Controller {
-    public function downloadCandidate() {
-        $data = []; 
-        $html = view('candidate-pdf', $data)->render(); 
+class DownloadController extends Controller
+{
+    public function downloadCandidate()
+    {
+        $data = [];
+        $html = view('candidate-pdf', $data)->render();
 
         $pdf = PDF::loadHTML($html);
         return $pdf->download('downloaded_pdf.pdf');
     }
 
-    public function downloadCandidateById($id) {
+    public function downloadCandidateById($id)
+    {
         $candidate = Candidate::find($id);
 
         if (!$candidate) {
@@ -32,7 +36,8 @@ class DownloadController extends Controller {
         return $pdf->stream('downloaded_pdf_' . $id . '.pdf');
     }
 
-    public function generateQrCode($id) {
+    public function generateQrCode($id)
+    {
         $candidate = Candidate::find($id);
 
         if (!$candidate) {
@@ -51,5 +56,4 @@ class DownloadController extends Controller {
 
         return $pdf->download('downloaded_pdf_with_qr_' . $id . '.pdf');
     }
-
-} 
+}
