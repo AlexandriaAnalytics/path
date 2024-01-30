@@ -16,6 +16,7 @@ use App\Models\Student;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
@@ -27,6 +28,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
@@ -50,11 +52,17 @@ class CandidateResource extends Resource
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
-                Select::make('status')
+                ToggleButtons::make('status')
                     ->options(\App\Enums\UserStatus::class)
-                    ->native(false)
                     ->required()
-                    ->enum(\App\Enums\UserStatus::class),
+                    ->inline()
+                    ->enum(\App\Enums\UserStatus::class)
+                    ->colors([
+                        'cancelled' => 'info',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
+                        'paymentwithdraw' => 'warning',
+                    ]),
             ]);
     }
 
@@ -91,6 +99,7 @@ class CandidateResource extends Resource
                     ->icon('heroicon-o-document')
                     ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ViewAction::make(),
+                EditAction::make(),
                 DeleteAction::make(),
             ])
             ->bulkActions([
@@ -116,7 +125,7 @@ class CandidateResource extends Resource
             'index' => Pages\ListCandidates::route('/'),
             // 'create' => Pages\CreateCandidate::route('/create'),
             'view' => Pages\ViewCandidate::route('/{record}'),
-            // 'edit' => Pages\EditCandidate::route('/{record}/edit'),
+            'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
     }
 
@@ -136,6 +145,7 @@ class CandidateResource extends Resource
                         ->label('Student')
                         ->placeholder('Select a student')
                         ->searchable()
+                        ->preload()
                         ->live()
                         ->options(function (callable $get) {
                             $instituteId = $get('institute_id');
@@ -281,6 +291,7 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->reactive()
                         ->required()
+                        ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
                     Select::make('modules')
                         ->multiple()

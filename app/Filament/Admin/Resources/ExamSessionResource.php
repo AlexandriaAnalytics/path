@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\Resources\ExamResource\RelationManagers\CandidatesRelationManager;
 use App\Filament\Admin\Resources\ExamSessionResource\Pages;
 use App\Filament\Admin\Resources\ExamSessionResource\RelationManagers;
 use App\Models\ExamSession;
@@ -62,6 +63,7 @@ class ExamSessionResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -74,7 +76,7 @@ class ExamSessionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CandidatesRelationManager::class
         ];
     }
 
@@ -83,6 +85,7 @@ class ExamSessionResource extends Resource
         return [
             'index' => Pages\ListExamSessions::route('/'),
             'create' => Pages\CreateExamSession::route('/create'),
+            'view' => Pages\ViewExamSession::route('/{record}'),
             'edit' => Pages\EditExamSession::route('/{record}/edit'),
         ];
     }
