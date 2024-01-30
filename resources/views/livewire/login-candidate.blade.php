@@ -9,9 +9,9 @@
             <form wire:submit.prevent="handleLoginCandidate" class="mt-8 space-y-6">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
-                        <label for="candidate_number" class="sr-only">Email</label>
-                        <input type="number" wire:model="candidate_number" id="candidate_number" placeholder="write you own candidate number" class="rounded appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
-                        @error('candidate_number') <span class="error text-red-500">{{ $message }}</span> @enderror
+                        <label for="id" class="sr-only">Email</label>
+                        <input type="number" wire:model="id" id="id" placeholder="write you own candidate number" class="rounded appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
+                        @error('id') <span class="error text-red-500">{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="flex items-center justify-center">

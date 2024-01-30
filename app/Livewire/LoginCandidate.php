@@ -8,22 +8,22 @@ class LoginCandidate extends Component
 {
   
 
-    public $candidate_number;
+    public $id;
 
     public function handleLoginCandidate()
     {
-        if($this->candidate_number == null){
+        if($this->id == null){
             session()->flash('error', 'Please enter your candidate number');
             return;
         }
-        $candidate = \App\Models\Candidate::where('candidate_number', $this->candidate_number)->first();
+        $candidate = \App\Models\Candidate::find($this->id)->first();
         if(!$candidate){
             session()->flash('error', 'Candidate not found');
             return;
         }
         // add $candidate to session
         session(['candidate' => $candidate]);
-        return redirect()->route('filament.candidate.pages.dashboard');
+        return redirect()->route('filament.candidate.pages.candidate-dahboard');
     }
 
     public function render()

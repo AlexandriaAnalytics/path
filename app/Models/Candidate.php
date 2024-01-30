@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\DB;
 
 class Candidate extends Pivot
 {
@@ -24,21 +25,6 @@ class Candidate extends Pivot
     protected $casts = [
         'status' => UserStatus::class,
     ];
-
-    protected $attributes = [];
-
-    private static int $candidate_counter = 0;
-
-    public static function boot(): void
-    {
-        parent::boot();
-        static::created(function(Candidate $candidate){
-            Candidate::$candidate_counter++;
-            $candidate_number = strval(10000000 + Candidate::$candidate_counter);
-            $candidate->candidate_number = $candidate_number;
-            $candidate->save();
-        });
-    }
 
     public function student(): BelongsTo
     {

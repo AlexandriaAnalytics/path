@@ -14,7 +14,11 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
-            $table->string('candidate_number')->unique()->nullable();
+
+            // $table->unsignedBigInteger('candidate_number')
+            //     ->autoIncrement()
+            //     ->startingValue(1000000)
+            //     ->unique();
 
             $table->foreignId('exam_id')
                 ->constrained()

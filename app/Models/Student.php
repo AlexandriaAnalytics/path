@@ -60,7 +60,7 @@ class Student extends Model
     {
         return $this->belongsToMany(Exam::class, 'candidates')
             ->using(Candidate::class)
-            ->withPivot(['id', 'modules'])
+            ->withPivot(['id'])
             ->withTimestamps();
     }
 

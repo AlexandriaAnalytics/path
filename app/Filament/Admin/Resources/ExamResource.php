@@ -62,7 +62,7 @@ class ExamResource extends Resource
                             ->searchable()
                             ->preload(),
                         Forms\Components\Select::make('modules')
-                            ->relationship(titleAttribute: 'name')
+                            ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
                             ->searchable()

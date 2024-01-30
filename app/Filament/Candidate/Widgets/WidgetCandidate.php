@@ -13,7 +13,7 @@ class WidgetCandidate extends BaseWidget
         
         return [// i want to show the candidate number here from session variable call candidate
             Stat::make('Payment Status', $candidate->status->name),
-            Stat::make('Candidate Number', $candidate->candidate_number),
+            Stat::make('Candidate Number', $candidate->id),
             Stat::make('Exam Date', '2021-10-10'), // i want to show the exam date here from session variable call candidate
             
             /*

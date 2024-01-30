@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\ExamResource\RelationManagers;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\ExamModule;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\CreateAction;
@@ -32,7 +33,20 @@ class CandidatesRelationManager extends RelationManager
                         Select::make('modules')
                             ->multiple()
                             ->required()
-                            ->options(fn () => $this->getOwnerRecord()->modules->flatMap(fn ($module) => [$module['type']->value => "{$module['type']->getLabel()} (\${$module['price']})"])),
+                            ->live()
+                            ->relationship(name: 'modules', titleAttribute: 'name')
+                            ->options(function (callable $get) {
+                                $examId = $get('exam_id');
+
+                                if (!$examId) {
+                                    return [];
+                                }
+                                return ExamModule::query()
+                                    ->whereExamId($examId)
+                                    ->join('modules', 'modules.id', '=', 'exam_module.module_id')
+                                    ->pluck('modules.name', 'modules.id');
+                            })
+                            ->preload(),
                     ]),
             ])
             ->actions([

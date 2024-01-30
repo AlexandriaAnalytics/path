@@ -31,7 +31,7 @@ class Payments extends Page implements HasForms
 
     public static function canAccess(): bool
     {
-        return isset(session('candidate')->candidate_number);
+        return isset(session('candidate')->id);
     }
 
     public function mount()

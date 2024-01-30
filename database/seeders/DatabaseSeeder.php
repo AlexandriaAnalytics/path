@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Exam;
 use App\Models\Institute;
+use App\Models\Module;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -26,8 +27,13 @@ class DatabaseSeeder extends Seeder
             ModuleSeeder::class,
         ]);
 
+        $modules = Module::all();
+
         $exams = Exam::factory(10)
-            ->create();
+            ->create()
+            ->each(function (Exam $exam) use ($modules): void {
+                $exam->modules()->attach($modules->random(3));
+            });
 
         User::factory()
             ->has(
