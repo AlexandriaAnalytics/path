@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('4rem')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => '#22526d',
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
