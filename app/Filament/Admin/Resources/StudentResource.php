@@ -25,6 +25,8 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-user-group';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -115,7 +117,7 @@ class StudentResource extends Resource
                     ->preload(),
                 Tables\Filters\QueryBuilder::make()
                     ->constraints([
-                        DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')->label('Created on')
                             ->label('Registered at'),
                     ]),
             ])
@@ -172,11 +174,11 @@ class StudentResource extends Resource
     {
         return [
             ColumnGroup::make('Metadata', [
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->label('Created on')
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->label('Updated on')
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

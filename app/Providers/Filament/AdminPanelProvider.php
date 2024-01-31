@@ -28,10 +28,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandLogo(asset('images/logo/01-regular.png'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('4rem')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => '#22526d',
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
@@ -47,7 +47,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('User Management'),
                 NavigationGroup::make()
                     ->label('Settings')
-                   
+
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([

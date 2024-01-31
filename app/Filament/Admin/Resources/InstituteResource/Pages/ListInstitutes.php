@@ -20,14 +20,9 @@ class ListInstitutes extends ListRecords
         ];
     }
 
-    public function getSubheading(): string|Htmlable|null
-    {
-        return str('Create, update, and delete institutes, and manage the authorised users of each institute.');
-    }
-
     public function getTabs(): array
     {
-        
+
 
         // Create tabs for each institute type.
         return [
