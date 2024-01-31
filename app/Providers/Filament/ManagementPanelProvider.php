@@ -30,7 +30,7 @@ class ManagementPanelProvider extends PanelProvider
             ->id('management')
             ->path('management')
             ->brandLogo(asset('images/logo/01-regular.png'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('4rem')
             ->login(
                 \App\Filament\Pages\Auth\Login::class
             )
