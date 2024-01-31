@@ -139,7 +139,7 @@ class InstituteResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('files_url')
-                    ->url(fn ($record) => $record->files_url)
+                    ->url(fn ($record) => $record->files_url, shouldOpenInNewTab: true)
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
