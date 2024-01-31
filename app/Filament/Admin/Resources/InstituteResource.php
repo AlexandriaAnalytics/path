@@ -19,6 +19,10 @@ class InstituteResource extends Resource
 {
     protected static ?string $model = Institute::class;
 
+    protected static ?string $modelLabel = 'Members and Centers';
+
+    protected static bool $hasTitleCaseModelLabel = false;
+
     protected static ?string $navigationGroup = 'Corporate';
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
