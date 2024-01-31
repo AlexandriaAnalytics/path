@@ -131,6 +131,7 @@ class InstituteResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('email')
+                    ->url(fn ($record) => 'mailto:' . $record->email, shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
