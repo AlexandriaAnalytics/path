@@ -46,6 +46,8 @@ class CandidateResource extends Resource
     protected static ?string $navigationGroup = 'Corporate';
     protected static ?string $navigationIcon = 'heroicon-m-academic-cap';
 
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form

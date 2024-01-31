@@ -27,6 +27,8 @@ class InstituteResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
 
+    protected static ?int $navigationSort = 1;
+
     public static function form(Form $form): Form
     {
         return $form
