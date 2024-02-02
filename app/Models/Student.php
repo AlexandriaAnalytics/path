@@ -19,7 +19,6 @@ class Student extends Model
         'country_id',
         'names',
         'last_name',
-        'slug',
         'country',
         'cbu',
         'birth_date',

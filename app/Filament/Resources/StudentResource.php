@@ -32,7 +32,6 @@ class StudentResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('names'),
                 Forms\Components\TextInput::make('last_name'),
-                Forms\Components\TextInput::make('slug'),
                 Forms\Components\Select::make('country')
                     ->label('Country of residence')
                     ->options(Country::class)
@@ -43,8 +42,6 @@ class StudentResource extends Resource
                     ->label('Date of birth')
                     ->native(false)
                     ->placeholder('dd/mm/yyyy'),
-                Forms\Components\Select::make('status')
-                    ->options(UserStatus::values()),
 
             ]);
     }

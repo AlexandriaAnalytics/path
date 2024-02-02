@@ -24,7 +24,6 @@ return new class extends Migration
 
             $table->string('names');
             $table->string('last_name');
-            $table->string('slug')->nullable();
             $table->string('country');
             $table->string('cbu')->nullable();
             $table->date('birth_date');

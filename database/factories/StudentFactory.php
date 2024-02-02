@@ -20,7 +20,6 @@ class StudentFactory extends Factory
             'institute_id' => \App\Models\Institute::factory(),
             'country_id' => fake()->randomElement(\App\Models\Country::pluck('id')->toArray()),
             'names' => fake()->firstName(),
-            'slug' => fake()->slug(),
             'country' => fake()->randomElement(\App\Enums\Country::values()),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
