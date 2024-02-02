@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('slug');
+            $table->string('files_url')->nullable();
+
             $table->softDeletes();
             $table->timestamps();
         });

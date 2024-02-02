@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class InstituteTypeFactory extends Factory
 {
-    
+
     protected static ?string $name;
     /**
      * Define the model's default state.
@@ -19,7 +19,8 @@ class InstituteTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => static::$name ??= fake()->company(),
+            'name' => fake()->company(),
+            'files_url' => fake()->url(),
         ];
     }
 }
