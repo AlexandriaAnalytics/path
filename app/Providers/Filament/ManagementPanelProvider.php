@@ -30,12 +30,12 @@ class ManagementPanelProvider extends PanelProvider
             ->id('management')
             ->path('management')
             ->brandLogo(asset('images/logo/01-regular.png'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('4rem')
             ->login(
                 \App\Filament\Pages\Auth\Login::class
             )
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => '#22526d',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

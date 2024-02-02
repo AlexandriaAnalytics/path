@@ -18,7 +18,7 @@ class CreateEvaluationsTable extends Migration
             $table->unsignedInteger('id_user');
             $table->unsignedInteger('id_exam');
             $table->unsignedInteger('id_status')->default(0);
-            $table->timestamp('deleted_at')->nullable();
+            $table->timestamp('deleted_at')->label('Deleted on')->nullable();
             $table->timestamps();
             $table->integer('mark')->nullable();
             $table->timestamp('deadline')->nullable();
