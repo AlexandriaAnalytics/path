@@ -16,14 +16,12 @@ class Student extends Model
 
     protected $fillable = [
         'institute_id',
-        'national_id',
         'country_id',
         'names',
         'last_name',
         'slug',
         'country',
         'address',
-        'phone',
         'cbu',
         'birth_date',
         'status',

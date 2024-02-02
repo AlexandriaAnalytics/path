@@ -54,15 +54,6 @@ class StudentResource extends Resource
                             ->preload()
                             ->native(false)
                             ->required(),
-                        Components\TextInput::make('phone')
-                            ->autofocus()
-                            ->placeholder('0118-999-881-999-119-725-3'),
-                        Components\TextInput::make('national_id')
-                            ->label('National ID')
-                            ->placeholder('20-12345678-9')
-                            ->mask('99-99999999-9')
-                            ->autofocus()
-                            ->required(),
                         Components\TextInput::make('birth_date')
                             ->autofocus()
                             ->type('date')

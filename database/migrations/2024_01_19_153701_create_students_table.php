@@ -22,13 +22,11 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('national_id', 32);
             $table->string('names');
             $table->string('last_name');
             $table->string('slug')->nullable();
             $table->string('country');
             $table->string('address')->nullable();
-            $table->string('phone')->nullable();
             $table->string('cbu')->nullable();
             $table->date('birth_date');
             $table->string('status');

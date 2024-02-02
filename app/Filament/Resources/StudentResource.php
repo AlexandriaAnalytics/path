@@ -39,9 +39,7 @@ class StudentResource extends Resource
                     ->enum(Country::class)
                     ->searchable(),
                 Forms\Components\TextInput::make('address'),
-                Forms\Components\TextInput::make('phone'),
                 Forms\Components\TextInput::make('cbu'),
-                Forms\Components\TextInput::make('national_id'),
                 Forms\Components\DatePicker::make('birth_date'),
                 Forms\Components\Select::make('status')
                     ->options(UserStatus::values()),
