@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\AllStudentsExport;
 use App\Exports\CandidateByIdExport;
 use App\Exports\UsersExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -12,5 +13,9 @@ class ExcelController extends Controller {
     public function exportById($id)
     {
         return Excel::download(new CandidateByIdExport($id), 'candidate.xlsx');
+    }
+
+    public function exportAllStudents() {
+        return Excel::download(new AllStudentsExport, 'students.xlsx');
     }
 }

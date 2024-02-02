@@ -2,29 +2,27 @@
 
 namespace App\Exports;
 
-use App\Models\Candidate;
-use Illuminate\Support\Collection;
+use App\Models\Student;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UsersExport implements FromCollection, WithHeadings, WithStyles
+class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
 {
     /**
-     * @return Collection
+     * @return \Illuminate\Support\Collection
      */
     public function collection()
     {
-        return Candidate::select(
-            'candidates.id as candidate_id',
+        return Student::select(
+            'students.id as student_id',
             'students.first_name',
             'students.last_name',
-            'exams.session_name as exam_session'
+            'institute_types.name as institute_name'
         )
-            ->join('students', 'students.id', '=', 'candidates.student_id')
-            ->join('exams', 'exams.id', '=', 'candidates.exam_id')
+            ->join('institute_types', 'institute_types.id', '=', 'students.institute_id')
             ->get();
     }
 
@@ -33,7 +31,7 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Candidate Number','First Name', 'Last Name', 'Exam Session'];
+        return ['Student Number','First Name', 'Last Name', 'Institute'];
     }
 
     /**
@@ -108,4 +106,5 @@ class UsersExport implements FromCollection, WithHeadings, WithStyles
             ],
         ]);
     }
+
 }
