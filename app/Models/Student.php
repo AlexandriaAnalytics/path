@@ -18,7 +18,7 @@ class Student extends Model
         'institute_id',
         'national_id',
         'country_id',
-        'first_name',
+        'names',
         'last_name',
         'slug',
         'country',

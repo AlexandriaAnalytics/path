@@ -39,8 +39,8 @@ class StudentResource extends Resource
                 Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
-                        Components\TextInput::make('first_name')
-                            ->label('First Name')
+                        Components\TextInput::make('names')
+                            ->label('names')
                             ->required()
                             ->placeholder('John'),
                         Components\TextInput::make('last_name')
@@ -166,7 +166,7 @@ class StudentResource extends Resource
                     ->label('National ID')
                     ->searchable(isIndividual: true)
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('first_name')
+                TextColumn::make('names')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('last_name')

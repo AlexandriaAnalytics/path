@@ -30,7 +30,7 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name'),
+                Forms\Components\TextInput::make('names'),
                 Forms\Components\TextInput::make('last_name'),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\Select::make('country')

@@ -23,7 +23,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('national_id', 32);
-            $table->string('first_name');
+            $table->string('names');
             $table->string('last_name');
             $table->string('slug')->nullable();
             $table->string('country');
