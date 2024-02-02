@@ -41,6 +41,6 @@ class CandidateController extends Controller
             'candidate' => $candidate,
         ];
 
-        return view('example', $data);
+        return view('candidate-pdf', $data);
     }
 }

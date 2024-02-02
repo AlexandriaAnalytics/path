@@ -2,56 +2,41 @@
 
 namespace App\Exports;
 
-use App\Models\Candidate;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
-use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use App\Models\Student;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithStyles
+class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
 {
-    use Exportable;
-
-    public function __construct(
-        private Collection $candidate_ids,
-    ) {
-    }
-
-    public function query()
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function collection()
     {
-        return Candidate::query()
-            ->whereIn('id', $this->candidate_ids)
-            ->with('student')
-            ->with('exam');
+        return Student::select(
+            'students.id as student_id',
+            'students.first_name',
+            'students.last_name',
+            'institute_types.name as institute_name'
+        )
+            ->join('institute_types', 'institute_types.id', '=', 'students.institute_id')
+            ->get();
     }
 
+    /**
+     * @return array
+     */
     public function headings(): array
     {
-        return [
-            'Candidate Number',
-            'Full Name',
-            'Session Name',
-            'Status'
-        ];
+        return ['Student Number','First Name', 'Last Name', 'Institute'];
     }
 
-    public function map($candidate): array
-    {
-        $fullName = $candidate->student->first_name . ' ' . $candidate->student->last_name;
-
-        return [
-            $candidate->id,
-            $fullName,
-            $candidate->exam->session_name,
-            $candidate->status->value
-        ];
-    }
-
+    /**
+     * @param Worksheet $sheet
+     */
     public function styles(Worksheet $sheet)
     {
 
@@ -65,7 +50,9 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('A')->setWidth(20);
+
+
         $sheet->getStyle('B1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -76,7 +63,8 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('B')->setWidth(40);
+
+        $sheet->getColumnDimension('B')->setWidth(35);
 
         $sheet->getStyle('C1')->applyFromArray([
             'font' => [
@@ -88,7 +76,7 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('C')->setWidth(40);
+        $sheet->getColumnDimension('C')->setWidth(35);
 
         $sheet->getStyle('D1')->applyFromArray([
             'font' => [
@@ -100,10 +88,13 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('D')->setWidth(40);
+
+        $sheet->getColumnDimension('D')->setWidth(35);
+
 
         $lastRow = $sheet->getHighestDataRow();
         $lastCol = $sheet->getHighestDataColumn();
+
 
         $range = 'A1:' . $lastCol . $lastRow;
         $sheet->getStyle($range)->applyFromArray([
@@ -115,4 +106,5 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
     }
+
 }

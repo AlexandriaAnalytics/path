@@ -2,9 +2,8 @@
 
 namespace App\Exports;
 
-use App\Models\Candidate;
+use App\Models\Student;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -13,48 +12,43 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 
-class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithStyles
+
+class StudentExport implements FromQuery, WithHeadings, WithMapping, WithStyles
 {
     use Exportable;
 
     public function __construct(
-        private Collection $candidate_ids,
+        private Collection $students_ids,
     ) {
     }
 
     public function query()
     {
-        return Candidate::query()
-            ->whereIn('id', $this->candidate_ids)
-            ->with('student')
-            ->with('exam');
+        return Student::query()
+            ->whereIn('id', $this->students_ids)
+            ->with('institute');
     }
 
     public function headings(): array
     {
         return [
-            'Candidate Number',
-            'Full Name',
-            'Session Name',
-            'Status'
+            'First Name',
+            'Last Name',
+            'Institute'
         ];
     }
 
-    public function map($candidate): array
+    public function map($student): array
     {
-        $fullName = $candidate->student->first_name . ' ' . $candidate->student->last_name;
-
         return [
-            $candidate->id,
-            $fullName,
-            $candidate->exam->session_name,
-            $candidate->status->value
+            $student->first_name,
+            $student->last_name,
+            $student->institute->name
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -65,7 +59,8 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('A')->setWidth(30);
+
         $sheet->getStyle('B1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -89,18 +84,6 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
         ]);
 
         $sheet->getColumnDimension('C')->setWidth(40);
-
-        $sheet->getStyle('D1')->applyFromArray([
-            'font' => [
-                'color' => ['rgb' => 'FFFFFF'],
-            ],
-            'fill' => [
-                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '000000'],
-            ],
-        ]);
-
-        $sheet->getColumnDimension('D')->setWidth(40);
 
         $lastRow = $sheet->getHighestDataRow();
         $lastCol = $sheet->getHighestDataColumn();

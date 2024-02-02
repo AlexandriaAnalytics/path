@@ -81,25 +81,26 @@
 </head>
 
 <body>
-    {{-- <header class="bg-blue-800 text-white rounded-br-full">
-        <nav class="container-nav">
-            <article class="logo">
-                <img src="{{ asset('images/logo/02-white.png') }}" alt="logo" class="logo-img">
-                <div class="texto-logo">
-                    <p>Intenational</p>
-                    <p>Examinations</p>
-                </div>
-            </article>
-            <article class="text-logo-int">
-                <div class="texto">
-                    <h1>International exam confirmation</h1>
-                    <h2> Path International Examinations </h2>
+    
+        {{-- <header class="bg-blue-800 text-white rounded-br-full">
+            <nav class="container-nav">
+                <article class="logo">
+                    <img src="{{ asset('images/logo/02-white.png') }}" alt="logo" class="logo-img">
+                    <div class="texto-logo">
+                        <p>Intenational</p>
+                        <p>Examinations</p>
+                    </div>
+                </article>
+                <article class="text-logo-int">
+                    <div class="texto">
+                        <h1>International exam confirmation</h1>
+                        <h2> Path International Examinations </h2>
 
-                </div>
-                </div>
-            </article>
-        </nav>
-    </header> --}}
+                    </div>
+                    </div>
+                </article>
+            </nav>
+        </header> --}}
     <main class="container mx-auto">
         <section class="data">
             <article class="form">
@@ -118,9 +119,7 @@
             <article class="form">
                 <p>{{$candidate->student->country}}</p>
             </article>
-
-
-            
+           
             {{-- <article class="form">
                 <p>Level </p>
             </article> --}}

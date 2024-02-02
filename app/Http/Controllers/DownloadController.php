@@ -44,16 +44,15 @@ class DownloadController extends Controller
             abort(404, 'Candidate not found');
         }
 
-        $qrCode = QrCode::size(150)->generate(route('candidate.view', ['id' => $id]));
+        $qrCode = QrCode::size(100)->generate(route('candidate.view', ['id' => $id]));
 
         $data = [
             'candidate' => $candidate,
             'qrCode' => $qrCode,
         ];
-        $html = view('qrCandidate', $data)->render();
+        
+        $pdf = PDF::loadHTML(view('qrCandidate', $data)->render());
 
-        $pdf = PDF::loadHTML($html);
-
-        return $pdf->download('downloaded_pdf_with_qr_' . $id . '.pdf');
+        return $pdf->stream('downloaded_pdf_with_qr_' . $id . '.pdf');
     }
 }
