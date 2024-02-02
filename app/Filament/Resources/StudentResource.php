@@ -40,7 +40,10 @@ class StudentResource extends Resource
                     ->searchable(),
                 Forms\Components\TextInput::make('address'),
                 Forms\Components\TextInput::make('cbu'),
-                Forms\Components\DatePicker::make('birth_date'),
+                Forms\Components\DatePicker::make('birth_date')
+                    ->label('Date of birth')
+                    ->native(false)
+                    ->placeholder('dd/mm/yyyy'),
                 Forms\Components\Select::make('status')
                     ->options(UserStatus::values()),
 

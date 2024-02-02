@@ -40,7 +40,6 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Components\TextInput::make('names')
-                            ->label('names')
                             ->required()
                             ->placeholder('John'),
                         Components\TextInput::make('last_name')
@@ -54,9 +53,10 @@ class StudentResource extends Resource
                             ->preload()
                             ->native(false)
                             ->required(),
-                        Components\TextInput::make('birth_date')
-                            ->autofocus()
-                            ->type('date')
+                        Components\DatePicker::make('birth_date')
+                            ->label('Date of birth')
+                            ->native(false)
+                            ->placeholder('dd/mm/yyyy')
                             ->required(),
                     ]),
                 Components\Section::make('Address')
