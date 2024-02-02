@@ -51,6 +51,7 @@ class StudentResource extends Resource
                             ->label('Institute')
                             ->relationship('institute', 'name')
                             ->searchable()
+                            ->preload()
                             ->native(false)
                             ->required(),
                         Components\TextInput::make('phone')
