@@ -56,6 +56,11 @@ Route::post('management/auth/logout', function () {
 
         return redirect()->route('filament.admin.pages.dashboard');
     }
-
     return redirect()->route('filament.management.auth.logout');
 })->name('auth.logout');
+
+Route::get('/pdf/candidate/{id}', function($id){
+    $candidate = Candidate::find($id);
+
+    return view('candidate-pdf', ['candidate'=>$candidate]);
+})->name('candidate.pdf');
