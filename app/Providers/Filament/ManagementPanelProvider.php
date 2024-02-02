@@ -3,11 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Models\Institute;
+use App\Settings\InformationSettings;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -25,6 +27,8 @@ class ManagementPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        $informationSettings = app(InformationSettings::class);
+
         return $panel
             ->default()
             ->id('management')
@@ -47,12 +51,17 @@ class ManagementPanelProvider extends PanelProvider
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,
             ])
-            ->tenantMenuItems([
-                MenuItem::make()
-                    ->label('Institute Files')
+            ->navigationItems([
+                NavigationItem::make()
+                    ->label('Centre Files')
                     ->icon('heroicon-o-folder')
                     ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
                     ->visible(fn () => Filament::getTenant()->files_url != null),
+                NavigationItem::make()
+                    ->label('All Files')
+                    ->icon('heroicon-o-folder')
+                    ->url(fn () => $informationSettings->files_url, shouldOpenInNewTab: true)
+                    ->visible(fn () => $informationSettings->files_url != null),
             ])
             ->userMenuItems([
                 'logout' => MenuItem::make()
