@@ -24,7 +24,7 @@ class InstituteResource extends Resource
 {
     protected static ?string $model = Institute::class;
 
-    protected static ?string $modelLabel = 'Members and Centers';
+    protected static ?string $modelLabel = 'Members and Centres';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
