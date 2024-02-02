@@ -71,21 +71,6 @@ class StudentResource extends Resource
                             ->enum(Country::class)
                             ->native(false),
                     ]),
-                Components\Section::make('Additional Information')
-                    ->columns(2)
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Components\TextInput::make('cbu')
-                            ->label('CBU')
-                            ->autofocus()
-                            ->placeholder('1234567890123456789012')
-                            ->required(),
-                        Components\Select::make('status')
-                            ->label('Status')
-                            ->options(['active' => 'active', 'inactive' => 'inactive'])
-                            ->placeholder('Select Status')
-                    ])
             ]);
     }
 
