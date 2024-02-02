@@ -26,6 +26,10 @@ class InstituteTypeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('files_url')
+                    ->maxLength(255)
+                    ->url()
+                    ->hint('The URL to the files for this institute type.'),
             ]);
     }
 

@@ -8,7 +8,6 @@ return [
      */
     'settings' => [
         \App\Settings\ExamSettings::class,
-        \App\Settings\InformationSettings::class,
     ],
 
     /*

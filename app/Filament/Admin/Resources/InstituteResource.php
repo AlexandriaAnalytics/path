@@ -98,13 +98,13 @@ class InstituteResource extends Resource
                                 TextInput::make('city')
                                     ->required()
                                     ->maxLength(255),
+                                TextInput::make('postcode')
+                                    ->required()
+                                    ->maxLength(255),
                                 TextInput::make('province')
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('country')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('postcode')
                                     ->required()
                                     ->maxLength(255),
                             ]),
