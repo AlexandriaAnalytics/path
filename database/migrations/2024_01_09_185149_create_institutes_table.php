@@ -19,10 +19,20 @@ return new class extends Migration
             $table->boolean('can_add_candidates');
             $table->string('phone');
             $table->string('email');
-            $table->string('address');
+            $table->string('street_name');
+            $table->string('number')->nullable();
+            $table->string('city');
+            $table->string('province');
+            $table->string('postcode');
+            $table->string('country');
 
-            $table->foreignId('institute_type_id')->constrained('institute_types')->cascadeOnDelete();
-            $table->foreignId('owner_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('institute_type_id')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('owner_id')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

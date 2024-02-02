@@ -22,7 +22,12 @@ class InstituteFactory extends Factory
             'files_url' => fake()->url(),
             'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
-            'address' => fake()->address()
+            'street_name' => fake()->streetName(),
+            'number' => fake()->optional()->buildingNumber(),
+            'city' => fake()->city(),
+            'province' => fake()->state(),
+            'postcode' => fake()->postcode(),
+            'country' => fake()->country(),
         ];
     }
 }

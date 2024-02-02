@@ -23,7 +23,12 @@ class Institute extends Model
         'owner_id',
         'email',
         'phone',
-        'address'
+        'street_name',
+        'number',
+        'city',
+        'province',
+        'postcode',
+        'country',
     ];
 
     protected $attributes = [

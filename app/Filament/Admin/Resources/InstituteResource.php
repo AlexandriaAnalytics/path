@@ -6,6 +6,10 @@ use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
@@ -14,6 +18,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class InstituteResource extends Resource
 {
@@ -32,81 +37,87 @@ class InstituteResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(12)
+            ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
-                    ->label('Name of institution')
-                    ->columnSpan(6)
-                    ->maxLength(255),
-
-                Forms\Components\Select::make('owner_id')
-                    ->required()
-                    ->label('Head')
-                    ->columnSpan(6)
-                    ->relationship('owner', 'name')
-                    ->placeholder('Select a user')
-                    ->preload()
-                    ->searchable()
-                    ->createOptionForm([
-                        Forms\Components\TextInput::make('full name')
-                            ->helperText('If omitted, the name will be generated from the first user added to the institute.')
-                            ->maxLength(255),
-                    ]),
-                Forms\Components\TextInput::make('street_name')
-                    ->columnSpan(4)
-                    ->required(),
-                Forms\Components\TextInput::make('number')
-                    ->columnSpan(1)
-                    ->required(),
-                Forms\Components\TextInput::make('city')
-                    ->columnSpan(2)
-                    ->required(),
-                Forms\Components\TextInput::make('province')
-                    ->columnSpan(2)
-                    ->required(),
-                Forms\Components\TextInput::make('country')
-                    ->columnSpan(2)
-                    ->required(),
-                Forms\Components\TextInput::make('post_code')
-                    ->columnSpan(1)
-                    ->required(),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->columnSpan(3)
-                    ->required(),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->revealable()
-                    ->columnSpan(3)
-                    ->required(),
-                Forms\Components\TextInput::make('country_code')
-                    ->columnSpan(2)
-                    ->required(),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->columnSpan(4)
-                    ->required(),
-                Forms\Components\Select::make('institute_type_id')
-                    ->columnSpan(6)
-                    ->required()
-                    ->label('Type')
-                    ->relationship('instituteType', 'name')
-                    ->native(true),
-                Forms\Components\TextInput::make('specific_files_url')
-                    ->columnSpan(6)
-                    ->type('url')
-                    ->helperText('The URL to web folder like Dropbox, One, etc.'),
-                Forms\Components\Section::make('Administration')
-                    ->collapsible()
-                    ->collapsed()
+                Fieldset::make('Information')
                     ->columnSpanFull()
                     ->schema([
-                        Forms\Components\TextInput::make('general_files_url')
+                        TextInput::make('name')
+                            ->helperText('If omitted, the name will be generated from the first user added to the institute.')
+                            ->label('Name of institution')
+                            ->maxLength(255),
+                        Select::make('institute_type_id')
+                            ->relationship('instituteType', 'name')
+                            ->required()
+                            ->label('Type')
+                            ->native(false),
+                        Select::make('owner_id')
+                            ->required()
+                            ->label('Head')
+                            ->relationship('owner', 'name')
+                            ->placeholder('Select a user')
+                            ->preload()
+                            ->searchable()
+                            ->createOptionForm([
+                                TextInput::make('name')
+                                    ->label('Full name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('password')
+                                    ->password()
+                                    ->revealable()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                                    ->dehydrated(fn (?string $state): bool => filled($state)),
+                            ]),
+                        Fieldset::make('Contact Information')
+                            ->schema([
+                                TextInput::make('phone')
+                                    ->tel()
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Fieldset::make('Address')
+                            ->columnSpan(2)
+                            ->columns(3)
+                            ->schema([
+                                TextInput::make('street_name')
+                                    ->required(),
+                                TextInput::make('number')
+                                    ->numeric()
+                                    ->minValue(1),
+                                TextInput::make('city')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('province')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('country')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('postcode')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                    ]),
+                Fieldset::make('Administration')
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('files_url')
+                            ->label('Institute files URL')
                             ->type('url')
-                            ->url()
-                            ->helperText('URL to shared web folder, such as Dropbox, OneDrive, etc.'),
-                        Forms\Components\Toggle::make('can_add_candidates')
+                            ->hint('This institute\'s specific web folder.')
+                            ->helperText('You can add global files in the settings.'),
+                        Toggle::make('can_add_candidates')
                             ->default(true)
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                     ]),
