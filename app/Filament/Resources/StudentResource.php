@@ -34,11 +34,10 @@ class StudentResource extends Resource
                 Forms\Components\TextInput::make('last_name'),
                 Forms\Components\TextInput::make('slug'),
                 Forms\Components\Select::make('country')
-                    ->label('Country')
+                    ->label('Country of residence')
                     ->options(Country::class)
                     ->enum(Country::class)
                     ->searchable(),
-                Forms\Components\TextInput::make('address'),
                 Forms\Components\TextInput::make('cbu'),
                 Forms\Components\DatePicker::make('birth_date')
                     ->label('Date of birth')

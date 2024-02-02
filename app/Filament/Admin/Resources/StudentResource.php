@@ -59,7 +59,7 @@ class StudentResource extends Resource
                             ->placeholder('dd/mm/yyyy')
                             ->required(),
                     ]),
-                Components\Section::make('Address')
+                Components\Section::make('Country of residence')
                     ->columns(2)
                     ->collapsible()
                     ->schema([
@@ -70,9 +70,6 @@ class StudentResource extends Resource
                             ->options(Country::class)
                             ->enum(Country::class)
                             ->native(false),
-                        Components\TextInput::make('address')
-                            ->autofocus()
-                            ->placeholder('Evergreen Terrace 742'),
                     ]),
                 Components\Section::make('Additional Information')
                     ->columns(2)
@@ -154,10 +151,6 @@ class StudentResource extends Resource
     {
         return [
             ColumnGroup::make('Personal Information', [
-                TextColumn::make('national_id')
-                    ->label('National ID')
-                    ->searchable(isIndividual: true)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('names')
                     ->searchable()
                     ->sortable(),
@@ -165,6 +158,7 @@ class StudentResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('birth_date')
+                    ->label('Date of birth')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]),

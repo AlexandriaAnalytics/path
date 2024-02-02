@@ -21,7 +21,6 @@ class Student extends Model
         'last_name',
         'slug',
         'country',
-        'address',
         'cbu',
         'birth_date',
         'status',
