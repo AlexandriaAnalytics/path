@@ -22,7 +22,7 @@
         }
         .data-cell {
             width: 50%;
-            text-align: left; /* Alinea el contenido a la derecha */
+            text-align: left
             vertical-align: top;
         }
     </style>
