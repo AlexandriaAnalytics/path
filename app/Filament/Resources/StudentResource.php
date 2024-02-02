@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Country;
 use App\Enums\UserStatus;
+use App\Exports\StudentExport;
 use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Models\Student;
@@ -11,7 +12,11 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
 {
@@ -60,8 +65,12 @@ class StudentResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
