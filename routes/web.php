@@ -36,6 +36,7 @@ Route::get('/prueba/{id}', [CandidateController::class, 'show']);
 
 Route::get('/users-excel', [ExcelController::class, 'export']);
 Route::get('/students-excel',[ExcelController::class,'exportAllStudents']);
+Route::get('/members-excel',[ExcelController::class,'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
