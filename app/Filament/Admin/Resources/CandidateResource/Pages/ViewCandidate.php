@@ -43,7 +43,7 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('national_id')
                             ->label('National ID'),
                     ]),
-                Fieldset::make('Exam')
+                /* Fieldset::make('Exam')
                     ->relationship('exam')
                     ->schema([
                         TextEntry::make('session_name')
@@ -53,7 +53,7 @@ class ViewCandidate extends ViewRecord
                             ->tooltip(fn (Model $record): string => $record->exam->scheduled_date)
                             ->date()
                             ->since(),
-                    ]),
+                    ]), */
             ]);
     }
 

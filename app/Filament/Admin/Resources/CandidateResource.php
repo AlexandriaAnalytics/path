@@ -137,8 +137,37 @@ class CandidateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 //Exam
-                TextColumn::make('exam')
-                    ->label('Session Name'),
+                /* TextColumn::make('exam')
+                    ->label('Session Name') */
+                IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
