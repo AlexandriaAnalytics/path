@@ -12,6 +12,7 @@ use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
 use App\Models\Institute;
+use App\Models\Status;
 use App\Models\Student;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
@@ -55,10 +56,10 @@ class CandidateResource extends Resource
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
                 ToggleButtons::make('status')
-                    ->options(\App\Enums\UserStatus::class)
+                    ->options(Status::all()->pluck('name', 'id'))
                     ->required()
                     ->inline()
-                    ->enum(\App\Enums\UserStatus::class)
+                    ->enum(Status::all()->pluck('name', 'id'))
                     ->colors([
                         'cancelled' => 'info',
                         'unpaid' => 'danger',
