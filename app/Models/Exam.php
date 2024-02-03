@@ -57,9 +57,4 @@ class Exam extends Model
             ->withPivot('module_id')
             ->withTimestamps();
     }
-
-    public function module()
-    {
-        return $this->belongsTo(Module::class, 'module_id');
-    }
 }
