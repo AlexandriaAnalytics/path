@@ -39,8 +39,7 @@ class StudentResource extends Resource
                 Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
-                        Components\TextInput::make('first_name')
-                            ->label('First Name')
+                        Components\TextInput::make('names')
                             ->required()
                             ->placeholder('John'),
                         Components\TextInput::make('last_name')
@@ -51,23 +50,16 @@ class StudentResource extends Resource
                             ->label('Institute')
                             ->relationship('institute', 'name')
                             ->searchable()
+                            ->preload()
                             ->native(false)
                             ->required(),
-                        Components\TextInput::make('phone')
-                            ->autofocus()
-                            ->placeholder('0118-999-881-999-119-725-3'),
-                        Components\TextInput::make('national_id')
-                            ->label('National ID')
-                            ->placeholder('20-12345678-9')
-                            ->mask('99-99999999-9')
-                            ->autofocus()
-                            ->required(),
-                        Components\TextInput::make('birth_date')
-                            ->autofocus()
-                            ->type('date')
+                        Components\DatePicker::make('birth_date')
+                            ->label('Date of birth')
+                            ->native(false)
+                            ->placeholder('dd/mm/yyyy')
                             ->required(),
                     ]),
-                Components\Section::make('Address')
+                Components\Section::make('Country of residence')
                     ->columns(2)
                     ->collapsible()
                     ->schema([
@@ -78,25 +70,7 @@ class StudentResource extends Resource
                             ->options(Country::class)
                             ->enum(Country::class)
                             ->native(false),
-                        Components\TextInput::make('address')
-                            ->autofocus()
-                            ->placeholder('Evergreen Terrace 742'),
                     ]),
-                Components\Section::make('Additional Information')
-                    ->columns(2)
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Components\TextInput::make('cbu')
-                            ->label('CBU')
-                            ->autofocus()
-                            ->placeholder('1234567890123456789012')
-                            ->required(),
-                        Components\Select::make('status')
-                            ->label('Status')
-                            ->options(['active' => 'active', 'inactive' => 'inactive'])
-                            ->placeholder('Select Status')
-                    ])
             ]);
     }
 
@@ -162,17 +136,14 @@ class StudentResource extends Resource
     {
         return [
             ColumnGroup::make('Personal Information', [
-                TextColumn::make('national_id')
-                    ->label('National ID')
-                    ->searchable(isIndividual: true)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('first_name')
+                TextColumn::make('names')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('last_name')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('birth_date')
+                    ->label('Date of birth')
                     ->date()
                     ->toggleable(isToggledHiddenByDefault: true),
             ]),
