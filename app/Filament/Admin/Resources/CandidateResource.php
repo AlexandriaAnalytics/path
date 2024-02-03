@@ -63,7 +63,6 @@ class CandidateResource extends Resource
                         'cancelled' => 'info',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                        'paymentwithdraw' => 'warning',
                     ]),
             ]);
     }
@@ -185,7 +184,6 @@ class CandidateResource extends Resource
                         UserStatus::Cancelled => 'gray',
                         UserStatus::Unpaid => 'danger',
                         UserStatus::Paid => 'success',
-                        UserStatus::PaymentWithDraw => 'warning',
                     }),
                 /*SelectColumn::make('modules')
                     ->label('Modules')
