@@ -16,14 +16,10 @@ class Candidate extends Pivot
     protected $table = 'candidates';
 
     protected $fillable = [
-        'exam_id',
+        'level_id',
         'student_id',
         'candidate_number',
         'status',
-    ];
-
-    protected $casts = [
-        'status' => UserStatus::class,
     ];
 
     public function student(): BelongsTo
@@ -31,9 +27,9 @@ class Candidate extends Pivot
         return $this->belongsTo(Student::class);
     }
 
-    public function exam(): BelongsTo
+    public function level(): BelongsTo
     {
-        return $this->belongsTo(Exam::class);
+        return $this->belongsTo(Level::class);
     }
 
     public function modules(): BelongsToMany
@@ -42,9 +38,9 @@ class Candidate extends Pivot
             ->withTimestamps();
     }
 
-    public function examsessions(): BelongsToMany
+    public function exam(): BelongsToMany
     {
-        return $this->belongsToMany(ExamSession::class, 'candidate_exam', 'examsession_id', 'candidate_id')
+        return $this->belongsToMany(Exam::class, 'candidate_exam', 'exam_id', 'candidate_id')
             ->withTimestamps();
     }
 }

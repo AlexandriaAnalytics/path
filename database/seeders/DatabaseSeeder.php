@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
 
             )
@@ -67,7 +67,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
             )
             ->create();

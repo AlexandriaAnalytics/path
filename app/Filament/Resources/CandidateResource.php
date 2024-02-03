@@ -71,10 +71,10 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
-                    ->color(fn (UserStatus $state): string => match ($state) {
-                        UserStatus::Cancelled => 'gray',
-                        UserStatus::Unpaid => 'danger',
-                        UserStatus::Paid => 'success',
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
                     }),
                 TextColumn::make('modules.name')
                     ->badge()

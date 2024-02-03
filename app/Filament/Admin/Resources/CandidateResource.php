@@ -12,6 +12,8 @@ use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\ExamModule;
 use App\Models\Institute;
+use App\Models\Level;
+use App\Models\Module;
 use App\Models\Status;
 use App\Models\Student;
 use Filament\Forms\Components\Builder;
@@ -59,11 +61,10 @@ class CandidateResource extends Resource
                     ->options(Status::all()->pluck('name', 'id'))
                     ->required()
                     ->inline()
-                    ->enum(Status::all()->pluck('name', 'id'))
                     ->colors([
-                        'cancelled' => 'info',
-                        'unpaid' => 'danger',
-                        'paid' => 'success',
+                        '1' => 'info',
+                        '2' => 'danger',
+                        '3' => 'success',
                     ]),
             ]);
     }
@@ -81,10 +82,10 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
-                    ->color(fn (UserStatus $state): string => match ($state) {
-                        UserStatus::Cancelled => 'gray',
-                        UserStatus::Unpaid => 'danger',
-                        UserStatus::Paid => 'success',
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
                     }),
                 TextColumn::make('modules.name')
                     ->badge()
@@ -136,7 +137,7 @@ class CandidateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 //Exam
-                TextColumn::make('exam.session_name')
+                TextColumn::make('exam')
                     ->label('Session Name'),
             ])
             ->filters([
@@ -236,26 +237,22 @@ class CandidateResource extends Resource
         return [
             Fieldset::make('Exam')
                 ->schema([
-                    Select::make('exam_id')
+                    Select::make('level_id')
                         ->label('Exam')
                         ->placeholder('Select an exam')
-                        ->options(function () {
-                            $exams = Exam::with('candidates')->get()->filter(function ($exam) {
-                                return $exam->candidates->count() < $exam->maximum_number_of_students;
-                            })->pluck('session_name', 'id');
-                            return $exams;
-                        })
+                        ->options(Level::all()->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()
                         ->required()
-                        ->preload()
-                        ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
+                        ->preload(),
+                    //->afterStateUpdated(fn (callable $set) => $set('modules', null)),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
-                        ->options(function (callable $get) {
+                        ->options(Module::all()->pluck('name', 'id'))
+                        /* ->options(function (callable $get) {
                             $examId = $get('exam_id');
 
                             if (!$examId) {
@@ -265,7 +262,7 @@ class CandidateResource extends Resource
                                 ->whereExamId($examId)
                                 ->join('modules', 'modules.id', '=', 'exam_module.module_id')
                                 ->pluck('modules.name', 'modules.id');
-                        })
+                        }) */
                         ->preload(),
                 ]),
         ];
