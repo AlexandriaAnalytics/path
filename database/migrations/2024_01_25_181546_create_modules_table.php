@@ -49,6 +49,20 @@ class CreateModulesTable extends Migration
 
             $table->timestamps();
         });
+
+        Schema::create('country_module', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('country_id')
+                ->constrained('countries')
+                ->cascadeOnDelete();
+
+            $table->foreignId('module_id')
+                ->constrained('modules')
+                ->cascadeOnDelete();
+
+            $table->timestamps();
+        });
     }
 
     /**
