@@ -40,7 +40,8 @@ class Candidate extends Pivot
 
     public function exam(): BelongsToMany
     {
-        return $this->belongsToMany(Exam::class, 'candidate_exam', 'exam_id', 'candidate_id')
+        return $this->belongsToMany(Exam::class, 'candidate_exam', 'candidate_id', 'exam_id')
+            ->withPivot('module_id')
             ->withTimestamps();
     }
 }
