@@ -68,6 +68,17 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
+
+                //Student
+                TextColumn::make('student.names')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.last_name')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
@@ -107,16 +118,6 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }) */,
-
-                //Student
-                TextColumn::make('student.names')
-                    ->label('Names')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('student.last_name')
-                    ->label('Last Name')
-                    ->sortable()
-                    ->searchable(),
 
                 //Exam
                 /* TextColumn::make('exam')
