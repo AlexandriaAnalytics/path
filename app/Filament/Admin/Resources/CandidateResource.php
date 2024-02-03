@@ -86,7 +86,7 @@ class CandidateResource extends Resource
                         UserStatus::Unpaid => 'danger',
                         UserStatus::Paid => 'success',
                     }),
-                TextColumn::make('modules')
+                TextColumn::make('modules.name')
                     ->badge()
                 /* IconColumn::make('modules')
                     ->icon(function (Candidate $candidate) {
