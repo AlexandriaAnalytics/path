@@ -51,11 +51,7 @@ class CandidateResource extends Resource
                             ->required()
                     ]),
                 ...AdminCandidateResource::getExamFields(),
-                Select::make('status')
-                    ->options(\App\Enums\UserStatus::class)
-                    ->native(false)
-                    ->required()
-                    ->enum(\App\Enums\UserStatus::class),
+
             ]);
     }
 
