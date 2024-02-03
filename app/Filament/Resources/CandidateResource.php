@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
@@ -20,6 +21,8 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -59,9 +62,63 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                ...AdminCandidateResource::getCandidateColumns(),
-                ...AdminCandidateResource::getStudentColumns(),
-                ...AdminCandidateResource::getExamColumns(),
+                //Candidate
+                TextColumn::make('id')
+                    ->label('Candidate No.')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric(),
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (UserStatus $state): string => match ($state) {
+                        UserStatus::Cancelled => 'gray',
+                        UserStatus::Unpaid => 'danger',
+                        UserStatus::Paid => 'success',
+                    }),
+                IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }),
+
+                //Student
+                TextColumn::make('student.names')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.last_name')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+
+                //Exam
+                TextColumn::make('exam.session_name')
+                    ->label('Session Name'),
             ])
             ->filters([
                 //

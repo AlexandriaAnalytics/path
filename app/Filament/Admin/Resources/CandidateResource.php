@@ -72,10 +72,70 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                ...static::getCandidateColumns(),
-                ...static::getStudentColumns(),
-                ...static::getInstituteColumns(),
-                ...static::getExamColumns(),
+                //Candidate
+                TextColumn::make('id')
+                    ->label('Candidate No.')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric(),
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (UserStatus $state): string => match ($state) {
+                        UserStatus::Cancelled => 'gray',
+                        UserStatus::Unpaid => 'danger',
+                        UserStatus::Paid => 'success',
+                    }),
+                IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }),
+
+                //Student
+                TextColumn::make('student.names')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.last_name')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+
+                //Institute
+                TextColumn::make('student.institute.name')
+                    ->label('Institute Name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                //Exam
+                TextColumn::make('exam.session_name')
+                    ->label('Session Name'),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
@@ -166,112 +226,6 @@ class CandidateResource extends Resource
                                 ->all();
                         })
                 ]),
-        ];
-    }
-
-    public static function getCandidateColumns(): array
-    {
-        return [
-            ColumnGroup::make('Candidate', [
-                TextColumn::make('id')
-                    ->label('Candidate No.')
-                    ->sortable()
-                    ->searchable()
-                    ->numeric(),
-                TextColumn::make('status')
-                    ->label('Payment Status')
-                    ->badge()
-                    ->color(fn (UserStatus $state): string => match ($state) {
-                        UserStatus::Cancelled => 'gray',
-                        UserStatus::Unpaid => 'danger',
-                        UserStatus::Paid => 'success',
-                    }),
-                /*SelectColumn::make('modules')
-                    ->label('Modules')
-                    ->options(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $arrayModules = [];
-                        foreach ($modules as $module) {
-                            $arrayModules[] = $module->name;
-                        }
-                        return $arrayModules;
-                    })*/
-                /* TextColumn::make('modules.name')
-                    ->listWithLineBreaks()
-                    ->bulleted() */
-                IconColumn::make('modules')
-                    ->icon(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
-                    })
-                    ->tooltip(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
-                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
-                    })
-                    ->color(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'success' : 'warning';
-                    })
-            ]),
-        ];
-    }
-
-    public static function getStudentColumns(): array
-    {
-        return [
-            ColumnGroup::make('Student', [
-                TextColumn::make('student.national_id')
-                    ->label('National ID')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('student.first_name')
-                    ->label('First Name')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('student.last_name')
-                    ->label('Last Name')
-                    ->sortable()
-                    ->searchable(),
-            ]),
-        ];
-    }
-
-    public static function getInstituteColumns(): array
-    {
-        return [
-            ColumnGroup::make('Institute', [
-                TextColumn::make('student.institute.name')
-                    ->label('Institute Name')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
-        ];
-    }
-
-    public static function getExamColumns(): array
-    {
-        return [
-            ColumnGroup::make('Exam', [
-                TextColumn::make('exam.session_name')
-                    ->label('Session Name'),
-            ]),
         ];
     }
 
