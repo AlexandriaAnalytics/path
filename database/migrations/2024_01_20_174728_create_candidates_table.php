@@ -20,7 +20,7 @@ return new class extends Migration
             //     ->startingValue(1000000)
             //     ->unique();
 
-            $table->foreignId('exam_id')
+            $table->foreignId('level_id')
                 ->constrained()
                 ->cascadeOnDelete();
 

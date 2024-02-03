@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CandidateResource\Pages;
+namespace App\Filament\Resources\CandidateResource\Pages;
 
-use App\Filament\Admin\Resources\CandidateResource;
-use App\Filament\Resources\CandidateResource as ResourcesCandidateResource;
+use App\Filament\Resources\CandidateResource;
 use App\Models\Candidate;
 use App\Models\CandidateModule;
 use App\Models\Exam;
@@ -18,9 +17,6 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Tables\Columns\Column;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
 class ViewCandidate extends ViewRecord
@@ -44,11 +40,7 @@ class ViewCandidate extends ViewRecord
                     ->schema([
                         TextEntry::make('names'),
                         TextEntry::make('last_name')
-                            ->label('Last Name'),
-                        TextEntry::make('institute.name')
-                            ->label('Institute'),
-                        TextEntry::make('national_id')
-                            ->label('National ID'),
+                            ->label('Last Name')
                     ]),
                 RepeatableEntry::make('exam')
                     ->schema([

@@ -30,8 +30,8 @@ class Module extends Model
             ->withTimestamps();
     }
 
-    public function examSessions(): HasMany
+    public function CandidateExams(): HasMany
     {
-        return $this->hasMany(ExamSession::class);
+        return $this->hasMany(CandidateExam::class);
     }
 }

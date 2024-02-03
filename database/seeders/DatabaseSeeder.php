@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Module;
+use App\Models\Status;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -25,9 +26,12 @@ class DatabaseSeeder extends Seeder
             PeriodSeeder::class,
             LevelSeeder::class,
             ModuleSeeder::class,
+            StatusSeeder::class
         ]);
 
         $modules = Module::all();
+
+        $statuses = Status::all();
 
         $exams = Exam::factory(10)
             ->create()
@@ -44,7 +48,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
 
             )
@@ -63,7 +67,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
             )
             ->create();
