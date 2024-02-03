@@ -158,10 +158,10 @@ class CandidateResource extends Resource
 
                             return Student::query()
                                 ->whereInstituteId($instituteId)
-                                ->select(['first_name', 'last_name', 'id']) // Seleccionar first_name y last_name
+                                ->select(['names', 'last_name', 'id']) // Seleccionar first_name y last_name
                                 ->get()
                                 ->mapWithKeys(function ($student) {
-                                    return [$student->id => "{$student->first_name} {$student->last_name}"];
+                                    return [$student->id => "{$student->names} {$student->last_name}"];
                                 })
                                 ->all();
                         })

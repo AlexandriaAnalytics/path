@@ -6,6 +6,7 @@ use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
@@ -42,9 +43,9 @@ class CandidateResource extends Resource
                         Select::make('student_id')
                             ->relationship(
                                 name: 'student',
-                                titleAttribute: 'first_name',
                                 modifyQueryUsing: fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()),
                             )
+                            ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->names} {$record->last_name}")
                             ->searchable()
                             ->preload()
                             ->required()
