@@ -119,8 +119,38 @@ class CandidateResource extends Resource
                     ->searchable(),
 
                 //Exam
-                TextColumn::make('exam.session_name')
-                    ->label('Session Name'),
+                /* TextColumn::make('exam')
+                    ->label('Session Name') */
+                IconColumn::make('modules')
+                    ->label('Exam session')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }),
             ])
             ->filters([
                 //
@@ -162,6 +192,7 @@ class CandidateResource extends Resource
         return [
             'index' => Pages\ListCandidates::route('/'),
             'create' => Pages\CreateCandidate::route('/create'),
+            'view' => Pages\ViewCandidate::route('/{record}'),
         ];
     }
 

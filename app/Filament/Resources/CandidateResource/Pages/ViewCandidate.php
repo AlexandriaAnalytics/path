@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CandidateResource\Pages;
+namespace App\Filament\Resources\CandidateResource\Pages;
 
-use App\Filament\Admin\Resources\CandidateResource;
+use App\Filament\Resources\CandidateResource;
 use App\Models\Candidate;
 use App\Models\CandidateModule;
 use App\Models\Exam;
@@ -36,16 +36,11 @@ class ViewCandidate extends ViewRecord
                 Fieldset::make('Student')
                     ->relationship('student')
                     ->schema([
-                        TextEntry::make('first_name')
-                            ->label('First Name'),
+                        TextEntry::make('names'),
                         TextEntry::make('last_name')
-                            ->label('Last Name'),
-                        TextEntry::make('institute.name')
-                            ->label('Institute'),
-                        TextEntry::make('national_id')
-                            ->label('National ID'),
+                            ->label('Last Name')
                     ]),
-                Fieldset::make('Exam')
+                /* Fieldset::make('Exam')
                     ->relationship('exam')
                     ->schema([
                         TextEntry::make('session_name')
@@ -55,7 +50,7 @@ class ViewCandidate extends ViewRecord
                             ->tooltip(fn (Model $record): string => $record->exam->scheduled_date)
                             ->date()
                             ->since(),
-                    ]),
+                    ]), */
             ]);
     }
 
