@@ -86,7 +86,9 @@ class CandidateResource extends Resource
                         UserStatus::Unpaid => 'danger',
                         UserStatus::Paid => 'success',
                     }),
-                IconColumn::make('modules')
+                TextColumn::make('modules')
+                    ->badge()
+                /* IconColumn::make('modules')
                     ->icon(function (Candidate $candidate) {
                         $modules = $candidate->modules;
                         $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
@@ -114,7 +116,7 @@ class CandidateResource extends Resource
                             })->exists();
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
-                    }),
+                    }) */,
 
                 //Student
                 TextColumn::make('student.names')
