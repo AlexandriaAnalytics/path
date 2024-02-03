@@ -140,6 +140,7 @@ class CandidateResource extends Resource
                 /* TextColumn::make('exam')
                     ->label('Session Name') */
                 IconColumn::make('modules')
+                    ->label('Exam session')
                     ->icon(function (Candidate $candidate) {
                         $modules = $candidate->modules;
                         $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
