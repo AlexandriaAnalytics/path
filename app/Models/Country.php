@@ -6,6 +6,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Country extends Model
 {
@@ -59,9 +60,14 @@ class Country extends Model
             ->withPivot('price');
     }
 
-    public function countryModules()
+    public function countryModules(): HasMany
     {
         return $this->hasMany(CountryModule::class);
+    }
+
+    public function countryExams(): HasMany
+    {
+        return $this->hasMany(CountryExam::class);
     }
 
     public function getFormattedPriceAttribute(): string

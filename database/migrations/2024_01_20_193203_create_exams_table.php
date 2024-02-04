@@ -23,6 +23,15 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('country_exam', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('exam_id')->constrained();
+            $table->foreignId('country_id')->constrained();
+            $table->double('pack_price', 15, 2);
+
+            $table->timestamps();
+        });
     }
 
     /**
@@ -31,5 +40,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('exams');
+        Schema::dropIfExists('country_exam');
     }
 };

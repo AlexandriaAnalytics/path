@@ -56,4 +56,15 @@ class Exam extends Model
         return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
             ->withTimestamps();
     }
+
+    public function CountryExams(): HasMany
+    {
+        return $this->hasMany(Country::class, 'country_exam');
+    }
+
+    public function getIsAbleToPricePackAttribute(): bool
+    {
+        // TODO: Complete this method
+        return false;
+    }
 }
