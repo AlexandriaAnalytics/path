@@ -47,8 +47,6 @@ class ViewCandidate extends ViewRecord
                             ->label('Last Name'),
                         TextEntry::make('institute.name')
                             ->label('Institute'),
-                        TextEntry::make('national_id')
-                            ->label('National ID'),
                     ]),
                 RepeatableEntry::make('exam')
                     ->schema([
