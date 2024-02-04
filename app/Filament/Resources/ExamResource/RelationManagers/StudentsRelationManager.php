@@ -30,7 +30,7 @@ class StudentsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return StudentResource::table($table)
-            /*->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->last_name)
+            /*->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->surnames)
             ->modifyQueryUsing(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
             ->headerActions([
                 Tables\Actions\AttachAction::make()
@@ -42,7 +42,7 @@ class StudentsRelationManager extends RelationManager
                             ->multiple()
                             ->options(
                                 Student::where('status', 1)->get()->mapWithKeys(function ($student) {
-                                    return [$student->id => $student->first_name . ' ' . $student->last_name];
+                                    return [$student->id => $student->first_name . ' ' . $student->surnames];
                                 })
                             )
                     )

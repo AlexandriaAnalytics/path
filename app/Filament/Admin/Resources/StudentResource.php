@@ -42,7 +42,7 @@ class StudentResource extends Resource
                         Components\TextInput::make('names')
                             ->required()
                             ->placeholder('John'),
-                        Components\TextInput::make('last_name')
+                        Components\TextInput::make('surnames')
                             ->label('Last Name')
                             ->required()
                             ->placeholder('Doe'),
@@ -141,7 +141,7 @@ class StudentResource extends Resource
                 TextColumn::make('names')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('last_name')
+                TextColumn::make('surnames')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('birth_date')

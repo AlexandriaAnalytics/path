@@ -19,7 +19,7 @@ class StudentFactory extends Factory
         return [
             'institute_id' => \App\Models\Institute::factory(),
             'names' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
+            'surnames' => fake()->lastName(),
             'country' => fake()->randomElement(\App\Enums\Country::values()),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),

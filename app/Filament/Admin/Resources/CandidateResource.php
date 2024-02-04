@@ -93,7 +93,7 @@ class CandidateResource extends Resource
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.last_name')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
@@ -280,7 +280,7 @@ class CandidateResource extends Resource
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.last_name')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
@@ -354,10 +354,10 @@ class CandidateResource extends Resource
 
                             return Student::query()
                                 ->whereInstituteId($instituteId)
-                                ->select(['names', 'last_name', 'id']) // Seleccionar first_name y last_name
+                                ->select(['names', 'surnames', 'id']) // Seleccionar first_name y surnames
                                 ->get()
                                 ->mapWithKeys(function ($student) {
-                                    return [$student->id => "{$student->names} {$student->last_name}"];
+                                    return [$student->id => "{$student->names} {$student->surnames}"];
                                 })
                                 ->all();
                         })

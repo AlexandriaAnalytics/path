@@ -19,7 +19,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('names');
-            $table->string('last_name');
+            $table->string('surnames');
             $table->string('country');
             $table->string('cbu')->nullable();
             $table->date('birth_date');

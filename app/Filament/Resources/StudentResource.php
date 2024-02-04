@@ -31,7 +31,7 @@ class StudentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('names'),
-                Forms\Components\TextInput::make('last_name'),
+                Forms\Components\TextInput::make('surnames'),
                 Forms\Components\Select::make('country')
                     ->label('Country of residence')
                     ->options(Country::class)
