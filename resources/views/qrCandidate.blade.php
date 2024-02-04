@@ -38,7 +38,7 @@
                 <p>{{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</p>
                 <p>{{ $candidate->student->institute->name}}</p>
                 <p>A1- Entry</p>
-                <p>{{ $candidate->exam->type}}</p>
+                {{-- <p>{{ $candidate->exam->type}}</p> --}}
             </td>
         </tr>
     </table>
