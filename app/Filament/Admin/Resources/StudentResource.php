@@ -71,6 +71,8 @@ class StudentResource extends Resource
                             ->enum(Country::class)
                             ->native(false),
                     ]),
+                Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
             ]);
     }
 

@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('cbu')->nullable();
             $table->date('birth_date');
             $table->string('status');
+            $table->string('personal_educational_needs')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

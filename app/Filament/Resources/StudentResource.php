@@ -42,6 +42,8 @@ class StudentResource extends Resource
                     ->label('Date of birth')
                     ->native(false)
                     ->placeholder('dd/mm/yyyy'),
+                Forms\Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
 
             ]);
     }

@@ -23,6 +23,7 @@ class Student extends Model
         'cbu',
         'birth_date',
         'status',
+        'personal_educational_needs'
     ];
 
     protected $casts = [
