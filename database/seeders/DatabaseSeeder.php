@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Module;
@@ -29,7 +30,17 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class
         ]);
 
+
+
+        $countries = Country::all();
         $modules = Module::all();
+
+        foreach($modules as $module){
+            foreach($countries as $country){
+                $module->countries()->attach($country, ['price' => rand(100, 1000)]);
+            }
+            $module->save();
+        }
 
         $statuses = Status::all();
 
