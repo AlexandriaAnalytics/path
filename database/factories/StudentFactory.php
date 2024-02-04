@@ -18,7 +18,6 @@ class StudentFactory extends Factory
     {
         return [
             'institute_id' => \App\Models\Institute::factory(),
-            'country_id' => fake()->randomElement(\App\Models\Country::pluck('id')->toArray()),
             'names' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'country' => fake()->randomElement(\App\Enums\Country::values()),
