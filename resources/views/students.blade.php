@@ -18,7 +18,7 @@
                 </td>
 
                 <td class="py-2 px-4 border-b">
-                    {{ $student->first_name . ' ' . $student->last_name }}
+                    {{ $student->first_name . ' ' . $student->surnames }}
                 </td>
 
             </tr>

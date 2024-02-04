@@ -21,7 +21,7 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
             'candidates.id as candidate_id',
             'candidates.status as candidate_status',
             'students.first_name',
-            'students.last_name',
+            'students.surnames',
             'exams.session_name as exam_session',
         )
             ->join('students', 'students.id', '=', 'candidates.student_id')
@@ -34,7 +34,7 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Candidate Number', 'Status','First Name', 'Last Name', 'Exam Session'];
+        return ['Candidate Number', 'Status', 'First Name', 'Last Name', 'Exam Session'];
     }
 
     /**

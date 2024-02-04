@@ -42,7 +42,7 @@ class StudentResource extends Resource
                         Components\TextInput::make('names')
                             ->required()
                             ->placeholder('John'),
-                        Components\TextInput::make('last_name')
+                        Components\TextInput::make('surnames')
                             ->label('Last Name')
                             ->required()
                             ->placeholder('Doe'),
@@ -71,6 +71,8 @@ class StudentResource extends Resource
                             ->enum(Country::class)
                             ->native(false),
                     ]),
+                Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
             ]);
     }
 
@@ -79,11 +81,9 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 ...static::getStudentColumns(),
-                ColumnGroup::make('Institute', [
-                    TextColumn::make('institute.name')
-                        ->searchable()
-                        ->sortable(),
-                ]),
+                TextColumn::make('institute.name')
+                    ->searchable()
+                    ->sortable(),
                 ...static::getMetadataColumns(),
             ])
             ->filters([
@@ -135,34 +135,30 @@ class StudentResource extends Resource
     public static function getStudentColumns(): array
     {
         return [
-            ColumnGroup::make('Personal Information', [
-                TextColumn::make('names')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('last_name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birth_date')
-                    ->label('Date of birth')
-                    ->date()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('names')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('surnames')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('birth_date')
+                ->label('Date of birth')
+                ->date()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 
     public static function getMetadataColumns(): array
     {
         return [
-            ColumnGroup::make('Metadata', [
-                TextColumn::make('created_at')->label('Created on')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')->label('Updated on')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('created_at')->label('Created on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('updated_at')->label('Updated on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 }

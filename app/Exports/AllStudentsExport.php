@@ -19,7 +19,7 @@ class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
         return Student::select(
             'students.id as student_id',
             'students.first_name',
-            'students.last_name',
+            'students.surnames',
             'institute_types.name as institute_name'
         )
             ->join('institute_types', 'institute_types.id', '=', 'students.institute_id')
@@ -31,7 +31,7 @@ class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Student Number','First Name', 'Last Name', 'Institute'];
+        return ['Student Number', 'First Name', 'Last Name', 'Institute'];
     }
 
     /**
@@ -106,5 +106,4 @@ class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
             ],
         ]);
     }
-
 }

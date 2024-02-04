@@ -39,7 +39,7 @@ class ViewCandidate extends ViewRecord
                     ->relationship('student')
                     ->schema([
                         TextEntry::make('names'),
-                        TextEntry::make('last_name')
+                        TextEntry::make('surnames')
                             ->label('Last Name')
                     ]),
                 RepeatableEntry::make('exam')

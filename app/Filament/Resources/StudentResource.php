@@ -31,7 +31,7 @@ class StudentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('names'),
-                Forms\Components\TextInput::make('last_name'),
+                Forms\Components\TextInput::make('surnames'),
                 Forms\Components\Select::make('country')
                     ->label('Country of residence')
                     ->options(Country::class)
@@ -42,6 +42,8 @@ class StudentResource extends Resource
                     ->label('Date of birth')
                     ->native(false)
                     ->placeholder('dd/mm/yyyy'),
+                Forms\Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
 
             ]);
     }

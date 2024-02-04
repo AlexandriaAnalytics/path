@@ -42,7 +42,7 @@ class StudentExport implements FromQuery, WithHeadings, WithMapping, WithStyles
     {
         return [
             $student->first_name,
-            $student->last_name,
+            $student->surnames,
             $student->institute->name
         ];
     }

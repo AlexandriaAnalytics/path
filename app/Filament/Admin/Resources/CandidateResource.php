@@ -26,6 +26,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
@@ -80,16 +81,6 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
 
-                //Student
-                TextColumn::make('student.names')
-                    ->label('Names')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('student.last_name')
-                    ->label('Last Name')
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
@@ -98,6 +89,16 @@ class CandidateResource extends Resource
                         'unpaid' => 'danger',
                         'paid' => 'success',
                     }),
+                //Student
+                TextColumn::make('student.names')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.surnames')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('modules.name')
                     ->badge()
                 /* IconColumn::make('modules')
@@ -129,6 +130,10 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }) */,
+                TextColumn::make('level.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 //Institute
                 TextColumn::make('student.institute.name')
@@ -186,17 +191,19 @@ class CandidateResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                Action::make('pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('pdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-document')
+                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -276,7 +283,7 @@ class CandidateResource extends Resource
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.last_name')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
@@ -350,10 +357,10 @@ class CandidateResource extends Resource
 
                             return Student::query()
                                 ->whereInstituteId($instituteId)
-                                ->select(['names', 'last_name', 'id']) // Seleccionar first_name y last_name
+                                ->select(['names', 'surnames', 'id']) // Seleccionar first_name y surnames
                                 ->get()
                                 ->mapWithKeys(function ($student) {
-                                    return [$student->id => "{$student->names} {$student->last_name}"];
+                                    return [$student->id => "{$student->names} {$student->surnames}"];
                                 })
                                 ->all();
                         })

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>QR Code for {{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</title>
+    <title>QR Code for {{ $candidate->student->first_name }} {{ $candidate->student->surnames }}</title>
     <style>
         body {
             height: 100vh;
@@ -35,7 +35,7 @@
             </td>
             <td class="data-cell">
                 <p>{{ $candidate->id}}</p>
-                <p>{{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</p>
+                <p>{{ $candidate->student->first_name }} {{ $candidate->student->surnames }}</p>
                 <p>{{ $candidate->student->institute->name}}</p>
                 <p>A1- Entry</p>
                 {{-- <p>{{ $candidate->exam->type}}</p> --}}

@@ -23,7 +23,7 @@ class StudentImporter extends Importer
                 ->label('First Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
-            ImportColumn::make('last_name')
+            ImportColumn::make('surnames')
                 ->label('Last Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
