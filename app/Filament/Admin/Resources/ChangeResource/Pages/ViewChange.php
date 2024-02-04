@@ -19,7 +19,8 @@ class ViewChange extends ViewRecord
                 ->action(function (array $data, Change $change) {
                     $change->status = 1;
                     $change->save();
-                }),
+                })
+                ->requiresConfirmation(),
         ];
     }
 }
