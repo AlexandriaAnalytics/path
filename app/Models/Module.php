@@ -15,8 +15,14 @@ class Module extends Model
 
     protected $fillable = [
         'name',
-        'price'
     ];
+
+    public function countries(): BelongsToMany
+    {
+        return $this->belongsToMany(Country::class, 'country_module')
+            ->withPivot('price')
+            ->withTimestamps();
+    }
 
     public function exams(): BelongsToMany
     {
@@ -27,11 +33,17 @@ class Module extends Model
     public function candidates(): BelongsToMany
     {
         return $this->belongsToMany(Candidate::class, 'candidate_module', 'candidate_id', 'module_id')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->withPivot('status');
     }
 
-    public function examSessions(): HasMany
+    public function CandidateExams(): HasMany
     {
-        return $this->hasMany(ExamSession::class);
+        return $this->hasMany(CandidateExam::class);
+    }
+
+    public function countryModules()
+    {
+        return $this->hasMany(CountryModule::class);
     }
 }

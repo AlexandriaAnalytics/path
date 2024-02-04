@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Level>
  */
-class ModuleFactory extends Factory
+class StatusFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,8 @@ class ModuleFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $name = fake()->name(),
+            'name' => fake()->name(),
+            'description' => fake()->optional()->realText(),
         ];
     }
 }

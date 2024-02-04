@@ -4,9 +4,11 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Module;
+use App\Models\Status;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -25,9 +27,22 @@ class DatabaseSeeder extends Seeder
             PeriodSeeder::class,
             LevelSeeder::class,
             ModuleSeeder::class,
+            StatusSeeder::class
         ]);
 
+
+
+        $countries = Country::all();
         $modules = Module::all();
+
+        foreach($modules as $module){
+            foreach($countries as $country){
+                $module->countries()->attach($country, ['price' => rand(100, 1000)]);
+            }
+            $module->save();
+        }
+
+        $statuses = Status::all();
 
         $exams = Exam::factory(10)
             ->create()
@@ -44,7 +59,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
 
             )
@@ -63,7 +78,7 @@ class DatabaseSeeder extends Seeder
                     })
                     ->has(
                         Student::factory(10)
-                            ->hasAttached($exams->random(3)),
+                        //->hasAttached($exams->random(3)),
                     )
             )
             ->create();

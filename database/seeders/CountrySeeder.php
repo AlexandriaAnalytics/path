@@ -19,30 +19,49 @@ class CountrySeeder extends Seeder
         $paymentMethodPaypal = PaymentMethod::where('slug', 'paypal')->first();
         $paymentMethodStripe = PaymentMethod::where('slug', 'stripe')->first();
 
-        foreach (CountryEnum::values() as $country) {
-            $countryBuffer = Country::create([
-                'name' => $country,
-                ]);
 
-            if($country == 'Argentina' ){
-                $countryBuffer->monetary_unit = 'ARS';
-                $countryBuffer->monetary_unit_symbol= '$';
-                $countryBuffer->paymentMethods()->sync([
-                    $paymentMethodMercadoPago->id,    
-                ]);
-            }else if($country == 'Uruguay') {
-                $countryBuffer->monetary_unit= 'UYU';
-                $countryBuffer->monetary_unit_symbol = '$';
-                $countryBuffer->paymentMethods()->sync([
-                    $paymentMethodMercadoPago->id,
-                    $paymentMethodPaypal->id,
-                    $paymentMethodStripe->id,    
-                ]);
-            }else {
-                $countryBuffer->paymentMethods()->sync([$paymentMethodPaypal->id]);
-            }
-            $countryBuffer->save();
-            
-        }
+        $countryAux = Country::create([
+            'name' => CountryEnum::ARGENTINA->value,
+            'monetary_unit' => 'ARS',
+            'monetary_unit_symbol' => '$',
+        ]);
+        $countryAux->paymentMethods()->sync([
+            $paymentMethodMercadoPago->id,
+        ]);
+        $countryAux->save();
+
+        $countryAux = Country::create([
+            'name' => CountryEnum::URUGUAY->value,
+            'monetary_unit' => 'UYU',
+            'monetary_unit_symbol' => '$',
+        ]);
+        $countryAux->paymentMethods()->sync([
+            $paymentMethodMercadoPago->id,
+            $paymentMethodPaypal->id,
+            $paymentMethodStripe->id,
+        ]);
+        $countryAux->save();
+
+        $countryAux = Country::create([
+            'name' => CountryEnum::PARAGUAY->value,
+            'monetary_unit' => 'PYG',
+            'monetary_unit_symbol' => '₲',
+        ]);
+        $countryAux->paymentMethods()->sync([
+            $paymentMethodMercadoPago->id,
+            $paymentMethodPaypal->id,
+            $paymentMethodStripe->id,
+        ]);
+        $countryAux->save();
+
+        $countryAux = Country::create([
+            'name' => CountryEnum::UNITED_KINGDOM->value,
+            'monetary_unit' => 'GBP',
+            'monetary_unit_symbol' => '$',
+        ]);
+        $countryAux->paymentMethods()->sync([
+            $paymentMethodPaypal->id,
+        ]);
+        $countryAux->save();
     }
 }

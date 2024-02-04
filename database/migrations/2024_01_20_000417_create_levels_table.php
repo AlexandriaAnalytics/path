@@ -28,20 +28,6 @@ class CreateLevelsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-
-        Schema::create('exam_level', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('exam_id')
-                ->constrained('exams')
-                ->cascadeOnDelete();
-
-            $table->foreignId('level_id')
-                ->constrained('levels')
-                ->cascadeOnDelete();
-
-            $table->timestamps();
-        });
     }
 
     /**
@@ -50,7 +36,6 @@ class CreateLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exam_level');
         Schema::dropIfExists('levels');
     }
 }

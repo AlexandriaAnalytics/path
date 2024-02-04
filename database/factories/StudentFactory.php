@@ -18,14 +18,10 @@ class StudentFactory extends Factory
     {
         return [
             'institute_id' => \App\Models\Institute::factory(),
-            'national_id' => fake()->numerify('##-########-#'),
             'country_id' => fake()->randomElement(\App\Models\Country::pluck('id')->toArray()),
-            'first_name' => fake()->firstName(),
+            'names' => fake()->firstName(),
             'last_name' => fake()->lastName(),
-            'slug' => fake()->slug(),
             'country' => fake()->randomElement(\App\Enums\Country::values()),
-            'address' => fake()->address(),
-            'phone' => fake()->phoneNumber(),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',
