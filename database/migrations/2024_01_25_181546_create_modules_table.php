@@ -14,10 +14,7 @@ class CreateModulesTable extends Migration
     {
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
-
             $table->string('name');
-            $table->decimal('price', 12, 2);
-
             $table->timestamps();
             $table->softDeletes();
         });
@@ -60,6 +57,8 @@ class CreateModulesTable extends Migration
             $table->foreignId('module_id')
                 ->constrained('modules')
                 ->cascadeOnDelete();
+
+            $table->double('price', 15, 2);
 
             $table->timestamps();
         });
