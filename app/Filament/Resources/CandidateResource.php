@@ -9,6 +9,8 @@ use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -163,16 +165,20 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                Action::make('pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                ViewAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('pdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-document')
+                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                    DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -200,6 +206,7 @@ class CandidateResource extends Resource
             'index' => Pages\ListCandidates::route('/'),
             'create' => Pages\CreateCandidate::route('/create'),
             'view' => Pages\ViewCandidate::route('/{record}'),
+            'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
     }
 
