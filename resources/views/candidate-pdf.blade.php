@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +13,16 @@
     </style>
 
     <style>
-        html{
+        @page {
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: 'Montserrat', sans-serif;
             font-size: 12pt;
             margin: 0;
-           
+
         }
 
         h1 {
@@ -58,7 +60,7 @@
             width: 33.33%;
             box-sizing: border-box;
         }
-        
+
         .p-1 {
             padding: 1em;
         }
@@ -95,8 +97,10 @@
         }
 
         .text-area {
-            height: 200px;
+            height: 125px;
         }
+
+        
     </style>
     <title>Student Detail</title>
 </head>
@@ -105,7 +109,8 @@
     <main>
         <header class="bg-blue container clearfix">
             <figure class="item-33">
-                <img src="/images/logo/02-regular.png" alt="logo" class="logo-img" height="75" width="75">
+                <img src="{{ asset('/images/logo/02-regular.png') }}" alt="logo" class="logo-img" height="75"
+                    width="75">
             </figure>
             <div class="item-50 p-1">
                 <h1>International exam confirmation</h1>
@@ -113,70 +118,70 @@
             </div>
             <div class="rounded-corner"></div>
         </header>
-        
+
         <section>
             <blockquote>
                 <p>
-                    <strong>Candidate Number:</strong> {{ $candidate->candidate_number }} <br>
+                    <strong>Candidate Number:</strong> {{ $candidate->id }} 
                 </p>
             </blockquote>
             <blockquote>
                 <p>
-                    <strong>Full Name:</strong> {{ $candidate->full_name }} <br>
-                </p>
-            </blockquote>
-
-            <blockquote>
-                <p>
-                    <strong>Date of birth:</strong> {{ $candidate->dob }} <br>
+                    <strong>Full Name:</strong> {{$candidate->student->full_name}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Country of residence</strong> {{ $candidate->country_of_residence }} <br>
+                    <strong>Date of birth:</strong> {{ $candidate->student->birth_date }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Level</strong> {{ $candidate->level }} <br>
+                    <strong>Country of residence:</strong> {{ $candidate->student->country}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Type of certificate</strong> {{ $candidate->subject }} <br>
+                    <strong>Level</strong> {{ $candidate->level }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Modules</strong> {{ $candidate->exam_date }} <br>
+                    <strong>Type of certificate</strong> {{ $candidate->toc}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Scheduled for</strong> {{ $candidate->exam_date }} <br>
+                    <strong>Modules</strong> {{ $candidate->exam_date }} 
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Exam session name</strong> {{ $candidate->exam_date }} <br>
+                    <strong>Scheduled for</strong> {{ $candidate->exam->scheduled_date }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Exam type</strong> {{ $candidate->exam_date }} <br>
+                    <strong>Exam session name</strong> {{ $candidate->exam->session_name}}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Exam type</strong> {{ $candidate->exam->type }}
                 </p>
             </blockquote>
 
             <blockquote class="text-area">
                 <p>
-                    <strong>Comments</strong> {{ $candidate->exam_date }} <br>
+                    <strong>Comments</strong> {{ $candidate->exam->comments }}
                 </p>
             </blockquote>
 
@@ -184,4 +189,5 @@
 
     </main>
 </body>
+
 </html>
