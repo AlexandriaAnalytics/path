@@ -69,6 +69,15 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
 
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
+                    }),
+
                 //Student
                 TextColumn::make('student.names')
                     ->label('Names')
@@ -79,14 +88,11 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                TextColumn::make('status')
-                    ->label('Payment Status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'cancelled' => 'gray',
-                        'unpaid' => 'danger',
-                        'paid' => 'success',
-                    }),
+                TextColumn::make('level.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('modules.name')
                     ->badge()
                 /* IconColumn::make('modules')
