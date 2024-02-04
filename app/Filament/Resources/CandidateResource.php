@@ -7,6 +7,7 @@ use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\Change;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Tables\Actions\ActionGroup;
@@ -14,6 +15,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,6 +30,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Features\SupportConsoleCommands\Commands\Upgrade\ChangeTestAssertionMethods;
 
 class CandidateResource extends Resource
 {
@@ -177,6 +181,20 @@ class CandidateResource extends Resource
                     ViewAction::make(),
                     EditAction::make()
                         ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                    Action::make('request changes')
+                        ->visible(fn (Candidate $candidate) => $candidate->status === 'paid')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->form([
+                            Textarea::make('changes')
+                        ])
+                        ->action(function (array $data, Candidate $candidate) {
+                            $change = new Change();
+                            $change->description = $data['changes'];
+                            $change->status = 0;
+                            $change->candidate_id = $candidate->id;
+                            $change->user_id = Auth::user()->id;
+                            $change->save();
+                        }),
                     DeleteAction::make(),
                 ])
             ])
