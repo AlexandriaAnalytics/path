@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -29,6 +30,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->enum('status', UserStatus::values())->default(UserStatus::Unpaid);
+
+            $table->enum('type_of_certificate', TypeOfCertificate::values());
 
             $table->timestamps();
         });

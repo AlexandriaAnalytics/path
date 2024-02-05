@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
@@ -60,6 +61,9 @@ class CandidateResource extends Resource
                             ->required()
                     ]),
                 ...AdminCandidateResource::getExamFields(),
+                Select::make('type_of_certificate')
+                    ->options(TypeOfCertificate::class)
+                    ->required(),
 
             ]);
     }

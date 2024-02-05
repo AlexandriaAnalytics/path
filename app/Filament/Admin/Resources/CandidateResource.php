@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
@@ -67,6 +68,9 @@ class CandidateResource extends Resource
                         '2' => 'danger',
                         '3' => 'success',
                     ]),
+                Select::make('type_of_certificate')
+                    ->options(TypeOfCertificate::class)
+                    ->required()
             ]);
     }
 
@@ -175,6 +179,7 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
+
             ])
             ->filters([
                 SelectFilter::make('institute_id')
