@@ -20,6 +20,7 @@ class Candidate extends Pivot
         'student_id',
         'candidate_number',
         'status',
+        'type_of_certificate'
     ];
 
     public function student(): BelongsTo
