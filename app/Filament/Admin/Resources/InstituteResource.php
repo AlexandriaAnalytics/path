@@ -22,6 +22,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Collection;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 
 class InstituteResource extends Resource
 {
@@ -80,10 +83,7 @@ class InstituteResource extends Resource
                             ]),
                         Fieldset::make('Contact Information')
                             ->schema([
-                                TextInput::make('phone')
-                                    ->tel()
-                                    ->required()
-                                    ->maxLength(255),
+                                PhoneInput::make('phone'),
                                 TextInput::make('email')
                                     ->email()
                                     ->required()
@@ -149,7 +149,7 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone')
+                PhoneColumn::make('phone')->displayFormat(PhoneInputNumberType::NATIONAL)
                     ->url(fn ($record) => 'https://api.whatsapp.com/send?phone=' . preg_replace("/[^\d]/", "", $record->phone), shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
