@@ -6,6 +6,13 @@
             </h1>
         </header>
         <main >
+            <div class="">
+                @if (session('error'))
+                    <div class="text-red-600 text-center">
+                        <p>{{ session('error') }}</p>
+                    </div>
+                @endif
+            </div>
             <form wire:submit.prevent="handleLoginCandidate" class="mt-8 space-y-6">
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
