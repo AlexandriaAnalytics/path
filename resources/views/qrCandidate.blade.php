@@ -31,7 +31,7 @@
     <table>
         <tr>
             <td class="qr-code-cell">
-                <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(route('candidate.view', ['id' => $candidate->id]))) !!}" alt="QR Code">
+                <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(route('candidate.pdf', ['id' => $candidate->id]))) !!}" alt="QR Code">
             </td>
             <td class="data-cell">
                 <p>{{ $candidate->id}}</p>
