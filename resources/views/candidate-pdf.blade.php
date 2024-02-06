@@ -1,155 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
 
-    {{-- Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap');
+    </style>
 
     <style>
+        @page {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
+            font-size: 12pt;
             margin: 0;
-        }
 
-        .bg-blue-800 {
-            background-color: #1a365d;
-            color: #edf2f7;
-            padding: 1rem;
-        }
-
-        .container-nav {
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .logo, .text-logo-int {
-            display: inline-block;
-            vertical-align: top;
-            text-align: left;
-        }
-
-        .logo {
-            margin-right: 20px; 
-        }
-
-        .logo-img {
-            width: 4rem;
-            height: 4rem;
-        }
-
-        .texto-logo {
-            font-size: 0.75rem;
-            margin-top: 0;
-        }
-
-        .text-logo-int .texto {
-            padding-top: 1.5rem;
-            font-size: 0.85rem;
-        }
-
-        .data {
-            clear: both;
-            padding: 0 1rem;
-        }
-
-        .form {
-            margin-top: 1rem;
-            background-color: #edf2f7;
-            height: 2.75rem;
-        }
-
-        .form-description {
-            margin-top: 2rem;
-            background-color: #edf2f7;
-            height: 4.8rem;
         }
 
         h1 {
-            font-size: 1rem;
+            font-size: 1.5em;
+            margin: 0;
         }
 
         h2 {
-            font-size: 0.7rem;
+            font-size: 1.1em;
         }
-    </style>
-    <title>Document</title>
 
+        p {
+            font-size: 0.75em;
+        }
+
+        .bg-blue {
+            background-color: #014b66;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .text-italic {
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .container {
+            width: 100%;
+            position: relative;
+        }
+
+        .item-33 {
+            float: left;
+            width: 33.33%;
+            box-sizing: border-box;
+        }
+
+        .p-1 {
+            padding: 1em;
+        }
+
+        .p-2 {
+            padding: 2em;
+        }
+
+        .item-50 {
+            float: left;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        section {
+            margin-top: 1.5em;
+            padding: 1.5em;
+            /* width: 100%; */
+        }
+
+        blockquote {
+            margin: 0;
+            padding: 0.2em;
+            background-color: #d9d9d9;
+            border-left: 5px solid #014b66;
+            color: #1e1e1e;
+            margin: 1.5em 0;
+        }
+
+        .text-area {
+            height: 125px;
+        }
+
+        
+    </style>
+    <title>Student Detail</title>
 </head>
 
 <body>
-    {{-- <header class="bg-blue-800 text-white rounded-br-full">
-        <nav class="container-nav">
-            <article class="logo">
-                <img src="{{ asset('images/logo/02-white.png') }}" alt="logo" class="logo-img">
-                <div class="texto-logo">
-                    <p>Intenational</p>
-                    <p>Examinations</p>
-                </div>
-            </article>
-            <article class="text-logo-int">
-                <div class="texto">
-                    <h1>International exam confirmation</h1>
-                    <h2> Path International Examinations </h2>
+    <main>
+        <header class="bg-blue container clearfix">
+            <figure class="item-33">
+                <img src="{{ asset('/images/logo/02-regular.png') }}" alt="logo" class="logo-img" height="75"
+                    width="75">
+            </figure>
+            <div class="item-50 p-1">
+                <h1>International exam confirmation</h1>
+                <h2 class="text-italic"> Path International Examinations </h2>
+            </div>
+            <div class="rounded-corner"></div>
+        </header>
 
-                </div>
-                </div>
-            </article>
-        </nav>
-    </header> --}}
-    <main class="container mx-auto">
-        <section class="data">
-            <article class="form">
-                <p>{{$candidate->id}}</p>
-            </article>
-            
-            <article class="form">
-            <p>{{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</p>
-            </article>
-            
+        <section>
+            <blockquote>
+                <p>
+                    <strong>Candidate Number:</strong> {{ $candidate->id }} 
+                </p>
+            </blockquote>
+            <blockquote>
+                <p>
+                    <strong>Full Name:</strong> {{$candidate->student->full_name}}
+                </p>
+            </blockquote>
 
-            <article class="form">
-                <p>{{$candidate->student->birth_date}}</p>
-            </article>
+            <blockquote>
+                <p>
+                    <strong>Date of birth:</strong> {{ $candidate->student->birth_date }}
+                </p>
+            </blockquote>
 
-            <article class="form">
-                <p>{{$candidate->student->country}}</p>
-            </article>
+            <blockquote>
+                <p>
+                    <strong>Country of residence:</strong> {{ $candidate->student->country}}
+                </p>
+            </blockquote>
 
+            <blockquote>
+                <p>
+                    <strong>Level</strong> {{ $candidate->level }}
+                </p>
+            </blockquote>
 
-            
-            {{-- <article class="form">
-                <p>Level </p>
-            </article> --}}
+            <blockquote>
+                <p>
+                    <strong>Type of certificate</strong> {{ $candidate->toc}}
+                </p>
+            </blockquote>
 
-            {{-- <article class="form">
-                <p>Type of certificate </p>
-            </article> --}}
+            <blockquote>
+                <p>
+                    <strong>Modules</strong> {{ $candidate->exam_date }} 
+                </p>
+            </blockquote>
 
-            {{-- <article class="form">
-                <p>Modules/p>
-            </article> --}}
-            
-            <article class="form">
-                <p>{{$candidate->exam->scheduled_date}}</p>
-            </article>
-            
-            <article class="form">
-                <p>{{$candidate->exam->session_name}}</p>
-            </article>
-            
-            <article class="form">
-                <p>{{$candidate->exam->type}}</p>
-            </article>
-            
-            <article class="form-description">
-                <p>{{$candidate->exam->comments}}</p>
-            </article>
+            <blockquote>
+                <p>
+                    <strong>Scheduled for</strong> {{ $candidate->exam->scheduled_date }}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Exam session name</strong> {{ $candidate->exam->session_name}}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Exam type</strong> {{ $candidate->exam->type }}
+                </p>
+            </blockquote>
+
+            <blockquote class="text-area">
+                <p>
+                    <strong>Comments</strong> {{ $candidate->exam->comments }}
+                </p>
+            </blockquote>
 
         </section>
+
     </main>
 </body>
 

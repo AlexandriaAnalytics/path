@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\Country;
 use App\Enums\Module;
+use App\Exports\StudentExport;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -11,11 +12,15 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
 {
@@ -34,11 +39,10 @@ class StudentResource extends Resource
                 Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
-                        Components\TextInput::make('first_name')
-                            ->label('First Name')
+                        Components\TextInput::make('names')
                             ->required()
                             ->placeholder('John'),
-                        Components\TextInput::make('last_name')
+                        Components\TextInput::make('surnames')
                             ->label('Last Name')
                             ->required()
                             ->placeholder('Doe'),
@@ -46,23 +50,16 @@ class StudentResource extends Resource
                             ->label('Institute')
                             ->relationship('institute', 'name')
                             ->searchable()
+                            ->preload()
                             ->native(false)
                             ->required(),
-                        Components\TextInput::make('phone')
-                            ->autofocus()
-                            ->placeholder('0118-999-881-999-119-725-3'),
-                        Components\TextInput::make('national_id')
-                            ->label('National ID')
-                            ->placeholder('20-12345678-9')
-                            ->mask('99-99999999-9')
-                            ->autofocus()
-                            ->required(),
-                        Components\TextInput::make('birth_date')
-                            ->autofocus()
-                            ->type('date')
+                        Components\DatePicker::make('birth_date')
+                            ->label('Date of birth')
+                            ->native(false)
+                            ->placeholder('dd/mm/yyyy')
                             ->required(),
                     ]),
-                Components\Section::make('Address')
+                Components\Section::make('Country of residence')
                     ->columns(2)
                     ->collapsible()
                     ->schema([
@@ -73,25 +70,9 @@ class StudentResource extends Resource
                             ->options(Country::class)
                             ->enum(Country::class)
                             ->native(false),
-                        Components\TextInput::make('address')
-                            ->autofocus()
-                            ->placeholder('Evergreen Terrace 742'),
                     ]),
-                Components\Section::make('Additional Information')
-                    ->columns(2)
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Components\TextInput::make('cbu')
-                            ->label('CBU')
-                            ->autofocus()
-                            ->placeholder('1234567890123456789012')
-                            ->required(),
-                        Components\Select::make('status')
-                            ->label('Status')
-                            ->options(['active' => 'active', 'inactive' => 'inactive'])
-                            ->placeholder('Select Status')
-                    ])
+                Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
             ]);
     }
 
@@ -100,11 +81,9 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 ...static::getStudentColumns(),
-                ColumnGroup::make('Institute', [
-                    TextColumn::make('institute.name')
-                        ->searchable()
-                        ->sortable(),
-                ]),
+                TextColumn::make('institute.name')
+                    ->searchable()
+                    ->sortable(),
                 ...static::getMetadataColumns(),
             ])
             ->filters([
@@ -126,8 +105,12 @@ class StudentResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -152,37 +135,30 @@ class StudentResource extends Resource
     public static function getStudentColumns(): array
     {
         return [
-            ColumnGroup::make('Personal Information', [
-                TextColumn::make('national_id')
-                    ->label('National ID')
-                    ->searchable(isIndividual: true)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('first_name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('last_name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birth_date')
-                    ->date()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('names')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('surnames')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('birth_date')
+                ->label('Date of birth')
+                ->date()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 
     public static function getMetadataColumns(): array
     {
         return [
-            ColumnGroup::make('Metadata', [
-                TextColumn::make('created_at')->label('Created on')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')->label('Updated on')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('created_at')->label('Created on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('updated_at')->label('Updated on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Candidate;
 use Livewire\Component;
 
 class LoginCandidate extends Component
@@ -16,11 +17,12 @@ class LoginCandidate extends Component
             session()->flash('error', 'Please enter your candidate number');
             return;
         }
-        $candidate = \App\Models\Candidate::find($this->id)->first();
-        if(!$candidate){
+        $data = Candidate::find($this->id);
+        if($data == null || !$data){
             session()->flash('error', 'Candidate not found');
             return;
         }
+        $candidate = $data->first();
         // add $candidate to session
         session(['candidate' => $candidate]);
         return redirect()->route('filament.candidate.pages.candidate-dahboard');

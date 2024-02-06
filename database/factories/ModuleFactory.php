@@ -19,7 +19,6 @@ class ModuleFactory extends Factory
     {
         return [
             'name' => $name = fake()->name(),
-            'price' => fake()->randomFloat(2, 0, 100),
         ];
     }
 }

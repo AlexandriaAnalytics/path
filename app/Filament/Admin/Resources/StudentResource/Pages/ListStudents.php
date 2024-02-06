@@ -14,6 +14,11 @@ class ListStudents extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('download')
+                ->label('Download Excel For All Student')
+                ->color('success')
+                ->outlined()
+                ->url('/students-excel'),
         ];
     }
 }

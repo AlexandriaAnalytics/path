@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
@@ -15,10 +16,15 @@ use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 
 class InstituteResource extends Resource
 {
@@ -77,10 +83,7 @@ class InstituteResource extends Resource
                             ]),
                         Fieldset::make('Contact Information')
                             ->schema([
-                                TextInput::make('phone')
-                                    ->tel()
-                                    ->required()
-                                    ->maxLength(255),
+                                PhoneInput::make('phone'),
                                 TextInput::make('email')
                                     ->email()
                                     ->required()
@@ -146,7 +149,7 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone')
+                PhoneColumn::make('phone')->displayFormat(PhoneInputNumberType::NATIONAL)
                     ->url(fn ($record) => 'https://api.whatsapp.com/send?phone=' . preg_replace("/[^\d]/", "", $record->phone), shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
@@ -189,6 +192,10 @@ class InstituteResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx')),
                 ]),
             ]);
     }

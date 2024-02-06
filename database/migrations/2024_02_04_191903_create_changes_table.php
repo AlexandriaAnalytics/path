@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('exams', function (Blueprint $table) {
+        Schema::create('changes', function (Blueprint $table) {
             $table->id();
-
-            $table->string('session_name');
-            $table->timestamp('scheduled_date');
-            $table->string('type');
-            $table->integer('maximum_number_of_students');
-            $table->string('comments')->nullable();
-
+            $table->string('description');
+            $table->string('status');
+            $table->foreignId('candidate_id')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('exams');
+        Schema::dropIfExists('changes');
     }
 };

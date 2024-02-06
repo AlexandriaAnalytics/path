@@ -87,7 +87,9 @@ class ExamResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
                     ->label('Max. Students')
-                    ->alignEnd()
+                    ->prefix(function ($record) {
+                        return $record->candidates->unique('id')->count() . ' / ';
+                    })
                     ->numeric()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

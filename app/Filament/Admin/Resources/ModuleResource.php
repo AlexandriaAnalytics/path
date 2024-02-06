@@ -6,12 +6,14 @@ use App\Filament\Admin\Resources\ModuleResource\Pages;
 use App\Filament\Admin\Resources\ModuleResource\RelationManagers;
 use App\Models\Module;
 use Filament\Forms;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 
 class ModuleResource extends Resource
 {
@@ -26,10 +28,25 @@ class ModuleResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+        ->schema([
+            Forms\Components\TextInput::make('name'),
+            
+            Forms\Components\Repeater::make('countryModules')
+            ->relationship()
             ->schema([
-                Forms\Components\TextInput::make('name'),
+                Forms\Components\Select::make('country_id')
+                ->relationship('country', 'name')
+                ->disabled(),
                 Forms\Components\TextInput::make('price')
-                    ->numeric(),
+                
+                ->prefix(fn(?Model $record) => $record->country->monetary_prefix)
+                ])
+                
+                
+                ->deletable(false)
+                ->addable(false)
+                ->grid(2),
+                
             ]);
     }
 
@@ -38,7 +55,13 @@ class ModuleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
-                Tables\Columns\TextColumn::make('price')->sortable(),
+                Tables\Columns\TextColumn::make('countries')
+                ->badge()
+                ->formatStateUsing(function ($state) {
+                    return $state->name . ' '. $state->formatted_price;
+                })
+                
+                ,
             ])
             ->filters([
                 //

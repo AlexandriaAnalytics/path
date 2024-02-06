@@ -6,6 +6,7 @@ use App\Http\Controllers\ExcelController;
 use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentController;
 use Maatwebsite\Excel\Row;
 
 /*
@@ -35,6 +36,8 @@ Route::get('/prueba', function () {
 Route::get('/prueba/{id}', [CandidateController::class, 'show']);
 
 Route::get('/users-excel', [ExcelController::class, 'export']);
+Route::get('/students-excel',[ExcelController::class,'exportAllStudents']);
+Route::get('/members-excel',[ExcelController::class,'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
@@ -56,6 +59,18 @@ Route::post('management/auth/logout', function () {
 
         return redirect()->route('filament.admin.pages.dashboard');
     }
-
     return redirect()->route('filament.management.auth.logout');
 })->name('auth.logout');
+
+Route::get('/pdf/candidate/{id}', function($id){
+    $candidate = Candidate::find($id);
+
+    return view('candidate-pdf', ['candidate'=>$candidate]);
+})->name('candidate.pdf');
+
+
+// Payment routes for all payment methodss
+Route::get('/payment/pay', [PaymentController::class, 'createTransaction'])->name('payment.create');
+Route::get('/payment/process', [PaymentController::class, 'processTransaction'])->name('payment.process');
+Route::get('/payment/success', [PaymentController::class, 'successTransaction'])->name('payment.success');
+Route::get('/payment/canceled', [PaymentController::class, 'cancelTransaction'])->name('payment.cancel');

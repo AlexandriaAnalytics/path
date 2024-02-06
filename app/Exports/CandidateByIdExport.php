@@ -33,23 +33,28 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
     public function headings(): array
     {
         return [
+            'Candidate Number',
             'Full Name',
             'Session Name',
+            'Status'
         ];
     }
 
     public function map($candidate): array
     {
-        $fullName = $candidate->student->first_name . ' ' . $candidate->student->last_name;
+        $fullName = $candidate->student->first_name . ' ' . $candidate->student->surnames;
 
         return [
+            $candidate->id,
             $fullName,
             $candidate->exam->session_name,
+            $candidate->status->value
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
+
         $sheet->getStyle('A1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -60,8 +65,7 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('A')->setWidth(30);
-
+        $sheet->getColumnDimension('A')->setWidth(15);
         $sheet->getStyle('B1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -73,6 +77,30 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
         ]);
 
         $sheet->getColumnDimension('B')->setWidth(40);
+
+        $sheet->getStyle('C1')->applyFromArray([
+            'font' => [
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '000000'],
+            ],
+        ]);
+
+        $sheet->getColumnDimension('C')->setWidth(40);
+
+        $sheet->getStyle('D1')->applyFromArray([
+            'font' => [
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '000000'],
+            ],
+        ]);
+
+        $sheet->getColumnDimension('D')->setWidth(40);
 
         $lastRow = $sheet->getHighestDataRow();
         $lastCol = $sheet->getHighestDataColumn();

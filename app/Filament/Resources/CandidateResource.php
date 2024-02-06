@@ -2,14 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\TypeOfCertificate;
+use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\Change;
+use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,9 +26,13 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Features\SupportConsoleCommands\Commands\Upgrade\ChangeTestAssertionMethods;
 
 class CandidateResource extends Resource
 {
@@ -42,19 +53,18 @@ class CandidateResource extends Resource
                         Select::make('student_id')
                             ->relationship(
                                 name: 'student',
-                                titleAttribute: 'first_name',
                                 modifyQueryUsing: fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()),
                             )
+                            ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->names} {$record->surnames}")
                             ->searchable()
                             ->preload()
                             ->required()
                     ]),
                 ...AdminCandidateResource::getExamFields(),
-                Select::make('status')
-                    ->options(\App\Enums\UserStatus::class)
-                    ->native(false)
-                    ->required()
-                    ->enum(\App\Enums\UserStatus::class),
+                Select::make('type_of_certificate')
+                    ->options(TypeOfCertificate::class)
+                    ->required(),
+
             ]);
     }
 
@@ -62,24 +72,135 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                ...AdminCandidateResource::getCandidateColumns(),
-                ...AdminCandidateResource::getStudentColumns(),
-                ...AdminCandidateResource::getExamColumns(),
+                //Candidate
+                TextColumn::make('id')
+                    ->label('Candidate No.')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric(),
+
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
+                    }),
+
+                //Student
+                TextColumn::make('student.names')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.surnames')
+                    ->label('Last Name')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('level.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('modules.name')
+                    ->badge()
+                /* IconColumn::make('modules')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }) */,
+
+                //Exam
+                /* TextColumn::make('exam')
+                    ->label('Session Name') */
+                IconColumn::make('modules')
+                    ->label('Exam session')
+                    ->icon(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
+                    })
+                    ->tooltip(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
+                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
+                    })
+                    ->color(function (Candidate $candidate) {
+                        $modules = $candidate->modules;
+                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
+                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                                $query->where('candidate_id', $candidate->id);
+                            })->exists();
+                        });
+                        return $allModulesHaveExamSession ? 'success' : 'warning';
+                    }),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                Action::make('pdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-                ViewAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('pdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-document')
+                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                    Action::make('request changes')
+                        ->visible(fn (Candidate $candidate) => $candidate->status === 'paid')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->form([
+                            Textarea::make('changes')
+                        ])
+                        ->action(function (array $data, Candidate $candidate) {
+                            $change = new Change();
+                            $change->description = $data['changes'];
+                            $change->status = 0;
+                            $change->candidate_id = $candidate->id;
+                            $change->user_id = Auth::user()->id;
+                            $change->save();
+                        }),
+                    DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -106,6 +227,8 @@ class CandidateResource extends Resource
         return [
             'index' => Pages\ListCandidates::route('/'),
             'create' => Pages\CreateCandidate::route('/create'),
+            'view' => Pages\ViewCandidate::route('/{record}'),
+            'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
     }
 

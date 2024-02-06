@@ -14,24 +14,17 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('country_id')
-                ->constrained()
-                ->cascadeOnDelete();
-
             $table->foreignId('institute_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('national_id', 32);
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('slug')->nullable();
+            $table->string('names');
+            $table->string('surnames');
             $table->string('country');
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
             $table->string('cbu')->nullable();
             $table->date('birth_date');
             $table->string('status');
+            $table->string('personal_educational_needs')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

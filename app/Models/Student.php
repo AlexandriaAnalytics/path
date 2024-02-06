@@ -16,17 +16,13 @@ class Student extends Model
 
     protected $fillable = [
         'institute_id',
-        'national_id',
-        'country_id',
-        'first_name',
-        'last_name',
-        'slug',
+        'names',
+        'surnames',
         'country',
-        'address',
-        'phone',
         'cbu',
         'birth_date',
         'status',
+        'personal_educational_needs'
     ];
 
     protected $casts = [
@@ -53,7 +49,7 @@ class Student extends Model
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->last_name}";
+        return "{$this->first_name} {$this->surnames}";
     }
 
     public function exams(): BelongsToMany

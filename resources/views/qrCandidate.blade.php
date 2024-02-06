@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>QR Code for {{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</title>
+    <title>QR Code for {{ $candidate->student->first_name }} {{ $candidate->student->surnames }}</title>
     <style>
         body {
             height: 100vh;
@@ -22,7 +22,7 @@
         }
         .data-cell {
             width: 50%;
-            text-align: left; /* Alinea el contenido a la derecha */
+            text-align: left;
             vertical-align: top;
         }
     </style>
@@ -31,14 +31,14 @@
     <table>
         <tr>
             <td class="qr-code-cell">
-                {!! QrCode::size(100)->generate(route('candidate.view', [$candidate])); !!}
+                <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->size(100)->generate(route('candidate.view', ['id' => $candidate->id]))) !!}" alt="QR Code">
             </td>
             <td class="data-cell">
                 <p>{{ $candidate->id}}</p>
-                <p>{{ $candidate->student->first_name }} {{ $candidate->student->last_name }}</p>
+                <p>{{ $candidate->student->first_name }} {{ $candidate->student->surnames }}</p>
                 <p>{{ $candidate->student->institute->name}}</p>
                 <p>A1- Entry</p>
-                <p>{{ $candidate->exam->type}}</p>
+                {{-- <p>{{ $candidate->exam->type}}</p> --}}
             </td>
         </tr>
     </table>

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Country;
 use App\Enums\UserStatus;
+use App\Exports\StudentExport;
 use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
 use App\Filament\Resources\StudentResource\Pages;
 use App\Models\Student;
@@ -11,7 +12,11 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
 {
@@ -25,21 +30,20 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('first_name'),
-                Forms\Components\TextInput::make('last_name'),
-                Forms\Components\TextInput::make('slug'),
+                Forms\Components\TextInput::make('names'),
+                Forms\Components\TextInput::make('surnames'),
                 Forms\Components\Select::make('country')
-                    ->label('Country')
+                    ->label('Country of residence')
                     ->options(Country::class)
                     ->enum(Country::class)
                     ->searchable(),
-                Forms\Components\TextInput::make('address'),
-                Forms\Components\TextInput::make('phone'),
                 Forms\Components\TextInput::make('cbu'),
-                Forms\Components\TextInput::make('national_id'),
-                Forms\Components\DatePicker::make('birth_date'),
-                Forms\Components\Select::make('status')
-                    ->options(UserStatus::values()),
+                Forms\Components\DatePicker::make('birth_date')
+                    ->label('Date of birth')
+                    ->native(false)
+                    ->placeholder('dd/mm/yyyy'),
+                Forms\Components\RichEditor::make('personal_educational_needs')
+                    ->columnSpanFull()
 
             ]);
     }
@@ -60,8 +64,12 @@ class StudentResource extends Resource
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

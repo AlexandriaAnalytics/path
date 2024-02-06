@@ -34,7 +34,7 @@ class Exam extends Model
 
     public function modules(): BelongsToMany
     {
-        return $this->belongsToMany(Module::class)
+        return $this->belongsToMany(Module::class, 'exam_module')
             ->withTimestamps();
     }
 
@@ -51,8 +51,20 @@ class Exam extends Model
         return $this->hasMany(Evaluation::class);
     }
 
-    public function candidates(): HasMany
+    public function candidates(): BelongsToMany
     {
-        return $this->hasMany(Candidate::class);
+        return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
+            ->withTimestamps();
+    }
+
+    public function CountryExams(): HasMany
+    {
+        return $this->hasMany(Country::class, 'country_exam');
+    }
+
+    public function getIsAbleToPricePackAttribute(): bool
+    {
+        // TODO: Complete this method
+        return false;
     }
 }
