@@ -181,7 +181,7 @@
 
             <blockquote class="text-area">
                 <p>
-                    {{-- <strong>Comments</strong> {{ $candidate->exam->first->comments }} --}}
+                    {{-- <strong>Comments</strong> {{ $candidate->exam->comments }} --}}
                 </p>
             </blockquote>
 
