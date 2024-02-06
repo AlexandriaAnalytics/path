@@ -23,11 +23,9 @@ class Payments extends Page implements HasForms
 
     public ?string $payment_method = null;
     public ?int $total_amount = 0;
-    
-
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
-
     protected static string $view = 'filament.candidate.pages.payments';
+
 
     public static function canAccess(): bool
     {
@@ -36,56 +34,47 @@ class Payments extends Page implements HasForms
 
     public function mount()
     {
-
         abort_unless(static::canAccess(), 403);
     }
 
-    
+    protected function getActions(): array
+    {
+        return [
+            Action::make('Print ticket')
+                ->icon('heroicon-o-printer'),
+            // ->message('Printed successfully.')
+            // ->perform(fn () => redirect()->route('candidate.payment')),
 
-   protected function getActions(): array
 
-   {
-       return [
-        Action::make('Print ticket')
-        ->icon('heroicon-o-printer'),
-        // ->message('Printed successfully.')
-        // ->perform(fn () => redirect()->route('candidate.payment')),
-        
-        
         ];
     }
-    
+
     public function form(Form $form): Form
     {
-       $form->schema([
-        
-           Select::make('payment_method')   
-               ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
-        
-               
-       ]);
+        $form->schema([
+            Select::make('payment_method')
+                ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
+        ]);
 
-         return $form;
-   }
+        return $form;
+    }
 
-   public function selectPaymentMethod()
-   {
-    Notification::make() 
-            ->title('Saved successfully')
-            ->success()
-            ->send(); 
-   }
+    public function selectPaymentMethod()
+    {
+        $payment_method_selected = $this->form->getState()['payment_method'];
+        if($payment_method_selected != null){
+            return redirect()->route('payment.process', ['payment_method' => $payment_method_selected, 'amount' => $this->total_amount]);
+        }
+    }
 
-   protected function getFormActions()
-   {
-    return [
-        Action::make('Submit')
-            ->submitTo('submit')
-            ->message('Payment method updated successfully.')
-            ->successToast(),
-      //      ->redirect('/candidate/payment'),
-    ];
-   }
-
-
+    protected function getFormActions()
+    {
+        return [
+            Action::make('Submit')
+                ->submitTo('submit')
+                ->message('Payment method updated successfully.')
+                ->successToast(),
+            //      ->redirect('/candidate/payment'),
+        ];
+    }
 }

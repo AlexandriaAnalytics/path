@@ -73,5 +73,6 @@ class CreateModulesTable extends Migration
         Schema::dropIfExists('exam_module');
         Schema::dropIfExists('candidate_module');
         Schema::dropIfExists('modules');
+        Schema::dropIfExists('country_module');
     }
 }

@@ -15,12 +15,6 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
-
-            // $table->unsignedBigInteger('candidate_number')
-            //     ->autoIncrement()
-            //     ->startingValue(1000000)
-            //     ->unique();
-
             $table->foreignId('level_id')
                 ->constrained()
                 ->cascadeOnDelete();

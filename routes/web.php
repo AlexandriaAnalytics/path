@@ -6,6 +6,7 @@ use App\Http\Controllers\ExcelController;
 use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PaymentController;
 use Maatwebsite\Excel\Row;
 
 /*
@@ -66,3 +67,10 @@ Route::get('/pdf/candidate/{id}', function($id){
 
     return view('candidate-pdf', ['candidate'=>$candidate]);
 })->name('candidate.pdf');
+
+
+// Payment routes for all payment methodss
+Route::get('/payment/pay', [PaymentController::class, 'createTransaction'])->name('payment.create');
+Route::get('/payment/process', [PaymentController::class, 'processTransaction'])->name('payment.process');
+Route::get('/payment/success', [PaymentController::class, 'successTransaction'])->name('payment.success');
+Route::get('/payment/canceled', [PaymentController::class, 'cancelTransaction'])->name('payment.cancel');
