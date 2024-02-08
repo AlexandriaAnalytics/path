@@ -850,8 +850,13 @@
                 </ul>
             </div>
         @endif
-
-        <a style="border: 1px solod black; border-radius: 10px; background-color: blue;" href="{{route('payment.process', ['payment_method' => 'paypal', 'amount' => 500])}}">Pagar</a>
+        
+        <div style="display: grid; grid-template-columns: auto">
+            <a style="color: whitesmoke; border: 1px solod black; border-radius: 10px; background-color: rgb(136, 136, 201); padding: 1rem;" href="{{route('payment.process', ['payment_method' => 'paypal', 'amount' => 500])}}">Pagar Paypal</a>
+            <a style="color: whitesmoke; 1px solod black; border-radius: 10px; background-color: rgb(136, 136, 201); padding: 1rem;" href="{{route('payment.process', ['payment_method' => 'mercado_pago', 'amount' => 50])}}">Pagar Mercado pago</a>
+        </div>
+    
+    
     </div>
 </body>
 
