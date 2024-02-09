@@ -851,9 +851,24 @@
             </div>
         @endif
         
-        <div style="display: grid; grid-template-columns: auto">
-            <a style="color: whitesmoke; border: 1px solod black; border-radius: 10px; background-color: rgb(136, 136, 201); padding: 1rem;" href="{{route('payment.process', ['payment_method' => 'paypal', 'amount' => 500])}}">Pagar Paypal</a>
-            <a style="color: whitesmoke; 1px solod black; border-radius: 10px; background-color: rgb(136, 136, 201); padding: 1rem;" href="{{route('payment.process', ['payment_method' => 'mercado_pago', 'amount' => 50])}}">Pagar Mercado pago</a>
+            <style>
+                .payment-container {
+                    display: grid; 
+                    grid-template-columns: auto; 
+                    gap:1rem;
+                }
+                .payment-container a {
+                    color: whitesmoke; 
+                    border: 1px solod black; 
+                    border-radius: 10px; 
+                    background-color: rgb(136, 136, 201); 
+                    padding: 1rem;  
+                }
+            </style>
+
+        <div class="payment-container">
+            <a href="{{route('payment.process', ['payment_method' => 'paypal', 'amount' => 500])}}">Pagar Paypal</a>
+            <a href="{{route('payment.process', ['payment_method' => 'mercado_pago', 'amount' => 50])}}">Pagar Mercado pago</a>
         </div>
     
     
