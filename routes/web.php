@@ -74,3 +74,6 @@ Route::get('/payment/pay', [PaymentController::class, 'createTransaction'])->nam
 Route::get('/payment/process', [PaymentController::class, 'processTransaction'])->name('payment.process');
 Route::get('/payment/success', [PaymentController::class, 'successTransaction'])->name('payment.success');
 Route::get('/payment/canceled', [PaymentController::class, 'cancelTransaction'])->name('payment.cancel');
+
+Route::get('/payment/webhook/paypal', [PaymentController::class, 'webhook'])->name('payment.webhook');
+

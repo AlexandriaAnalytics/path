@@ -79,4 +79,21 @@ class PaymentController extends Controller
     {
         return $response['message'] ?? 'You have canceled the transaction.';
     }
+
+    public function webhook(Request $request)
+    {
+        /*
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+        $response = $provider->verifyWebhook($request->getContent());
+        if (isset($response['status']) && $response['status'] == 'VERIFIED') {
+            return 'Webhook verified.';
+        } else {
+            return  $response['message'] ?? 'Webhook not verified.';
+        }
+        */
+
+        
+    }
 }

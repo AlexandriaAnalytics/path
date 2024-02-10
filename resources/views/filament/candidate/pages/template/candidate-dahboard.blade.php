@@ -13,4 +13,6 @@
         "
         :widgets="$this->getVisibleWidgets()"
     />
+
+     {{-- {{ $this->table }} --}}
 </x-filament-panels::page>
