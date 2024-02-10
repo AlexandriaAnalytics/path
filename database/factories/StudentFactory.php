@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,6 +25,7 @@ class StudentFactory extends Factory
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',
+            'country_id' => Country::all()->random()->id,
         ];
     }
 }

@@ -46,4 +46,11 @@ class Module extends Model
     {
         return $this->hasMany(CountryModule::class);
     }
+
+    public function getPriceBasedOnRegion(Country $country)
+    {
+        return $this->countryModules->where('country_id', $country->id)->first()->price;
+    }
+
+   
 }
