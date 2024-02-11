@@ -77,4 +77,13 @@ class Institute extends Model
     {
         return $this->belongsTo(User::class, 'owner_id');
     }
+
+    public function levels(): BelongsToMany
+    {
+        return $this->belongsToMany(Level::class, 'institute_levels')
+            ->withPivot('institute_custom_level_price')
+            ->withPivot('institute_custom_rigth_exam_price')
+            ->withPivot('can_edit')
+            ->withTimestamps();
+    }
 }

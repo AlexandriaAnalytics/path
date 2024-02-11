@@ -28,6 +28,26 @@ class CreateLevelsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('institute_levels', function(Blueprint $table){
+            $table->id();
+            $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
+            $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
+            $table->decimal('institute_custom_level_price', 12, 2)->nullable();
+            $table->decimal('institute_custom_rigth_exam_price', 12, 2)->nullable();
+            $table->boolean('can_edit')->default(false);
+            $table->timestamps();
+        });
+
+        Schema::create('level_country', function(Blueprint $table)
+        {
+            $table->id();
+            $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
+            $table->decimal('price_discounted', 12, 2);
+            $table->decimal('price_right_exam', 12, 2);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -37,5 +57,6 @@ class CreateLevelsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('levels');
+        Schema::dropIfExists('institute_level');
     }
 }
