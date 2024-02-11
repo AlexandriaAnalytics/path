@@ -20,12 +20,12 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
         return Candidate::select(
             'candidates.id as candidate_id',
             'candidates.status as candidate_status',
-            'students.first_name',
+            'students.names',
             'students.surnames',
-            'exams.session_name as exam_session',
+            // 'exams.session_name as exam_session',
         )
             ->join('students', 'students.id', '=', 'candidates.student_id')
-            ->join('exams', 'exams.id', '=', 'candidates.exam_id')
+            // ->join('exams', 'exams.id', '=', 'candidates.exam_id')
             ->get();
     }
 

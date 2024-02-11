@@ -35,10 +35,10 @@
             </td>
             <td class="data-cell">
                 <p>{{ $candidate->id}}</p>
-                <p>{{ $candidate->student->first_name }} {{ $candidate->student->surnames }}</p>
+                <p>{{ $candidate->student->full_name}}</p>
                 <p>{{ $candidate->student->institute->name}}</p>
-                <p>A1- Entry</p>
-                {{-- <p>{{ $candidate->exam->type}}</p> --}}
+                <p>{{ $candidate->level->name}}</p>
+                <p>{{ $candidate->type_of_certificate}}</p>
             </td>
         </tr>
     </table>
