@@ -42,13 +42,13 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
 
     public function map($candidate): array
     {
-        $fullName = $candidate->student->first_name . ' ' . $candidate->student->surnames;
+        $fullName = $candidate->student->names . ' ' . $candidate->student->surnames;
 
         return [
             $candidate->id,
             $fullName,
-            $candidate->exam->session_name,
-            $candidate->status->value
+            // $candidate->exam->session_name,
+            $candidate->status
         ];
     }
 

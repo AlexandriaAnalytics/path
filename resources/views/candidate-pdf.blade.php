@@ -127,14 +127,13 @@
             </blockquote>
             <blockquote>
                 <p>
-                    <strong>Full Name:</strong> {{$candidate->student->full_name}}
+                    <strong>Full Name:</strong> {{$candidate->student->names}} {{$candidate->student->surnames}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Date of birth:</strong> {{ $candidate->student->birth_date }}
-                </p>
+                   <strong>Date of birth:</strong> {{ \Carbon\Carbon::parse($candidate->student->birth_date)->locale('en')->format('m/d/Y') }}
             </blockquote>
 
             <blockquote>
@@ -151,7 +150,7 @@
 
             <blockquote>
                 <p>
-                    <strong>Type of certificate</strong> {{ $candidate->toc}}
+                    <strong>Type of certificate</strong> {{ $candidate->type_of_certificate}}
                 </p>
             </blockquote>
 
