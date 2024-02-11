@@ -160,29 +160,29 @@
                 </p>
             </blockquote>
 
-            <blockquote>
+            {{-- <blockquote>
                 <p>
-                    {{-- <strong>Scheduled for</strong> {{ $candidate->exam->scheduled_date }} --}}
+                    <strong>Scheduled for</strong> {{ $candidate->exam->scheduled_date }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    {{-- <strong>Exam session name</strong> {{ $candidate->exam->first()->session_name}} --}}
+                    <strong>Exam session name</strong> {{ $candidate->exam->first()->session_name}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    {{-- <strong>Exam type</strong> {{ $candidate->exam->type }} --}}
+                    <strong>Exam type</strong> {{ $candidate->exam->type }}
                 </p>
             </blockquote>
 
             <blockquote class="text-area">
                 <p>
-                    {{-- <strong>Comments</strong> {{ $candidate->exam->comments }} --}}
+                    <strong>Comments</strong> {{ $candidate->exam->comments }}
                 </p>
-            </blockquote>
+            </blockquote> --}}
 
         </section>
 

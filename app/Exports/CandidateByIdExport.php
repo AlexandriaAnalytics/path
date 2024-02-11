@@ -46,7 +46,8 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
 
         return [
             $candidate->id,
-            $fullName,
+            $candidate->student->names,
+            $candidate->student->surnames,
             // $candidate->exam->session_name,
             $candidate->status
         ];
