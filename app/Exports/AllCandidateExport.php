@@ -20,12 +20,12 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
         return Candidate::select(
             'candidates.id as candidate_id',
             'candidates.status as candidate_status',
-            'students.first_name',
+            'students.names',
             'students.surnames',
-            'exams.session_name as exam_session',
+            // 'exams.session_name as exam_session',
         )
             ->join('students', 'students.id', '=', 'candidates.student_id')
-            ->join('exams', 'exams.id', '=', 'candidates.exam_id')
+            // ->join('exams', 'exams.id', '=', 'candidates.exam_id')
             ->get();
     }
 
@@ -34,7 +34,7 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Candidate Number', 'Status', 'First Name', 'Last Name', 'Exam Session'];
+        return ['Candidate Number', 'Status', 'First Name', 'Last Name'];
     }
 
     /**
@@ -92,17 +92,17 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
         ]);
 
 
-        $sheet->getColumnDimension('E')->setWidth(35);
+        // $sheet->getColumnDimension('E')->setWidth(35);
 
-        $sheet->getStyle('E1')->applyFromArray([
-            'font' => [
-                'color' => ['rgb' => 'FFFFFF'],
-            ],
-            'fill' => [
-                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '000000'],
-            ],
-        ]);
+        // $sheet->getStyle('E1')->applyFromArray([
+        //     'font' => [
+        //         'color' => ['rgb' => 'FFFFFF'],
+        //     ],
+        //     'fill' => [
+        //         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+        //         'startColor' => ['rgb' => '000000'],
+        //     ],
+        // ]);
 
 
         $sheet->getColumnDimension('D')->setWidth(30);
