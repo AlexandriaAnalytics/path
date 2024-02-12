@@ -43,8 +43,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $levels = Level::all();
-        foreach($levels as $level)
-        {
+        foreach ($levels as $level) {
             foreach ($countries as $country) {
                 $level->countries()->attach($country, [
                     'price_discounted' => rand(1000, 5000),
@@ -70,10 +69,11 @@ class DatabaseSeeder extends Seeder
 
                         foreach ($levels as $level) {
                             $institute->levels()->attach($level, [
-                                 'institute_custom_level_price' => rand(1000, 5000),
-                                 'institute_custom_rigth_exam_price' => rand(1000, 5000),
-                                 'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
-                             ]);
+                                'institute_diferencial_percentage_price' => rand(-20, 20),
+                                'institute_diferencial_aditional_price' => rand(-500, 500),
+                                'institute_right_exam' => $institute->instituteType->slug == 'premium_exam_centre'? rand(1000, 5000) : null,
+                                'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
+                            ]);
                         }
                         $institute->save();
                     })

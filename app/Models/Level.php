@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Level extends Model 
+class Level extends Model
 {
-    use HasFactory, Sluggable, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -24,17 +23,6 @@ class Level extends Model
         'complete_price',
     ];
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-                'separator' => '-',
-                'onUpdate' => true,
-            ],
-        ];
-    }
-
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'available_levels')
@@ -43,9 +31,10 @@ class Level extends Model
 
     public function institutes(): BelongsToMany
     {
-        return $this->belongsToMany(Institute::class, 'institute_levels')
-            ->withPivot('institute_custom_level_price')
-            ->withPivot('institute_custom_rigth_exam_price')
+        return $this->belongsToMany(Institute::class, 'institute_level')
+            ->withPivot('institute_diferencial_percentage_price')
+            ->withPivot('institute_diferencial_aditional_price')
+            ->withPivot('institute_right_exam')
             ->withPivot('can_edit')
             ->withTimestamps();
     }
@@ -58,13 +47,8 @@ class Level extends Model
             ->withTimestamps();
     }
 
-    public function levelCountries(): HasMany
+    public function levelCountries()
     {
         return $this->hasMany(LevelCountry::class);
-    }
-
-    public function getPriceDiscoutedBasedOnRegion(Country $country): float
-    {
-        return $this->levelCountries->where('country_id', $country)->first()->price_discounted;
     }
 }

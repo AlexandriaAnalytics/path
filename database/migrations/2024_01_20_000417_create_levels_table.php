@@ -29,12 +29,13 @@ class CreateLevelsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('institute_levels', function(Blueprint $table){
+        Schema::create('institute_level', function(Blueprint $table){
             $table->id();
             $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
             $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
-            $table->decimal('institute_custom_level_price', 12, 2)->nullable();
-            $table->decimal('institute_custom_rigth_exam_price', 12, 2)->nullable();
+            $table->decimal('institute_diferencial_percentage_price', 12, 2)->default(0);
+            $table->decimal('institute_diferencial_aditional_price', 12, 2)->default(0);
+            $table->decimal('institute_right_exam', 12, 2)->nullable();
             $table->boolean('can_edit')->default(false);
             $table->timestamps();
         });
