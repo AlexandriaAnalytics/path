@@ -25,6 +25,9 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('status');
             $table->string('personal_educational_needs')->nullable();
+            $table->foreignId('country_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
             $table->timestamps();
             $table->softDeletes();

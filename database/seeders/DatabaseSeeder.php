@@ -7,8 +7,8 @@ namespace Database\Seeders;
 use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
+use App\Models\Level;
 use App\Models\Module;
-use App\Models\Status;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -35,16 +35,25 @@ class DatabaseSeeder extends Seeder
         $countries = Country::all();
         $modules = Module::all();
 
-        foreach($modules as $module){
-            foreach($countries as $country){
+        foreach ($modules as $module) {
+            foreach ($countries as $country) {
                 $module->countries()->attach($country, ['price' => rand(100, 1000)]);
             }
             $module->save();
         }
 
-        $statuses = Status::all();
+        $levels = Level::all();
+        foreach ($levels as $level) {
+            foreach ($countries as $country) {
+                $level->countries()->attach($country, [
+                    'price_discounted' => rand(1000, 5000),
+                    'price_right_exam' => rand(1000, 5000),
+                ]);
+            }
+            $level->save();
+        }
 
-        $exams = Exam::factory(10)
+        Exam::factory(10)
             ->create()
             ->each(function (Exam $exam) use ($modules): void {
                 $exam->modules()->attach($modules->random(3));
@@ -55,6 +64,17 @@ class DatabaseSeeder extends Seeder
                 Institute::factory(3)
                     ->afterCreating(function (Institute $institute, User $user): void {
                         $institute->owner()->associate($user);
+                        $levels = Level::all();
+
+
+                        foreach ($levels as $level) {
+                            $institute->levels()->attach($level, [
+                                'institute_diferencial_percentage_price' => rand(-20, 20),
+                                'institute_diferencial_aditional_price' => rand(-500, 500),
+                                'institute_right_exam' => $institute->instituteType->slug == 'premium_exam_centre'? rand(1000, 5000) : null,
+                                'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
+                            ]);
+                        }
                         $institute->save();
                     })
                     ->has(

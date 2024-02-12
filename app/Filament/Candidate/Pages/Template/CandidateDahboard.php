@@ -3,14 +3,23 @@
 namespace App\Filament\Candidate\Pages\Template;
 
 use App\Filament\Candidate\Widgets\WidgetCandidate;
+use App\Models\Candidate;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard;
 use Filament\Pages\Page;
+use Filament\Resources\Concerns\HasTabs;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\Support\Htmlable;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
 
-class CandidateDahboard extends Dashboard
+class CandidateDahboard extends Dashboard  //implements HasTable
 {
+
+    // use InteractsWithTable;
+
     protected static ?int $navigationSort = -2;
     protected static string $view = 'filament.candidate.pages.template.candidate-dahboard';
 
@@ -36,6 +45,25 @@ class CandidateDahboard extends Dashboard
         ];
     }
 
+    
+
+    /*
+    public function table(Table $table): Table
+    {
+        return $table
+            ->query(Candidate::query())
+            ->columns([
+                TextColumn::make('id')
+            ])
+            ->filters([
+                //
+            ])
+            
+            ->viewData([
+                'title' => 'Candidates',
+            ]);
+    }
+    */
     
   protected function getActions(): array
 {

@@ -19,11 +19,12 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",
+        "mercadopago/dx-php": "^3.0",
         "mpdf/mpdf": "^8.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-pdf": "^1.1",
-        "ysfkaya/filament-phone-input": "^2.3",
-        "srmklive/paypal": "~3.0"
+        "srmklive/paypal": "~3.0",
+        "ysfkaya/filament-phone-input": "^2.3"
     },
     "require-dev": {
         "doctrine/dbal": "^3.7",

@@ -27,15 +27,26 @@ class LevelResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Repeater::make('levelCountries')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('country_id')
+                            ->relationship('country', 'name')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('price_discounted')
+                            ->label('Completed price')
+                            ->numeric()
+                            ->prefix(function($record){
+                                return $record->country->monetary_prefix;
+                            })
+                    ])
+                    ->addable(false)
+                    ->deletable(false)
+                    ->grid(2)->columns(2),
                 Forms\Components\TextInput::make('name'),
-                Forms\Components\TextInput::make('price')
-                    ->numeric(),
-                Forms\Components\TextInput::make('slug'),
-                Forms\Components\TextInput::make('modules'),
+                Forms\Components\MarkdownEditor::make('description')->label('Description')->columns(1),
                 Forms\Components\TextInput::make('tier'),
-                Forms\Components\TextInput::make('complete_price')
-                    ->numeric()
-            ]);
+            ])->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -43,10 +54,14 @@ class LevelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
-                Tables\Columns\TextColumn::make('price')->sortable(),
-                Tables\Columns\TextColumn::make('modules')->sortable(),
+                Tables\Columns\TextColumn::make('description'),
                 Tables\Columns\TextColumn::make('tier')->sortable(),
-                Tables\Columns\TextColumn::make('complete_price')->sortable(),
+                Tables\Columns\TextColumn::make('levelCountries')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                    return $state->country->monetary_prefix . ' ' . $state->price_discounted;
+                })
+                    ->sortable(),
             ])
             ->filters([
                 //
