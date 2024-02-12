@@ -3,6 +3,8 @@
 namespace App\Filament\Candidate\Pages;
 
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -12,17 +14,32 @@ use Filament\Pages\Page;
 class Payments extends Page implements HasForms
 {
     private $candidate;
+    private $country;
     public ?string $monetariUnitSymbol;
-
-    public function __construct()
-    {
-        $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
-        $this->monetariUnitSymbol = $this->candidate->student->region->monetary_unit_symbol ?? '$';
-        $this->total_amount = random_int(1000, 5000);
-    }
-
     public ?string $payment_method = null;
     public ?int $total_amount = 0;
+
+    public $modules = [];
+    
+    public function __construct()
+    { //$candidate->modules[1]->countryModules[0]->price
+        // $candidate->modules[1]->countryModules[0]->country->name
+
+        $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
+        $this->country = $this->candidate->student->region->name;
+        
+        $this->modules = $this->candidate->modules->map(function($module){
+            return [
+                'name' => $module->name,
+                'price' => $module->getPriceBasedOnRegion($this->candidate->student->region)
+            ];
+        });
+        
+        $this->total_amount = $this->modules->sum('price');
+
+        $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static string $view = 'filament.candidate.pages.payments';
 
@@ -44,15 +61,17 @@ class Payments extends Page implements HasForms
                 ->icon('heroicon-o-printer'),
             // ->message('Printed successfully.')
             // ->perform(fn () => redirect()->route('candidate.payment')),
-
-
         ];
     }
 
     public function form(Form $form): Form
     {
+        // dd($this->candidate->modules->pluck('name')->toArray());
         $form->schema([
             Select::make('payment_method')
+                ->label('Payment method')
+                ->placeholder('Select a payment method')
+                ->native(false)
                 ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
         ]);
 
@@ -62,9 +81,20 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-        if($payment_method_selected != null){
-            return redirect()->route('payment.process', ['payment_method' => $payment_method_selected, 'amount' => $this->total_amount]);
+        if($payment_method_selected == null){
+            Notification::make()
+            ->danger()
+            ->title('Payment method not selected')
+            ->send();
+            return;
         }
+        return redirect()
+            ->route(
+                'payment.process', 
+                [
+                    'payment_method' => $payment_method_selected, 
+                    'amount' => $this->total_amount
+                ]);
     }
 
     protected function getFormActions()

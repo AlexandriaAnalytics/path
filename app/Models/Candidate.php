@@ -44,4 +44,9 @@ class Candidate extends Pivot
         return $this->belongsToMany(Exam::class, 'candidate_exam', 'candidate_id', 'exam_id')
             ->withTimestamps();
     }
+
+    public function getMonetaryString()
+    {
+        return $this->student->region->monetary_unit . $this->student->region->monetary_unit_symbol;
+    }
 }

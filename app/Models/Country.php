@@ -80,5 +80,13 @@ class Country extends Model
         return $this->monetary_unit . $this->monetary_unit_symbol;
     }
 
+    public function levels(): BelongsToMany
+    {
+        return $this->belongsToMany(Level::class, 'level_country')
+            ->withPivot('price_discounted')
+            ->withPivot('price_right_exam')
+            ->withTimestamps();
+    }
+
 
 }
