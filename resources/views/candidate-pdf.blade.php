@@ -127,14 +127,13 @@
             </blockquote>
             <blockquote>
                 <p>
-                    <strong>Full Name:</strong> {{$candidate->student->full_name}}
+                    <strong>Full Name:</strong> {{$candidate->student->names}} {{$candidate->student->surnames}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Date of birth:</strong> {{ $candidate->student->birth_date }}
-                </p>
+                   <strong>Date of birth:</strong> {{ \Carbon\Carbon::parse($candidate->student->birth_date)->locale('en')->format('m/d/Y') }}
             </blockquote>
 
             <blockquote>
@@ -145,23 +144,23 @@
 
             <blockquote>
                 <p>
-                    <strong>Level</strong> {{ $candidate->level }}
+                    <strong>Level</strong> {{ $candidate->level->name}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Type of certificate</strong> {{ $candidate->toc}}
+                    <strong>Type of certificate</strong> {{ $candidate->type_of_certificate}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Modules</strong> {{ $candidate->exam_date }} 
+                    <strong>Modules</strong> {{ $candidate->modules->first()->name }} 
                 </p>
             </blockquote>
 
-            <blockquote>
+            {{-- <blockquote>
                 <p>
                     <strong>Scheduled for</strong> {{ $candidate->exam->scheduled_date }}
                 </p>
@@ -169,7 +168,7 @@
 
             <blockquote>
                 <p>
-                    <strong>Exam session name</strong> {{ $candidate->exam->session_name}}
+                    <strong>Exam session name</strong> {{ $candidate->exam->first()->session_name}}
                 </p>
             </blockquote>
 
@@ -183,7 +182,7 @@
                 <p>
                     <strong>Comments</strong> {{ $candidate->exam->comments }}
                 </p>
-            </blockquote>
+            </blockquote> --}}
 
         </section>
 

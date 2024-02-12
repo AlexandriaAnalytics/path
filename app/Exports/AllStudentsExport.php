@@ -18,11 +18,11 @@ class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
     {
         return Student::select(
             'students.id as student_id',
-            'students.first_name',
+            'students.names',
             'students.surnames',
-            'institute_types.name as institute_name'
+            'institutes.name as institute_name'
         )
-            ->join('institute_types', 'institute_types.id', '=', 'students.institute_id')
+            ->join('institutes', 'institutes.id', '=', 'students.institute_id')
             ->get();
     }
 
