@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('province');
             $table->string('postcode');
             $table->string('country');
+            $table->decimal('discounted_price_diferencial', 12, 2)->default(0);
+            $table->decimal('discounted_price_percentage',12, 2)->default(0);
+            $table->decimal('rigth_exam_diferencial', 12, 2)->default(100);
+
 
             $table->foreignId('institute_type_id')
                 ->constrained()
