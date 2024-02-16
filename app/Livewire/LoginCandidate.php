@@ -17,12 +17,13 @@ class LoginCandidate extends Component
             session()->flash('error', 'Please enter your candidate number');
             return;
         }
+
         $data = Candidate::find($this->id);
         if($data == null || !$data){
             session()->flash('error', 'Candidate not found');
             return;
         }
-        $candidate = $data->first();
+        $candidate = $data;
         // add $candidate to session
         session(['candidate' => $candidate]);
         return redirect()->route('filament.candidate.pages.candidate-dahboard');
