@@ -46,7 +46,7 @@ class Payments extends Page implements HasForms
             
         }else {
             $priceDiferencinal = $this->candidate->student->institute
-            ->getLevelPaymentDiferencial($this->candidate->student->level->name);
+            ->getLevelPaymentDiferencial($this->candidate->level->name);
             
             $fixedPrice = $priceDiferencinal->institute_diferencial_aditional_price;
             $percentagePrice = $priceDiferencinal->institute_diferencial_percentage_price;
