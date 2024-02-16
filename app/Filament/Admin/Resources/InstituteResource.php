@@ -133,8 +133,22 @@ class InstituteResource extends Resource
                 Fieldset::make('Exams and payements')
                     ->columnSpanFull()
                     ->schema([
-                        Repeater::make('instituteLevels')
+                        TextInput::make('discounted_price_diferencial')
+                            ->label('Discounted price diferencial')
+                            ->type('number')
+                            ->hint('Price difference for this institute when all levels are selected by one candidate.'),
+                        TextInput::make('discounted_price_percentage')
+                            ->label('Discounted price percentage')
+                            ->type('number')
+                            ->hint('Percentage difference in price for this institute when all levels are selected by one candidate.'),
+                        TextInput::make('rigth_exam_diferencial')
+                            ->label('Right exam')
+                            ->type('number')
+                            ->hint('Price of the rigth exam for an institute.'),
+                            Repeater::make('instituteLevels')
                             ->grid(2)
+                            ->deletable(false)
+                            ->addable(false)
                             ->relationship()
                             ->schema([
                                 Select::make('level')

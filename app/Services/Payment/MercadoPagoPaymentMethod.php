@@ -12,12 +12,13 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 {
     public function pay(float $amount): PaymentResult
     {
+
         MercadoPagoConfig::setAccessToken($this->getAccessToken());
         $client = new PreferenceClient();
-        
-        $request_options = new RequestOptions();
-        $request_options->setCustomHeaders(["X-Idempotency-Key: 123456789"]);
         $preference = $client->create([
+            'id' => 'PATH-'. time(),
+            'external_reference' => 'PATH-'. time(),
+            'notification_url' => 'https://d20hsnk8-3000.brs.devtunnels.ms/callbacks/mp',
             'items' => [
                 [
                     'title' => 'Payment for product',
@@ -26,28 +27,18 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                     'unit_price' => $amount
                 ]
             ]
-        ], $request_options);
+        ]);
+
+        $preference->redirect_urls = [
+            'success' => $this->getRedirectSuccess(),
+            'failure' => $this->getRedirectCancel(),
+            'pending' => $this->getRedirectCancel(),
+        ];
+
+        $preference->auto_return = "approved";
 
         redirect($preference->init_point);
 
-        /*
-         $createRequest = [
-    "transaction_amount" => 100,
-    "description" => "description",
-    "payment_method_id" => "pix",
-      "payer" => [
-        "email" => "test_user_24634097@testuser.com",
-      ]
-  ];
-
-  $client = new PaymentClient();
-  $request_options = new RequestOptions();
-  $request_options->setCustomHeaders(["X-Idempotency-Key: <SOME_UNIQUE_VALUE>"]);
-
-  $client->create($createRequest, $request_options);
-  */
-
-        // resultado de la operación
         return new PaymentResult(
             PaymentMethodResult::REDIRECT,
             null,
@@ -57,6 +48,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     private function getAccessToken(): string
     {
+
         return config('mercadopago.mode') === 'sandbox'
             ? config('mercadopago.sandbox.access_token')
             : config('mercadopago.live.access_token');
