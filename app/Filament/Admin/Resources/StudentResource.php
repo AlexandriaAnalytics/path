@@ -141,6 +141,12 @@ class StudentResource extends Resource
             TextColumn::make('surnames')
                 ->searchable()
                 ->sortable(),
+            TextColumn::make('region.name')
+                ->label('Region')
+                ->searchable()
+                ->badge()
+                ->sortable(),
+
             TextColumn::make('birth_date')
                 ->label('Date of birth')
                 ->date()
