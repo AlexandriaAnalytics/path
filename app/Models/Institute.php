@@ -92,5 +92,9 @@ class Institute extends Model
     {
         return $this->hasMany(InstituteLevel::class);
     }
-    
+
+    public function getLevelPaymentDiferencial(string $levelName): object
+    {
+        return $this->instituteLevels->where('level.name', $levelName)->first();
+    }
 }

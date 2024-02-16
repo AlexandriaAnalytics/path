@@ -3,8 +3,6 @@
 namespace App\Filament\Candidate\Pages;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -18,6 +16,7 @@ class Payments extends Page implements HasForms
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
     public ?int $total_amount = 0;
+    public ?bool $canApplyToDiscount = false;
 
     public $modules = [];
     
@@ -34,9 +33,29 @@ class Payments extends Page implements HasForms
                 'price' => $module->getPriceBasedOnRegion($this->candidate->student->region)
             ];
         });
-        
-        $this->total_amount = $this->modules->sum('price');
 
+        $this->canApplyToDiscount = count($this->modules) == 3; 
+
+        if($this->canApplyToDiscount){
+            // (Valor Original +valor fijo ) *((100+valor porcentaje)/100)
+            $price_with_discount = $this->candidate->student->institute->discounted_price_diferencial;
+            $price_With_discount_percentage = $this->candidate->student->institute->discounted_price_percentage; 
+            
+            $this->total_amount = 
+            ($price_with_discount) * (( 100 + $price_With_discount_percentage ) / 100);
+            
+        }else {
+            $priceDiferencinal = $this->candidate->student->institute
+            ->getLevelPaymentDiferencial($this->candidate->student->level->name);
+            
+            $fixedPrice = $priceDiferencinal->institute_diferencial_aditional_price;
+            $percentagePrice = $priceDiferencinal->institute_diferencial_percentage_price;
+            
+            $this->total_amount = ($this->modules->sum('price') + $fixedPrice) * ((100 + $percentagePrice) / 100);
+        }
+        $price_right_exam = $this->candidate->student->institute->rigth_exam_diferencial;
+        $this->total_amount += $price_right_exam;
+        
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
     }
 
