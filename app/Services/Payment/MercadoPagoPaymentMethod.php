@@ -3,7 +3,7 @@
 namespace App\Services\Payment;
 
 use App\Enums\PaymentMethodResult;
-use App\Services\Payment\contracts\AbstractPayment;
+use App\Services\Payment\Contracts\AbstractPayment;
 use MercadoPago\Client\Common\RequestOptions;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\MercadoPagoConfig;
@@ -12,12 +12,11 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 {
     public function pay(float $amount): PaymentResult
     {
-
         MercadoPagoConfig::setAccessToken($this->getAccessToken());
         $client = new PreferenceClient();
         $preference = $client->create([
-            'id' => 'PATH-'. time(),
-            'external_reference' => 'PATH-'. time(),
+            'id' => 'PATH-' . time(),
+            'external_reference' => 'PATH-' . time(),
             'notification_url' => 'https://d20hsnk8-3000.brs.devtunnels.ms/callbacks/mp',
             'items' => [
                 [

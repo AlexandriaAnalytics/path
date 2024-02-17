@@ -3,8 +3,8 @@
 namespace App\Services\Payment;
 
 use App\Enums\PaymentMethod;
-use App\Services\Payment\contracts\IPayment;
-use App\Services\Payment\contracts\IPaymentFactory;
+use App\Services\Payment\Contracts\IPayment;
+use App\Services\Payment\Contracts\IPaymentFactory;
 
 class PaymentFactory implements IPaymentFactory
 {
@@ -20,4 +20,3 @@ class PaymentFactory implements IPaymentFactory
         }
     }
 }
-
