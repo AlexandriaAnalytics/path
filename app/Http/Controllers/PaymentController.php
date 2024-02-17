@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\PaymentMethodResult;
 use App\Exceptions\PaymentException;
 use App\Http\Requests\PaymentRequest;
-use App\Services\Payment\contracts\IPaymentFactory;
+use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class PaymentController extends Controller
     {
         $this->paymentFactory = $paymentFactory;
     }
-    
+
 
     public function createTransaction()
     {
@@ -34,22 +34,21 @@ class PaymentController extends Controller
     {
 
         $validated = $request->validated();
-        try{
+        try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-    
+
             $paymentMethod->setRedirectSuccess(route('payment.success'));
             $paymentMethod->setRedirectCancel(route('payment.cancel'));
-            
+
             $paymentResult = $paymentMethod->pay((float) $validated['amount']);
-    
-            if($paymentResult->getResult() == PaymentMethodResult::REDIRECT){
+
+            if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
                 return redirect()->away($paymentResult->getRedirectUrl());
             }
-            if($paymentResult->getResult() == PaymentMethodResult::ERROR){
+            if ($paymentResult->getResult() == PaymentMethodResult::ERROR) {
                 return $paymentResult->getMessage(); //TODO: return error view
             }
-
-        }catch(PaymentException $pe){
+        } catch (PaymentException $pe) {
             return $pe->getMessage(); //TODO: return error view
         }
     }
@@ -93,7 +92,5 @@ class PaymentController extends Controller
             return  $response['message'] ?? 'Webhook not verified.';
         }
         */
-
-        
     }
 }
