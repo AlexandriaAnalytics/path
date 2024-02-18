@@ -10,7 +10,7 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaypalPaymentMethod extends AbstractPayment
 {
-    public function pay(float $amount_value): PaymentResult
+    public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult
     {
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
@@ -23,10 +23,12 @@ class PaypalPaymentMethod extends AbstractPayment
                 "cancel_url" => $this->getRedirectCancel(),
             ],
             "purchase_units" => [
-                0 => [
+                [
+                    "description" => $description,
+                    "custom_id" => $id,
                     "amount" => [
-                        "currency_code" => "USD",
-                        "value" => strval($amount_value)
+                        "currency_code" => $currency,
+                        "value" => $amount_value,
                     ]
                 ]
             ]

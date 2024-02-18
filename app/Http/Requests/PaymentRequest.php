@@ -24,7 +24,7 @@ class PaymentRequest extends FormRequest
     {
         return [
             'payment_method' => ['required', 'string', 'exists:payment_methods,slug'],
-            'amount' => ['required', 'numeric', 'min:0.01'],
+            // 'amount' => ['required', 'numeric', 'min:0.01'],
         ];
     }
 

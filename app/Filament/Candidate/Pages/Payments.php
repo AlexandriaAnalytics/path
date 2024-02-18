@@ -19,43 +19,42 @@ class Payments extends Page implements HasForms
     public ?bool $canApplyToDiscount = false;
 
     public $modules = [];
-    
+
     public function __construct()
     { //$candidate->modules[1]->countryModules[0]->price
         // $candidate->modules[1]->countryModules[0]->country->name
 
         $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
         $this->country = $this->candidate->student->region->name;
-        
-        $this->modules = $this->candidate->modules->map(function($module){
+
+        $this->modules = $this->candidate->modules->map(function ($module) {
             return [
                 'name' => $module->name,
                 'price' => $module->getPriceBasedOnRegion($this->candidate->student->region)
             ];
         });
 
-        $this->canApplyToDiscount = count($this->modules) == 3; 
+        $this->canApplyToDiscount = count($this->modules) == 3;
 
-        if($this->canApplyToDiscount){
+        if ($this->canApplyToDiscount) {
             // (Valor Original +valor fijo ) *((100+valor porcentaje)/100)
             $price_with_discount = $this->candidate->student->institute->discounted_price_diferencial;
-            $price_With_discount_percentage = $this->candidate->student->institute->discounted_price_percentage; 
-            
-            $this->total_amount = 
-            ($price_with_discount) * (( 100 + $price_With_discount_percentage ) / 100);
-            
-        }else {
+            $price_With_discount_percentage = $this->candidate->student->institute->discounted_price_percentage;
+
+            $this->total_amount =
+                ($price_with_discount) * ((100 + $price_With_discount_percentage) / 100);
+        } else {
             $priceDiferencinal = $this->candidate->student->institute
-            ->getLevelPaymentDiferencial($this->candidate->level->name);
-            
+                ->getLevelPaymentDiferencial($this->candidate->level->name);
+
             $fixedPrice = $priceDiferencinal->institute_diferencial_aditional_price;
             $percentagePrice = $priceDiferencinal->institute_diferencial_percentage_price;
-            
+
             $this->total_amount = ($this->modules->sum('price') + $fixedPrice) * ((100 + $percentagePrice) / 100);
         }
         $price_right_exam = $this->candidate->student->institute->rigth_exam_diferencial;
         $this->total_amount += $price_right_exam;
-        
+
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
     }
 
@@ -91,7 +90,12 @@ class Payments extends Page implements HasForms
                 ->label('Payment method')
                 ->placeholder('Select a payment method')
                 ->native(false)
-                ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
+                ->options([
+                    'paypal' => 'Paypal',
+                    'stripe' => 'Stripe',
+                    'mercado_pago' => 'Mercado Pago',
+                ])
+            // ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
         ]);
 
         return $form;
@@ -100,20 +104,20 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-        if($payment_method_selected == null){
+        if ($payment_method_selected == null) {
             Notification::make()
-            ->danger()
-            ->title('Payment method not selected')
-            ->send();
+                ->danger()
+                ->title('Payment method not selected')
+                ->send();
             return;
         }
         return redirect()
             ->route(
-                'payment.process', 
+                'payment.process',
                 [
-                    'payment_method' => $payment_method_selected, 
-                    'amount' => $this->total_amount
-                ]);
+                    'payment_method' => $payment_method_selected,
+                ]
+            );
     }
 
     protected function getFormActions()

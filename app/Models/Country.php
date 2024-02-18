@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\PaymentMethod> $paymentMethods
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\CountryModule> $countryModules
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\CountryExam> $countryExams
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Level> $levels
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property string $monetary_unit
+ * @property string $monetary_unit_symbol
+ */
 class Country extends Model
 {
     use HasFactory, Sluggable;
@@ -18,7 +30,7 @@ class Country extends Model
         'monetary_unit',
         'monetary_unit_symbol',
     ];
-    
+
     /*
     public static function boot(): void
     {
@@ -72,7 +84,7 @@ class Country extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return $this->monetary_unit . $this->monetary_unit_symbol. number_format($this->pivot->price, 2, ',', '.');
+        return $this->monetary_unit . $this->monetary_unit_symbol . number_format($this->pivot->price, 2, ',', '.');
     }
 
     public function getMonetaryPrefixAttribute(): string
@@ -87,6 +99,4 @@ class Country extends Model
             ->withPivot('price_right_exam')
             ->withTimestamps();
     }
-
-
 }

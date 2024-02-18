@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Payment\contracts;
+namespace App\Services\Payment\Contracts;
 
 abstract class AbstractPayment implements IPayment
 {
