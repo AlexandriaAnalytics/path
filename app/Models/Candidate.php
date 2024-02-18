@@ -63,9 +63,40 @@ class Candidate extends Pivot
     public function totalAmount(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                // @TODO: Implement this method
-                return 75.25;
+            get: function (): float {
+                $amount = 0;
+
+                if (Module::all()->diff($this->modules)->isEmpty()) {
+                    // If the student has all the modules, apply the complete price
+                    // that may be different from the sum of the individual modules prices
+                    $amount = $this
+                        ->level
+                        ->countries
+                        ->firstWhere('id', $this->student->region->id)
+                        ->pivot
+                        ->price_discounted;
+                } else {
+                    // If the student does not have all the modules, apply the sum of the individual
+                    // modules prices
+                    $amount =  $this
+                        ->level
+                        ->countries
+                        ->firstWhere('id', $this->student->region->id)
+                        ->modules
+                        ->intersect($this->modules)
+                        ->sum('pivot.price');
+                }
+
+                // If the institute has an additional price for this level, apply it
+                $amount += $this
+                    ->student
+                    ->institute
+                    ->levels
+                    ->firstWhere('id', $this->level->id)
+                    ->pivot
+                    ->institute_diferencial_aditional_price;
+
+                return $amount;
             },
         );
     }
@@ -74,7 +105,7 @@ class Candidate extends Pivot
     {
         return Attribute::make(
             get: function () {
-                return 'USD';
+                return $this->student->region->monetary_unit;
             },
         );
     }
