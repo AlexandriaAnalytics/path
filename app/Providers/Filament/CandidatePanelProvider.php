@@ -2,13 +2,11 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use App\Filament\Candidate\Pages\Template\CandidateDahboard;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -21,16 +19,13 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class CandidatePanelProvider extends PanelProvider
 {
-
-
-
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->id('candidate')
             ->path('candidate')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#22526d',
             ])
             ->discoverResources(in: app_path('Filament/Candidate/Resources'), for: 'App\\Filament\\Candidate\\Resources')
             ->discoverPages(in: app_path('Filament/Candidate/Pages'), for: 'App\\Filament\\Candidate\\Pages')

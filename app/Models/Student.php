@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property \App\Models\Institute $institute
+ * @property \App\Models\Country $region
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Exam> $exams
+ * @property int $id
+ */
 class Student extends Model
 {
     use HasFactory;
