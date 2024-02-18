@@ -17,11 +17,13 @@ class LevelResource extends Resource
 {
     protected static ?string $model = Level::class;
 
-    protected static ?string $navigationGroup = 'Exam Management';
+    protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationParentItem = 'Exams';
+    protected static ?string $modelLabel = 'Level setting';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    //protected static ?string $navigationParentItem = 'Exams';
+
+    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -36,7 +38,7 @@ class LevelResource extends Resource
                         Forms\Components\TextInput::make('price_discounted')
                             ->label('Completed price')
                             ->numeric()
-                            ->prefix(function($record){
+                            ->prefix(function ($record) {
                                 return $record->country->monetary_prefix;
                             })
                     ])
@@ -59,8 +61,8 @@ class LevelResource extends Resource
                 Tables\Columns\TextColumn::make('levelCountries')
                     ->badge()
                     ->formatStateUsing(function ($state) {
-                    return $state->country->monetary_prefix . ' ' . $state->price_discounted;
-                })
+                        return $state->country->monetary_prefix . ' ' . $state->price_discounted;
+                    })
                     ->sortable(),
             ])
             ->filters([
