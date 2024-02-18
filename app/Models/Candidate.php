@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $level_id
  * @property int $student_id
  * @property float $total_amount
+ * @property string $currency
  * @property string $candidate_number
  * @property string $status
  * @property string $type_of_certificate
@@ -65,6 +66,15 @@ class Candidate extends Pivot
             get: function () {
                 // @TODO: Implement this method
                 return 75.25;
+            },
+        );
+    }
+
+    public function currency(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return 'USD';
             },
         );
     }
