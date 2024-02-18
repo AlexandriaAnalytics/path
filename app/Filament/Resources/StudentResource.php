@@ -74,12 +74,12 @@ class StudentResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    /* public static function getRelations(): array
     {
         return [
             StudentResource\RelationManagers\ExamsRelationManager::class,
         ];
-    }
+    } */
 
     public static function getPages(): array
     {
