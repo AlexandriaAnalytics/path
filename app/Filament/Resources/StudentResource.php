@@ -32,10 +32,10 @@ class StudentResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('names'),
                 Forms\Components\TextInput::make('surnames'),
-                Forms\Components\Select::make('country')
+                Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
-                    ->options(Country::class)
-                    ->enum(Country::class)
+                    ->relationship('region', 'name')
+                    ->preload()
                     ->searchable(),
                 Forms\Components\TextInput::make('cbu'),
                 Forms\Components\DatePicker::make('birth_date')

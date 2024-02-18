@@ -21,7 +21,6 @@ class StudentFactory extends Factory
             'institute_id' => \App\Models\Institute::factory(),
             'names' => fake()->firstName(),
             'surnames' => fake()->lastName(),
-            'country' => fake()->randomElement(\App\Enums\Country::values()),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',

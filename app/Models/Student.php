@@ -24,15 +24,11 @@ class Student extends Model
         'institute_id',
         'names',
         'surnames',
-        'country',
         'cbu',
         'birth_date',
         'status',
-        'personal_educational_needs'
-    ];
-
-    protected $casts = [
-        'country' => \App\Enums\Country::class,
+        'personal_educational_needs',
+        'country_id'
     ];
 
     protected $attributes = [
