@@ -17,11 +17,13 @@ use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasApiTokens;
     use HasFactory;
+    use HasRoles;
     use Notifiable;
     use LogsActivity;
     use SoftDeletes;
@@ -50,7 +52,10 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     public function canAccessPanel(Panel $panel): bool
     {
-        /** @todo Implement role-based access control */
+        if ($panel->getId() === 'admin' && !$this->hasRole('Superadministrator')) {
+            return false;
+        }
+
         return true;
     }
 
