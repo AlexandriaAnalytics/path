@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
+use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -67,6 +68,15 @@ class Candidate extends Pivot
                 return 75.25;
             },
         );
+    }
+
+    public function currency(): Attribute
+    {
+      return Attribute::make(
+          get: function () {
+              return $this->student->region->monetary_unit;
+          },
+      );
     }
 
     public function getMonetaryString()
