@@ -21,7 +21,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int $minimum_age
  * @property int $maximum_age
  * @property string $modules
- * @property string $tier
  * @property float $complete_price
  */
 class Level extends Model
@@ -33,11 +32,8 @@ class Level extends Model
     protected $fillable = [
         'name',
         'price',
-        'slug',
         'minimum_age',
         'maximum_age',
-        'modules',
-        'tier',
         'complete_price',
     ];
 

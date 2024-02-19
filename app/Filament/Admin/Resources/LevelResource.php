@@ -29,25 +29,27 @@ class LevelResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->required(),
+                Forms\Components\TextInput::make('description')->label('Description'),
                 Forms\Components\Repeater::make('levelCountries')
                     ->relationship()
+                    ->columns(3)
+                    ->columnSpanFull()
                     ->schema([
                         Forms\Components\Select::make('country_id')
                             ->relationship('country', 'name')
-                            ->disabled(),
+                            ->native(false),
                         Forms\Components\TextInput::make('price_discounted')
                             ->label('Completed price')
                             ->numeric()
-                            ->prefix(function ($record) {
-                                return $record->country->monetary_prefix;
-                            })
+                            ->minValue(0),
+                        Forms\Components\TextInput::make('price_right_exam')
+                            ->label('Price right exam')
+                            ->numeric()
+                            ->minValue(0),
                     ])
-                    ->addable(false)
-                    ->deletable(false)
-                    ->grid(2)->columns(2),
-                Forms\Components\TextInput::make('name'),
-                Forms\Components\MarkdownEditor::make('description')->label('Description')->columns(1),
-                Forms\Components\TextInput::make('tier'),
+                    ->minItems(1),
             ])->columns(2);
     }
 
@@ -57,7 +59,6 @@ class LevelResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('tier')->sortable(),
                 Tables\Columns\TextColumn::make('levelCountries')
                     ->badge()
                     ->formatStateUsing(function ($state) {
