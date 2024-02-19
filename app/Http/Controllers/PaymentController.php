@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethodResult;
+use App\Enums\UserStatus;
 use App\Exceptions\PaymentException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Candidate;
@@ -11,8 +12,13 @@ use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
+use LDAP\Result;
+use MercadoPago\Client\MerchantOrder\MerchantOrderClient;
+use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\MercadoPagoConfig;
 
 class PaymentController extends Controller
 {
@@ -26,7 +32,6 @@ class PaymentController extends Controller
 
     public function createTransaction()
     {
-        Log::info('entro al area de pruebas');
         return view('welcome');
     }
 
@@ -45,8 +50,8 @@ class PaymentController extends Controller
             /** @var \App\Models\Candidate $candidate */
             $candidate = session('candidate');
 
-            switch($validated['payment_method'] ){
-                case 'paypal':    
+            switch ($validated['payment_method']) {
+                case 'paypal':
                     $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
                     $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
                     break;
@@ -54,7 +59,7 @@ class PaymentController extends Controller
                     $paymentMethod->setRedirectSuccess(route('payment.mp.success'));
                     $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
                     break;
-                }
+            }
 
             $paymentResult = $paymentMethod->pay(
                 $candidate->id,
@@ -87,7 +92,6 @@ class PaymentController extends Controller
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request['token']);
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-//Log::debug('paypal success transaction' . $response['purchase_units']['payments']['captures']['id']);
             $candidateId = $response['purchase_units'][0]['payments']['captures'][0]['custom_id'];
             $payer_id = $request->input('PayerID');
 
@@ -115,7 +119,7 @@ class PaymentController extends Controller
     }
 
 
-    
+
     /**
      * cancel transaction.
      *
@@ -126,42 +130,71 @@ class PaymentController extends Controller
         return $response['message'] ?? 'You have canceled the transaction.';
     }
 
+    public function mercadopagoNotificationURL(Request $request)
+    {
+        Log::info('notification ' . $request->all());
+        return Response::json(['message' => 'success']);
+    }
+
     public function mercadopagoWebhook(Request $request)
     {
-/*
-        MercadoPagoConfig::setAccessToken(config('mercadopago.mode') === 'sandbox'
-            ? config('mercadopago.sandbox.access_token')
-            : config('mercadopago.live.access_token'));
 
-        $id = $request->input('id');
-        $paymentClient = new PaymentClient();
-        $payment = $paymentClient->get($id);
-        $orderClient = new MerchantOrderClient();
-        $order = $orderClient->get($payment->order_id);
-
-        // For each $order->items as $item
-        foreach ($order->items as $item) {
-            $candidate = Candidate::find($item->id);
-            $candidate->status = UserStatus::Paid;
-            $candidate->save();
+        if ($request->input('action') == null) {
+            return Response::json(['status' => 'do_nothing']);
         }
-*/
-        
-        Log::info('entro mercado pago webhook', $request->all());
-        return Response::json(['status' => 'success']);
+
+        if ($request->input('action') == 'payment.created') {
+
+            $orderId = $request->input('data.id');
+
+            $token = config('mercadopago.mode') == 'sandbox' ? config('mercadopago.sandbox.access_token') : config('mercadopago.live.access_token');
+
+
+            $headers = [
+                'Authorization' => 'Bearer ' . $token,
+            ];
+
+            $url = 'https://api.mercadopago.com/v1/payments/' . $orderId;
+
+            $response = Http::withToken($token)->get($url);
+
+            if ($response->successful()) {
+                $result = $response->body();
+                $data = json_decode($result, true);
+
+                $candidateId = $data['external_reference'];
+
+                Payment::create([
+                    'candidate_id' => $candidateId,
+                    'payment_method' => 'mercado_pago',
+                    'payment_id' => $orderId,
+                    'currency' => $data['currency_id'],
+                    'amount' => $data['additional_info']['items'][0]['unit_price'],
+                    'status' => 'approved',
+                ]);
+
+                $candidate = Candidate::find($candidateId);
+                $candidate->status = 'paid';
+                $candidate->save();
+            }
+
+
+
+
+            return Response::json(['status' => 'success']);
+        }
     }
 
     public function processTransactionCuotas(PaymentRequest $request)
     {
         $validated = $request->validated();
 
-        
-        try
-        {
+
+        try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-            
-            switch($validated['payment_method'] ){ //TODO: sacar este horrible switch e implementar algun tipo de interfaz
-                case 'paypal':    
+
+            switch ($validated['payment_method']) { //TODO: sacar este horrible switch e implementar algun tipo de interfaz
+                case 'paypal':
                     $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
                     $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
                     break;
@@ -169,54 +202,51 @@ class PaymentController extends Controller
                     $paymentMethod->setRedirectSuccess(route('payment.mp.success'));
                     $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
                     break;
-                }
+            }
             $paymentResult = $paymentMethod->suscribe(
                 2, //session('candidate')->id,
                 'ARS',
                 session('candidate')->total_amount,
                 'pago en 3 cuotas',
-                 $request->input('cuotas')
+                $request->input('cuotas')
             );
-    
+
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
                 return redirect()->away($paymentResult->getRedirectUrl());
             }
             if ($paymentResult->getResult() == PaymentMethodResult::ERROR) {
                 return $paymentResult->getMessage(); //TODO: return error view
             }
-
-        }catch(PaymentException $pe){
+        } catch (PaymentException $pe) {
             return $pe->getMessage(); //TODO: return error view
         }
     }
 
-    
+
     public function paypalWebhook(Request $request)
     {
         $eventType = $request->input('event_type');
         $resource = $request->input('resource');
         $payment_id = $resource['id'];
-        Log::info('paypal webhook -> ' . $eventType .  ' id ' . $payment_id );
+        Log::info('paypal webhook -> ' . $eventType .  ' id ' . $payment_id);
         switch ($eventType) {
             case 'CHECKOUT.ORDER.APPROVED':
 
-                Log::info('entre');
                 $payment = Payment::where('payment_id', $resource['id'])->first();
-                if($payment != null){
+                if ($payment != null) {
                     $payment->status = 'approved';
                     $payment->save();
-                    
-                        $candidate = Candidate::find($payment->candidate_id);
-                        $candidate->status = 'paid';
-                        $candidate->save();        
-    
-                    }
+
+                    $candidate = Candidate::find($payment->candidate_id);
+                    $candidate->status = 'paid';
+                    $candidate->save();
+                }
                 break;
 
-                default:
+            default:
                 break;
-            }
-            
+        }
+
         return Response::json(['status' => 'success']);
     }
 }

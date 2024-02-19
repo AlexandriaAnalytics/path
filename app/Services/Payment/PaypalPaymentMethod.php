@@ -8,8 +8,6 @@ use App\Models\Payment;
 use App\Services\Payment\Contracts\AbstractPayment;
 use Carbon\Carbon;
 use Exception;
-use Hamcrest\Type\IsNumeric;
-use Srmklive\PayPal\Facades\PayPal;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaypalPaymentMethod extends AbstractPayment

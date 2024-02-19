@@ -141,6 +141,15 @@ class Payments extends Page implements HasForms
                 ->send();
             return;
         }
+
+        if($payment_method_selected == 'stripe' || $payment_method_selected == 'Stripe'){
+            Notification::make()
+            ->danger()
+            ->title('Method in construction 🚧')
+            ->send();
+            return;
+        }
+
         return redirect()
             ->route(
                 'payment.process',

@@ -3,6 +3,7 @@
 namespace App\Services\Payment;
 
 use App\Enums\PaymentMethodResult;
+use App\Exceptions\PaymentException;
 use App\Services\Payment\Contracts\AbstractPayment;
 use Carbon\Carbon;
 use Exception;
@@ -11,23 +12,32 @@ use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Resources\PreApproval;
+use Ramsey\Uuid\Type\Integer;
 
 class MercadoPagoPaymentMethod extends AbstractPayment
 {
     public function pay(string $id, string $description, string $currency, string $amount_value, string $mode = 'single'): PaymentResult
     {
+
+        if(!is_numeric($amount_value)){
+            throw new PaymentException('Must be insert a correct amount');
+        }
+
+        $numeric_amount = round($amount_value);
+
         MercadoPagoConfig::setAccessToken($this->getAccessToken());
         $client = new PreferenceClient();
+        $now = Carbon::now()->timestamp;
         $preference = $client->create([
-            'id' => 'PATH-' . time(),
-            'external_reference' => 'PATH-' . time(),
+            'id' => 'PATH-' . $now,
+            'external_reference' => $id,
             'notification_url' => route('payment.mercadopago.webhook'),
             'items' => [
                 [
-                    'title' => $description,
+                    'title' => 'description',
                     'quantity' => 1,
-                    'currency_id' => $currency,
-                    'unit_price' => $amount_value,
+                    'currency_id' => "ARS",
+                    'unit_price' =>  $numeric_amount,//$amount_value,
                 ],
             ],
         ]);
@@ -160,4 +170,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             'message',
         );
     }
+
+    
 }
