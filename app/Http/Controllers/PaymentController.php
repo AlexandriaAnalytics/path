@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethodResult;
-use App\Enums\UserStatus;
 use App\Exceptions\PaymentException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Candidate;
@@ -12,12 +11,8 @@ use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
-use MercadoPago\Client\MerchantOrder\MerchantOrderClient;
-use MercadoPago\Client\Payment\PaymentClient;
-use MercadoPago\MercadoPagoConfig;
 
 class PaymentController extends Controller
 {
@@ -29,12 +24,12 @@ class PaymentController extends Controller
         $this->paymentFactory = $paymentFactory;
     }
 
-
     public function createTransaction()
     {
         Log::info('entro al area de pruebas');
         return view('welcome');
     }
+
     /**
      * process transaction.
      *
@@ -49,8 +44,17 @@ class PaymentController extends Controller
 
             /** @var \App\Models\Candidate $candidate */
             $candidate = session('candidate');
-            $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
-            $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
+
+            switch($validated['payment_method'] ){
+                case 'paypal':    
+                    $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
+                    $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
+                    break;
+                case 'mercado_pago':
+                    $paymentMethod->setRedirectSuccess(route('payment.mp.success'));
+                    $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
+                    break;
+                }
 
             $paymentResult = $paymentMethod->pay(
                 $candidate->id,
@@ -69,6 +73,7 @@ class PaymentController extends Controller
             return $pe->getMessage(); //TODO: return error view
         }
     }
+
     /**
      * success transaction.
      *
@@ -77,7 +82,6 @@ class PaymentController extends Controller
     public function paypalSuccessTransaction(Request $request)
     {
         $provider = new PayPalClient;
-
 
         $provider->setApiCredentials(config('paypal'));
         $provider->getAccessToken();
@@ -99,6 +103,19 @@ class PaymentController extends Controller
             return  $response['message'] ?? 'Something went wrong.';
         }
     }
+
+    public function mpSuccessTransaction(Request $request)
+    {
+        return $request['message'] ?? 'success';
+    }
+
+    public function mpCancelTransaction(Request $request)
+    {
+        return 'something went wrong';
+    }
+
+
+    
     /**
      * cancel transaction.
      *
@@ -109,14 +126,9 @@ class PaymentController extends Controller
         return $response['message'] ?? 'You have canceled the transaction.';
     }
 
-    public function webhook(Request $request)
+    public function mercadopagoWebhook(Request $request)
     {
-      // TODO: implement webhook generic
-    }
-
-    public function mercadoPagoWebhook(Request $request)
-    {
-
+/*
         MercadoPagoConfig::setAccessToken(config('mercadopago.mode') === 'sandbox'
             ? config('mercadopago.sandbox.access_token')
             : config('mercadopago.live.access_token'));
@@ -133,7 +145,9 @@ class PaymentController extends Controller
             $candidate->status = UserStatus::Paid;
             $candidate->save();
         }
-
+*/
+        
+        Log::info('entro mercado pago webhook', $request->all());
         return Response::json(['status' => 'success']);
     }
 
@@ -141,14 +155,21 @@ class PaymentController extends Controller
     {
         $validated = $request->validated();
 
+        
         try
         {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-    
             
-            $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
-            $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
-    
+            switch($validated['payment_method'] ){ //TODO: sacar este horrible switch e implementar algun tipo de interfaz
+                case 'paypal':    
+                    $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
+                    $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
+                    break;
+                case 'mercado_pago':
+                    $paymentMethod->setRedirectSuccess(route('payment.mp.success'));
+                    $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
+                    break;
+                }
             $paymentResult = $paymentMethod->suscribe(
                 2, //session('candidate')->id,
                 'ARS',

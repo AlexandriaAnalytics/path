@@ -80,9 +80,11 @@ Route::get('/payment/process/cuotas', [PaymentController::class, 'processTransac
 
 Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccessTransaction'])->name('payment.paypal.success');
 Route::get('/payment/paypal/canceled', [PaymentController::class, 'paypalCancelTransaction'])->name('payment.paypal.cancel');
+Route::get('/payment/mp/success', [PaymentController::class, 'mpSuccessTransaction'])->name('payment.mp.success');
+Route::get('/payment/mp/canceled', [PaymentController::class, 'mpCancelTransaction'])->name('payment.mp.cancel');
 
 Route::get('/payment/webhook/paypal', [PaymentController::class, 'webhook'])->name('payment.webhook');
 
 // Payment webhooks
-Route::post('/payment/webhook/mercadopago', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
-Route::post('/payment/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');
+Route::post('/payment/webhook/mp', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
+Route::post('/payment/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  
