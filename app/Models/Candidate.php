@@ -2,19 +2,19 @@
 
 namespace App\Models;
 
-use App\Casts\StudentModules;
-use App\Enums\UserStatus;
+use App\Jobs\AddCandidateBillableConcepts;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @property \App\Models\Student $student
  * @property \App\Models\Level $level
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Exam> $exam
+ * @property \Illuminate\Support\Collection $billed_concepts
  * @property int $id
  * @property int $level_id
  * @property int $student_id
@@ -35,8 +35,29 @@ class Candidate extends Pivot
         'student_id',
         'candidate_number',
         'status',
-        'type_of_certificate'
+        'type_of_certificate',
+        'billed_concepts', // The concepts that have been billed to the student
     ];
+
+    /**
+     * The default values for the model's attributes.
+     */
+    protected $attributes = [
+        'billed_concepts' => '[]',
+    ];
+
+    protected $casts = [
+        'billed_concepts' => AsCollection::class,
+    ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function (Candidate $candidate) {
+            AddCandidateBillableConcepts::dispatch($candidate)->afterResponse();
+        });
+    }
 
     public function student(): BelongsTo
     {
@@ -63,40 +84,8 @@ class Candidate extends Pivot
     public function totalAmount(): Attribute
     {
         return Attribute::make(
-            get: function (): float {
-                $amount = 0;
-
-                if (Module::all()->diff($this->modules)->isEmpty()) {
-                    // If the student has all the modules, apply the complete price
-                    // that may be different from the sum of the individual modules prices
-                    $amount = $this
-                        ->level
-                        ->countries
-                        ->firstWhere('id', $this->student->region->id)
-                        ->pivot
-                        ->price_discounted;
-                } else {
-                    // If the student does not have all the modules, apply the sum of the individual
-                    // modules prices
-                    $amount =  $this
-                        ->level
-                        ->countries
-                        ->firstWhere('id', $this->student->region->id)
-                        ->modules
-                        ->intersect($this->modules)
-                        ->sum('pivot.price');
-                }
-
-                // If the institute has an additional price for this level, apply it
-                $amount += $this
-                    ->student
-                    ->institute
-                    ->levels
-                    ->firstWhere('id', $this->level->id)
-                    ->pivot
-                    ->institute_diferencial_aditional_price;
-
-                return $amount;
+            get: function () {
+                return $this->billed_concepts->sum('amount');
             },
         );
     }

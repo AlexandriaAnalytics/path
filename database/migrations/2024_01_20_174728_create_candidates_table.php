@@ -27,6 +27,8 @@ return new class extends Migration
 
             $table->enum('type_of_certificate', TypeOfCertificate::values());
 
+            $table->json('billed_concepts');
+
             $table->timestamps();
         });
     }
