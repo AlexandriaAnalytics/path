@@ -152,8 +152,7 @@ class InstituteResource extends Resource
                             ->relationship()
                             ->schema([
                                 Select::make('level')
-                                    ->relationship('level', 'name')
-                                    ->disabled(),
+                                    ->relationship('level', 'name'),
                                 TextInput::make('institute_diferencial_percentage_price')
                                     ->label('Percentage price difference')
                                     ->type('number')
@@ -165,8 +164,10 @@ class InstituteResource extends Resource
                                 Toggle::make('can_edit')
                                     ->label('Can set right exam price') 
                                     ->reactive() // Ensure reactivity for conditional behavior
-                                    ->hidden(fn (InstituteLevel $instituteLevel): bool => $instituteLevel->institute->instituteType->slug !== 'premium_exam_centre'),
-                                
+                                    ->hidden(fn (InstituteLevel $instituteLevel): bool => 
+                                         $instituteLevel->institute && 
+                                         $instituteLevel->institute->instituteType && 
+                                         $instituteLevel->institute->instituteType->slug !== 'premium_exam_centre')
                             ]),
                     ])->columns(1),
             ]);
