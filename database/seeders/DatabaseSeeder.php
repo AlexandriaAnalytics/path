@@ -12,6 +12,7 @@ use App\Models\Module;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             PeriodSeeder::class,
             LevelSeeder::class,
             ModuleSeeder::class,
+            RoleSeeder::class,
             StatusSeeder::class
         ]);
 
@@ -59,7 +61,7 @@ class DatabaseSeeder extends Seeder
                 $exam->modules()->attach($modules->random(3));
             });
 
-        User::factory()
+        $testUser = User::factory()
             ->has(
                 Institute::factory(3)
                     ->afterCreating(function (Institute $institute, User $user): void {
@@ -71,7 +73,7 @@ class DatabaseSeeder extends Seeder
                             $institute->levels()->attach($level, [
                                 'institute_diferencial_percentage_price' => rand(-20, 20),
                                 'institute_diferencial_aditional_price' => rand(-500, 500),
-                                'institute_right_exam' => $institute->instituteType->slug == 'premium_exam_centre'? rand(1000, 5000) : null,
+                                'institute_right_exam' => $institute->instituteType->slug == 'premium_exam_centre' ? rand(1000, 5000) : null,
                                 'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
                             ]);
                         }
@@ -81,13 +83,13 @@ class DatabaseSeeder extends Seeder
                         Student::factory(10)
                         //->hasAttached($exams->random(3)),
                     )
-
             )
             ->create([
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ]);
 
+        $testUser->assignRole(Role::firstOrCreate(['name' => 'Superadministrator'])->first());
 
         User::factory(10)
             ->has(

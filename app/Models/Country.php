@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\PaymentMethod> $paymentMethods
@@ -23,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Country extends Model
 {
     use HasFactory, Sluggable;
+    use LogsActivity;
 
     protected $fillable = [
         'name',
@@ -43,6 +46,11 @@ class Country extends Model
     }
 
     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function sluggable(): array
     {

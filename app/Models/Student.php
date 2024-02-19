@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property \App\Models\Institute $institute
@@ -18,26 +20,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Student extends Model
 {
     use HasFactory;
+    use LogsActivity;
     use SoftDeletes;
 
     protected $fillable = [
         'institute_id',
         'names',
         'surnames',
-        'country',
         'cbu',
         'birth_date',
         'status',
-        'personal_educational_needs'
-    ];
-
-    protected $casts = [
-        'country' => \App\Enums\Country::class,
+        'personal_educational_needs',
+        'country_id'
     ];
 
     protected $attributes = [
         'status' => 'active',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function firstName(): Attribute
     {

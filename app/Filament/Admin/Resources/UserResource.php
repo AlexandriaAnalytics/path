@@ -27,8 +27,10 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
                 Fieldset::make('User Information')
+                    ->columnSpan(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -46,6 +48,17 @@ class UserResource extends Resource
                             ->dehydrated(fn (?string $state): bool => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->hiddenOn(['view']),
+                    ]),
+                Fieldset::make('Access Control')
+                    ->columnSpan(1)
+                    ->schema([
+                        Forms\Components\Select::make('roles')
+                            ->relationship(
+                                name: 'roles',
+                                titleAttribute: 'name',
+                            )
+                            ->multiple()
+                            ->preload(true),
                     ]),
             ]);
     }

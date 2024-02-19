@@ -15,34 +15,34 @@ class ModuleResource extends Resource
 {
     protected static ?string $model = Module::class;
 
-    protected static ?string $navigationGroup = 'Corporate';
+    protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Forms\Components\TextInput::make('name'),
-            
-            Forms\Components\Repeater::make('countryModules')
-            ->relationship()
             ->schema([
-                Forms\Components\Select::make('country_id')
-                ->relationship('country', 'name')
-                ->disabled(),
-                Forms\Components\TextInput::make('price')
-                
-                ->prefix(fn(?Model $record) => $record->country->monetary_prefix)
-                ])
-                
-                
-                ->deletable(false)
-                ->addable(false)
-                ->grid(2),
-                
+                Forms\Components\TextInput::make('name'),
+
+                Forms\Components\Repeater::make('countryModules')
+                    ->relationship()
+                    ->schema([
+                        Forms\Components\Select::make('country_id')
+                            ->relationship('country', 'name')
+                            ->disabled(),
+                        Forms\Components\TextInput::make('price')
+
+                            ->prefix(fn (?Model $record) => $record->country->monetary_prefix)
+                    ])
+
+
+                    ->deletable(false)
+                    ->addable(false)
+                    ->grid(2),
+
             ]);
     }
 
@@ -52,12 +52,10 @@ class ModuleResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('countries')
-                ->badge()
-                ->formatStateUsing(function ($state) {
-                    return $state->name . ' '. $state->formatted_price;
-                })
-                
-                ,
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return $state->name . ' ' . $state->formatted_price;
+                    }),
             ])
             ->filters([
                 //
