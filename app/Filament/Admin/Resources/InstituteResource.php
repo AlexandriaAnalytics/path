@@ -151,7 +151,7 @@ class InstituteResource extends Resource
                             ->addable(false)
                             ->relationship()
                             ->schema([
-                                Select::make('level')
+                                Select::make('level_id')
                                     ->relationship('level', 'name'),
                                 TextInput::make('institute_diferencial_percentage_price')
                                     ->label('Percentage price difference')
