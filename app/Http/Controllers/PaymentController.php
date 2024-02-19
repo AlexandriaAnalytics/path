@@ -111,17 +111,7 @@ class PaymentController extends Controller
 
     public function webhook(Request $request)
     {
-        /*
-        $provider = new PayPalClient;
-        $provider->setApiCredentials(config('paypal'));
-        $provider->getAccessToken();
-        $response = $provider->verifyWebhook($request->getContent());
-        if (isset($response['status']) && $response['status'] == 'VERIFIED') {
-            return 'Webhook verified.';
-        } else {
-            return  $response['message'] ?? 'Webhook not verified.';
-        }
-        */
+      // TODO: implement webhook generic
     }
 
     public function mercadoPagoWebhook(Request $request)
@@ -147,25 +137,35 @@ class PaymentController extends Controller
         return Response::json(['status' => 'success']);
     }
 
-    public function processTransactionCuotas(Request $request)
+    public function processTransactionCuotas(PaymentRequest $request)
     {
-        $paymentMethod = $this->paymentFactory->create('paypal');
-        $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
-        $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
+        $validated = $request->validated();
 
-        $paymentResult = $paymentMethod->suscribe(
-            2, //session('candidate')->id,
-            'USD',
-            session('candidate')->total_amount,
-            'pago en 3 cuotas',
-            $request->input('cuotas')
-        );
+        try
+        {
+            $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
+    
+            
+            $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
+            $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
+    
+            $paymentResult = $paymentMethod->suscribe(
+                2, //session('candidate')->id,
+                'ARS',
+                session('candidate')->total_amount,
+                'pago en 3 cuotas',
+                 $request->input('cuotas')
+            );
+    
+            if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
+                return redirect()->away($paymentResult->getRedirectUrl());
+            }
+            if ($paymentResult->getResult() == PaymentMethodResult::ERROR) {
+                return $paymentResult->getMessage(); //TODO: return error view
+            }
 
-        if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
-            return redirect()->away($paymentResult->getRedirectUrl());
-        }
-        if ($paymentResult->getResult() == PaymentMethodResult::ERROR) {
-            return $paymentResult->getMessage(); //TODO: return error view
+        }catch(PaymentException $pe){
+            return $pe->getMessage(); //TODO: return error view
         }
     }
 

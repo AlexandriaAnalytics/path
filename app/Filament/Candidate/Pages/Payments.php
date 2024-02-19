@@ -85,6 +85,11 @@ class Payments extends Page implements HasForms
         return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => 3]);
     }
 
+    public function payWithMercadoPago()
+    {
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' =>3]);
+    }
+
     protected function getActions(): array
     {
         return [
@@ -100,6 +105,10 @@ class Payments extends Page implements HasForms
             Action::make('3Cuotas')
                 ->icon('heroicon-o-currency-dollar')
                 ->action(fn () => $this->payWithPaypal3Cuotas()),
+
+            Action::make('3cuotasmp')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->payWithMercadoPago()),
         ];
     }
 
