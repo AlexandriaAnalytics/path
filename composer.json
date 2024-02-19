@@ -23,6 +23,7 @@
         "mpdf/mpdf": "^8.2",
         "sentry/sentry-laravel": "^4.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/laravel-activitylog": "^4.7",
         "spatie/laravel-pdf": "^1.1",
         "srmklive/paypal": "~3.0",
         "ysfkaya/filament-phone-input": "^2.3"

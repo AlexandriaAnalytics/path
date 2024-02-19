@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Jobs\AddCandidateBillableConcepts;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property \App\Models\Student $student
@@ -24,11 +26,9 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property string $status
  * @property string $type_of_certificate
  */
-class Candidate extends Pivot
+class Candidate extends Model
 {
-    public $incrementing = true;
-
-    protected $table = 'candidates';
+    use LogsActivity;
 
     protected $fillable = [
         'level_id',
@@ -57,6 +57,12 @@ class Candidate extends Pivot
         static::created(function (Candidate $candidate) {
             AddCandidateBillableConcepts::dispatch($candidate)->afterResponse();
         });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
     }
 
     public function student(): BelongsTo

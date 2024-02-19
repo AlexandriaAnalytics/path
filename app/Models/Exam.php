@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Level> $levels
@@ -41,6 +42,12 @@ class Exam extends Model
         'scheduled_date' => 'datetime',
         'type' => \App\Enums\ExamType::class,
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function levels(): BelongsToMany
     {
