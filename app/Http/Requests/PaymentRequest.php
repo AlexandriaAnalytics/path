@@ -23,8 +23,7 @@ class PaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_method' => ['required', 'string', 'exists:payment_methods,slug'],
-            // 'amount' => ['required', 'numeric', 'min:0.01'],
+            'payment_method' => ['required', 'string', 'exists:payment_methods,slug']
         ];
     }
 
@@ -34,9 +33,6 @@ class PaymentRequest extends FormRequest
             'payment_method.required' => 'El método de pago es requerido',
             'payment_method.string' => 'El método de pago debe ser una cadena de texto',
             'payment_method.in' => 'El método de pago no es válido',
-            'amount.required' => 'El monto es requerido',
-            'amount.numeric' => 'El monto debe ser un número',
-            'amount.min' => 'El monto debe ser mayor a 0',
         ];
     }
     

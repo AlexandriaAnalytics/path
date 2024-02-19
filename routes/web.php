@@ -75,8 +75,16 @@ Route::get('/pdf/candidate/{id}', function ($id) {
 // Payment routes for all payment methodss
 Route::get('/payment/pay', [PaymentController::class, 'createTransaction'])->name('payment.create');
 Route::get('/payment/process', [PaymentController::class, 'processTransaction'])->name('payment.process');
-Route::get('/payment/success', [PaymentController::class, 'successTransaction'])->name('payment.success');
-Route::get('/payment/canceled', [PaymentController::class, 'cancelTransaction'])->name('payment.cancel');
+Route::get('/payment/process/cuotas', [PaymentController::class, 'processTransactionCuotas'])->name('payment.process.cuotas');
+
+
+Route::get('/payment/paypal/success', [PaymentController::class, 'paypalSuccessTransaction'])->name('payment.paypal.success');
+Route::get('/payment/paypal/canceled', [PaymentController::class, 'paypalCancelTransaction'])->name('payment.paypal.cancel');
+Route::get('/payment/mp/success', [PaymentController::class, 'mpSuccessTransaction'])->name('payment.mp.success');
+Route::get('/payment/mp/canceled', [PaymentController::class, 'mpCancelTransaction'])->name('payment.mp.cancel');
 
 Route::get('/payment/webhook/paypal', [PaymentController::class, 'webhook'])->name('payment.webhook');
-Route::post('/payment/webhook/mercadopago', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
+
+// Payment webhooks
+Route::post('/payment/webhook/mp', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
+Route::post('/payment/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  

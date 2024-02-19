@@ -6,12 +6,13 @@ use Filament\Tables\Table;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\TableWidget;
+use App\Models\Candidate;
 
 class WidgetCandidate extends BaseWidget
 {
     protected function getStats(): array
     {
-        $candidate = session('candidate');
+        $candidate =  Candidate::find(session('candidate')->id);
         
         return [ // i want to show the candidate number here from session variable call candidate
             Stat::make('Candidate Number', $candidate->id),
