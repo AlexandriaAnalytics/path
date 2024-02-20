@@ -5,10 +5,12 @@ namespace App\Models;
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
 use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Facades\DB;
 
@@ -49,6 +51,11 @@ class Candidate extends Pivot
         'status' => UserStatus::Unpaid,
     ];
 
+    public function candidateExam(): HasMany
+    {
+        return $this->hasMany(CandidateExam::class);
+    }
+
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
@@ -65,9 +72,31 @@ class Candidate extends Pivot
             ->withTimestamps();
     }
 
-    public function exam(): BelongsToMany
+    /**
+     * Get the pending modules to be assigned to the candidate.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function pendingModules(): BelongsToMany
+    {
+        return $this
+            ->modules()
+            ->where(
+                fn (Builder $query) => $query->whereDoesntHave(
+                    'exams',
+                    fn (Builder $query) => $query->whereHas(
+                        'candidates',
+                        fn (Builder $query) => $query->where('candidates.id', $this->id)
+                            ->whereColumn('module_id', 'modules.id'),
+                    ),
+                ),
+            );
+    }
+
+    public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'candidate_exam', 'candidate_id', 'exam_id')
+            ->withPivot('module_id')
             ->withTimestamps();
     }
 

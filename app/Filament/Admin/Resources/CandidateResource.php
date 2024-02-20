@@ -26,6 +26,7 @@ use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
@@ -125,36 +126,13 @@ class CandidateResource extends Resource
 
                 //Exam
                 IconColumn::make('modules')
+                    ->alignCenter()
                     ->label('Exam session')
-                    ->icon(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
-                    })
-                    ->tooltip(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
-                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
-                    })
-                    ->color(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'success' : 'warning';
-                    }),
-
+                    ->icon(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
+                    ->tooltip(fn (Candidate $record) => $record->pendingModules->isNotEmpty()
+                        ? "Pending modules: {$record->pendingModules->pluck('name')->join(', ')}"
+                        : 'All modules assigned')
+                    ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
@@ -165,7 +143,7 @@ class CandidateResource extends Resource
                     ->preload(),
                 SelectFilter::make('exam_id')
                     ->label('Exam')
-                    ->relationship('exam', 'session_name')
+                    ->relationship('exams', 'session_name')
                     ->searchable()
                     ->multiple()
                     ->preload(),
@@ -251,16 +229,6 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ]),
-        ];
-    }
-
-    public static function getExamColumns(): array
-    {
-        return [
-            ColumnGroup::make('Exam', [
-                TextColumn::make('exam.session_name')
-                    ->label('Session Name'),
             ]),
         ];
     }

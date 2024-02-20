@@ -3,25 +3,17 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
-use App\Filament\Resources\CandidateResource as ResourcesCandidateResource;
 use App\Models\Candidate;
-use App\Models\CandidateModule;
 use App\Models\Exam;
-use App\Models\ExamSession;
 use App\Models\Module;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
-use Filament\Tables\Columns\Column;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 
 class ViewCandidate extends ViewRecord
 {
@@ -48,16 +40,16 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('institute.name')
                             ->label('Institute'),
                     ]),
-                RepeatableEntry::make('exam')
+                RepeatableEntry::make('exams')
+                    ->columns(3)
                     ->schema([
                         TextEntry::make('session_name')
                             ->label('Exam session'),
-                        TextEntry::make('candidates')
-                            ->formatStateUsing(function ($record) {
-                                $moduleId = $record->pivot->module_id;
-                                return Module::where('id', $moduleId)->value('name');
-                            }),
                         TextEntry::make('scheduled_date')
+                            ->label('Scheduled date'),
+                        TextEntry::make('pivot.module_id')
+                            ->label('Module')
+                            ->formatStateUsing(fn ($state) => Module::find($state)->name),
                     ])
                     ->columnSpanFull()
                     ->grid(2),
@@ -82,51 +74,37 @@ class ViewCandidate extends ViewRecord
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
             Action::make('Assign exam session')
+                ->disabled(fn (Candidate $record) => $record->pendingModules->isEmpty())
                 ->form([
-                    Select::make('module')
+                    Select::make('module_id')
+                        ->label('Module')
+                        ->placeholder('Select a module')
                         ->required()
+                        ->native(false)
                         ->live()
-                        ->options(function (Candidate $record) {
-                            $candidateId = $record->getKey();
-
-                            if (!$candidateId) {
-                                return [];
-                            }
-                            return CandidateModule::query()
-                                ->whereCandidateId($candidateId)
-                                ->join('modules', 'modules.id', '=', 'candidate_module.module_id')
-                                ->pluck('modules.name', 'modules.id');
-                        })
+                        ->options(fn (Candidate $record) => $record->pendingModules->pluck('name', 'id'))
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
                     Select::make('exam_id')
                         ->label('Exam Session')
-                        ->options(function (callable $get, Candidate $record) {
-                            $moduleId = $get('module');
-                            $levelId = $record->level_id;
-
-                            if (!$moduleId) {
-                                return [];
-                            }
-
-                            $exams = Exam::whereHas('modules', function ($query) use ($moduleId) {
-                                $query->where('module_id', $moduleId);
-                            })->whereHas('levels', function ($query) use ($levelId) {
-                                $query->where('level_id', $levelId);
-                            })->get();
-                            return $exams->pluck('session_name', 'id');
-                        })
+                        ->native(false)
+                        ->options(
+                            fn (callable $get, Candidate $record) =>
+                            $get('module_id')
+                                ? Exam::whereHas('modules', fn ($query) => $query->where('modules.id', $get('module_id')))
+                                ->whereDoesntHave('candidates', fn ($query) => $query->where('candidates.id', $record->id))
+                                ->pluck('session_name', 'id')
+                                : []
+                        )
                         ->required(),
                 ])
-                ->action(function (array $data, Candidate $record): void {
-                    $candidateId = $record->getKey();
-                    $examId = $data['exam_id'];
-                    $moduleId = $data['module'];
-                    $exam = Exam::findOrFail($examId);
-                    $record->exam()->attach($exam, ['candidate_id' => $candidateId, 'exam_id' => $examId, 'module_id' => $moduleId]);
-
-                    $record->save();
-                }),
+                ->action(fn (Candidate $record, array $data) => $record
+                    ->exams()
+                    ->attach([
+                        $data['exam_id'] => [
+                            'module_id' => $data['module_id'],
+                        ],
+                    ])),
         ];
     }
 }

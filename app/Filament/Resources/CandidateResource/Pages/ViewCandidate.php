@@ -117,7 +117,7 @@ class ViewCandidate extends ViewRecord
                     $examId = $data['exam_id'];
                     $moduleId = $data['module'];
                     $exam = Exam::findOrFail($examId);
-                    $record->exam()->attach($exam, ['candidate_id' => $candidateId, 'exam_id' => $examId, 'module_id' => $moduleId]);
+                    $record->exams()->attach($exam, ['candidate_id' => $candidateId, 'exam_id' => $examId, 'module_id' => $moduleId]);
 
                     $record->save();
                 }),

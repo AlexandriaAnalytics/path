@@ -77,6 +77,7 @@ class Exam extends Model
     public function candidates(): BelongsToMany
     {
         return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
+            ->withPivot('module_id')
             ->withTimestamps();
     }
 
