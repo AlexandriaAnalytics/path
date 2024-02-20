@@ -80,6 +80,7 @@ class ManagementPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->tenant(Institute::class);
+            ->tenant(Institute::class)
+            ->spa();
     }
 }
