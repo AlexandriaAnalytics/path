@@ -60,7 +60,8 @@ class CandidateResource extends Resource
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
                 ToggleButtons::make('status')
-                    ->options(Status::all()->pluck('name', 'id'))
+                    ->options(UserStatus::class)
+                    ->enum(UserStatus::class)
                     ->required()
                     ->inline()
                     ->colors([
@@ -104,36 +105,7 @@ class CandidateResource extends Resource
                     ->searchable(),
 
                 TextColumn::make('modules.name')
-                    ->badge()
-                /* IconColumn::make('modules')
-                    ->icon(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
-                    })
-                    ->tooltip(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
-                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
-                    })
-                    ->color(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'success' : 'warning';
-                    }) */,
+                    ->badge(),
                 TextColumn::make('level.name')
                     ->sortable()
                     ->searchable()
@@ -147,8 +119,6 @@ class CandidateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 //Exam
-                /* TextColumn::make('exam')
-                    ->label('Session Name') */
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->icon(function (Candidate $candidate) {

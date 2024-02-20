@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
 use Filament\Forms\Get;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -33,9 +34,19 @@ class Candidate extends Pivot
     protected $fillable = [
         'level_id',
         'student_id',
+        'billed_concepts',
         'candidate_number',
         'status',
         'type_of_certificate'
+    ];
+
+    protected $casts = [
+        'billed_concepts' => AsCollection::class,
+    ];
+
+    protected $attributes = [
+        'billed_concepts' => '[]',
+        'status' => UserStatus::Unpaid,
     ];
 
     public function student(): BelongsTo
@@ -72,11 +83,11 @@ class Candidate extends Pivot
 
     public function currency(): Attribute
     {
-      return Attribute::make(
-          get: function () {
-              return $this->student->region->monetary_unit;
-          },
-      );
+        return Attribute::make(
+            get: function () {
+                return $this->student->region->monetary_unit;
+            },
+        );
     }
 
     public function getMonetaryString()
