@@ -23,7 +23,29 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('payment_id')
+                ->required(),
+                Forms\Components\Select::make('payment_method')
+                ->options([
+                    'paypal', 'mercado_libre', 'fisic'
+                    ])
+                ->required(),
+                Forms\Components\TextInput::make('currency')
+                ->required(),
+                Forms\Components\TextInput::make('amount')
+                ->numeric()
+                ->required(),
+                Forms\Components\Select::make('status')
+                ->options([
+                    'pending', 'approved', 'rejected'
+                    ])
+                ->required(),
+               /*
+                Forms\Components\Select::make('candidate_id')
+                ->relationship(name: 'candidate', titleAttribute: 'id')
+                ->preload()
+                ->required(),
+                */
             ]);
     }
 
