@@ -59,19 +59,24 @@ class CandidateResource extends Resource
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
-                ToggleButtons::make('status')
-                    ->options(UserStatus::class)
-                    ->enum(UserStatus::class)
-                    ->required()
-                    ->inline()
-                    ->colors([
-                        '1' => 'info',
-                        '2' => 'danger',
-                        '3' => 'success',
+                Fieldset::make('Certificate and payment')
+                    ->schema([
+                        Select::make('type_of_certificate')
+                            ->options(TypeOfCertificate::class)
+                            ->required()
+                            ->native(false),
+                        ToggleButtons::make('status')
+                            ->options(UserStatus::class)
+                            ->enum(UserStatus::class)
+                            ->required()
+                            ->inline()
+                            ->colors([
+                                '1' => 'info',
+                                '2' => 'danger',
+                                '3' => 'success',
+                            ])
+                            ->hiddenOn('create'),
                     ]),
-                Select::make('type_of_certificate')
-                    ->options(TypeOfCertificate::class)
-                    ->required()
             ]);
     }
 
@@ -207,8 +212,7 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                    })
-                    ->hiddenOn(['create']),
+                    }),
                 TextColumn::make('modules.name')
                     ->badge(),
 
@@ -271,7 +275,7 @@ class CandidateResource extends Resource
     {
         return [
             'index' => Pages\ListCandidates::route('/'),
-            // 'create' => Pages\CreateCandidate::route('/create'),
+            'create' => Pages\CreateCandidate::route('/create'),
             'view' => Pages\ViewCandidate::route('/{record}'),
             'edit' => Pages\EditCandidate::route('/{record}/edit'),
         ];
@@ -281,6 +285,7 @@ class CandidateResource extends Resource
     {
         return [
             Fieldset::make('Student')
+                ->disabledOn('edit')
                 ->schema([
                     Select::make('institute_id')
                         ->label('Institute')
