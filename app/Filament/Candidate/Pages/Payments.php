@@ -21,44 +21,13 @@ class Payments extends Page implements HasForms
     public $modules = [];
 
     public function __construct()
-    { //$candidate->modules[1]->countryModules[0]->price
-        // $candidate->modules[1]->countryModules[0]->country->name
-
+    {
         $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
         $this->country = $this->candidate->student->region->name;
 
-        /*
-        $this->modules = $this->candidate->modules->map(function ($module) {
-            return [
-                'name' => $module->name,
-                'price' => $module->getPriceBasedOnRegion($this->candidate->student->region)
-            ];
-        });
-
-        $this->canApplyToDiscount = count($this->modules) == 3;
-
-        if ($this->canApplyToDiscount) {
-            // (Valor Original +valor fijo ) *((100+valor porcentaje)/100)
-            $price_with_discount = $this->candidate->student->institute->discounted_price_diferencial;
-            $price_With_discount_percentage = $this->candidate->student->institute->discounted_price_percentage;
-
-            $this->total_amount =
-                ($price_with_discount) * ((100 + $price_With_discount_percentage) / 100);
-        } else {
-            $priceDiferencinal = $this->candidate->student->institute
-                ->getLevelPaymentDiferencial($this->candidate->level->name);
-
-            $fixedPrice = $priceDiferencinal->institute_diferencial_aditional_price;
-            $percentagePrice = $priceDiferencinal->institute_diferencial_percentage_price;
-
-            $this->total_amount = ($this->modules->sum('price') + $fixedPrice) * ((100 + $percentagePrice) / 100);
-        }
-        $price_right_exam = $this->candidate->student->institute->rigth_exam_diferencial;
-        */
         $this->total_amount += $this->candidate->total_amount;
 
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
-
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -87,7 +56,7 @@ class Payments extends Page implements HasForms
 
     public function payWithMercadoPago()
     {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' =>3]);
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' => 3]);
     }
 
     protected function getActions(): array
@@ -142,11 +111,11 @@ class Payments extends Page implements HasForms
             return;
         }
 
-        if($payment_method_selected == 'stripe' || $payment_method_selected == 'Stripe'){
+        if ($payment_method_selected == 'stripe' || $payment_method_selected == 'Stripe') {
             Notification::make()
-            ->danger()
-            ->title('Method in construction 🚧')
-            ->send();
+                ->danger()
+                ->title('Method in construction 🚧')
+                ->send();
             return;
         }
 

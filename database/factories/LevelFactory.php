@@ -20,9 +20,6 @@ class LevelFactory extends Factory
         return [
             'name' => fake()->name(),
             'description' => fake()->optional()->realText(),
-            'price' => fake()->randomFloat(2, 0, 100),
-            'complete_price' => fake()->randomFloat(2, 0, 100),
-            'modules' => fake()->optional()->text(),
         ];
     }
 }

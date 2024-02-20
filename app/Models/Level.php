@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -13,7 +14,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Exam> $exams
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Institute> $institutes
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Country> $countries
- * @property \Illuminate\Database\Eloquent\Collection<\App\Models\LevelCountry> $levelCountries
  * @property int $id
  * @property string $name
  * @property float $price
@@ -31,10 +31,9 @@ class Level extends Model
 
     protected $fillable = [
         'name',
-        'price',
+        'description',
         'minimum_age',
         'maximum_age',
-        'complete_price',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -66,7 +65,7 @@ class Level extends Model
             ->withTimestamps();
     }
 
-    public function levelCountries()
+    public function levelCountries(): HasMany
     {
         return $this->hasMany(LevelCountry::class);
     }

@@ -26,13 +26,6 @@ class Module extends Model
             ->logAll();
     }
 
-    public function countries(): BelongsToMany
-    {
-        return $this->belongsToMany(Country::class, 'country_module')
-            ->withPivot('price')
-            ->withTimestamps();
-    }
-
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'exam_module')
@@ -46,18 +39,20 @@ class Module extends Model
             ->withPivot('status');
     }
 
-    public function CandidateExams(): HasMany
+    public function candidateExams(): HasMany
     {
         return $this->hasMany(CandidateExam::class);
     }
 
-    public function countryModules()
+    public function levelCountries(): BelongsToMany
     {
-        return $this->hasMany(CountryModule::class);
+        return $this->belongsToMany(LevelCountry::class, 'level_country_module')
+            ->withPivot('price')
+            ->withTimestamps();
     }
 
-    public function getPriceBasedOnRegion(Country $country)
+    public function levelCountryModules(): HasMany
     {
-        return $this->countryModules->where('country_id', $country->id)->first()->price;
+        return $this->hasMany(LevelCountryModule::class);
     }
 }

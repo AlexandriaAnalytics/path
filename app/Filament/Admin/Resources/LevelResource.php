@@ -3,15 +3,12 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\LevelResource\Pages;
-use App\Filament\Admin\Resources\LevelResource\RelationManagers;
 use App\Models\Level;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LevelResource extends Resource
 {
@@ -30,27 +27,14 @@ class LevelResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\TextInput::make('description')->label('Description'),
-                Forms\Components\Repeater::make('levelCountries')
-                    ->relationship()
-                    ->columns(3)
-                    ->columnSpanFull()
-                    ->schema([
-                        Forms\Components\Select::make('country_id')
-                            ->relationship('country', 'name')
-                            ->native(false),
-                        Forms\Components\TextInput::make('price_discounted')
-                            ->label('Completed price')
-                            ->numeric()
-                            ->minValue(0),
-                        Forms\Components\TextInput::make('price_right_exam')
-                            ->label('Price right exam')
-                            ->numeric()
-                            ->minValue(0),
-                    ])
-                    ->minItems(1),
-            ])->columns(2);
+                    ->label('Name')
+                    ->required()
+                    ->unique(Level::class, 'name', ignoreRecord: true)
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('description')
+                    ->label('Description')
+                    ->maxLength(255),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -59,37 +43,29 @@ class LevelResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('description'),
-                Tables\Columns\TextColumn::make('levelCountries')
-                    ->badge()
-                    ->formatStateUsing(function ($state) {
-                        return $state->country->monetary_prefix . ' ' . $state->price_discounted;
-                    })
-                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            LevelResource\RelationManagers\LevelCountriesRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
+            'view' => Pages\ViewLevel::route('/{record}'),
             'index' => Pages\ListLevels::route('/'),
             'create' => Pages\CreateLevel::route('/create'),
             'edit' => Pages\EditLevel::route('/{record}/edit'),

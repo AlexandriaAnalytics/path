@@ -17,15 +17,12 @@ class CreateLevelsTable extends Migration
 
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2)->nullable();
-            $table->decimal('complete_price', 12, 2)->nullable();
-            $table->text('modules')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
         });
 
-        Schema::create('institute_level', function(Blueprint $table){
+        Schema::create('institute_level', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
             $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
@@ -36,8 +33,7 @@ class CreateLevelsTable extends Migration
             $table->timestamps();
         });
 
-        Schema::create('level_country', function(Blueprint $table)
-        {
+        Schema::create('level_country', function (Blueprint $table) {
             $table->id();
             $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
             $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();

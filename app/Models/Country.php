@@ -13,7 +13,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
 /**
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\PaymentMethod> $paymentMethods
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
- * @property \Illuminate\Database\Eloquent\Collection<\App\Models\CountryModule> $countryModules
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\CountryExam> $countryExams
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Level> $levels
  * @property int $id
@@ -24,8 +23,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class Country extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory;
     use LogsActivity;
+    use Sluggable;
 
     protected $fillable = [
         'name',
@@ -34,18 +34,6 @@ class Country extends Model
         'monetary_unit_symbol',
     ];
 
-    /*
-    public static function boot(): void
-    {
-        parent::boot();
-        static::created(function (Country $country): void {
-            $country->name = ucfirst($country->name);
-            $country->monetary_unit = strtoupper($country->monetary_unit);    
-            $country->save();
-        });
-    }
-
-    */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -71,18 +59,6 @@ class Country extends Model
     public function paymentMethods(): BelongsToMany
     {
         return $this->belongsToMany(PaymentMethod::class, 'country_payment_method')->withTimestamps();
-    }
-
-    // get modules with price for a country
-    public function modules(): BelongsToMany
-    {
-        return $this->belongsToMany(Module::class, 'country_module')
-            ->withPivot('price');
-    }
-
-    public function countryModules(): HasMany
-    {
-        return $this->hasMany(CountryModule::class);
     }
 
     public function countryExams(): HasMany

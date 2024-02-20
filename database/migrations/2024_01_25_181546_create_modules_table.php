@@ -47,18 +47,18 @@ class CreateModulesTable extends Migration
             $table->timestamps();
         });
 
-        Schema::create('country_module', function (Blueprint $table) {
+        Schema::create('level_country_module', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('country_id')
-                ->constrained('countries')
+            $table->foreignId('level_country_id')
+                ->constrained('level_country')
                 ->cascadeOnDelete();
 
             $table->foreignId('module_id')
                 ->constrained('modules')
                 ->cascadeOnDelete();
 
-            $table->double('price', 15, 2);
+            $table->decimal('price', 12, 2);
 
             $table->timestamps();
         });
@@ -70,9 +70,8 @@ class CreateModulesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exam_module');
         Schema::dropIfExists('candidate_module');
+        Schema::dropIfExists('exam_module');
         Schema::dropIfExists('modules');
-        Schema::dropIfExists('country_module');
     }
 }

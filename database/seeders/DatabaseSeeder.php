@@ -37,13 +37,6 @@ class DatabaseSeeder extends Seeder
         $countries = Country::all();
         $modules = Module::all();
 
-        foreach ($modules as $module) {
-            foreach ($countries as $country) {
-                $module->countries()->attach($country, ['price' => rand(100, 1000)]);
-            }
-            $module->save();
-        }
-
         $levels = Level::all();
         foreach ($levels as $level) {
             foreach ($countries as $country) {

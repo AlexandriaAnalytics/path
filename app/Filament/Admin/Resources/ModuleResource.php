@@ -26,23 +26,6 @@ class ModuleResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name'),
-
-                Forms\Components\Repeater::make('countryModules')
-                    ->relationship()
-                    ->schema([
-                        Forms\Components\Select::make('country_id')
-                            ->relationship('country', 'name')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('price')
-
-                            ->prefix(fn (?Model $record) => $record->country->monetary_prefix)
-                    ])
-
-
-                    ->deletable(false)
-                    ->addable(false)
-                    ->grid(2),
-
             ]);
     }
 
@@ -51,11 +34,6 @@ class ModuleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
-                Tables\Columns\TextColumn::make('countries')
-                    ->badge()
-                    ->formatStateUsing(function ($state) {
-                        return $state->name . ' ' . $state->formatted_price;
-                    }),
             ])
             ->filters([
                 //

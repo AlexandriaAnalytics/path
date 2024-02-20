@@ -143,7 +143,7 @@ class CandidateResource extends Resource
                     ->icon(function (Candidate $candidate) {
                         $modules = $candidate->modules;
                         $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                            return $module->candidateExams()->whereHas('candidate', function ($query) use ($candidate) {
                                 $query->where('candidate_id', $candidate->id);
                             })->exists();
                         });
@@ -152,7 +152,7 @@ class CandidateResource extends Resource
                     ->tooltip(function (Candidate $candidate) {
                         $modules = $candidate->modules;
                         $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                            return $module->candidateExams()->whereHas('candidate', function ($query) use ($candidate) {
                                 $query->where('candidate_id', $candidate->id);
                             })->exists();
                         });
@@ -162,7 +162,7 @@ class CandidateResource extends Resource
                     ->color(function (Candidate $candidate) {
                         $modules = $candidate->modules;
                         $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->CandidateExams()->whereHas('candidate', function ($query) use ($candidate) {
+                            return $module->candidateExams()->whereHas('candidate', function ($query) use ($candidate) {
                                 $query->where('candidate_id', $candidate->id);
                             })->exists();
                         });
