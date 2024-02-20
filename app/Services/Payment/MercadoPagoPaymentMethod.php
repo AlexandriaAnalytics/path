@@ -23,13 +23,13 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             throw new PaymentException('Must be insert a correct amount');
         }
 
-        $numeric_amount = round($amount_value);
+        $numeric_amount = round(floatval($amount_value));
 
         MercadoPagoConfig::setAccessToken($this->getAccessToken());
         $client = new PreferenceClient();
         $now = Carbon::now()->timestamp;
         $preference = $client->create([
-            'id' => 'PATH-' . $now,
+            //'id' => 'PATH-' . $now,
             'external_reference' => $id,
             'notification_url' => route('payment.mercadopago.webhook'),
             'items' => [
@@ -42,11 +42,15 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             ],
         ]);
 
+
+
         $preference->redirect_urls = [
             'success' => $this->getRedirectSuccess(),
             'failure' => $this->getRedirectCancel(),
             'pending' => $this->getRedirectCancel(),
         ];
+
+        dd($preference);
 
         $preference->auto_return = "approved";
 

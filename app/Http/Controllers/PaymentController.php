@@ -64,8 +64,8 @@ class PaymentController extends Controller
             $paymentResult = $paymentMethod->pay(
                 $candidate->id,
                 $candidate->student->names,
-                'USD', //$candidate->student->region->monetary_unit,
-                round($candidate->total_amount),
+                $candidate->currency, //$candidate->student->region->monetary_unit,
+                $candidate->total_amount,
             );
 
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
@@ -188,7 +188,7 @@ class PaymentController extends Controller
     public function processTransactionCuotas(PaymentRequest $request)
     {
         $validated = $request->validated();
-
+        $candidate = Candidate::find(session('candidate')->id);
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
@@ -204,9 +204,9 @@ class PaymentController extends Controller
                     break;
             }
             $paymentResult = $paymentMethod->suscribe(
-                2, //session('candidate')->id,
+                $candidate->id,
                 'ARS',
-                session('candidate')->total_amount,
+                $candidate->total_amount,
                 'pago en 3 cuotas',
                 $request->input('cuotas')
             );

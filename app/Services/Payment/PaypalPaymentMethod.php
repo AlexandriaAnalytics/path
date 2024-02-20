@@ -22,10 +22,11 @@ class PaypalPaymentMethod extends AbstractPayment
         if ($amount_value <= 0) {
             return new PaymentResult(PaymentMethodResult::ERROR, 'Amount value must be greater than 0');
         }
-
+        /*
         if (strtoupper($currency) != 'USD') {
             return new PaymentResult(PaymentMethodResult::ERROR, 'Currency must be USD');
         }
+        */
 
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
@@ -42,7 +43,7 @@ class PaypalPaymentMethod extends AbstractPayment
                     "description" => $description,
                     "custom_id" => $id,
                     "amount" => [
-                        "currency_code" => strtoupper($currency),
+                        "currency_code" => 'USD', //strtoupper($currency),
                         "value" => $amount_value,
                     ]
                 ]

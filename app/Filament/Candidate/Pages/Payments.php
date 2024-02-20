@@ -2,12 +2,16 @@
 
 namespace App\Filament\Candidate\Pages;
 
+use Carbon\Carbon;
+use Carbon\Doctrine\CarbonType;
+use DateTime;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Date;
 
 class Payments extends Page implements HasForms
 {
@@ -17,7 +21,8 @@ class Payments extends Page implements HasForms
     public ?string $payment_method = null;
     public int $total_amount = 0;
     public ?bool $canApplyToDiscount = false;
-
+    public int $instalment_number = 0;
+    public ?DateTime $examDate;
     public $modules = [];
 
     public function __construct()
@@ -28,6 +33,9 @@ class Payments extends Page implements HasForms
         $this->total_amount += $this->candidate->total_amount;
 
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
+
+        $this->examDate = new Carbon('2024-11-03');
+        $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -44,38 +52,31 @@ class Payments extends Page implements HasForms
         abort_unless(static::canAccess(), 403);
     }
 
-    public function payWithPaypal()
-    {
-        return redirect()->route('payment.process', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount]);
-    }
-
     public function payWithPaypal3Cuotas()
     {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => 3]);
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
     public function payWithMercadoPago()
     {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' => 3]);
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
     protected function getActions(): array
     {
         return [
+          /*
             Action::make('Print ticket')
                 ->icon('heroicon-o-printer'),
-
-            Action::make('Pay With Paypal')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->payWithPaypal()),
-            // ->message('Printed successfully.')
-            // ->perform(fn () => redirect()->route('candidate.payment')),
-
+            */
+          
             Action::make('3Cuotas')
+                ->label('financing in paypal ' . $this->instalment_number . ' instalments')
                 ->icon('heroicon-o-currency-dollar')
                 ->action(fn () => $this->payWithPaypal3Cuotas()),
 
             Action::make('3cuotasmp')
+                ->label('financing in Mercado Pago ' . $this->instalment_number . ' instalments')
                 ->icon('heroicon-o-currency-dollar')
                 ->action(fn () => $this->payWithMercadoPago()),
         ];
