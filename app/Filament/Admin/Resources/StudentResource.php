@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Enums\Country;
 use App\Enums\Module;
 use App\Exports\StudentExport;
+use App\Models\Country;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -63,12 +63,12 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->collapsible()
                     ->schema([
-                        Components\Select::make('country')
-                            ->label('Country')
-                            ->searchable()
+                        Components\Select::make('country_id')
+                            ->label('Region')
+                            ->relationship('region', 'name')
                             ->required()
-                            ->options(Country::class)
-                            ->enum(Country::class)
+                            ->searchable()
+                            ->preload()
                             ->native(false),
                     ]),
                 Components\RichEditor::make('personal_educational_needs')
