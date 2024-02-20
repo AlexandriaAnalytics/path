@@ -50,8 +50,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             'pending' => $this->getRedirectCancel(),
         ];
 
-        dd($preference);
-
         $preference->auto_return = "approved";
 
         redirect($preference->init_point);
