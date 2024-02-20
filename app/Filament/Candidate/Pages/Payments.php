@@ -11,11 +11,11 @@ use Filament\Pages\Page;
 
 class Payments extends Page implements HasForms
 {
-    private $candidate;
+    public $candidate;
     private $country;
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
-    public ?int $total_amount = 0;
+    public int $total_amount = 0;
     public ?bool $canApplyToDiscount = false;
 
     public $modules = [];
@@ -27,6 +27,7 @@ class Payments extends Page implements HasForms
         $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
         $this->country = $this->candidate->student->region->name;
 
+        /*
         $this->modules = $this->candidate->modules->map(function ($module) {
             return [
                 'name' => $module->name,
@@ -53,9 +54,11 @@ class Payments extends Page implements HasForms
             $this->total_amount = ($this->modules->sum('price') + $fixedPrice) * ((100 + $percentagePrice) / 100);
         }
         $price_right_exam = $this->candidate->student->institute->rigth_exam_diferencial;
-        $this->total_amount += $price_right_exam;
+        */
+        $this->total_amount += $this->candidate->total_amount;
 
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
+
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -72,13 +75,40 @@ class Payments extends Page implements HasForms
         abort_unless(static::canAccess(), 403);
     }
 
+    public function payWithPaypal()
+    {
+        return redirect()->route('payment.process', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount]);
+    }
+
+    public function payWithPaypal3Cuotas()
+    {
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => 3]);
+    }
+
+    public function payWithMercadoPago()
+    {
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' =>3]);
+    }
+
     protected function getActions(): array
     {
         return [
             Action::make('Print ticket')
                 ->icon('heroicon-o-printer'),
+
+            Action::make('Pay With Paypal')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->payWithPaypal()),
             // ->message('Printed successfully.')
             // ->perform(fn () => redirect()->route('candidate.payment')),
+
+            Action::make('3Cuotas')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->payWithPaypal3Cuotas()),
+
+            Action::make('3cuotasmp')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->payWithMercadoPago()),
         ];
     }
 
@@ -111,6 +141,15 @@ class Payments extends Page implements HasForms
                 ->send();
             return;
         }
+
+        if($payment_method_selected == 'stripe' || $payment_method_selected == 'Stripe'){
+            Notification::make()
+            ->danger()
+            ->title('Method in construction 🚧')
+            ->send();
+            return;
+        }
+
         return redirect()
             ->route(
                 'payment.process',
@@ -119,6 +158,7 @@ class Payments extends Page implements HasForms
                 ]
             );
     }
+
 
     protected function getFormActions()
     {

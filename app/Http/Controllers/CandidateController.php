@@ -11,7 +11,6 @@ class CandidateController extends Controller
 
     public function confirm(Request $request)
     {
-        dd('hola');
         $examId = $request->input('exam_id');
         $selectedCandidates = $request->input('selected_candidates');
 
