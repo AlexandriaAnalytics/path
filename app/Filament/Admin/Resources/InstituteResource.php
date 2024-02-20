@@ -145,29 +145,35 @@ class InstituteResource extends Resource
                             ->label('Right exam')
                             ->type('number')
                             ->hint('Price of the rigth exam for an institute.'),
-                            Repeater::make('instituteLevels')
+                        Repeater::make('instituteLevels')
                             ->grid(2)
-                            ->deletable(false)
-                            ->addable(false)
                             ->relationship()
                             ->schema([
                                 Select::make('level_id')
-                                    ->relationship('level', 'name'),
+                                    ->label('Level')
+                                    ->relationship('level', 'name')
+                                    ->required()
+                                    ->placeholder('Select a level')
+                                    ->preload()
+                                    ->searchable()
+                                    ->native(false),
                                 TextInput::make('institute_diferencial_percentage_price')
                                     ->label('Percentage price difference')
                                     ->type('number')
-                                    ->hint('Percentage difference in price for this institute.'),
+                                    ->hint('Percentage difference in price for this institute.')
+                                    ->required(),
                                 TextInput::make('institute_diferencial_aditional_price')
                                     ->label('Additional price')
                                     ->type('number')
-                                    ->hint('Additional price for this institute.'),
+                                    ->hint('Additional price for this institute.')
+                                    ->required(),
                                 Toggle::make('can_edit')
-                                    ->label('Can set right exam price') 
+                                    ->label('Can set right exam price')
                                     ->reactive() // Ensure reactivity for conditional behavior
-                                    ->hidden(fn (InstituteLevel $instituteLevel): bool => 
-                                         $instituteLevel->institute && 
-                                         $instituteLevel->institute->instituteType && 
-                                         $instituteLevel->institute->instituteType->slug !== 'premium_exam_centre')
+                                    ->hidden(fn (InstituteLevel $instituteLevel): bool =>
+                                    $instituteLevel->institute &&
+                                        $instituteLevel->institute->instituteType &&
+                                        $instituteLevel->institute->instituteType->slug !== 'premium_exam_centre')
                             ]),
                     ])->columns(1),
             ]);
