@@ -7,7 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Level> $levels
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Student> $students
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Evaluation> $evaluations
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Candidate> $candidates
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Country> $CountryExams
+ * @property int $id
+ * @property string $session_name
+ * @property \Illuminate\Support\Carbon $scheduled_date
+ * @property string $type
+ * @property int $maximum_number_of_students
+ * @property string $comments
+ * @property bool $is_able_to_price_pack
+ * 
+ */
 class Exam extends Model
 {
     use HasFactory;
@@ -25,6 +42,12 @@ class Exam extends Model
         'scheduled_date' => 'datetime',
         'type' => \App\Enums\ExamType::class,
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function levels(): BelongsToMany
     {

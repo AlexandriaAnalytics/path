@@ -15,15 +15,11 @@ class CreateLevelsTable extends Migration
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
 
-            $table->string('slug');
             $table->string('name');
             $table->text('description')->nullable();
-            $table->decimal('price', 12, 2);
-            $table->decimal('complete_price', 12, 2);
+            $table->decimal('price', 12, 2)->nullable();
+            $table->decimal('complete_price', 12, 2)->nullable();
             $table->text('modules')->nullable();
-            $table->unsignedInteger('tier')->nullable();
-            $table->decimal('minimum_age', 3, 1);
-            $table->decimal('maximum_age', 3, 1);
 
             $table->timestamps();
             $table->softDeletes();

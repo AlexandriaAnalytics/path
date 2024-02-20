@@ -20,7 +20,6 @@ return new class extends Migration
 
             $table->string('names');
             $table->string('surnames');
-            $table->string('country');
             $table->string('cbu')->nullable();
             $table->date('birth_date');
             $table->string('status');

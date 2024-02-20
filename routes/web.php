@@ -36,15 +36,15 @@ Route::get('/prueba', function () {
 Route::get('/prueba/{id}', [CandidateController::class, 'show']);
 
 Route::get('/users-excel', [ExcelController::class, 'export']);
-Route::get('/students-excel',[ExcelController::class,'exportAllStudents']);
-Route::get('/members-excel',[ExcelController::class,'exportAllMembers']);
+Route::get('/students-excel', [ExcelController::class, 'exportAllStudents']);
+Route::get('/members-excel', [ExcelController::class, 'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 // Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
 
-Route::get('/candidate/logout', function(){
+Route::get('/candidate/logout', function () {
     //clean all session
     session()->flush();
     return redirect()->route('candidate.login');
@@ -59,13 +59,16 @@ Route::post('management/auth/logout', function () {
 
         return redirect()->route('filament.admin.pages.dashboard');
     }
-    return redirect()->route('filament.management.auth.logout');
+
+    auth()->logout();
+
+    return redirect()->route('filament.management.auth.login');
 })->name('auth.logout');
 
-Route::get('/pdf/candidate/{id}', function($id){
+Route::get('/pdf/candidate/{id}', function ($id) {
     $candidate = Candidate::find($id);
 
-    return view('candidate-pdf', ['candidate'=>$candidate]);
+    return view('candidate-pdf', ['candidate' => $candidate]);
 })->name('candidate.pdf');
 
 
@@ -76,4 +79,4 @@ Route::get('/payment/success', [PaymentController::class, 'successTransaction'])
 Route::get('/payment/canceled', [PaymentController::class, 'cancelTransaction'])->name('payment.cancel');
 
 Route::get('/payment/webhook/paypal', [PaymentController::class, 'webhook'])->name('payment.webhook');
-
+Route::post('/payment/webhook/mercadopago', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');

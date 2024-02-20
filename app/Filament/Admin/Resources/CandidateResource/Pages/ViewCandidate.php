@@ -60,7 +60,19 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('scheduled_date')
                     ])
                     ->columnSpanFull()
-                    ->grid(2)
+                    ->grid(2),
+                RepeatableEntry::make('billed_concepts')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('concept')
+                            ->label('Concept'),
+                        TextEntry::make('currency')
+                            ->label('Currency'),
+                        TextEntry::make('amount')
+                            ->label('Amount')
+                            ->numeric(decimalPlaces: 2),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 

@@ -15,12 +15,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     use HasApiTokens;
     use HasFactory;
+    use HasRoles;
     use Notifiable;
+    use LogsActivity;
     use SoftDeletes;
 
     protected $fillable = [
@@ -39,9 +44,18 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         'password' => 'hashed',
     ];
 
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        /** @todo Implement role-based access control */
+        if ($panel->getId() === 'admin' && !$this->hasRole('Superadministrator')) {
+            return false;
+        }
+
         return true;
     }
 

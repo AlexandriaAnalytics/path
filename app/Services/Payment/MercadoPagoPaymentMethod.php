@@ -3,30 +3,29 @@
 namespace App\Services\Payment;
 
 use App\Enums\PaymentMethodResult;
-use App\Services\Payment\contracts\AbstractPayment;
-use MercadoPago\Client\Common\RequestOptions;
+use App\Services\Payment\Contracts\AbstractPayment;
 use MercadoPago\Client\Preference\PreferenceClient;
+use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\MercadoPagoConfig;
 
 class MercadoPagoPaymentMethod extends AbstractPayment
 {
-    public function pay(float $amount): PaymentResult
+    public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult
     {
-
         MercadoPagoConfig::setAccessToken($this->getAccessToken());
         $client = new PreferenceClient();
         $preference = $client->create([
-            'id' => 'PATH-'. time(),
-            'external_reference' => 'PATH-'. time(),
-            'notification_url' => 'https://d20hsnk8-3000.brs.devtunnels.ms/callbacks/mp',
+            'id' => 'PATH-' . time(),
+            'external_reference' => 'PATH-' . time(),
+            'notification_url' => route('payment.mercadopago.webhook'),
             'items' => [
                 [
-                    'title' => 'Payment for product',
+                    'title' => $description,
                     'quantity' => 1,
-                    'currency_id' => 'ARS',
-                    'unit_price' => $amount
-                ]
-            ]
+                    'currency_id' => $currency,
+                    'unit_price' => $amount_value,
+                ],
+            ],
         ]);
 
         $preference->redirect_urls = [
