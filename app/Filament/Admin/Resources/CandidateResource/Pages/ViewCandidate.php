@@ -40,6 +40,8 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('institute.name')
                             ->label('Institute'),
                     ]),
+                TextEntry::make('level.name')
+                    ->label('Level'),
                 RepeatableEntry::make('exams')
                     ->columns(3)
                     ->schema([
@@ -54,6 +56,12 @@ class ViewCandidate extends ViewRecord
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('billed_concepts')
+                    ->hidden(function () {
+                        /** @var \App\Models\User $user */
+                        $user = auth()->user();
+
+                        return !$user->hasRole('Superadministrator');
+                    })
                     ->columns(3)
                     ->schema([
                         TextEntry::make('concept')
@@ -65,6 +73,12 @@ class ViewCandidate extends ViewRecord
                             ->numeric(decimalPlaces: 2),
                     ])
                     ->columnSpanFull(),
+                TextEntry::make('total_amount')
+                    ->label('Total amount')
+                    ->numeric()
+                    ->money(
+                        currency: $this->record->billa
+                    ),
             ]);
     }
 

@@ -83,4 +83,9 @@ class Country extends Model
             ->withPivot('price_right_exam')
             ->withTimestamps();
     }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
 }

@@ -6,18 +6,16 @@ use App\Filament\Resources\CandidateResource;
 use App\Models\Candidate;
 use App\Models\CandidateModule;
 use App\Models\Exam;
-use App\Models\ExamSession;
 use App\Models\Module;
 use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Database\Eloquent\Model;
 
 class ViewCandidate extends ViewRecord
 {
@@ -40,22 +38,27 @@ class ViewCandidate extends ViewRecord
                     ->schema([
                         TextEntry::make('names'),
                         TextEntry::make('surnames')
-                            ->label('Last Name')
+                            ->label('Last Name'),
+                        TextEntry::make('institute.name')
+                            ->label('Institute'),
                     ]),
-                RepeatableEntry::make('exam')
+                TextEntry::make('level.name')
+                    ->label('Level'),
+                RepeatableEntry::make('exams')
+                    ->columns(3)
                     ->schema([
                         TextEntry::make('session_name')
                             ->label('Exam session'),
-                        TextEntry::make('candidates')
-                            ->formatStateUsing(function ($record) {
-                                $moduleId = $record->pivot->module_id;
-                                return Module::where('id', $moduleId)->value('name');
-                            }),
                         TextEntry::make('scheduled_date')
+                            ->label('Scheduled date'),
+                        TextEntry::make('pivot.module_id')
+                            ->label('Module')
+                            ->formatStateUsing(fn ($state) => Module::find($state)->name),
                     ])
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('billed_concepts')
+                    ->hidden(fn () => Filament::getTenant()->instituteType->slug !== 'premium_exam_centre')
                     ->columns(3)
                     ->schema([
                         TextEntry::make('concept')
@@ -67,6 +70,12 @@ class ViewCandidate extends ViewRecord
                             ->numeric(decimalPlaces: 2),
                     ])
                     ->columnSpanFull(),
+                TextEntry::make('total_amount')
+                    ->label('Total amount')
+                    ->numeric()
+                    ->money(
+                        currency: $this->record->billa
+                    ),
             ]);
     }
 

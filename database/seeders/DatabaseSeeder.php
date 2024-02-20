@@ -8,6 +8,7 @@ use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Level;
+use App\Models\LevelCountry;
 use App\Models\Module;
 use App\Models\Student;
 use App\Models\User;
@@ -47,6 +48,12 @@ class DatabaseSeeder extends Seeder
             }
             $level->save();
         }
+
+        LevelCountry::all()->each(function (LevelCountry $levelCountry) use ($modules): void {
+            $levelCountry->modules()->attach($modules->random(3), [
+                'price' => rand(1000, 5000),
+            ]);
+        });
 
         Exam::factory(10)
             ->create()

@@ -22,6 +22,7 @@ use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Infolists;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -298,7 +299,9 @@ class CandidateResource extends Resource
                     Select::make('level_id')
                         ->label('Exam')
                         ->placeholder('Select an exam')
-                        ->options(Level::all()->pluck('name', 'id'))
+                        ->options(fn (Get $get) => Level::query()
+                            ->whereHas('countries', fn ($query) => $query->whereHas('students', fn ($query) => $query->where('id', $get('student_id'))))
+                            ->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()
                         ->required()

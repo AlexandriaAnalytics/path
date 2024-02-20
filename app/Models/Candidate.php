@@ -104,8 +104,7 @@ class Candidate extends Pivot
     {
         return Attribute::make(
             get: function () {
-                // @TODO: Implement this method
-                return 75.25;
+                return $this->billed_concepts->sum('amount');
             },
         );
     }
