@@ -23,7 +23,7 @@ services:
             - sail
         depends_on:
             - mysql
-            - mailpit
+            - buggregator
     mysql:
         image: 'mysql/mysql-server:8.0'
         ports:
@@ -51,7 +51,7 @@ services:
     phpmyadmin:
         image: phpmyadmin
         ports:
-            - '9090:80'
+            - '9000:80'
         environment:
             PMA_HOST: mysql
             PMA_USER: '${DB_USERNAME}'
@@ -60,13 +60,16 @@ services:
             - mysql
         networks:
             - sail
-    mailpit:
-        image: 'axllent/mailpit:latest'
+    buggregator:
+        image: 'ghcr.io/buggregator/server:latest'
         ports:
-            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
-            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+            - '127.0.0.1:8000:8000'
+            - '127.0.0.1:1025:1025'
+            - '127.0.0.1:9912:9912'
+            - '127.0.0.1:9913:9913'
         networks:
             - sail
+
 networks:
     sail:
         driver: bridge
