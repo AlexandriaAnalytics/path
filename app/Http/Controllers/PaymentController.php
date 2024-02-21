@@ -63,7 +63,7 @@ class PaymentController extends Controller
 
             $paymentResult = $paymentMethod->pay(
                 $candidate->id,
-                $candidate->student->names,
+                $candidate->student->name,
                 $candidate->currency, //$candidate->student->region->monetary_unit,
                 $candidate->total_amount,
             );

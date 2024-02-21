@@ -34,6 +34,11 @@ class Country extends Model
         'monetary_unit_symbol',
     ];
 
+    protected $attributes = [
+        'monetary_unit' => 'USD',
+        'monetary_unit_symbol' => '$',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

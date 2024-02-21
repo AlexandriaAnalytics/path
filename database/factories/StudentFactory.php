@@ -20,8 +20,8 @@ class StudentFactory extends Factory
         return [
             'institute_id' => \App\Models\Institute::factory(),
             'country_id' => Country::all()->random()->id,
-            'names' => fake()->firstName(),
-            'surnames' => fake()->lastName(),
+            'name' => fake()->firstName(),
+            'surname' => fake()->lastName(),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',

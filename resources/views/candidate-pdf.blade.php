@@ -127,7 +127,7 @@
             </blockquote>
             <blockquote>
                 <p>
-                    <strong>Full Name:</strong> {{$candidate->student->names}} {{$candidate->student->surnames}}
+                    <strong>Full Name:</strong> {{$candidate->student->name}} {{$candidate->student->surname}}
                 </p>
             </blockquote>
 

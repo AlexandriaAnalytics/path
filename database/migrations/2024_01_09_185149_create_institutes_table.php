@@ -14,29 +14,40 @@ return new class extends Migration
         Schema::create('institutes', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name')->nullable();
-            $table->string('files_url')->nullable();
-            $table->boolean('can_add_candidates');
+            $table->foreignId('institute_type_id')
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->foreignId('owner_id')
+                ->nullable()
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->string('name')
+                ->nullable();
+
+            $table->string('files_url')
+                ->nullable();
+
+            $table->boolean('can_add_candidates')
+                ->comment('If the institute can add candidates');
+
             $table->string('phone');
             $table->string('email');
             $table->string('street_name');
-            $table->string('number')->nullable();
+            $table->string('number')
+                ->nullable();
+
             $table->string('city');
             $table->string('province');
             $table->string('postcode');
             $table->string('country');
-            $table->decimal('discounted_price_diferencial', 12, 2)->default(0);
-            $table->decimal('discounted_price_percentage',12, 2)->default(0);
-            $table->decimal('rigth_exam_diferencial', 12, 2)->default(100);
 
-
-            $table->foreignId('institute_type_id')
-                ->constrained()
-                ->cascadeOnDelete();
-            $table->foreignId('owner_id')
-                ->nullable()
-                ->constrained('users')
-                ->cascadeOnDelete();
+            $table->decimal('discounted_price_diferencial', 12, 2);
+            $table->decimal('discounted_price_percentage', 12, 2);
+            $table->decimal('rigth_exam_diferencial', 12, 2);
 
             $table->timestamps();
             $table->softDeletes();
@@ -47,11 +58,13 @@ return new class extends Migration
 
             $table->foreignId('institute_id')
                 ->constrained('institutes')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('user_id')
                 ->constrained('users')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });

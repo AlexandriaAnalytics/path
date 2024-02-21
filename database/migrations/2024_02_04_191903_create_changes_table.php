@@ -13,14 +13,18 @@ return new class extends Migration
     {
         Schema::create('changes', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
-            $table->string('status');
+
             $table->foreignId('candidate_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('user_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->string('description');
+            $table->string('status');
             $table->timestamps();
             $table->softDeletes();
         });

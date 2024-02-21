@@ -15,15 +15,18 @@ return new class extends Migration
     {
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('level_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('student_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
-            $table->enum('status', UserStatus::values())->default(UserStatus::Unpaid);
+            $table->enum('status', UserStatus::values());
 
             $table->enum('type_of_certificate', TypeOfCertificate::values());
 

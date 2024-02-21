@@ -24,11 +24,13 @@ class CreateModulesTable extends Migration
 
             $table->foreignId('exam_id')
                 ->constrained('exams')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('module_id')
                 ->constrained('modules')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });
@@ -38,11 +40,13 @@ class CreateModulesTable extends Migration
 
             $table->foreignId('candidate_id')
                 ->constrained('candidates')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('module_id')
                 ->constrained('modules')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });
@@ -52,11 +56,13 @@ class CreateModulesTable extends Migration
 
             $table->foreignId('level_country_id')
                 ->constrained('level_country')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('module_id')
                 ->constrained('modules')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->decimal('price', 12, 2);
 
@@ -70,6 +76,7 @@ class CreateModulesTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('level_country_module');
         Schema::dropIfExists('candidate_module');
         Schema::dropIfExists('exam_module');
         Schema::dropIfExists('modules');

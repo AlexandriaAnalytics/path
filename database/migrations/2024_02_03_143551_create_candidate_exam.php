@@ -16,15 +16,18 @@ return new class extends Migration
 
             $table->foreignId('candidate_id')
                 ->constrained('candidates')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('exam_id')
                 ->constrained('exams')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('module_id')
                 ->constrained('modules')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });

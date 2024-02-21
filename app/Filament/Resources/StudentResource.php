@@ -30,8 +30,8 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('names'),
-                Forms\Components\TextInput::make('surnames'),
+                Forms\Components\TextInput::make('name'),
+                Forms\Components\TextInput::make('surname'),
                 Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
                     ->relationship('region', 'name')
