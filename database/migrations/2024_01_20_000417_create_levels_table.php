@@ -58,8 +58,13 @@ class CreateLevelsTable extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->decimal('price_discounted', 12, 2);
-            $table->decimal('price_right_exam', 12, 2);
+            $table->decimal('price_all_modules', 12, 2)
+                ->comment('Price for all modules');
+            $table->decimal('price_exam_right_all_modules', 12, 2)
+                ->comment('Price for exam right for all modules');
+            $table->decimal('price_exam_right', 12, 2)
+                ->comment('Price for exam right without all modules');
+
             $table->timestamps();
         });
     }

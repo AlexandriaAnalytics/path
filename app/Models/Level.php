@@ -60,7 +60,7 @@ class Level extends Model
     public function countries(): BelongsToMany
     {
         return $this->belongsToMany(Country::class, 'level_country')
-            ->withPivot(['price_discounted', 'price_right_exam'])
+            ->withPivot(['price_all_modules', 'price_exam_right_all_modules', 'price_exam_right'])
             ->withTimestamps();
     }
 

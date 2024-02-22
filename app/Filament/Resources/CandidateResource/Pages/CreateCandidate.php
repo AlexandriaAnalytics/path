@@ -31,10 +31,10 @@ class CreateCandidate extends CreateRecord
     {
         /** @var \App\Models\Candidate $candidate */
         $candidate = $this->record;
-        debug($candidate->modules);
         $billed_concepts = $candidate->billed_concepts;
+        $missingModules = Module::all()->diff($candidate->modules);
 
-        if (Module::all()->diff($candidate->modules)->isEmpty()) {
+        if ($missingModules->isEmpty()) {
             // If the student has all the modules, apply the complete price
             // that may be different from the sum of the individual modules prices
             $billed_concepts->push([
@@ -49,7 +49,7 @@ class CreateCandidate extends CreateRecord
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->pivot
-                    ->price_discounted,
+                    ->price_all_modules,
             ]);
         } else {
             // If the student does not have all the modules, apply the sum of the individual
@@ -100,14 +100,23 @@ class CreateCandidate extends CreateRecord
         }
 
         // If the institute has a right-to-exam fee, apply it
-        $rightToExamFee = $candidate
+        $countryPrice = $candidate
             ->level
             ->countries
             ->firstWhere('id', $candidate->student->region->id)
-            ->pivot
-            ->price_right_exam;
+            ->pivot;
 
-        if ($rightToExamFee > 0) {
+        if ($missingModules->isEmpty()) {
+            $billed_concepts->push([
+                'concept' => 'Right to exam (all modules)',
+                'currency' => $candidate
+                    ->level
+                    ->countries
+                    ->firstWhere('id', $candidate->student->region->id)
+                    ->monetary_unit,
+                'amount' => $countryPrice->price_exam_right_all_modules,
+            ]);
+        } else {
             $billed_concepts->push([
                 'concept' => 'Right to exam',
                 'currency' => $candidate
@@ -115,9 +124,10 @@ class CreateCandidate extends CreateRecord
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => $rightToExamFee,
+                'amount' => $countryPrice->price_exam_right,
             ]);
         }
+
 
         $candidate->update([
             'billed_concepts' => $billed_concepts,

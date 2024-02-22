@@ -42,8 +42,9 @@ class DatabaseSeeder extends Seeder
         foreach ($levels as $level) {
             foreach ($countries as $country) {
                 $level->countries()->attach($country, [
-                    'price_discounted' => rand(1000, 5000),
-                    'price_right_exam' => rand(1000, 5000),
+                    'price_all_modules' => rand(1000, 5000),
+                    'price_exam_right_all_modules' => $examRight = rand(1000, 5000),
+                    'price_exam_right' => $examRight + rand(1000, 2000),
                 ]);
             }
             $level->save();

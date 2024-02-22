@@ -30,12 +30,20 @@ class LevelCountriesRelationManager extends RelationManager
                         return $rule->where('level_id', $this->getOwnerRecord()->getKey());
                     })
                     ->placeholder('Select a country'),
-                TextInput::make('price_discounted')
+                TextInput::make('price_all_modules')
                     ->required()
                     ->numeric()
                     ->minValue(0)
                     ->default(0),
-                TextInput::make('price_right_exam')
+                TextInput::make('price_exam_right')
+                    ->label('Base price for exam right')
+                    ->required()
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0),
+                TextInput::make('price_exam_right_all_modules')
+                    ->label('Discounted Price')
+                    ->hint('Price for exam right for all modules')
                     ->required()
                     ->numeric()
                     ->minValue(0)
