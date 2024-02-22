@@ -25,8 +25,8 @@ class Student extends Authenticatable
     use SoftDeletes;
 
     protected $fillable = [
-        'names',
-        'surnames',
+        'name',
+        'surname',
         'email',
         'institute_id',
         'cbu',
