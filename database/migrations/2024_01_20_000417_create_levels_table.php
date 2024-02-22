@@ -18,6 +18,11 @@ class CreateLevelsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 
+            $table->unsignedTinyInteger('minimum_age')
+                ->nullable();
+            $table->unsignedTinyInteger('maximum_age')
+                ->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

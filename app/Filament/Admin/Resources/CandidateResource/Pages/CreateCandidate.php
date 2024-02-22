@@ -14,7 +14,6 @@ class CreateCandidate extends CreateRecord
     {
         /** @var \App\Models\Candidate $candidate */
         $candidate = $this->record;
-        debug($candidate->modules);
         $billed_concepts = $candidate->billed_concepts;
 
         if (Module::all()->diff($candidate->modules)->isEmpty()) {

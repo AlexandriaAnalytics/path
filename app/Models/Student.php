@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -68,6 +69,11 @@ class Student extends Authenticatable
     public function getFullNameAttribute(): string
     {
         return "{$this->first_name} {$this->surname}";
+    }
+
+    public function getAgeAttribute(): int
+    {
+        return Carbon::now()->diffInYears($this->birth_date);
     }
 
     public function exams(): BelongsToMany

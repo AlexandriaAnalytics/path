@@ -34,6 +34,17 @@ class LevelResource extends Resource
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('minimum_age')
+                    ->label('Minimum age')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(100),
+                Forms\Components\TextInput::make('maximum_age')
+                    ->label('Maximum age')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->gte('minimum_age'),
             ]);
     }
 

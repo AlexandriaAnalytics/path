@@ -17,6 +17,7 @@ use App\Models\Level;
 use App\Models\Module;
 use App\Models\Status;
 use App\Models\Student;
+use Closure;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
@@ -286,7 +287,7 @@ class CandidateResource extends Resource
                                     return [$student->id => "{$student->name} {$student->surname}"];
                                 })
                                 ->all();
-                        })
+                        }),
                 ]),
         ];
     }
@@ -305,25 +306,30 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->reactive()
                         ->required()
-                        ->preload(),
-                    //->afterStateUpdated(fn (callable $set) => $set('modules', null)),
+                        ->preload()
+                        ->rules([
+                            fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                $level = Level::find($get('level_id'));
+                                if (!$level) {
+                                    return;
+                                }
+
+                                $student = Student::find($value);
+
+                                if (
+                                    $level->minimum_age && $student->age < $level->minimum_age
+                                    || $level->maximum_age && $student->age > $level->maximum_age
+                                ) {
+                                    $fail("The student's age is not within the range of the selected level");
+                                }
+                            },
+                        ]),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(Module::all()->pluck('name', 'id'))
-                        /* ->options(function (callable $get) {
-                            $examId = $get('exam_id');
-
-                            if (!$examId) {
-                                return [];
-                            }
-                            return ExamModule::query()
-                                ->whereExamId($examId)
-                                ->join('modules', 'modules.id', '=', 'exam_module.module_id')
-                                ->pluck('modules.name', 'modules.id');
-                        }) */
                         ->preload(),
                 ]),
         ];
