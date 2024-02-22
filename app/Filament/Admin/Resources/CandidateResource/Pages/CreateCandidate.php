@@ -106,4 +106,9 @@ class CreateCandidate extends CreateRecord
             'billed_concepts' => $billed_concepts,
         ]);
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
