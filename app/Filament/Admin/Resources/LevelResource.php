@@ -65,9 +65,9 @@ class LevelResource extends Resource
     public static function getPages(): array
     {
         return [
-            'view' => Pages\ViewLevel::route('/{record}'),
             'index' => Pages\ListLevels::route('/'),
             'create' => Pages\CreateLevel::route('/create'),
+            'view' => Pages\ViewLevel::route('/{record}'),
             'edit' => Pages\EditLevel::route('/{record}/edit'),
         ];
     }
