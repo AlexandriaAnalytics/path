@@ -26,9 +26,12 @@ class LevelCountriesRelationManager extends RelationManager
                     ->required()
                     ->native(false)
                     ->columnSpanFull()
-                    ->unique(modifyRuleUsing: function (Unique $rule) {
-                        return $rule->where('level_id', $this->getOwnerRecord()->getKey());
-                    })
+                    ->unique(
+                        modifyRuleUsing: function (Unique $rule) {
+                            return $rule->where('level_id', $this->getOwnerRecord()->getKey());
+                        },
+                        ignoreRecord: true,
+                    )
                     ->placeholder('Select a country'),
                 TextInput::make('price_all_modules')
                     ->required()
