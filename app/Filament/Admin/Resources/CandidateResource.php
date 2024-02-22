@@ -102,11 +102,11 @@ class CandidateResource extends Resource
                         'paid' => 'success',
                     }),
                 //Student
-                TextColumn::make('student.name')
+                TextColumn::make('student.names')
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.surname')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
@@ -209,11 +209,11 @@ class CandidateResource extends Resource
     {
         return [
             ColumnGroup::make('Student', [
-                TextColumn::make('student.name')
+                TextColumn::make('student.names')
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.surname')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
@@ -280,10 +280,10 @@ class CandidateResource extends Resource
 
                             return Student::query()
                                 ->whereInstituteId($instituteId)
-                                ->select(['name', 'surname', 'id']) // Seleccionar first_name y surnames
+                                ->select(['names', 'surnames', 'id']) // Seleccionar first_name y surnames
                                 ->get()
                                 ->mapWithKeys(function ($student) {
-                                    return [$student->id => "{$student->name} {$student->surname}"];
+                                    return [$student->id => "{$student->names} {$student->surnames}"];
                                 })
                                 ->all();
                         })

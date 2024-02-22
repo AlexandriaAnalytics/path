@@ -55,7 +55,7 @@ class CandidateResource extends Resource
                                 name: 'student',
                                 modifyQueryUsing: fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()),
                             )
-                            ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
+                            ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->names} {$record->surnames}")
                             ->searchable()
                             ->preload()
                             ->required()
@@ -89,11 +89,11 @@ class CandidateResource extends Resource
                     }),
 
                 //Student
-                TextColumn::make('student.name')
+                TextColumn::make('student.names')
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.surname')
+                TextColumn::make('student.surnames')
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
