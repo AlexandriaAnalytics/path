@@ -39,10 +39,10 @@ class StudentResource extends Resource
                 Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
-                        Components\TextInput::make('name')
+                        Components\TextInput::make('names')
                             ->required()
                             ->placeholder('John'),
-                        Components\TextInput::make('surname')
+                        Components\TextInput::make('surnames')
                             ->label('Last Name')
                             ->required()
                             ->placeholder('Doe'),
@@ -135,10 +135,10 @@ class StudentResource extends Resource
     public static function getStudentColumns(): array
     {
         return [
-            TextColumn::make('name')
+            TextColumn::make('names')
                 ->searchable()
                 ->sortable(),
-            TextColumn::make('surname')
+            TextColumn::make('surnames')
                 ->searchable()
                 ->sortable(),
             TextColumn::make('region.name')
