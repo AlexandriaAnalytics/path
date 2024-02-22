@@ -93,7 +93,7 @@ class Institute extends Model
     public function levels(): BelongsToMany
     {
         return $this->belongsToMany(Level::class, 'institute_level', 'institute_id', 'level_id')
-            ->withPivot('institute_diferencial_percentage_price', 'institute_diferencial_aditional_price', 'institute_right_exam', 'can_edit')
+            ->withPivot('institute_diferencial_percentage_price', 'institute_diferencial_aditional_price', 'can_edit')
             ->withTimestamps();
     }
     public function instituteLevels(): HasMany

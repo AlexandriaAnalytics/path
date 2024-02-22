@@ -36,7 +36,6 @@ class CreateLevelsTable extends Migration
 
             $table->decimal('institute_diferencial_percentage_price', 12, 2)->default(0);
             $table->decimal('institute_diferencial_aditional_price', 12, 2)->default(0);
-            $table->decimal('institute_right_exam', 12, 2)->nullable();
             $table->boolean('can_edit')->default(false);
 
             $table->timestamps();

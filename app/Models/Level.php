@@ -53,7 +53,6 @@ class Level extends Model
         return $this->belongsToMany(Institute::class, 'institute_level')
             ->withPivot('institute_diferencial_percentage_price')
             ->withPivot('institute_diferencial_aditional_price')
-            ->withPivot('institute_right_exam')
             ->withPivot('can_edit')
             ->withTimestamps();
     }

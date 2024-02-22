@@ -73,7 +73,6 @@ class DatabaseSeeder extends Seeder
                             $institute->levels()->attach($level, [
                                 'institute_diferencial_percentage_price' => rand(-20, 20),
                                 'institute_diferencial_aditional_price' => rand(-500, 500),
-                                'institute_right_exam' => $institute->instituteType->slug == 'premium_exam_centre' ? rand(1000, 5000) : null,
                                 'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
                             ]);
                         }
