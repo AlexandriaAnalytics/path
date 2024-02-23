@@ -70,6 +70,7 @@ class PaymentController extends Controller
                 $candidate->student->name ?? 'DESCRIPTION',
                 $candidate->currency ?? 'USD', //$candidate->student->region->monetary_unit,
                 $candidate->total_amount,
+             
             );
 
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
@@ -193,6 +194,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validated();
         $candidate = Candidate::find(session('candidate')->id);
+        $candidate = Candidate::find(session('candidate')->id);
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
@@ -209,7 +211,9 @@ class PaymentController extends Controller
             }
             $paymentResult = $paymentMethod->suscribe(
                 $candidate->id,
+                $candidate->id,
                 'ARS',
+                $candidate->total_amount,
                 $candidate->total_amount,
                 'pago en 3 cuotas',
                 $request->input('cuotas')
@@ -253,12 +257,9 @@ class PaymentController extends Controller
 
         return Response::json(['status' => 'success']);
     }
-
-
     /**
     @var 
     */  
-
     public function stripeWebhook(Request $request)
     {
         Log::info($request->all());

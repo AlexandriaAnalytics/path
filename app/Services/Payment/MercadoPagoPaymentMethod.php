@@ -43,6 +43,8 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             ],
         ]);
 
+
+
         $preference->redirect_urls = [
             'success' => $this->getRedirectSuccess(),
             'failure' => $this->getRedirectCancel(),
