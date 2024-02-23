@@ -15,6 +15,8 @@ class PaymentFactory implements IPaymentFactory
                 return new MercadoPagoPaymentMethod();
             case PaymentMethod::PAYPAL->value:
                 return new PaypalPaymentMethod();
+            case PaymentMethod::STRIPE->value:
+                return new StripePaymentMethod();
             default:
                 throw new \InvalidArgumentException("Payment method not supported.");
         }

@@ -77,6 +77,7 @@ class CandidateResource extends Resource
                                 '1' => 'info',
                                 '2' => 'danger',
                                 '3' => 'success',
+                                '4' => 'warning',
                             ])
                             ->hiddenOn('create'),
                     ]),

@@ -88,3 +88,4 @@ Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotific
 // Payment webhooks
 Route::post('/payment/webhook/mp', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
 Route::post('/payment/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  
+Route::post('/payment/webhook/stripe', [PaymentController::class, 'stripeWebhook'])->name('payment.stripe.webhook');

@@ -8,8 +8,10 @@ use App\Exceptions\PaymentException;
 use App\Http\Requests\PaymentRequest;
 use App\Models\Candidate;
 use App\Models\Payment;
+use App\Services\Payment\Contracts\IPayment;
 use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
+use App\Services\Payment\StripePaymentMethod;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -19,6 +21,8 @@ use LDAP\Result;
 use MercadoPago\Client\MerchantOrder\MerchantOrderClient;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\MercadoPagoConfig;
+use App\Services\Payment\Contracts\AbstractPayment;
+
 
 class PaymentController extends Controller
 {
@@ -63,9 +67,10 @@ class PaymentController extends Controller
 
             $paymentResult = $paymentMethod->pay(
                 $candidate->id,
-                $candidate->student->name,
-                $candidate->currency, //$candidate->student->region->monetary_unit,
+                $candidate->student->name ?? 'DESCRIPTION',
+                $candidate->currency ?? 'USD', //$candidate->student->region->monetary_unit,
                 $candidate->total_amount,
+             
             );
 
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
@@ -189,6 +194,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validated();
         $candidate = Candidate::find(session('candidate')->id);
+        $candidate = Candidate::find(session('candidate')->id);
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
@@ -205,7 +211,9 @@ class PaymentController extends Controller
             }
             $paymentResult = $paymentMethod->suscribe(
                 $candidate->id,
+                $candidate->id,
                 'ARS',
+                $candidate->total_amount,
                 $candidate->total_amount,
                 'pago en 3 cuotas',
                 $request->input('cuotas')
@@ -222,7 +230,7 @@ class PaymentController extends Controller
         }
     }
 
-
+ 
     public function paypalWebhook(Request $request)
     {
         $eventType = $request->input('event_type');
@@ -248,5 +256,18 @@ class PaymentController extends Controller
         }
 
         return Response::json(['status' => 'success']);
+    }
+    /**
+    @var 
+    */  
+    public function stripeWebhook(Request $request)
+    {
+        Log::info($request->all());
+        
+        $stripePaymentMethod = new StripePaymentMethod();
+        $stripePaymentMethod->processWebhook($request);
+        
+        return Response::json([
+            'status' => 'succes']);
     }
 }

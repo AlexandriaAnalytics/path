@@ -869,11 +869,15 @@
         <div class="payment-container">
             <a href="{{route('payment.process', [
                 'payment_method' => 'paypal'
-                
-                
-
-                ])}}">Pagar Paypal</a>
-            <a href="{{route('payment.process', ['payment_method' => 'mercado_pago', 'amount_value' => 50])}}">Pagar Mercado pago</a>
+                ])}}">Pagar con Paypal</a>
+        
+            <a href="{{route('payment.process', [
+                'payment_method' => 'mercado_pago', 
+                ])}}">Pagar con Mercado pago</a>
+        
+            <a href="{{route('payment.process', [
+                'payment_method' => 'stripe'
+            ])}}">Pagar con Stripe</a>
         </div>
     
     
