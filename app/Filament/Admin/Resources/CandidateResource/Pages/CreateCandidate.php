@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\CustomLevelPrice;
 use App\Models\Module;
 use Filament\Resources\Pages\CreateRecord;
 
