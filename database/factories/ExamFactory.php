@@ -22,6 +22,7 @@ class ExamFactory extends Factory
             'type' => fake()->randomElement(\App\Enums\ExamType::values()),
             'maximum_number_of_students' => fake()->numberBetween(1, 100),
             'comments' => fake()->optional()->sentence(),
+            'payment_deadline' => fake()->date(),
         ];
     }
 }

@@ -31,13 +31,22 @@ class ExamResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Details')
-                    ->columns(2)
+                    ->columns(3)
                     ->schema([
                         Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('maximum_number_of_students')
+                            ->numeric(),
                         Forms\Components\DateTimePicker::make('scheduled_date')
+                            ->native(false)
+                            ->seconds(false)
+                            ->minutesStep(5)
+                            ->required()
+                            ->minDate(now()),
+                        Forms\Components\DateTimePicker::make('payment_deadline')
                             ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
@@ -48,8 +57,6 @@ class ExamResource extends Resource
                             ->native(false)
                             ->required()
                             ->enum(\App\Enums\ExamType::class),
-                        Forms\Components\TextInput::make('maximum_number_of_students')
-                            ->numeric(),
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),
                     ]),

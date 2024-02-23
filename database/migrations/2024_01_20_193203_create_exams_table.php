@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('type');
             $table->integer('maximum_number_of_students');
             $table->string('comments')->nullable();
+            $table->timestamp('payment_deadline');
 
             $table->timestamps();
             $table->softDeletes();
