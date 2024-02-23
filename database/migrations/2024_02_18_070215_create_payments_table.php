@@ -17,9 +17,9 @@ return new class extends Migration
             $table->string('payment_id');
             $table->string('currency');
             $table->string('amount');
-            $table->enum('status', ['pending', 'approved', 'rejected']);
-            $table->string('instalment_number')->nullable();
-
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->integer('instalment_number')->nullable();
+            $table->integer('current_instalment')->nullable();
             $table->foreignId('candidate_id')
                 ->constrained('candidates')
                 ->cascadeOnDelete()

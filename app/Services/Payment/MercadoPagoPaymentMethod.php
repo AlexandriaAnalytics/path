@@ -72,13 +72,9 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
     {
-        MercadoPagoConfig::setAccessToken($this->getAccessToken());
-
-
-
-
         try {
-            $amount = round($total_amount_value / $instalment_number, 2);
+            MercadoPagoConfig::setAccessToken($this->getAccessToken());
+            $amount = round(floatval($total_amount_value) / $instalment_number, 2);
             $now = Carbon::now();
             $endDate = Carbon::now()->addMonths($instalment_number);
             
@@ -91,31 +87,13 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                     "start_date" => $now->toISOString(),
                     "end_date" =>$endDate->toISOString(),
                     "transaction_amount" => $amount,
-                    "currency_id" => $currency,
-                ],
-                "back_url" => $this->getRedirectSuccess(),
-                "external_reference" => "YG-1234",
-                "payer_email" => "test_user_1279746686@testuser.com",
-                "reason" => "Exam instalment " . "per" . $instalment_number . "months.",
-            ];
-
-            /*
-            $preapproval_data =  [
-                "auto_recurring" => [
-                    "frequency" => 1,
-                    "frequency_type" => "months",
-                    "start_date" => $now->toIso8601ZuluString(),
-                    "end_date" => $endDate->toIso8601ZuluString(),
-                    "transaction_amount" => $amount,
-                    "currency_id" => $currency,
+                    "currency_id" => $currency// $currency,
                 ],
                 "back_url" => $this->getRedirectSuccess(),
                 "external_reference" => $id,
                 "payer_email" => "test_user_1279746686@testuser.com",
-                "reason" => "Exam instalments" . $instalment_number,
+                "reason" => "Exam instalment " . "per" . $instalment_number . "months.",
             ];
-            */
-
 
             $preapproval = $client->create($preapproval_data);
 

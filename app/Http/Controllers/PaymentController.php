@@ -211,11 +211,9 @@ class PaymentController extends Controller
             }
             $paymentResult = $paymentMethod->suscribe(
                 $candidate->id,
-                $candidate->id,
-                'ARS',
+                $candidate->currency,
                 $candidate->total_amount,
-                $candidate->total_amount,
-                'pago en 3 cuotas',
+                'Cuotas',
                 $request->input('cuotas')
             );
 
@@ -229,7 +227,6 @@ class PaymentController extends Controller
             return $pe->getMessage(); //TODO: return error view
         }
     }
-
  
     public function paypalWebhook(Request $request)
     {
