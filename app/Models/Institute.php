@@ -51,10 +51,10 @@ class Institute extends Model
 
         static::addGlobalScope(function (Builder $query) {
             $query->addSelect([
-                '*',
+                'institutes.*',
                 'remaining_discount' => Candidate::query()
                     ->whereHas('student', fn (Builder $query) => $query->whereColumn('institute_id', 'institutes.id'))
-                    ->select(DB::raw('maximum_cumulative_discount - COALESCE(SUM(granted_discount), 0)')),
+                    ->select(DB::raw('maximum_cumulative_discount - coalesce(sum(granted_discount), 0)'))
             ]);
         });
 
