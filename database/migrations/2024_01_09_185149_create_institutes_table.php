@@ -28,6 +28,9 @@ return new class extends Migration
             $table->string('name')
                 ->nullable();
 
+            $table->decimal('maximum_cumulative_discount', 12, 2)
+                ->comment('Maximum cumulative discount that the institute can apply as discounts to the students.');
+
             $table->string('files_url')
                 ->nullable();
 

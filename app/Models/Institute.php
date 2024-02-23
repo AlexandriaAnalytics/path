@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -32,10 +34,12 @@ class Institute extends Model
         'province',
         'postcode',
         'country',
+        'maximum_cumulative_discount',
     ];
 
     protected $attributes = [
         'can_add_candidates' => true,
+        'maximum_cumulative_discount' => 0,
         'discounted_price_diferencial' => 0,
         'discounted_price_percentage' => 0,
         'rigth_exam_diferencial' => 100,
@@ -44,6 +48,15 @@ class Institute extends Model
     public static function boot(): void
     {
         parent::boot();
+
+        static::addGlobalScope(function (Builder $query) {
+            $query->addSelect([
+                '*',
+                'remaining_discount' => Candidate::query()
+                    ->whereHas('student', fn (Builder $query) => $query->whereColumn('institute_id', 'institutes.id'))
+                    ->select(DB::raw('maximum_cumulative_discount - COALESCE(SUM(granted_discount), 0)')),
+            ]);
+        });
 
         static::created(function (Institute $institute): void {
             Log::info('Created institute', ['institute' => $institute->toArray()]);

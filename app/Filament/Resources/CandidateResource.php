@@ -11,12 +11,14 @@ use App\Models\Candidate;
 use App\Models\Change;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Closure;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -62,8 +64,26 @@ class CandidateResource extends Resource
                     ]),
                 ...AdminCandidateResource::getExamFields(),
                 Select::make('type_of_certificate')
+                    ->native(false)
                     ->options(TypeOfCertificate::class)
+                    ->enum(TypeOfCertificate::class)
                     ->required(),
+                TextInput::make('granted_discount')
+                    ->label('Discount')
+                    ->postfix('%')
+                    ->required()
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->hint(fn () => 'Available discount: ' . Filament::getTenant()->remaining_discount . '%')
+                    ->rules([
+                        fn (): Closure => function (string $attribute, $value, Closure $fail) {
+                            if ($value > Filament::getTenant()->remaining_discount) {
+                                $fail('The institute does not have enough discount to grant.');
+                            }
+                        },
+                    ]),
 
             ]);
     }
@@ -78,7 +98,6 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
@@ -97,47 +116,12 @@ class CandidateResource extends Resource
                     ->label('Last Name')
                     ->sortable()
                     ->searchable(),
-
                 TextColumn::make('level.name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('modules.name')
-                    ->badge()
-                /* IconColumn::make('modules')
-                    ->icon(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'heroicon-o-check-circle' : 'heroicon-o-clock';
-                    })
-                    ->tooltip(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $modulesWithoutExamSession = $modules->reject(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        $moduleNames = $modulesWithoutExamSession->pluck('name')->toArray();
-                        return $moduleNames == [] ? '' : 'Modules missing to be assigned: ' . implode(', ', $moduleNames);
-                    })
-                    ->color(function (Candidate $candidate) {
-                        $modules = $candidate->modules;
-                        $allModulesHaveExamSession = $modules->every(function ($module) use ($candidate) {
-                            return $module->examsessions()->whereHas('candidates', function ($query) use ($candidate) {
-                                $query->where('candidate_id', $candidate->id);
-                            })->exists();
-                        });
-                        return $allModulesHaveExamSession ? 'success' : 'warning';
-                    }) */,
-
-                //Exam
-                /* TextColumn::make('exam')
-                    ->label('Session Name') */
+                    ->badge(),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->icon(function (Candidate $candidate) {

@@ -70,6 +70,10 @@ class ViewCandidate extends ViewRecord
                             ->numeric(decimalPlaces: 2),
                     ])
                     ->columnSpanFull(),
+                TextEntry::make('granted_discount')
+                    ->label('Discount granted')
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => $state . '%'),
                 TextEntry::make('total_amount')
                     ->label('Total amount')
                     ->numeric()

@@ -111,6 +111,20 @@ class CreateCandidate extends CreateRecord
             ]);
         }
 
+        // If the student has a discount, apply it
+        $discount = $candidate->granted_discount;
+
+        if ($discount > 0) {
+            $billed_concepts->push([
+                'concept' => 'Discount',
+                'currency' => $candidate
+                    ->level
+                    ->countries
+                    ->firstWhere('id', $candidate->student->region->id)
+                    ->monetary_unit,
+                'amount' => -$billed_concepts->sum('amount') * ($discount / 100),
+            ]);
+        }
 
         $candidate->update([
             'billed_concepts' => $billed_concepts,

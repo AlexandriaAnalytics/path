@@ -26,10 +26,11 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
+            $table->decimal('granted_discount', 12, 2)
+                ->comment('Discount granted to the student by the institute.');
+
             $table->enum('status', UserStatus::values());
-
             $table->enum('type_of_certificate', TypeOfCertificate::values());
-
             $table->json('billed_concepts');
 
             $table->timestamps();
