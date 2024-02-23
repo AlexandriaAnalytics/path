@@ -5,15 +5,12 @@ namespace App\Services\Payment;
 use App\Services\Payment\Contracts\AbstractPayment;
 use App\Models\Candidate;
 use App\Models\Payment;
-use Carbon\Carbon;
-use Exception;
 use App\Services\Payment\PaymentResult;
 use App\Enums\PaymentMethodResult;
 use App\Enums\UserStatus;
 use App\Exceptions\PaymentException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use MercadoPago\Resources\Payment\PaymentMethodData;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Stripe\StripeClient;
@@ -27,8 +24,8 @@ class StripePaymentMethod extends AbstractPayment
 
         $stripe = new \Stripe\StripeClient($this->getAccessToken());
         $price = $stripe->prices->create([
-            'currency' => $currency,
-            'unit_amount' => $amount_value,
+            'currency' => 'USD', //$currency,
+            'unit_amount' => round($amount_value) * 100,
             // 'recurring' => ['interval' => 'month'],
             'product_data' => ['name' => 'Path Exam'],
         ]);
@@ -58,7 +55,7 @@ class StripePaymentMethod extends AbstractPayment
                 'payment_method' => 'stripe',
                 'payment_id' => $session->id,
                 'currency' => $currency,
-                'amount' => $amount_value,
+                'amount' => round($amount_value),
             ]);
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
@@ -134,19 +131,26 @@ class StripePaymentMethod extends AbstractPayment
         $data = $request->input('data');
         $type = $request->input('type');
         $stripe = new StripeClient($this->getAccessToken());
-        Log::info('action' . $data['object']['object']);
-        Log::info('id' . $data['object']['id']);
+        
+        $stripeSessionCode = $data['object']['id']; 
+
         switch ($type) {
             case 'checkout.session.completed':
-                $sessionCompleted = $stripe->checkout->sessions->retrieve($data['object']['id']);
+                //$sessionCompleted = $stripe->checkout->sessions->retrieve($data['object']['id']);
                 if ($data['object']['status'] == 'complete') {
-                    $payment = Payment::where('payment_id', $data['object']['id']);
-                    $payment->status = 'approved';
-                    $payment->save();
-
-                    $candidate = Candidate::find($payment->candidate_id);
-                    $candidate->status = UserStatus::Paid->value;
-                    $candidate->save();
+                    $payment = Payment::where('payment_id', $stripeSessionCode)->first();
+                    if($payment != null){
+                        Log::info($payment );
+                        $payment->status = 'approved';
+                        $payment->save();
+    
+                        $candidate = Candidate::find($payment->candidate_id);
+                        if($candidate != null){
+                            $candidate->status = UserStatus::Paid->value;
+                            Log::alert('Candidate state ' . $candidate->status);
+                            $candidate->save();
+                        }
+                    }
                 }
                 break;
         }

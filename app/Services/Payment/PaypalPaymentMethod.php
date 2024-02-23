@@ -134,7 +134,7 @@ class PaypalPaymentMethod extends AbstractPayment
 
             if (isset($response['id']) && $response['id'] != null) {
                 // redirect to approve href
-                foreach ($response['links'] as $links) {
+                foreach ($response['links'] as $links)  {
                     if ($links['rel'] == 'approve') {
                         return new PaymentResult(PaymentMethodResult::REDIRECT, null, $links['href']);
                         // return redirect()->away($links['href']);
