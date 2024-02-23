@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\LevelResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -34,23 +35,28 @@ class LevelCountriesRelationManager extends RelationManager
                     )
                     ->placeholder('Select a country'),
                 TextInput::make('price_all_modules')
+                    ->label('Price for all modules')
                     ->required()
                     ->numeric()
                     ->minValue(0)
                     ->default(0),
-                TextInput::make('price_exam_right')
-                    ->label('Base price for exam right')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0),
-                TextInput::make('price_exam_right_all_modules')
-                    ->label('Discounted Price')
-                    ->hint('Price for exam right for all modules')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0),
+                Fieldset::make('Exam Right')
+                    ->schema([
+                        TextInput::make('price_exam_right')
+                            ->label('Base Price')
+                            ->hint('When not all modules are taken')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0),
+                        TextInput::make('price_exam_right_all_modules')
+                            ->label('Discounted Price')
+                            ->hint('When all modules are taken')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0),
+                    ]),
                 Repeater::make('levelCountryModules')
                     ->label('Modules')
                     ->columnSpanFull()

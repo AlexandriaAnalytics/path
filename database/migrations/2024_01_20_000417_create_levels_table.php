@@ -27,25 +27,6 @@ class CreateLevelsTable extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('institute_level', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('institute_id')
-                ->constrained()
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('level_id')
-                ->constrained()
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-
-            $table->decimal('institute_diferencial_percentage_price', 12, 2)->default(0);
-            $table->decimal('institute_diferencial_aditional_price', 12, 2)->default(0);
-            $table->boolean('can_edit')->default(false);
-
-            $table->timestamps();
-        });
-
         Schema::create('level_country', function (Blueprint $table) {
             $table->id();
 
@@ -75,7 +56,6 @@ class CreateLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('institute_level');
         Schema::dropIfExists('level_country');
         Schema::dropIfExists('levels');
     }

@@ -69,21 +69,11 @@ class Exam extends Model
             ->withTimestamps();
     }
 
-    public function evaluations(): HasMany
-    {
-        return $this->hasMany(Evaluation::class);
-    }
-
     public function candidates(): BelongsToMany
     {
         return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
             ->withPivot('module_id')
             ->withTimestamps();
-    }
-
-    public function CountryExams(): HasMany
-    {
-        return $this->hasMany(Country::class, 'country_exam');
     }
 
     public function getIsAbleToPricePackAttribute(): bool

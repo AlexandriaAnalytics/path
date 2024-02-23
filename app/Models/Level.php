@@ -48,15 +48,6 @@ class Level extends Model
             ->withTimestamps();
     }
 
-    public function institutes(): BelongsToMany
-    {
-        return $this->belongsToMany(Institute::class, 'institute_level')
-            ->withPivot('institute_diferencial_percentage_price')
-            ->withPivot('institute_diferencial_aditional_price')
-            ->withPivot('can_edit')
-            ->withTimestamps();
-    }
-
     public function countries(): BelongsToMany
     {
         return $this->belongsToMany(Country::class, 'level_country')

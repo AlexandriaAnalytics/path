@@ -68,6 +68,33 @@ class CreateModulesTable extends Migration
 
             $table->timestamps();
         });
+
+        Schema::create('institute_custom_level_price', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('institute_id')
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->foreignId('level_country_id')
+                ->constrained('level_country')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->decimal('price_all_modules', 12, 2)
+                ->nullable()
+                ->comment('Price for all modules');
+            $table->decimal('price_exam_right', 12, 2)
+                ->nullable()
+                ->comment('Price for exam right');
+            $table->decimal('price_exam_right_all_modules', 12, 2)
+                ->nullable()
+                ->comment('Price for exam right for all modules');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -76,6 +103,7 @@ class CreateModulesTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('institute_custom_level_price');
         Schema::dropIfExists('level_country_module');
         Schema::dropIfExists('candidate_module');
         Schema::dropIfExists('exam_module');

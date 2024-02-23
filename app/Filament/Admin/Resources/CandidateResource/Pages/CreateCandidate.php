@@ -20,6 +20,16 @@ class CreateCandidate extends CreateRecord
         if ($missingModules->isEmpty()) {
             // If the student has all the modules, apply the complete price
             // that may be different from the sum of the individual modules prices
+
+            // Or, if the institute has a custom price for the level, apply it
+            $institutePrice = CustomLevelPrice::query()
+                ->whereHas('institute', fn ($query) => $query->where('id', $candidate->student->institute_id))
+                ->whereHas('levelCountry', fn ($query) => $query
+                    ->where('level_id', $candidate->level_id)
+                    ->where('country_id', $candidate->student->country_id))
+                ->first()
+                ?->price_all_modules;
+
             $billed_concepts->push([
                 'concept' => 'Complete price',
                 'currency' => $candidate
@@ -27,7 +37,7 @@ class CreateCandidate extends CreateRecord
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => $candidate
+                'amount' => $institutePrice ?? $candidate
                     ->level
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
@@ -62,26 +72,6 @@ class CreateCandidate extends CreateRecord
             });
         }
 
-        // If the institute has an additional price for the level, apply it
-        $instituteFee = $candidate
-            ->level
-            ->countries
-            ->firstWhere('id', $candidate->student->region->id)
-            ->pivot
-            ->institute_diferencial_aditional_price;
-
-        if ($instituteFee > 0) {
-            $billed_concepts->push([
-                'concept' => 'Service fee',
-                'currency' => $candidate
-                    ->level
-                    ->countries
-                    ->firstWhere('id', $candidate->student->region->id)
-                    ->monetary_unit,
-                'amount' => $instituteFee,
-            ]);
-        }
-
         // If the institute has a right-to-exam fee, apply it
         $countryPrice = $candidate
             ->level
@@ -91,7 +81,7 @@ class CreateCandidate extends CreateRecord
 
         if ($missingModules->isEmpty()) {
             $billed_concepts->push([
-                'concept' => 'Right to exam (all modules)',
+                'concept' => 'Exam Right (all modules)',
                 'currency' => $candidate
                     ->level
                     ->countries
@@ -101,7 +91,7 @@ class CreateCandidate extends CreateRecord
             ]);
         } else {
             $billed_concepts->push([
-                'concept' => 'Right to exam',
+                'concept' => 'Exam Right',
                 'currency' => $candidate
                     ->level
                     ->countries

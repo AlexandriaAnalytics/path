@@ -67,21 +67,10 @@ class DatabaseSeeder extends Seeder
                 Institute::factory(3)
                     ->afterCreating(function (Institute $institute, User $user): void {
                         $institute->owner()->associate($user);
-                        $levels = Level::all();
-
-
-                        foreach ($levels as $level) {
-                            $institute->levels()->attach($level, [
-                                'institute_diferencial_percentage_price' => rand(-20, 20),
-                                'institute_diferencial_aditional_price' => rand(-500, 500),
-                                'can_edit' => $institute->instituteType->slug == 'premium_exam_centre',
-                            ]);
-                        }
                         $institute->save();
                     })
                     ->has(
                         Student::factory(10)
-                        //->hasAttached($exams->random(3)),
                     )
             )
             ->create([
