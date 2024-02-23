@@ -7,6 +7,7 @@ use App\Exceptions\PaymentException;
 use App\Services\Payment\Contracts\AbstractPayment;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
 use MercadoPago\Client\PreApproval\PreApprovalClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
@@ -67,13 +68,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         return config('mercadopago.mode') === 'sandbox'
             ? config('mercadopago.sandbox.access_token')
             : config('mercadopago.live.access_token');
-    }
-
-    private function getPublicKey(): string
-    {
-        return config('mercadopago.mode') === 'sandbox'
-            ? config('mercadopago.sandbox.public_key')
-            : config('mercadopago.live.public_key');
     }
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
@@ -171,6 +165,10 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             PaymentMethodResult::ERROR,
             'message',
         );
+    }
+
+    public function processWebhook(Request $request){
+        // make Logic
     }
 
     

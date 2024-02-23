@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -17,21 +19,27 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Exam> $exams
  * @property int $id
  */
-class Student extends Model
+class Student extends Authenticatable
 {
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
 
     protected $fillable = [
+        'name',
+        'surname',
+        'email',
         'institute_id',
-        'names',
-        'surnames',
         'cbu',
         'birth_date',
         'status',
         'personal_educational_needs',
         'country_id'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     protected $attributes = [
@@ -60,7 +68,12 @@ class Student extends Model
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->surnames}";
+        return "{$this->first_name} {$this->surname}";
+    }
+
+    public function getAgeAttribute(): int
+    {
+        return Carbon::now()->diffInYears($this->birth_date);
     }
 
     public function exams(): BelongsToMany

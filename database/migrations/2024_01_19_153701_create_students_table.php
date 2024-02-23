@@ -16,17 +16,40 @@ return new class extends Migration
 
             $table->foreignId('institute_id')
                 ->constrained()
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
-            $table->string('names');
-            $table->string('surnames');
-            $table->string('cbu')->nullable();
-            $table->date('birth_date');
+            $table->string('email')
+                ->nullable()
+                ->unique()
+                ->comment('Email address for login and notifications');
+            $table->timestamp('email_verified_at')
+                ->nullable();
+            $table->string('password')
+                ->nullable();
+            $table->rememberToken();
+
+            $table->string('name')
+                ->comment('First name(s)');
+            $table->string('surname')
+                ->comment('Last name(s)');
+            $table->date('birth_date')
+                ->comment('Date of birth');
+
+            $table->string('cbu')
+                ->nullable()
+                ->comment('Clave Bancaria Uniforme (CBU)');
+
             $table->string('status');
-            $table->string('personal_educational_needs')->nullable();
+
+            $table->string('personal_educational_needs')
+                ->nullable();
+
             $table->foreignId('country_id')
+                ->nullable()
                 ->constrained()
-                ->cascadeOnDelete();
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();

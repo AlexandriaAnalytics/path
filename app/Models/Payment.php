@@ -18,4 +18,8 @@ class Payment extends Model
         'instalment_number',
         'candidate_id'
     ];
+
+    protected $attributes = [
+        'status' => 'pending'
+    ];
 }

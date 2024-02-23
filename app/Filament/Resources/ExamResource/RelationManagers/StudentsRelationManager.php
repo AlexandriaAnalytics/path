@@ -29,29 +29,7 @@ class StudentsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return StudentResource::table($table)
-            /*->recordTitle(fn (Student $record): string => $record->first_name . ' ' . $record->surnames)
-            ->modifyQueryUsing(fn (Builder $query) => $query->whereBelongsTo(Filament::getTenant()))
-            ->headerActions([
-                Tables\Actions\AttachAction::make()
-                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->where('status', 1))
-                    ->label('Add candidates')
-                    ->recordSelect(
-                        fn (Select $select) => $select
-                            ->placeholder('Select a student')
-                            ->multiple()
-                            ->options(
-                                Student::where('status', 1)->get()->mapWithKeys(function ($student) {
-                                    return [$student->id => $student->first_name . ' ' . $student->surnames];
-                                })
-                            )
-                    )
-
-            ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DetachAction::make(),
-            ])*/;
+        return StudentResource::table($table);
     }
 
     public function isReadOnly(): bool

@@ -14,8 +14,9 @@ class LevelCountry extends Model
     protected $fillable = [
         'level_id',
         'country_id',
-        'price_discounted',
-        'price_right_exam',
+        'price_all_modules',
+        'price_exam_right_all_modules',
+        'price_exam_right',
     ];
 
     public function level(): BelongsTo

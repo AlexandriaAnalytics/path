@@ -34,6 +34,17 @@ class LevelResource extends Resource
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('minimum_age')
+                    ->label('Minimum age')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(100),
+                Forms\Components\TextInput::make('maximum_age')
+                    ->label('Maximum age')
+                    ->numeric()
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->gte('minimum_age'),
             ]);
     }
 
@@ -65,9 +76,9 @@ class LevelResource extends Resource
     public static function getPages(): array
     {
         return [
-            'view' => Pages\ViewLevel::route('/{record}'),
             'index' => Pages\ListLevels::route('/'),
             'create' => Pages\CreateLevel::route('/create'),
+            'view' => Pages\ViewLevel::route('/{record}'),
             'edit' => Pages\EditLevel::route('/{record}/edit'),
         ];
     }

@@ -18,27 +18,34 @@ class CreateLevelsTable extends Migration
             $table->string('name');
             $table->text('description')->nullable();
 
+            $table->unsignedTinyInteger('minimum_age')
+                ->nullable();
+            $table->unsignedTinyInteger('maximum_age')
+                ->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });
 
-        Schema::create('institute_level', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('institute_id')->constrained('institutes')->cascadeOnDelete();
-            $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
-            $table->decimal('institute_diferencial_percentage_price', 12, 2)->default(0);
-            $table->decimal('institute_diferencial_aditional_price', 12, 2)->default(0);
-            $table->decimal('institute_right_exam', 12, 2)->nullable();
-            $table->boolean('can_edit')->default(false);
-            $table->timestamps();
-        });
-
         Schema::create('level_country', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('level_id')->constrained('levels')->cascadeOnDelete();
-            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
-            $table->decimal('price_discounted', 12, 2);
-            $table->decimal('price_right_exam', 12, 2);
+
+            $table->foreignId('level_id')
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('country_id')
+                ->constrained('countries')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->decimal('price_all_modules', 12, 2)
+                ->comment('Price for all modules');
+            $table->decimal('price_exam_right_all_modules', 12, 2)
+                ->comment('Price for exam right for all modules');
+            $table->decimal('price_exam_right', 12, 2)
+                ->comment('Price for exam right without all modules');
+
             $table->timestamps();
         });
     }
@@ -49,7 +56,7 @@ class CreateLevelsTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('level_country');
         Schema::dropIfExists('levels');
-        Schema::dropIfExists('institute_level');
     }
 }

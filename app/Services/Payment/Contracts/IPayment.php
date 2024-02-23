@@ -4,6 +4,7 @@ namespace App\Services\Payment\Contracts;
 
 use App\Exceptions\PaymentException;
 use App\Services\Payment\PaymentResult;
+use Illuminate\Http\Request;
 
 interface IPayment
 {
@@ -20,6 +21,13 @@ interface IPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode='subscription'): PaymentResult;
     
+
+    /**
+    @params Illuminate\Http\Request $request
+    @return void
+    */
+    public function processWebHook(Request $request);
+
     /**	
     @param string $url
      */

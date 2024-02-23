@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('institute_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+
+            $table->string('name')
+                ->unique();
             $table->string('slug');
             $table->string('files_url')->nullable();
 

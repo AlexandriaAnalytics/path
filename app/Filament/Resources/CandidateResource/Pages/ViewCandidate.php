@@ -36,8 +36,8 @@ class ViewCandidate extends ViewRecord
                 Fieldset::make('Student')
                     ->relationship('student')
                     ->schema([
-                        TextEntry::make('names'),
-                        TextEntry::make('surnames')
+                        TextEntry::make('name'),
+                        TextEntry::make('surname')
                             ->label('Last Name'),
                         TextEntry::make('institute.name')
                             ->label('Institute'),
@@ -70,6 +70,10 @@ class ViewCandidate extends ViewRecord
                             ->numeric(decimalPlaces: 2),
                     ])
                     ->columnSpanFull(),
+                TextEntry::make('granted_discount')
+                    ->label('Discount granted')
+                    ->numeric()
+                    ->formatStateUsing(fn ($state) => $state . '%'),
                 TextEntry::make('total_amount')
                     ->label('Total amount')
                     ->numeric()

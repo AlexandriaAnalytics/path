@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\CustomLevelPrice;
 use App\Models\Module;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -14,12 +15,22 @@ class CreateCandidate extends CreateRecord
     {
         /** @var \App\Models\Candidate $candidate */
         $candidate = $this->record;
-        debug($candidate->modules);
         $billed_concepts = $candidate->billed_concepts;
+        $missingModules = Module::all()->diff($candidate->modules);
 
-        if (Module::all()->diff($candidate->modules)->isEmpty()) {
+        if ($missingModules->isEmpty()) {
             // If the student has all the modules, apply the complete price
             // that may be different from the sum of the individual modules prices
+
+            // Or, if the institute has a custom price for the level, apply it
+            $institutePrice = CustomLevelPrice::query()
+                ->whereHas('institute', fn ($query) => $query->where('id', $candidate->student->institute_id))
+                ->whereHas('levelCountry', fn ($query) => $query
+                    ->where('level_id', $candidate->level_id)
+                    ->where('country_id', $candidate->student->country_id))
+                ->first()
+                ?->price_all_modules;
+
             $billed_concepts->push([
                 'concept' => 'Complete price',
                 'currency' => $candidate
@@ -27,12 +38,12 @@ class CreateCandidate extends CreateRecord
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => $candidate
+                'amount' => $institutePrice ?? $candidate
                     ->level
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->pivot
-                    ->price_discounted,
+                    ->price_all_modules,
             ]);
         } else {
             // If the student does not have all the modules, apply the sum of the individual
@@ -62,48 +73,57 @@ class CreateCandidate extends CreateRecord
             });
         }
 
-        // If the institute has an additional price for the level, apply it
-        $instituteFee = $candidate
+        // If the institute has a right-to-exam fee, apply it
+        $countryPrice = $candidate
             ->level
             ->countries
             ->firstWhere('id', $candidate->student->region->id)
-            ->pivot
-            ->institute_diferencial_aditional_price;
+            ->pivot;
 
-        if ($instituteFee > 0) {
+        if ($missingModules->isEmpty()) {
             $billed_concepts->push([
-                'concept' => 'Service fee',
+                'concept' => 'Exam Right (all modules)',
                 'currency' => $candidate
                     ->level
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => $instituteFee,
+                'amount' => $countryPrice->price_exam_right_all_modules,
+            ]);
+        } else {
+            $billed_concepts->push([
+                'concept' => 'Exam Right',
+                'currency' => $candidate
+                    ->level
+                    ->countries
+                    ->firstWhere('id', $candidate->student->region->id)
+                    ->monetary_unit,
+                'amount' => $countryPrice->price_exam_right,
             ]);
         }
 
-        // If the institute has a right-to-exam fee, apply it
-        $rightToExamFee = $candidate
-            ->level
-            ->countries
-            ->firstWhere('id', $candidate->student->region->id)
-            ->pivot
-            ->price_right_exam;
+        // If the student has a discount, apply it
+        $discount = $candidate->granted_discount;
 
-        if ($rightToExamFee > 0) {
+        if ($discount > 0) {
             $billed_concepts->push([
-                'concept' => 'Right to exam',
+                'concept' => 'Discount',
                 'currency' => $candidate
                     ->level
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => $rightToExamFee,
+                'amount' => -$billed_concepts->sum('amount') * ($discount / 100),
             ]);
         }
 
         $candidate->update([
             'billed_concepts' => $billed_concepts,
         ]);
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

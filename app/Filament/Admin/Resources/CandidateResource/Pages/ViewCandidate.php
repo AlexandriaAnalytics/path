@@ -34,8 +34,8 @@ class ViewCandidate extends ViewRecord
                 Fieldset::make('Student')
                     ->relationship('student')
                     ->schema([
-                        TextEntry::make('names'),
-                        TextEntry::make('surnames')
+                        TextEntry::make('name'),
+                        TextEntry::make('surname')
                             ->label('Last Name'),
                         TextEntry::make('institute.name')
                             ->label('Institute'),

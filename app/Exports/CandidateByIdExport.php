@@ -27,7 +27,8 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
         return Candidate::query()
             ->whereIn('id', $this->candidate_ids)
             ->with('student')
-            ->with('exam');
+            ->with('exams')
+            ->with('modules');
     }
 
     public function headings(): array
@@ -36,20 +37,20 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             'Candidate Number',
             'Full Name',
             'Session Name',
-            'Status'
+            'Status',
+            'Modules'
         ];
     }
 
     public function map($candidate): array
     {
-        $fullName = $candidate->student->names . ' ' . $candidate->student->surnames;
-
         return [
             $candidate->id,
-            $candidate->student->names,
-            $candidate->student->surnames,
+            $candidate->student->name,
+            $candidate->student->surname,
             // $candidate->exam->session_name,
-            $candidate->status
+            $candidate->status,
+            $candidate->modules->pluck('name')->implode(', ')
         ];
     }
 
@@ -66,7 +67,7 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             ],
         ]);
 
-        $sheet->getColumnDimension('A')->setWidth(15);
+        $sheet->getColumnDimension('A')->setWidth(20);
         $sheet->getStyle('B1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
@@ -102,6 +103,18 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
         ]);
 
         $sheet->getColumnDimension('D')->setWidth(40);
+
+        $sheet->getStyle('E1')->applyFromArray([
+            'font' => [
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '000000'],
+            ],
+        ]);
+
+        $sheet->getColumnDimension('E')->setWidth(50);
 
         $lastRow = $sheet->getHighestDataRow();
         $lastCol = $sheet->getHighestDataColumn();

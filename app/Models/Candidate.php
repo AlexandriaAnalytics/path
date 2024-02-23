@@ -39,7 +39,8 @@ class Candidate extends Pivot
         'billed_concepts',
         'candidate_number',
         'status',
-        'type_of_certificate'
+        'type_of_certificate',
+        'granted_discount',
     ];
 
     protected $casts = [
@@ -48,6 +49,7 @@ class Candidate extends Pivot
 
     protected $attributes = [
         'billed_concepts' => '[]',
+        'granted_discount' => 0,
         'status' => UserStatus::Unpaid,
     ];
 

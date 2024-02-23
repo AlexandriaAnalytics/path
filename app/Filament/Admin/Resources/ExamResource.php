@@ -5,9 +5,12 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\ExamResource\Pages;
 use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
-use Filament\Tables\Actions\Action;
+use App\Models\Level;
+use App\Models\Module;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -28,13 +31,22 @@ class ExamResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Details')
-                    ->columns(2)
+                    ->columns(3)
                     ->schema([
                         Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                        Forms\Components\TextInput::make('maximum_number_of_students')
+                            ->numeric(),
                         Forms\Components\DateTimePicker::make('scheduled_date')
+                            ->native(false)
+                            ->seconds(false)
+                            ->minutesStep(5)
+                            ->required()
+                            ->minDate(now()),
+                        Forms\Components\DateTimePicker::make('payment_deadline')
                             ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
@@ -45,8 +57,6 @@ class ExamResource extends Resource
                             ->native(false)
                             ->required()
                             ->enum(\App\Enums\ExamType::class),
-                        Forms\Components\TextInput::make('maximum_number_of_students')
-                            ->numeric(),
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),
                     ]),
@@ -60,13 +70,31 @@ class ExamResource extends Resource
                             ->native(false)
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('select-all')
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->label('Select All')
+                                    ->tooltip('Select all levels')
+                                    ->action(function (Set $set) {
+                                        $set('levels', Level::all()->pluck('id'));
+                                    }),
+                            ),
                         Forms\Components\Select::make('modules')
                             ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('select-all')
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->label('Select All')
+                                    ->tooltip('Select all modules')
+                                    ->action(function (Set $set) {
+                                        $set('modules', Module::all()->pluck('id'));
+                                    }),
+                            ),
                     ])
             ]);
     }

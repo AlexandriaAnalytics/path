@@ -34,6 +34,11 @@ class Country extends Model
         'monetary_unit_symbol',
     ];
 
+    protected $attributes = [
+        'monetary_unit' => 'USD',
+        'monetary_unit_symbol' => '$',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -79,8 +84,11 @@ class Country extends Model
     public function levels(): BelongsToMany
     {
         return $this->belongsToMany(Level::class, 'level_country')
-            ->withPivot('price_discounted')
-            ->withPivot('price_right_exam')
+            ->withPivot([
+                'price_all_modules',
+                'price_exam_right_all_modules',
+                'price_exam_right',
+            ])
             ->withTimestamps();
     }
 

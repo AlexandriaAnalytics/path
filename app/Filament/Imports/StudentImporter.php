@@ -19,11 +19,11 @@ class StudentImporter extends Importer
                 ->label('National ID')
                 ->requiredMapping()
                 ->rules(['required', 'max:32']),
-            ImportColumn::make('first_name')
+            ImportColumn::make('name')
                 ->label('First Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
-            ImportColumn::make('surnames')
+            ImportColumn::make('surname')
                 ->label('Last Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),

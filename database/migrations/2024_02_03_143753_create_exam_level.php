@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('exam_id')
-                ->constrained('exams')
-                ->cascadeOnDelete();
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->foreignId('level_id')
-                ->constrained('levels')
-                ->cascadeOnDelete();
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
 
             $table->timestamps();
         });

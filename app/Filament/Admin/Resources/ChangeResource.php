@@ -35,7 +35,7 @@ class ChangeResource extends Resource
             ->schema([
                 TextInput::make('candidate')
                     ->formatStateUsing(function ($record) {
-                        return $record->candidate->student->names . ' ' . $record->candidate->student->surnames;
+                        return $record->candidate->student->name . ' ' . $record->candidate->student->surname;
                     }),
                 TextInput::make('user')
                     ->label('Requested by')
@@ -53,7 +53,7 @@ class ChangeResource extends Resource
             ->columns([
                 TextColumn::make('candidate')
                     ->formatStateUsing(function ($record) {
-                        return $record->candidate->student->names . ' ' . $record->candidate->student->surnames;
+                        return $record->candidate->student->name . ' ' . $record->candidate->student->surname;
                     }),
                 TextColumn::make('user')
                     ->label('Requested by')

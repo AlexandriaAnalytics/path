@@ -19,18 +19,10 @@ return new class extends Migration
             $table->string('type');
             $table->integer('maximum_number_of_students');
             $table->string('comments')->nullable();
+            $table->timestamp('payment_deadline');
 
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('country_exam', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('exam_id')->constrained();
-            $table->foreignId('country_id')->constrained();
-            $table->double('pack_price', 15, 2);
-
-            $table->timestamps();
         });
     }
 
@@ -40,6 +32,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('exams');
-        Schema::dropIfExists('country_exam');
     }
 };
