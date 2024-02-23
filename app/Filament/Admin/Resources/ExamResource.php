@@ -5,9 +5,12 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\ExamResource\Pages;
 use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
-use Filament\Tables\Actions\Action;
+use App\Models\Level;
+use App\Models\Module;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -60,13 +63,31 @@ class ExamResource extends Resource
                             ->native(false)
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('select-all')
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->label('Select All')
+                                    ->tooltip('Select all levels')
+                                    ->action(function (Set $set) {
+                                        $set('levels', Level::all()->pluck('id'));
+                                    }),
+                            ),
                         Forms\Components\Select::make('modules')
                             ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->suffixAction(
+                                Action::make('select-all')
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->label('Select All')
+                                    ->tooltip('Select all modules')
+                                    ->action(function (Set $set) {
+                                        $set('modules', Module::all()->pluck('id'));
+                                    }),
+                            ),
                     ])
             ]);
     }
