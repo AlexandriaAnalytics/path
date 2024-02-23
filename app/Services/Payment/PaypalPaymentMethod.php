@@ -69,7 +69,7 @@ class PaypalPaymentMethod extends AbstractPayment
     {
 
         try {
-            $amount = round($total_amount_value / $instalment_number, 2);
+            $amount = round(floatval($total_amount_value) / $instalment_number, 2);
 
             $candidate = Candidate::find($id);
             if ($candidate == null) {
