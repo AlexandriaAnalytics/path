@@ -27,10 +27,10 @@ class StripePaymentMethod extends AbstractPayment
 
         $stripe = new \Stripe\StripeClient($this->getAccessToken());
         $price = $stripe->prices->create([
-            'currency' => 'usd',
-            'unit_amount' => 1000,
+            'currency' => $currency,
+            'unit_amount' => $amount_value,
             // 'recurring' => ['interval' => 'month'],
-            'product_data' => ['name' => 'Gold Plan'],
+            'product_data' => ['name' => 'Path Exam'],
         ]);
 
         try {
@@ -48,7 +48,7 @@ class StripePaymentMethod extends AbstractPayment
                 ]
             ]);
 
-            
+
             $candidate = Candidate::find($id);
             $candidate->status = UserStatus::Processing_payment->value;
             $candidate->save();
@@ -59,9 +59,8 @@ class StripePaymentMethod extends AbstractPayment
                 'payment_id' => $session->id,
                 'currency' => $currency,
                 'amount' => $amount_value,
-                ]);
+            ]);
 
-            Log::info('checkout: ' . $session->id);
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
         } catch (PaymentException $pe) {
             return new PaymentResult(
@@ -73,10 +72,56 @@ class StripePaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
     {
-        return new PaymentResult(
-            PaymentMethodResult::ERROR,
-            'This payment method does not support payments'
-        );
+        $amountPerInstalment = $total_amount_value  / $instalment_number;  
+
+        Stripe::setApiKey($this->getAccessToken());
+
+        $stripe = new \Stripe\StripeClient($this->getAccessToken());
+        $price = $stripe->prices->create([
+            'currency' => $currency,
+            'unit_amount' => $amountPerInstalment,
+            'recurring' => [
+                'interval' => 'month',
+            ],
+            'product_data' => ['name' => 'Path Exam'],
+        ]);
+
+
+        try {
+            $session = Session::create([
+                'success_url' => 'https://example.com/success',
+                'line_items' => [
+                    [
+                        'price' => $price->id,
+                        'quantity' => 1,
+                    ],
+                ],
+                'mode' => 'payment',
+                'metadata' => [
+                    'id' => $id
+                ]
+            ]);
+
+
+            $candidate = Candidate::find($id);
+            $candidate->status = UserStatus::Processing_payment->value;
+            $candidate->save();
+
+            Payment::create([
+                'candidate_id' => $candidate->id,
+                'payment_method' => 'stripe',
+                'payment_id' => $session->id,
+                'currency' => $currency,
+                'amount' => $amountPerInstalment,
+            ]);
+
+            return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
+        } catch (PaymentException $pe) {
+            return new PaymentResult(
+                PaymentMethodResult::ERROR,
+                $pe->getMessage()
+            );
+        }
     }
 
     private function getAccessToken(): string
@@ -89,12 +134,12 @@ class StripePaymentMethod extends AbstractPayment
         $data = $request->input('data');
         $type = $request->input('type');
         $stripe = new StripeClient($this->getAccessToken());
-        Log::info('action'. $data['object']['object'] );
-        Log::info('id'. $data['object']['id']);
-        switch($type) {
+        Log::info('action' . $data['object']['object']);
+        Log::info('id' . $data['object']['id']);
+        switch ($type) {
             case 'checkout.session.completed':
                 $sessionCompleted = $stripe->checkout->sessions->retrieve($data['object']['id']);
-                if($data['object']['status'] == 'complete'){
+                if ($data['object']['status'] == 'complete') {
                     $payment = Payment::where('payment_id', $data['object']['id']);
                     $payment->status = 'approved';
                     $payment->save();
@@ -105,6 +150,5 @@ class StripePaymentMethod extends AbstractPayment
                 }
                 break;
         }
-
     }
 }
