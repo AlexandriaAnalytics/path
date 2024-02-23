@@ -7,6 +7,7 @@ enum UserStatus: string
     case Cancelled = 'cancelled';
     case Unpaid = 'unpaid';
     case Paid = 'paid';
+    case Processing_payment = 'processing payment';
 
     public static function values(): array
     {
