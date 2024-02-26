@@ -121,29 +121,23 @@ class InstituteResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('files_url')
-                            ->label('Member or centre files URL')
-                            ->type('url')
-                            ->hint('This Member or centre\'s specific web folder.')
-                            ->helperText('You can add global files in the settings.'),
+                            ->label('Specific files URL')
+                            ->type('url'),
                         Toggle::make('can_add_candidates')
-                            ->default(true)
-                            ->helperText('If enabled, the Member or centre will be able to add candidates to exams.'),
+                            ->default(true),
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('discounted_price_diferencial')
                             ->label('Discounted price diferencial')
-                            ->type('number')
-                            ->hint('Price difference for this Member or centre when all levels are selected by one candidate.'),
+                            ->type('number'),
                         TextInput::make('discounted_price_percentage')
                             ->label('Discounted price percentage')
-                            ->type('number')
-                            ->hint('Percentage difference in price for this Member or centre when all levels are selected by one candidate.'),
+                            ->type('number'),
                         TextInput::make('rigth_exam_diferencial')
-                            ->label('Right exam')
-                            ->type('number')
-                            ->hint('Price of the rigth exam for an Member or centre.'),
+                            ->label('Exam registration fee')
+                            ->type('number'),
                     ])->columns(1),
             ]);
     }
@@ -156,7 +150,7 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('(unnamed)')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
@@ -168,50 +162,51 @@ class InstituteResource extends Resource
                             'Premium Training Centre' => 'primary',
                             default => 'gray',
                         };
-                    }),
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('email')
                     ->url(fn ($record) => 'mailto:' . $record->email, shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 PhoneColumn::make('phone')->displayFormat(PhoneInputNumberType::NATIONAL)
                     ->url(fn ($record) => 'https://api.whatsapp.com/send?phone=' . preg_replace("/[^\d]/", "", $record->phone), shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('files_url')
                     ->url(fn ($record) => $record->files_url, shouldOpenInNewTab: true)
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
                     ->alignCenter()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')->label('Updated on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('deleted_at')->label('Deleted on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()
