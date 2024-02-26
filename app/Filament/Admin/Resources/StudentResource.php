@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Exports\StudentExporter;
+use App\Models\Candidate;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
@@ -12,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
@@ -34,10 +36,11 @@ class StudentResource extends Resource
                     ->columns(2)
                     ->schema([
                         Components\TextInput::make('name')
+                            ->label('Names')
                             ->required()
                             ->placeholder('John'),
                         Components\TextInput::make('surname')
-                            ->label('Last Name')
+                            ->label('Surnames')
                             ->required()
                             ->placeholder('Doe'),
                         Components\Select::make('institute_id')
@@ -58,7 +61,7 @@ class StudentResource extends Resource
                     ->collapsible()
                     ->schema([
                         Components\Select::make('country_id')
-                            ->label('Region')
+                            ->label('Country')
                             ->relationship('region', 'name')
                             ->required()
                             ->searchable()
@@ -66,6 +69,7 @@ class StudentResource extends Resource
                             ->native(false),
                     ]),
                 Components\RichEditor::make('personal_educational_needs')
+                    ->label('Personal Educational Needs')
                     ->columnSpanFull()
             ]);
     }
@@ -96,7 +100,10 @@ class StudentResource extends Resource
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(function (Student $record) {
+                        return !Candidate::where('student_id', $record->id)->exists();
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -128,9 +135,11 @@ class StudentResource extends Resource
     {
         return [
             TextColumn::make('name')
+                ->label('Names')
                 ->searchable()
                 ->sortable(),
             TextColumn::make('surname')
+                ->label('Surnames')
                 ->searchable()
                 ->sortable(),
             TextColumn::make('region.name')
@@ -138,7 +147,10 @@ class StudentResource extends Resource
                 ->searchable()
                 ->badge()
                 ->sortable(),
-
+            TextColumn::make('personal_educational_needs')
+                ->label('PENs')
+                ->wrap()
+                ->default('-'),
             TextColumn::make('birth_date')
                 ->label('Date of birth')
                 ->date()

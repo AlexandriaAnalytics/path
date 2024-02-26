@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use App\Exports\StudentExport;
 use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
 use App\Filament\Resources\StudentResource\Pages;
+use App\Models\Candidate;
 use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -30,8 +31,10 @@ class StudentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name'),
-                Forms\Components\TextInput::make('surname'),
+                Forms\Components\TextInput::make('name')
+                    ->label('Names'),
+                Forms\Components\TextInput::make('surname')
+                    ->label('Surnames'),
                 Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
                     ->relationship('region', 'name')
@@ -60,7 +63,10 @@ class StudentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(function (Student $record) {
+                        return !Candidate::where('student_id', $record->id)->exists();
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

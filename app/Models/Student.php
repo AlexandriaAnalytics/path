@@ -93,4 +93,13 @@ class Student extends Authenticatable
     {
         return $this->belongsTo(Country::class, 'country_id');
     }
+
+    public function PENs(): string
+    {
+        if (is_null($this->personal_educational_needs)) {
+            return 'null';
+        } else {
+            return $this->personal_educational_needs;
+        }
+    }
 }
