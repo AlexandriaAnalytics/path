@@ -25,11 +25,11 @@ class CountryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('name')
-                    ->options(\App\Enums\Country::class)
+                    ->options(array_combine(\App\Enums\Country::values(), \App\Enums\Country::values()))
                     ->autofocus()
                     ->required()
-                    ->placeholder('Name'),
-
+                    ->placeholder('Name')
+                    ->enum(\App\Enums\Country::class),
                 Forms\Components\Select::make('paymentMethods')
                     ->relationship('paymentMethods', 'name')
                     ->multiple()
