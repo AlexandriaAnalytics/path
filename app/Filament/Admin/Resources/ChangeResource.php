@@ -26,6 +26,7 @@ class ChangeResource extends Resource
     protected static ?string $model = Change::class;
 
     protected static ?string $modelLabel = 'Change requests';
+    protected static bool $hasTitleCaseModelLabel = false;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
 
