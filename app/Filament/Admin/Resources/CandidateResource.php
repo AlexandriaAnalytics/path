@@ -6,6 +6,7 @@ use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
+use App\Filament\Exports\CandidateExporter;
 use App\Models\AvailableModule;
 use App\Models\Candidate;
 use App\Models\CandidateExam;
@@ -37,6 +38,7 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
@@ -78,6 +80,7 @@ class CandidateResource extends Resource
                                 '2' => 'danger',
                                 '3' => 'success',
                                 '4' => 'warning',
+                                '5' => 'warning',
                             ])
                             ->hiddenOn('create'),
                     ]),
@@ -168,10 +171,8 @@ class CandidateResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('export-excel')
-                        ->label('Download as Excel')
-                        ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new CandidateByIdExport($records->pluck('id')))->download('candidates.xlsx')),
+                    ExportBulkAction::make()
+                        ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ]);

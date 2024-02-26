@@ -3,28 +3,57 @@
 namespace App\Services\Payment;
 
 use App\Enums\PaymentMethodResult;
+use App\Enums\UserStatus;
+use App\Exceptions\PaymentException;
 use App\Models\Candidate;
+use App\Models\Payment;
 use App\Services\Payment\Contracts\AbstractPayment;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PaypalPaymentMethod extends AbstractPayment
 {
+    private const AVAILABLE_CURRENCIES = [ // https://developer.paypal.com/docs/reports/reference/paypal-supported-currencies/
+        'AUD',
+        'BRL',
+        'CAD',
+        'CNY',
+        'CZK',
+        'DDK',
+        'EUR',
+        'HKD',
+        'HUF',
+        'ILS',
+        'JPY',
+        'MYR',
+        'MXN',
+        'TWD',
+        'NZD',
+        'NOK',
+        'PHP',
+        'PLN',
+        'GBP',
+        'SGD',
+        'SEK',
+        'CHF',
+        'THB',
+        'USD'
+    ];
+
     public function pay(string $id, string $description, string $currency, string $amount_value, $mode = 'single'): PaymentResult
     {
 
-        if (!is_numeric($amount_value)) {
+        if (!is_numeric($amount_value))
             return new PaymentResult(PaymentMethodResult::ERROR, 'Amount value must be a number');
-        }
 
-        if ($amount_value <= 0) {
+        if ($amount_value <= 0)
             return new PaymentResult(PaymentMethodResult::ERROR, 'Amount value must be greater than 0');
-        }
+
         /*
-        if (strtoupper($currency) != 'USD') {
+        if (strtoupper($currency) != 'USD')
             return new PaymentResult(PaymentMethodResult::ERROR, 'Currency must be USD');
-        }
         */
 
         $provider = new PayPalClient;
@@ -67,14 +96,16 @@ class PaypalPaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
     {
+        $currency = strtoupper($currency);
+        if (!in_array($currency, PaypalPaymentMethod::AVAILABLE_CURRENCIES))
+            throw new PaymentException('Currency not supported');
 
         try {
             $amount = round(floatval($total_amount_value) / $instalment_number, 2);
 
             $candidate = Candidate::find($id);
-            if ($candidate == null) {
+            if ($candidate == null)
                 return new PaymentResult(PaymentMethodResult::ERROR, 'Candidate not found');
-            }
 
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
@@ -83,8 +114,8 @@ class PaypalPaymentMethod extends AbstractPayment
             $product = $provider->createProduct([
                 'name' => 'Examen en 3 cuotas',
                 'description' => 'Exam en 3 cuotas description',
-                'type' => 'SERVICE', // Indica que el producto es un servicio
-                'category' => 'EDUCATIONAL_AND_TEXTBOOKS',
+                'type' => 'SERVICE', // type of product see paypal docuumentation
+                'category' => 'EDUCATIONAL_AND_TEXTBOOKS', // type of category provided for paypal api see documentation  
                 'image_url' => 'https://example.com/images/product-image.png',
                 'home_url' => 'https://example.com/home',
             ]);
@@ -95,6 +126,7 @@ class PaypalPaymentMethod extends AbstractPayment
                 'product_id' => $product['id'], // Id del producto creado
                 'name' => 'Plan de ' . $instalment_number . ' cuotas sin interes',
                 'description' => 'Plan de ' . $instalment_number . ' cuotas sin interes',
+                'plan_request' => ['id' => $id],
                 'payment_preferences' => [
                     'auto_bill_outstanding' => true,
                     'setup_fee_failure_action' => 'CONTINUE',
@@ -122,20 +154,36 @@ class PaypalPaymentMethod extends AbstractPayment
 
 
             $plan = $provider->createPlan($plan_request);
-
-
             $response = $provider->createSubscription([
                 'plan_id' => $plan['id'],
-
                 'application_context' => [
                     "shipping_preference" => "NO_SHIPPING",
                 ],
             ]);
 
+            Log::info('response id', [$response]);
+
             if (isset($response['id']) && $response['id'] != null) {
-                // redirect to approve href
-                foreach ($response['links'] as $links)  {
+
+                foreach ($response['links'] as $links) {
                     if ($links['rel'] == 'approve') {
+
+                        Log::info('create-suscription-code' . $response['id'] );
+                        for($instalment = 1; $instalment <= $instalment_number; $instalment++)
+                        {
+                            Payment::create([
+                                'candidate_id' => $id,
+                                'payment_method' => 'paypal',
+                                'currency' => $currency,
+                                'amount' => $amount,
+                                'suscription_code' => $response['id'],
+                                'instalment_number' => $instalment_number,
+                                'current_instalment' => $instalment 
+                            ]);
+                        }
+
+
+                        Candidate::where('id', $id)->update(['status' => UserStatus::Processing_payment]);
                         return new PaymentResult(PaymentMethodResult::REDIRECT, null, $links['href']);
                         // return redirect()->away($links['href']);
                     }
@@ -167,7 +215,8 @@ class PaypalPaymentMethod extends AbstractPayment
         }
     }
 
-    public function processWebhook(Request $request){
-        // make logic
+    public function processWebhook(Request $request)
+    {
+        // make magic logic
     }
 }

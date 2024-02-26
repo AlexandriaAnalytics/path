@@ -7,7 +7,7 @@ use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
-use Maatwebsite\Excel\Row;
+use App\Http\Controllers\WebHookPaymentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +86,6 @@ Route::get('/payment/mp/canceled', [PaymentController::class, 'mpCancelTransacti
 Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotificationURL'])->name('payment.mp.webhook');
 
 // Payment webhooks
-Route::post('/payment/webhook/mp', [PaymentController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
-Route::post('/payment/webhook/paypal', [PaymentController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  
-Route::post('/payment/webhook/stripe', [PaymentController::class, 'stripeWebhook'])->name('payment.stripe.webhook');
+Route::post('/payment/webhook/mp', [WebHookPaymentsController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
+Route::post('/payment/webhook/paypal', [WebHookPaymentsController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  
+Route::post('/payment/webhook/stripe', [WebHookPaymentsController::class, 'stripeWebhook'])->name('payment.stripe.webhook');

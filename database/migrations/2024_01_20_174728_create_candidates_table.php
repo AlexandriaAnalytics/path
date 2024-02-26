@@ -29,8 +29,8 @@ return new class extends Migration
             $table->decimal('granted_discount', 12, 2)
                 ->comment('Discount granted to the student by the institute.');
 
-            $table->enum('status', UserStatus::values());
-            $table->enum('type_of_certificate', TypeOfCertificate::values());
+            $table->string('status');
+            $table->string('type_of_certificate');
             $table->json('billed_concepts');
 
             $table->timestamps();

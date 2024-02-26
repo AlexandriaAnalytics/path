@@ -2,25 +2,19 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Enums\Module;
-use App\Exports\StudentExport;
-use App\Models\Country;
+use App\Filament\Exports\StudentExporter;
 use App\Models\Student;
 use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
 {
@@ -106,10 +100,8 @@ class StudentResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('export-excel')
-                        ->label('Download as Excel')
-                        ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
+                    ExportBulkAction::make()
+                        ->exporter(StudentExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ]);
