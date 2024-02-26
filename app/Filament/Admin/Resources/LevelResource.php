@@ -16,7 +16,7 @@ class LevelResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $modelLabel = 'Level setting';
+    protected static ?string $modelLabel = 'Levels';
 
     //protected static ?string $navigationParentItem = 'Exams';
 

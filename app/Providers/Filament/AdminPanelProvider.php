@@ -41,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Corporate'),
                 NavigationGroup::make()
-                    ->label('Exam Management'),
+                    ->label('Exam session management'),
                 NavigationGroup::make()
                     ->label('User Management'),
                 NavigationGroup::make()

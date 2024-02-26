@@ -121,7 +121,7 @@ class CandidateResource extends Resource
 
                 //Institute
                 TextColumn::make('student.institute.name')
-                    ->label('Institute Name')
+                    ->label('Member or centre Name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -138,7 +138,7 @@ class CandidateResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('institute_id')
-                    ->label('Institute')
+                    ->label('Member or centre')
                     ->relationship('student.institute', 'name')
                     ->searchable()
                     ->multiple()
@@ -198,7 +198,7 @@ class CandidateResource extends Resource
 
                 //Institute
                 TextColumn::make('student.institute.name')
-                    ->label('Institute Name')
+                    ->label('Member or centre Name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -227,7 +227,7 @@ class CandidateResource extends Resource
         return [
             ColumnGroup::make('Institute', [
                 TextColumn::make('student.institute.name')
-                    ->label('Institute Name')
+                    ->label('Member or centre Name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -258,7 +258,7 @@ class CandidateResource extends Resource
                 ->disabledOn('edit')
                 ->schema([
                     Select::make('institute_id')
-                        ->label('Institute')
+                        ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
                         ->options(Institute::all()->pluck('name', 'id'))
