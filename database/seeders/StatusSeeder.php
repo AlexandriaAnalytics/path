@@ -23,6 +23,10 @@ class StatusSeeder extends Seeder
             [
                 'name' => 'Cancelled',
             ],
+            [
+                'name' => 'paying'
+            ]
+
         ];
 
         Status::factory()
