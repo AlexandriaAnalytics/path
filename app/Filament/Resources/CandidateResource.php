@@ -106,6 +106,7 @@ class CandidateResource extends Resource
                         'unpaid' => 'danger',
                         'paid' => 'success',
                         'processing payment' => 'warning',
+                        'paying' => 'warning',
                     }),
 
                 //Student

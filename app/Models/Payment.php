@@ -17,6 +17,7 @@ class Payment extends Model
         'currency',
         'amount',
         'status',
+        'suscription_code',
         'instalment_number',
         'current_instalment',
         'candidate_id',
@@ -26,32 +27,6 @@ class Payment extends Model
     protected $attributes = [
         'status' => 'pending'
     ];
-
-    protected static function booted(): void
-    {
-        static::created(function(Payment $payment) {
-            
-            if($payment->instalment_number != null) {
-                $previusPayments = Payment::where('candidate_id', $payment->candidate_id)->get();
-                $lastInstalment = $previusPayments->max('current_instalment');
-                
-                if(
-                    $payment->instalment_number != null && $lastInstalment == $payment->instalment_number
-                ){
-                    throw new Exception('yo can not pay more');
-                }
-                
-                if(count($previusPayments) == 0){
-                    $payment->current_instalment = 1;
-                }else {
-                    $lastInstalment = $previusPayments->max('current_instalment');
-                    $payment->current_instalment = $lastInstalment + 1;
-                }
-                $payment->save();
-            }
-            
-        });
-    }
 
     protected function counter() : Attribute {
        return Attribute::make(
