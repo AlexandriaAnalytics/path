@@ -161,14 +161,13 @@ class PaypalPaymentMethod extends AbstractPayment
                 ],
             ]);
 
-            Log::info('response id', [$response]);
+            
 
             if (isset($response['id']) && $response['id'] != null) {
 
                 foreach ($response['links'] as $links) {
                     if ($links['rel'] == 'approve') {
 
-                        Log::info('create-suscription-code' . $response['id'] );
                         for($instalment = 1; $instalment <= $instalment_number; $instalment++)
                         {
                             Payment::create([

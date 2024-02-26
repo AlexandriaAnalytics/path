@@ -38,7 +38,7 @@ class WebHookPaymentsController extends Controller
                 break;
             case 'PAYMENT.SALE.COMPLETED':
 
-                if(Payment::where('payment_id', $payment_id)->first() != null) break; // payment exists
+                if (Payment::where('payment_id', $payment_id)->first() != null) break; // payment exists
 
                 $billing_agreement_id = $request->input('resource.billing_agreement_id');;
                 $currentPayment = Payment::where('suscription_code', $billing_agreement_id)
@@ -58,7 +58,7 @@ class WebHookPaymentsController extends Controller
                     if ($currentPayment->current_instalment == $currentPayment->instalment_number)
                         Candidate::find($currentPayment->candidate_id)->update(['status' => UserStatus::Paid->value]);
                     break;
-                }else {
+                } else {
                     Log::error('currentInstalment not found');
                     break;
                 }
@@ -90,47 +90,60 @@ class WebHookPaymentsController extends Controller
 
     public function mercadopagoWebhook(Request $request)
     {
-
-        if ($request->input('action') == null) {
+        $action = $request->input('action');
+        Log::info($action);
+        if (!isset($action) || $action == null) {
             return Response::json(['status' => 'do_nothing']);
         }
 
-        if ($request->input('action') == 'payment.created') {
-
-            $orderId = $request->input('data.id');
-
-            $token = config('mercadopago.mode') == 'sandbox' ? config('mercadopago.sandbox.access_token') : config('mercadopago.live.access_token');
-
-
-            $headers = [
-                'Authorization' => 'Bearer ' . $token,
-            ];
-
-            $url = 'https://api.mercadopago.com/v1/payments/' . $orderId;
-
-            $response = Http::withToken($token)->get($url);
-
-            if ($response->successful()) {
-                $result = $response->body();
-                $data = json_decode($result, true);
-
-                $candidateId = $data['external_reference'];
-
-                Payment::create([
-                    'candidate_id' => $candidateId,
-                    'payment_method' => 'mercado_pago',
-                    'payment_id' => $orderId,
-                    'currency' => $data['currency_id'],
-                    'amount' => $data['additional_info']['items'][0]['unit_price'],
-                    'status' => 'approved',
-                ]);
-
-                $candidate = Candidate::find($candidateId);
-                $candidate->status = 'paid';
-                $candidate->save();
-            }
-
-            return Response::json(['status' => 'success']);
+        switch ($action) {
+            case 'payment.created':
+                $this->handleActionsMPPaymentCreated($request);
+                break;
+            
         }
+        return Response::json(['status' => 'success']);
+    }
+
+    private function handleActionsMPPaymentCreated(Request $request)
+    {
+        $orderId = $request->input('data.id');
+
+        $token = config('mercadopago.mode') == 'sandbox' ? config('mercadopago.sandbox.access_token') : config('mercadopago.live.access_token');
+
+
+        $headers = [
+            'Authorization' => 'Bearer ' . $token,
+        ];
+
+        $url = 'https://api.mercadopago.com/v1/payments/' . $orderId;
+
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->successful()) {
+            $result = $response->body();
+            $data = json_decode($result, true);
+
+            $candidateId = $data['external_reference'];
+
+            Payment::create([
+                'candidate_id' => $candidateId,
+                'payment_method' => 'mercado_pago',
+                'payment_id' => $orderId,
+                'currency' => $data['currency_id'],
+                'amount' => $data['additional_info']['items'][0]['unit_price'],
+                'status' => 'approved',
+            ]);
+
+            $candidate = Candidate::find($candidateId);
+            $candidate->status = 'paid';
+            $candidate->save();
+        }
+
+       
+    }
+
+    private function handleActionMPSuscription(Request $request){
+
     }
 }
