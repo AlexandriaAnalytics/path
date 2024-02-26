@@ -2,6 +2,7 @@
 
 namespace App\Filament\Candidate\Pages;
 
+use App\Enums\PaymentMethod;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
 use DateTime;
@@ -17,6 +18,7 @@ class Payments extends Page implements HasForms
 {
     public $candidate;
     private $country;
+    public $candidate_payment_methods = [];
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
     public int $total_amount = 0;
@@ -28,6 +30,7 @@ class Payments extends Page implements HasForms
     public function __construct()
     {
         $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
+        $this->candidate_payment_methods = $this->candidate->student->region->paymentMethods()->pluck('name')->toArray();
         $this->country = $this->candidate->student->region->name;
 
         $this->total_amount += $this->candidate->total_amount;
@@ -64,22 +67,29 @@ class Payments extends Page implements HasForms
 
     protected function getActions(): array
     {
-        return [
-          /*
-            Action::make('Print ticket')
-                ->icon('heroicon-o-printer'),
-            */
-          
-            Action::make('3Cuotas')
-                ->label('financing in paypal ' . $this->instalment_number . ' instalments')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->payWithPaypal3Cuotas()),
+        $actions = [];
+        if($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre'){
+            if(
+                in_array(PaymentMethod::PAYPAL->value,$this->candidate_payment_methods)){
+                $actions = array_merge($actions, 
+                [
+                    Action::make('paypal_financing')
+                        ->label('financing in paypal ' . $this->instalment_number . ' instalments')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->action(fn () => $this->payWithPaypal3Cuotas()),
+                ]
+                );
+            }else if(in_array( ucwords(str_replace('_', ' ', PaymentMethod::MERCADO_PAGO->value)) , $this->candidate_payment_methods)){
+                $actions = array_merge($actions, [
+                    Action::make('MP_financing')
+                        ->label('financing in Mercado pago ' . $this->instalment_number . ' instalments')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->action(fn () => $this->payWithPaypal3Cuotas()),
+                    ]);
+            }
+        }
 
-            Action::make('3cuotasmp')
-                ->label('financing in Mercado Pago ' . $this->instalment_number . ' instalments')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->payWithMercadoPago()),
-        ];
+        return $actions;
     }
 
     public function form(Form $form): Form
@@ -90,11 +100,7 @@ class Payments extends Page implements HasForms
                 ->label('Payment method')
                 ->placeholder('Select a payment method')
                 ->native(false)
-                ->options([
-                    'paypal' => 'Paypal',
-                    'stripe' => 'Stripe',
-                    'mercado_pago' => 'Mercado Pago',
-                ])
+                ->options($this->candidate_payment_methods)
             // ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
         ]);
 
