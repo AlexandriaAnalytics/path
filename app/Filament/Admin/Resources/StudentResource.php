@@ -41,7 +41,7 @@ class StudentResource extends Resource
                             ->required()
                             ->placeholder('Doe'),
                         Components\Select::make('institute_id')
-                            ->label('Institute')
+                            ->label('Member or centre')
                             ->relationship('institute', 'name')
                             ->searchable()
                             ->preload()
@@ -82,7 +82,7 @@ class StudentResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('institute_id')
-                    ->label('Institute')
+                    ->label('Member or centre')
                     ->relationship('institute', 'name')
                     ->native(false)
                     ->searchable()

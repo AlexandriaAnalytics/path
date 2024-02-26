@@ -78,7 +78,7 @@ class UserResource extends Resource
                 ]),
                 ColumnGroup::make('Institutes', [
                     Tables\Columns\TextColumn::make('institutes_count')
-                        ->label('Institute Count')
+                        ->label('Member or centre Count')
                         ->counts('institutes')
                         ->alignEnd()
                         ->toggleable(isToggledHiddenByDefault: true),

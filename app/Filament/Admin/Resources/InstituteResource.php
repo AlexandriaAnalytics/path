@@ -34,7 +34,7 @@ class InstituteResource extends Resource
 {
     protected static ?string $model = Institute::class;
 
-    protected static ?string $modelLabel = 'Members and Centres';
+    protected static ?string $modelLabel = 'Member or centre';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -121,13 +121,13 @@ class InstituteResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('files_url')
-                            ->label('Institute files URL')
+                            ->label('Member or centre files URL')
                             ->type('url')
-                            ->hint('This institute\'s specific web folder.')
+                            ->hint('This Member or centre\'s specific web folder.')
                             ->helperText('You can add global files in the settings.'),
                         Toggle::make('can_add_candidates')
                             ->default(true)
-                            ->helperText('If enabled, the institute will be able to add candidates to exams.'),
+                            ->helperText('If enabled, the Member or centre will be able to add candidates to exams.'),
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
@@ -135,15 +135,15 @@ class InstituteResource extends Resource
                         TextInput::make('discounted_price_diferencial')
                             ->label('Discounted price diferencial')
                             ->type('number')
-                            ->hint('Price difference for this institute when all levels are selected by one candidate.'),
+                            ->hint('Price difference for this Member or centre when all levels are selected by one candidate.'),
                         TextInput::make('discounted_price_percentage')
                             ->label('Discounted price percentage')
                             ->type('number')
-                            ->hint('Percentage difference in price for this institute when all levels are selected by one candidate.'),
+                            ->hint('Percentage difference in price for this Member or centre when all levels are selected by one candidate.'),
                         TextInput::make('rigth_exam_diferencial')
                             ->label('Right exam')
                             ->type('number')
-                            ->hint('Price of the rigth exam for an institute.'),
+                            ->hint('Price of the rigth exam for an Member or centre.'),
                     ])->columns(1),
             ]);
     }

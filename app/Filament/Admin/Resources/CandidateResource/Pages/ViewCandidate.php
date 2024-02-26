@@ -38,7 +38,7 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('surname')
                             ->label('Last Name'),
                         TextEntry::make('institute.name')
-                            ->label('Institute'),
+                            ->label('Member or centre'),
                     ]),
                 TextEntry::make('level.name')
                     ->label('Level'),
