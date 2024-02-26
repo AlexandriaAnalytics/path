@@ -31,13 +31,19 @@ class ExamResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Details')
-                    ->columns(3)
+                    ->columns([
+                        'sm' => 1,
+                        'xl' => 3
+                    ])
                     ->schema([
                         Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
                             ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpan([
+                                'sm' => 1,
+                                'xl' => 2,
+                            ]),
                         Forms\Components\TextInput::make('maximum_number_of_students')
                             ->numeric(),
                         Forms\Components\DateTimePicker::make('scheduled_date')
