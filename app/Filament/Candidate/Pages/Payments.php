@@ -118,11 +118,12 @@ class Payments extends Page implements HasForms
             return;
         }
 
+        $pm = str_replace('_', ' ', strtolower($this->candidate_payment_methods [$payment_method_selected]));
         return redirect()
             ->route(
                 'payment.process',
                 [
-                    'payment_method' => $this->candidate_payment_methods [$payment_method_selected],
+                    'payment_method' => $pm ,
                 ]
             );
     }
