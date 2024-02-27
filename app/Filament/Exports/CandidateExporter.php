@@ -16,15 +16,18 @@ class CandidateExporter extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('Candidate No.'),
-            ExportColumn::make('level.name')
-                ->label('Level'),
+            ExportColumn::make('status'),
             ExportColumn::make('student.name')
                 ->label('Name'),
             ExportColumn::make('student.surname')
                 ->label('Surname'),
             ExportColumn::make('granted_discount')
                 ->label('Discount'),
-            ExportColumn::make('status'),
+            ExportColumn::make('level.name')
+                ->label('Level'),
+            ExportColumn::make('modules.name')->label('Module Name'),
+            ExportColumn::make('student.institute.name')->label('Member or Center Name'),
+            ExportColumn::make('pendingModules.name')->label('Pending Modules'),
             ExportColumn::make('type_of_certificate')
                 ->label('Type of Certificate'),
 
@@ -34,7 +37,6 @@ class CandidateExporter extends Exporter
 
         ];
     }
-    
 
     public static function getCompletedNotificationBody(Export $export): string
     {

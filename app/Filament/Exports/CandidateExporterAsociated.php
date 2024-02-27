@@ -18,29 +18,22 @@ class CandidateExporterAsociated extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('Candidate No.'),
-            ExportColumn::make('level.name')
-                ->label('Level'),
             ExportColumn::make('student.name')
                 ->label('Name'),
             ExportColumn::make('student.surname')
                 ->label('Surname'),
             ExportColumn::make('granted_discount')
                 ->label('Discount'),
+            ExportColumn::make('level.name')
+                ->label('Level'),
             ExportColumn::make('status'),
             ExportColumn::make('modules.name')->label('Module Name'),
             ExportColumn::make('pendingModules.name')->label('Pending Modules'),
         ];
     }
 
-    public function getXlsxHeaderCellStyle(): ?Style{
-        return (new Style())
-        ->setFontSize(12)
-        ->setFontName('Consolas')
-        ->setFontColor(Color::rgb(255, 255, 77))
-        ->setBackgroundColor(Color::rgb(0, 0, 0));
+    
 
-    }
-  
     public static function getCompletedNotificationBody(Export $export): string
     {
         $body = 'Your candidate export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
