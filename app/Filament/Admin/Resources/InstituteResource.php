@@ -128,8 +128,8 @@ class InstituteResource extends Resource
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                         Toggle::make('can_view_price_details')
                             ->default(false),
-                            
-                            /*
+
+                        /*
                             ->disabled(
                                 fn (Institute $record) => (
                                     ($record->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record->can_view_price_details)
@@ -176,10 +176,6 @@ class InstituteResource extends Resource
                 Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)')
-                    ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable()
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('email')
                     ->url(fn ($record) => 'mailto:' . $record->email, shouldOpenInNewTab: true)
