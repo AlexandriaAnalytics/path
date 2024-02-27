@@ -14,6 +14,7 @@ use App\Models\Student;
 use Closure;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -139,6 +140,18 @@ class CandidateResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
+                    Action::make('financing')
+                        ->label('financing')
+                        ->icon('heroicon-o-document')
+                        ->form([
+                            TextInput::make('instalments')
+                                ->numeric()
+                                ->min(1)
+                                ->max(12)
+                        ])
+                        ->action(function () {
+                        }),
+
                     Action::make('qr-code')
                         ->label('QR Code')
                         ->icon('heroicon-o-qr-code')
@@ -246,13 +259,13 @@ class CandidateResource extends Resource
                         ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
-                       // ->relationship('institute.name')
+                        // ->relationship('institute.name')
                         ->options(Institute::all()->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->reactive()
                         ->afterStateUpdated(function (callable $set, $data) {
-                            
+
                             $set('student_id', null);
                         }),
                     Select::make('student_id')

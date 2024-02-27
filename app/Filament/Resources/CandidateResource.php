@@ -3,12 +3,16 @@
 namespace App\Filament\Resources;
 
 use App\Enums\TypeOfCertificate;
+use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use App\Models\Change;
+use App\Models\Financing;
+use App\Models\Payment;
 use App\Models\Student;
+use Carbon\Carbon;
 use Closure;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
@@ -18,6 +22,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
@@ -157,6 +162,54 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
+
+                Action::make('financing')
+                    ->label('financing')
+                    ->icon('heroicon-o-document')
+                    ->form([
+                        TextInput::make('instalments')
+                            ->label('Number of instalments')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                    ])
+                    ->action(function (Candidate $candidate, array $data) {
+                        $fincancing = Financing::create([
+                            'country_id' => $candidate->student->country_id,
+                            'candidate_id' => $candidate->id,
+                            'institute_id' => Filament::getTenant()->id,
+                            'currency' => $candidate->currency
+                        ]);
+
+                        $amount = $candidate->total_amount / $data['instalments'];
+                        $suscriptionCode = 'f-' . Carbon::now()->timestamp;
+
+                        for ($index = 1; $index <= $data['instalments']; $index++) {
+                            $payment = Payment::create([
+                                'candidate_id' => $candidate->id,
+                                'payment_method' => 'financing by associated',
+                                'currency' => $candidate->currency,
+                                'amount' => $amount,
+                                'suscription_code' => $suscriptionCode,
+                                'instalment_number' => $data['instalments'],
+                                'current_instalment' => $index
+                            ]);
+                            $fincancing->payments()->save($payment);
+                            
+                        }
+
+                        Candidate::find($candidate->id)->update(['status' => UserStatus::Paying]);
+
+
+                       
+
+                        Notification::make()
+                            ->title('Financiament was created successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
+
                 ActionGroup::make([
                     Action::make('qr-code')
                         ->label('QR Code')
