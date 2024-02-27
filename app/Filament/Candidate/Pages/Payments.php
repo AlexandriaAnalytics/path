@@ -122,7 +122,7 @@ class Payments extends Page implements HasForms
             ->route(
                 'payment.process',
                 [
-                    'payment_method' => $payment_method_selected,
+                    'payment_method' => $this->candidate_payment_methods [$payment_method_selected],
                 ]
             );
     }
