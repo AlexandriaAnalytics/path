@@ -3,6 +3,7 @@
 namespace App\Filament\Candidate\Pages;
 
 use App\Enums\PaymentMethod;
+use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
 use DateTime;
@@ -55,37 +56,39 @@ class Payments extends Page implements HasForms
         abort_unless(static::canAccess(), 403);
     }
 
-    public function payWithPaypal3Cuotas()
+    public function paypalFinaciament()
     {
         return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
-    public function payWithMercadoPago()
-    {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_,value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
+    public function mercadoPagoFinanciament(){
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
+
 
     protected function getActions(): array
     {
         $actions = [];
-        if($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre'){
-            if(
-                in_array(PaymentMethod::PAYPAL->value,$this->candidate_payment_methods)){
-                $actions = array_merge($actions, 
-                [
-                    Action::make('paypal_financing')
-                        ->label('financing in paypal ' . $this->instalment_number . ' instalments')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->action(fn () => $this->payWithPaypal3Cuotas()),
-                ]
+        if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
+            if (
+                in_array(PaymentMethod::PAYPAL->value, $this->candidate_payment_methods)
+            ) {
+                $actions = array_merge(
+                    $actions,
+                    [
+                        Action::make('paypal_financing')
+                            ->label('financing in paypal ' . $this->instalment_number . ' instalments')
+                            ->icon('heroicon-o-currency-dollar')
+                            ->action(fn () => $this->paypalFinaciament()),
+                    ]
                 );
-            }else if(in_array( ucwords(str_replace('_', ' ', PaymentMethod::MERCADO_PAGO->value)) , $this->candidate_payment_methods)){
+            } else if (in_array(ucwords(str_replace('_', ' ', PaymentMethod::MERCADO_PAGO->value)), $this->candidate_payment_methods)) {
                 $actions = array_merge($actions, [
                     Action::make('MP_financing')
                         ->label('financing in Mercado pago ' . $this->instalment_number . ' instalments')
                         ->icon('heroicon-o-currency-dollar')
-                        ->action(fn () => $this->payWithPaypal3Cuotas()),
-                    ]);
+                        ->action(fn () => $this->mercadoPagoFinanciament()),
+                ]);
             }
         }
 
@@ -100,8 +103,7 @@ class Payments extends Page implements HasForms
                 ->label('Payment method')
                 ->placeholder('Select a payment method')
                 ->native(false)
-                ->options($this->candidate_payment_methods)
-            // ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
+                ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
         ]);
 
         return $form;
@@ -110,20 +112,20 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-        if ($payment_method_selected == null) {
+/*
+        if (!in_array($payment_method_selected, PaymentMethodModel::all()->pluck('slug')->toArray())){
             Notification::make()
                 ->danger()
                 ->title('Payment method not selected')
                 ->send();
             return;
-        }
-
-        $pm = str_replace(' ' , '_', strtolower($this->candidate_payment_methods [$payment_method_selected]));
+            }
+*/
         return redirect()
             ->route(
                 'payment.process',
                 [
-                    'payment_method' => $pm ,
+                    'payment_method' => $payment_method_selected,
                 ]
             );
     }

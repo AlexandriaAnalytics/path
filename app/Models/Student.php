@@ -68,7 +68,7 @@ class Student extends Authenticatable
 
     public function getFullNameAttribute(): string
     {
-        return "{$this->first_name} {$this->surname}";
+        return $this->name . ' ' . $this->surname;
     }
 
     public function getAgeAttribute(): int
