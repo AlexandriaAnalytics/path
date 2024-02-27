@@ -89,6 +89,7 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
+                        'paying'=> 'warning',
                         'processing payment'=>'warning'
                     }),
                 //Student
