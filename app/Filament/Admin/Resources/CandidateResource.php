@@ -18,6 +18,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
@@ -250,15 +251,12 @@ class CandidateResource extends Resource
                         ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
-                        ->relationship('student', 'institute_id')
-                        ->options(Institute::all()->pluck('name'))
+                        // ->relationship('institute.name')
+                        ->options(Institute::all()->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(function (callable $set) {
-
-                            $set('student_id', null);
-                        }),
+                        ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
                     Select::make('student_id')
                         ->label('Student Code')
                         ->placeholder('Select a student')
