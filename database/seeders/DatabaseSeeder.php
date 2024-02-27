@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Enums\ModuleType;
 use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
@@ -53,6 +54,7 @@ class DatabaseSeeder extends Seeder
         LevelCountry::all()->each(function (LevelCountry $levelCountry) use ($modules): void {
             $levelCountry->modules()->attach($modules->random(3), [
                 'price' => rand(1000, 5000),
+                'module_type' => ModuleType::cases()[rand(0, 2)],
             ]);
         });
 
