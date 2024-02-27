@@ -139,7 +139,6 @@ class CandidateResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                ActionGroup::make([
                     Action::make('financing')
                         ->label('financing')
                         ->icon('heroicon-o-document')
@@ -152,10 +151,11 @@ class CandidateResource extends Resource
                         ->action(function () {
                         }),
 
-                    Action::make('qr-code')
-                        ->label('QR Code')
-                        ->icon('heroicon-o-qr-code')
-                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('qr-code')
+                ->label('QR Code')
+                ->icon('heroicon-o-qr-code')
+                ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                ActionGroup::make([
                     Action::make('pdf')
                         ->label('PDF')
                         ->icon('heroicon-o-document')
@@ -163,7 +163,7 @@ class CandidateResource extends Resource
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
-                ])
+                ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([

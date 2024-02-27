@@ -213,11 +213,11 @@ class CandidateResource extends Resource
                     })
                     ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
 
+                Action::make('qr-code')
+                ->label('QR Code')
+                ->icon('heroicon-o-qr-code')
+                ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
-                    Action::make('qr-code')
-                        ->label('QR Code')
-                        ->icon('heroicon-o-qr-code')
-                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     Action::make('pdf')
                         ->label('PDF')
                         ->icon('heroicon-o-document')
@@ -240,7 +240,7 @@ class CandidateResource extends Resource
                             $change->save();
                         }),
                     DeleteAction::make(),
-                ])
+                    ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
