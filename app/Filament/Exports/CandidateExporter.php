@@ -6,6 +6,8 @@ use App\Models\Candidate;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
 
 class CandidateExporter extends Exporter
 {
@@ -36,6 +38,15 @@ class CandidateExporter extends Exporter
     }
     
 
+    public function getXlsxHeaderCellStyle(): ?Style{
+        return (new Style())
+        ->setFontSize(12)
+        ->setFontName('Consolas')
+        ->setFontColor(Color::rgb(255, 255, 77))
+        ->setBackgroundColor(Color::rgb(0, 0, 0));
+
+    }
+  
     public static function getCompletedNotificationBody(Export $export): string
     {
         $body = 'Your candidate export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
