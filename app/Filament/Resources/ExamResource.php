@@ -22,6 +22,8 @@ class ExamResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return AdminExamResource::form($form);

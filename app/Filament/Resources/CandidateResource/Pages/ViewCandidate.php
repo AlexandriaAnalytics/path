@@ -58,7 +58,7 @@ class ViewCandidate extends ViewRecord
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('billed_concepts')
-                    ->hidden(fn () => Filament::getTenant()->instituteType->slug !== 'premium_exam_centre')
+                    ->hidden(fn () => Filament::getTenant()->can_view_price_details)
                     ->columns(3)
                     ->schema([
                         TextEntry::make('concept')
