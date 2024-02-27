@@ -121,6 +121,9 @@ class ExamResource extends Resource
                     ->badge()
                     ->alignCenter()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('modules.name')
+                    ->badge(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
                     ->label('Max. Students')
                     ->prefix(function ($record) {
