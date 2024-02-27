@@ -35,10 +35,12 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
     {
         return [
             'Candidate Number',
-            'Full Name',
-            'Session Name',
-            'Status',
-            'Modules'
+            'Payment Status',
+            'Name',
+            'Surname',
+            'Modules',
+            'Level',
+            'Exam Session'
         ];
     }
 
@@ -46,11 +48,12 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
     {
         return [
             $candidate->id,
+            $candidate->status,
             $candidate->student->name,
             $candidate->student->surname,
-            // $candidate->exam->session_name,
-            $candidate->status,
-            $candidate->modules->pluck('name')->implode(', ')
+            $candidate->modules->pluck('name')->implode(', '),
+            $candidate->level->name,
+            $candidate->pendingModules
         ];
     }
 
