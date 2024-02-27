@@ -23,12 +23,10 @@ class CandidateExporter extends Exporter
             ExportColumn::make('student.surname')
                 ->label('Surname'),
             ExportColumn::make('granted_discount')
-                ->label('Discount')
-                ->enabledByDefault(false),
+                ->label('Discount'),
             ExportColumn::make('status'),
             ExportColumn::make('type_of_certificate')
-                ->label('Type of Certificate')
-                ->enabledByDefault(false),
+                ->label('Type of Certificate'),
         ];
     }
 
