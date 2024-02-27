@@ -10,6 +10,7 @@ use App\Filament\Widgets\FinancingWidget;
 use App\Models\Financing;
 use App\Models\Institute;
 use App\Models\InstitutePayment;
+use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Group;
@@ -76,8 +77,10 @@ class ListFinancings extends ListRecords
                         ->where('institute_id', Filament::getTenant()->id)
                         ->where('currency', 'GBP');
                     foreach ($financins as $finance) {
-                        $finance->current_payment->status = UserStatus::Processing_payment->value;
-                        $finance->current_payment->save();
+                        $finance->current_payment->update([
+                            'status' => UserStatus::Processing_payment->value,
+                            'payment_id' => 'pid-'.(Carbon::now()->timestamp + random_int())   
+                        ]);
                     }
                 }),
         ];

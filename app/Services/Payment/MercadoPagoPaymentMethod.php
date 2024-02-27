@@ -104,7 +104,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                     "start_date" => $now->toISOString(),
                     "end_date" =>$endDate->toISOString(),
                     "transaction_amount" => $amount,
-                    "currency_id" => $currency// $currency,
+                    "currency_id" => 'ARS', //$currency// $currency,
                 ],
                 "back_url" => $this->getRedirectSuccess(),
                 "external_reference" => $id,
