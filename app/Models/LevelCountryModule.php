@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModuleType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -12,6 +13,11 @@ class LevelCountryModule extends Pivot
         'level_country_id',
         'module_id',
         'price',
+        'module_type',
+    ];
+
+    protected $casts = [
+        'module_type' => ModuleType::class,
     ];
 
     public function levelCountry(): BelongsTo

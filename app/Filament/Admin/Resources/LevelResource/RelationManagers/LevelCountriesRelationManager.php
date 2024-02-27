@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources\LevelResource\RelationManagers;
 
+use App\Enums\ModuleType;
+use App\Models\Module;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -34,24 +36,25 @@ class LevelCountriesRelationManager extends RelationManager
                         ignoreRecord: true,
                     )
                     ->placeholder('Select a country'),
-                TextInput::make('price_all_modules')
-                    ->label('Price for all modules')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->default(0),
-                Fieldset::make('Exam Right')
+                Fieldset::make('Pricing')
+                    ->columns(3)
                     ->schema([
-                        TextInput::make('price_exam_right')
-                            ->label('Base Price')
-                            ->hint('When not all modules are taken')
+                        TextInput::make('price_all_modules')
+                            ->label('Complete Exam Price')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->default(0),
                         TextInput::make('price_exam_right_all_modules')
-                            ->label('Discounted Price')
-                            ->hint('When all modules are taken')
+                            ->label('Complete Exam Right')
+                            ->helperText('When all modules are taken')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0),
+                        TextInput::make('price_exam_right')
+                            ->label('Incomplete Exam Right')
+                            ->helperText('When not all modules are taken')
                             ->required()
                             ->numeric()
                             ->minValue(0)
@@ -60,7 +63,7 @@ class LevelCountriesRelationManager extends RelationManager
                 Repeater::make('levelCountryModules')
                     ->label('Modules')
                     ->columnSpanFull()
-                    ->columns(2)
+                    ->columns(3)
                     ->relationship()
                     ->schema([
                         Select::make('module_id')
@@ -70,6 +73,13 @@ class LevelCountriesRelationManager extends RelationManager
                             ->native(false)
                             ->placeholder('Select a module')
                             ->fixIndistinctState(),
+                        Select::make('module_type')
+                            ->label('Type')
+                            ->options(ModuleType::class)
+                            ->enum(ModuleType::class)
+                            ->required()
+                            ->native(false)
+                            ->placeholder('Select a type'),
                         TextInput::make('price')
                             ->label('Price')
                             ->required()

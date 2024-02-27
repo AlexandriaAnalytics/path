@@ -6,8 +6,10 @@ use App\Models\Candidate;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
 
-class CandidateExporter extends Exporter
+class CandidateExporterAsociated extends Exporter
 {
     protected static ?string $model = Candidate::class;
 
@@ -16,7 +18,6 @@ class CandidateExporter extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('Candidate No.'),
-            ExportColumn::make('status'),
             ExportColumn::make('student.name')
                 ->label('Name'),
             ExportColumn::make('student.surname')
@@ -25,18 +26,13 @@ class CandidateExporter extends Exporter
                 ->label('Discount'),
             ExportColumn::make('level.name')
                 ->label('Level'),
-            ExportColumn::make('modules.name')->label('Module Name'),
-            ExportColumn::make('student.institute.name')->label('Member or Center Name'),
-            ExportColumn::make('pendingModules.name')->label('Pending Modules'),
-            ExportColumn::make('type_of_certificate')
-                ->label('Type of Certificate'),
-
-            ExportColumn::make('student.institute.name')->label('Institute Name'),
+            ExportColumn::make('status'),
             ExportColumn::make('modules.name')->label('Module Name'),
             ExportColumn::make('pendingModules.name')->label('Pending Modules'),
-
         ];
     }
+
+    
 
     public static function getCompletedNotificationBody(Export $export): string
     {

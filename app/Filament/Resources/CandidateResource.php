@@ -6,11 +6,15 @@ use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
+use App\Filament\Exports\CandidateExporter;
+use App\Filament\Exports\CandidateExporterAsociated;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use App\Models\Change;
+use App\Models\Financing;
+use App\Models\Payment;
 use App\Models\Student;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Closure;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
@@ -20,13 +24,14 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -34,7 +39,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Features\SupportConsoleCommands\Commands\Upgrade\ChangeTestAssertionMethods;
 
 class CandidateResource extends Resource
 {
@@ -45,6 +49,8 @@ class CandidateResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?string $navigationGroup = 'Exam Management';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -159,11 +165,107 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
+
+                Action::make('financing')
+                    ->label('financing')
+                    ->icon('heroicon-o-document')
+                    ->form([
+                        TextInput::make('instalments')
+                            ->label('Number of instalments')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                    ])
+                    ->action(function (Candidate $candidate, array $data) {
+                        $fincancing = Financing::create([
+                            'country_id' => $candidate->student->country_id,
+                            'candidate_id' => $candidate->id,
+                            'institute_id' => Filament::getTenant()->id,
+                            'currency' => $candidate->currency
+                        ]);
+
+                        $amount = $candidate->total_amount / $data['instalments'];
+                        $suscriptionCode = 'f-' . Carbon::now()->timestamp;
+
+                        for ($index = 1; $index <= $data['instalments']; $index++) {
+                            $payment = Payment::create([
+                                'candidate_id' => $candidate->id,
+                                'payment_method' => 'financing by associated',
+                                'currency' => $candidate->currency,
+                                'amount' => $amount,
+                                'suscription_code' => $suscriptionCode,
+                                'instalment_number' => $data['instalments'],
+                                'current_instalment' => $index
+                            ]);
+                            $fincancing->payments()->save($payment);
+                            
+                        }
+
+                        Candidate::find($candidate->id)->update(['status' => UserStatus::Paying]);
+
+
+                       
+
+                        Notification::make()
+                            ->title('Financiament was created successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
+
+
+                Action::make('financing')
+                    ->label('financing')
+                    ->icon('heroicon-o-document')
+                    ->form([
+                        TextInput::make('instalments')
+                            ->label('Number of instalments')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                    ])
+                    ->action(function (Candidate $candidate, array $data) {
+                        $fincancing = Financing::create([
+                            'country_id' => $candidate->student->country_id,
+                            'candidate_id' => $candidate->id,
+                            'institute_id' => Filament::getTenant()->id,
+                            'currency' => $candidate->currency
+                        ]);
+
+                        $amount = $candidate->total_amount / $data['instalments'];
+                        $suscriptionCode = 'f-' . Carbon::now()->timestamp;
+
+                        for ($index = 1; $index <= $data['instalments']; $index++) {
+                            $payment = Payment::create([
+                                'candidate_id' => $candidate->id,
+                                'payment_method' => 'financing by associated',
+                                'currency' => $candidate->currency,
+                                'amount' => $amount,
+                                'suscription_code' => $suscriptionCode,
+                                'instalment_number' => $data['instalments'],
+                                'current_instalment' => $index
+                            ]);
+                            $fincancing->payments()->save($payment);
+                            
+                        }
+
+                        Candidate::find($candidate->id)->update(['status' => UserStatus::Paying]);
+
+
+                       
+
+                        Notification::make()
+                            ->title('Financiament was created successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
+
+                Action::make('qr-code')
+                ->label('QR Code')
+                ->icon('heroicon-o-qr-code')
+                ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
-                    Action::make('qr-code')
-                        ->label('QR Code')
-                        ->icon('heroicon-o-qr-code')
-                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     Action::make('pdf')
                         ->label('PDF')
                         ->icon('heroicon-o-document')
@@ -186,14 +288,12 @@ class CandidateResource extends Resource
                             $change->save();
                         }),
                     DeleteAction::make(),
-                ])
+                    ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('export-excel')
-                        ->label('Download as Excel')
-                        ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new CandidateByIdExport($records->pluck('id')))->download('candidates.xlsx')),
+                    ExportBulkAction::make()
+                    ->exporter(CandidateExporterAsociated::class),
                     DeleteBulkAction::make(),
                 ]),
             ])

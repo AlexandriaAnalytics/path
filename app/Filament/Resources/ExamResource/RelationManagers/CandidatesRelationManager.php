@@ -57,7 +57,7 @@ class CandidatesRelationManager extends RelationManager
             ])
             ->filters([
                 SelectFilter::make('institute_id')
-                    ->label('Institute')
+                    ->label('Member or centre')
                     ->relationship('student.institute', 'name')
                     ->searchable()
                     ->multiple()

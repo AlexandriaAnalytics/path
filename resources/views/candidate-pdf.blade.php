@@ -14,15 +14,14 @@
 
     <style>
         @page {
-            margin: 0;
-            padding: 0;
+            size: 21cm 29.7cm;
+            margin: 0
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
             font-size: 12pt;
-            margin: 0;
-
+            margin: 0
         }
 
         h1 {
@@ -99,8 +98,6 @@
         .text-area {
             height: 125px;
         }
-
-        
     </style>
     <title>Student Detail</title>
 </head>
@@ -122,41 +119,66 @@
         <section>
             <blockquote>
                 <p>
-                    <strong>Candidate Number:</strong> {{ $candidate->id }} 
+                    <strong>Candidate Number:</strong> {{ $candidate->id }}
                 </p>
             </blockquote>
             <blockquote>
                 <p>
-                    <strong>Full Name:</strong> {{$candidate->student->name}} {{$candidate->student->surname}}
-                </p>
-            </blockquote>
-
-            <blockquote>
-                <p>
-                   <strong>Date of birth:</strong> {{ \Carbon\Carbon::parse($candidate->student->birth_date)->locale('en')->format('m/d/Y') }}
-            </blockquote>
-
-            <blockquote>
-                <p>
-                    <strong>Country of residence:</strong> {{ $candidate->student->country}}
+                    <strong>Full Name:</strong> {{ $candidate->student->name }} {{ $candidate->student->surname }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Level</strong> {{ $candidate->level->name}}
+                    <strong>Date of birth:</strong>
+                    {{ \Carbon\Carbon::parse($candidate->student->birth_date)->locale('en')->format('m/d/Y') }}
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Country of residence:</strong> {{ $candidate->student->region->name}}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Type of certificate</strong> {{ $candidate->type_of_certificate}}
+                    <strong>Level</strong> {{ $candidate->level->name }}
                 </p>
             </blockquote>
 
             <blockquote>
                 <p>
-                    <strong>Modules</strong> {{ $candidate->modules->first()->name }} 
+                    <strong>Type of certificate</strong> {{ $candidate->type_of_certificate }}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Modules</strong> {{ implode(', ', $candidate->modules->pluck('name')->toArray()) }}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Scheduled for</strong> {{ $candidate->exams->pluck('scheduled_date')}}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Exam session name</strong> {{ implode(', ', $candidate->exams->pluck('session_name')->toArray()) }}
+                </p>
+            </blockquote>
+
+            <blockquote>
+                <p>
+                    <strong>Exam type</strong>: {{ $candidate->exams->first()->type->getLabel() }}
+                </p>
+            </blockquote>
+
+            <blockquote class="text-area">
+                <p>
+                    <strong>Comments</strong> {{ implode(', ', $candidate->exams->pluck('comments')->filter()->toArray()) }}
                 </p>
             </blockquote>
 

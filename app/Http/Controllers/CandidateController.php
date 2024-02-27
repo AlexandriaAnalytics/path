@@ -30,7 +30,7 @@ class CandidateController extends Controller
 
     public function show($id)
     {
-        $candidate = Candidate::with(['student', 'exam'])->find($id);
+        $candidate = Candidate::with(['student', 'exams'])->find($id);
 
         if (!$candidate) {
             abort(404, 'Candidate not found');
