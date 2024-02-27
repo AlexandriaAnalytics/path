@@ -9,7 +9,7 @@ use Filament\Actions\Exports\Models\Export;
 use OpenSpout\Common\Entity\Style\Color;
 use OpenSpout\Common\Entity\Style\Style;
 
-class CandidateExporter extends Exporter
+class CandidateExporterAsociated extends Exporter
 {
     protected static ?string $model = Candidate::class;
 
@@ -27,9 +27,6 @@ class CandidateExporter extends Exporter
             ExportColumn::make('granted_discount')
                 ->label('Discount'),
             ExportColumn::make('status'),
-            ExportColumn::make('type_of_certificate')
-                ->label('Type of Certificate'),
-            ExportColumn::make('student.institute.name')->label('Institute Name'),
             ExportColumn::make('modules.name')->label('Module Name'),
             ExportColumn::make('pendingModules.name')->label('Pending Modules'),
         ];
