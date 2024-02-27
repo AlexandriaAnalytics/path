@@ -4,51 +4,34 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
-use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Filament\Exports\CandidateExporter;
-use App\Models\AvailableModule;
 use App\Models\Candidate;
-use App\Models\CandidateExam;
-use App\Models\CandidateModule;
-use App\Models\Exam;
-use App\Models\ExamModule;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
-use App\Models\Status;
 use App\Models\Student;
 use Closure;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportBulkAction;
-use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class CandidateResource extends Resource
 {
@@ -263,12 +246,17 @@ class CandidateResource extends Resource
                         ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
+                       // ->relationship('institute.name')
                         ->options(Institute::all()->pluck('name', 'id'))
                         ->searchable()
+                        ->preload()
                         ->reactive()
-                        ->afterStateUpdated(fn (callable $set) => $set('student_id', null)),
+                        ->afterStateUpdated(function (callable $set, $data) {
+                            
+                            $set('student_id', null);
+                        }),
                     Select::make('student_id')
-                        ->label('Student')
+                        ->label('Student Code')
                         ->placeholder('Select a student')
                         ->required()
                         ->searchable()
