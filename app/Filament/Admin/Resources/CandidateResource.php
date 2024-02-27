@@ -252,7 +252,7 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(function (callable $set, $data) {
+                        ->afterStateUpdated(function (callable $set) {
 
                             $set('student_id', null);
                         }),
