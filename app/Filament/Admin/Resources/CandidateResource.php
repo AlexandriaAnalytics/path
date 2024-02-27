@@ -89,7 +89,7 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                        'processing paym...'=>'warning'
+                        'processing payment'=>'warning'
                     }),
                 //Student
                 TextColumn::make('student.name')

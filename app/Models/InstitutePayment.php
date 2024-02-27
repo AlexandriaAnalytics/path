@@ -13,5 +13,6 @@ class InstitutePayment extends Model
         'institute_id',
         'ticket_link',
         'monthly_amount',
+        'description',
     ];
 }
