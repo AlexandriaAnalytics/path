@@ -64,6 +64,8 @@ class CreateModulesTable extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
+            $table->string('module_type')
+                ->comment('Type of module');
             $table->decimal('price', 12, 2);
 
             $table->timestamps();
