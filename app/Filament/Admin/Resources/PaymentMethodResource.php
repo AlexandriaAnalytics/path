@@ -20,7 +20,8 @@ class PaymentMethodResource extends Resource
     protected static ?string $navigationGroup = 'Settings';
     protected static ?string $modelLabel = 'Payments';
     protected static bool $hasTitleCaseModelLabel = false;
-    
+    protected static ?int $navigationSort = 4;
+
     public static function form(Form $form): Form
     {
         return $form

@@ -28,6 +28,8 @@ class ExamResource extends Resource
 
     protected static ?string $modelLabel = 'Exam sessions';
 
+    protected static ?int $navigationSort = 0;
+
     public static function form(Form $form): Form
     {
         return $form
