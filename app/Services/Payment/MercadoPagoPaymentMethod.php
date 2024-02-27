@@ -42,7 +42,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                 [
                     'title' => 'description',
                     'quantity' => 1,
-                    'currency_id' => $currency,
+                    'currency_id' => 'ARS', //$currency,
                     'unit_price' =>  $numeric_amount,//$amount_value,
                 ],
             ],
