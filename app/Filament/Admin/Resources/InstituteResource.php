@@ -127,13 +127,16 @@ class InstituteResource extends Resource
                             ->default(true)
                             ->helperText('If enabled, the institute will be able to add candidates to exams.'),
                         Toggle::make('can_view_price_details')
-                            ->default(false)
+                            ->default(false),
+                            
+                            /*
                             ->disabled(
                                 fn (Institute $record) => (
                                     ($record->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record->can_view_price_details)
                                     && $record->instituteType->slug !== 'premium_exam_centre'
                             )
-                            ->helperText('This option will be enabled after 30 candidates are added in the current year.'),
+                            ->helperText('This option will be enabled after 30 candidates are added in the current year.')
+                            */
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
