@@ -33,6 +33,7 @@ class CandidateExporter extends Exporter
 
         ];
     }
+    
 
     public static function getCompletedNotificationBody(Export $export): string
     {

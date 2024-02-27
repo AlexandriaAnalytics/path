@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('payment_id')->nullable()->unique();
             $table->string('currency');
             $table->string('amount');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'processing payment'])->default('pending');
             $table->string('suscription_code')->nullable();
             $table->integer('instalment_number')->nullable();
             $table->integer('current_instalment')->nullable();
