@@ -28,6 +28,8 @@ class ExamResource extends Resource
 
     protected static ?string $modelLabel = 'Exam sessions';
 
+    protected static ?int $navigationSort = 0;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -120,6 +122,9 @@ class ExamResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('modules.name')
+                    ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
                     ->label('Max. Students')
