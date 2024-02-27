@@ -7,11 +7,15 @@
 
     <div>
         @if($candidate->status == 'paid')
-        <h2>Exam Paid 👍</h2>
-        @else
+            <h2>Exam Paid 👍</h2>
+        @elseif ($candidate->status == 'processing payment')
+            <h2>payment in process of verification be patinces. 😄</h2>
+        @else 
         <x-filament-panels::form wire:submit="selectPaymentMethod">
             <h2 class="">Total Amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
-            
+            <section>
+                <h3>Examen date: <span>{{$examDate}}</span></h3>
+            </section>            
             <blockquote>
                 <h3>Detail</h3>
                 @foreach ($this->modules as $module)  

@@ -83,7 +83,6 @@ class PaymentController extends Controller
     {
         $validated = $request->validated();
         $candidate = Candidate::find(session('candidate')->id);
-        $candidate = Candidate::find(session('candidate')->id);
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
