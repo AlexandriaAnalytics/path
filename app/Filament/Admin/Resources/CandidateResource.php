@@ -151,6 +151,18 @@ class CandidateResource extends Resource
                         ->action(function () {
                         }),
 
+                    Action::make('financing')
+                        ->label('financing')
+                        ->icon('heroicon-o-document')
+                        ->form([
+                            TextInput::make('instalments')
+                                ->numeric()
+                                ->min(1)
+                                ->max(12)
+                        ])
+                        ->action(function () {
+                        }),
+
                 Action::make('qr-code')
                 ->label('QR Code')
                 ->icon('heroicon-o-qr-code')

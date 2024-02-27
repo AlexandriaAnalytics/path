@@ -213,6 +213,54 @@ class CandidateResource extends Resource
                     })
                     ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
 
+
+                Action::make('financing')
+                    ->label('financing')
+                    ->icon('heroicon-o-document')
+                    ->form([
+                        TextInput::make('instalments')
+                            ->label('Number of instalments')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(12)
+                    ])
+                    ->action(function (Candidate $candidate, array $data) {
+                        $fincancing = Financing::create([
+                            'country_id' => $candidate->student->country_id,
+                            'candidate_id' => $candidate->id,
+                            'institute_id' => Filament::getTenant()->id,
+                            'currency' => $candidate->currency
+                        ]);
+
+                        $amount = $candidate->total_amount / $data['instalments'];
+                        $suscriptionCode = 'f-' . Carbon::now()->timestamp;
+
+                        for ($index = 1; $index <= $data['instalments']; $index++) {
+                            $payment = Payment::create([
+                                'candidate_id' => $candidate->id,
+                                'payment_method' => 'financing by associated',
+                                'currency' => $candidate->currency,
+                                'amount' => $amount,
+                                'suscription_code' => $suscriptionCode,
+                                'instalment_number' => $data['instalments'],
+                                'current_instalment' => $index
+                            ]);
+                            $fincancing->payments()->save($payment);
+                            
+                        }
+
+                        Candidate::find($candidate->id)->update(['status' => UserStatus::Paying]);
+
+
+                       
+
+                        Notification::make()
+                            ->title('Financiament was created successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
+
                 Action::make('qr-code')
                 ->label('QR Code')
                 ->icon('heroicon-o-qr-code')
