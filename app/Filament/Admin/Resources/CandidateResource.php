@@ -89,8 +89,8 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                        'paying'=> 'warning',
-                        'processing payment'=>'warning'
+                        'paying' => 'warning',
+                        'processing payment' => 'warning'
                     }),
                 //Student
                 TextColumn::make('student.name')
@@ -142,11 +142,12 @@ class CandidateResource extends Resource
             ])
             ->actions([
                 Action::make('qr-code')
-                ->label('QR Code')
-                ->icon('heroicon-o-qr-code')
-                ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
                     Action::make('pdf')
+                        ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
                         ->label('PDF')
                         ->icon('heroicon-o-document')
                         ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
