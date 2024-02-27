@@ -3,14 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Enums\TypeOfCertificate;
-use App\Enums\UserStatus;
 use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
 use App\Filament\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use App\Models\Change;
 use App\Models\Student;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Closure;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
@@ -21,7 +19,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
@@ -34,7 +31,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Features\SupportConsoleCommands\Commands\Upgrade\ChangeTestAssertionMethods;
 
 class CandidateResource extends Resource
 {

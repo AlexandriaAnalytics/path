@@ -43,14 +43,14 @@ class LevelCountriesRelationManager extends RelationManager
                 Fieldset::make('Exam Right')
                     ->schema([
                         TextInput::make('price_exam_right')
-                            ->label('Base Price')
+                            ->label('Incomplete Exam Right')
                             ->hint('When not all modules are taken')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->default(0),
                         TextInput::make('price_exam_right_all_modules')
-                            ->label('Discounted Price')
+                            ->label('Complete Exam Right')
                             ->hint('When all modules are taken')
                             ->required()
                             ->numeric()

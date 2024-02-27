@@ -124,21 +124,26 @@ class InstituteResource extends Resource
                             ->label('Specific files URL')
                             ->type('url'),
                         Toggle::make('can_add_candidates')
-                            ->default(true),
+                            ->default(true)
+                            ->helperText('If enabled, the institute will be able to add candidates to exams.'),
+                        Toggle::make('can_view_price_details')
+                            ->default(false)
+                            ->disabled(
+                                fn (Institute $record) => (
+                                    ($record->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record->can_view_price_details)
+                                    && $record->instituteType->slug !== 'premium_exam_centre'
+                            )
+                            ->helperText('This option will be enabled after 30 candidates are added in the current year.'),
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
                     ->schema([
-                        TextInput::make('discounted_price_diferencial')
-                            ->label('Discounted price diferencial')
-                            ->type('number'),
-                        TextInput::make('discounted_price_percentage')
-                            ->label('Discounted price percentage')
-                            ->type('number'),
-                        TextInput::make('rigth_exam_diferencial')
-                            ->label('Exam registration fee')
-                            ->type('number'),
-                    ])->columns(1),
+                        TextInput::make('maximum_cumulative_discount')
+                            ->label('Maximum cumulative discount')
+                            ->type('number')
+                            ->default(0)
+                            ->minValue(0),
+                    ]),
             ]);
     }
 
