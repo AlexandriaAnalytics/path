@@ -81,6 +81,7 @@ class ManagementPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->tenant(Institute::class)
-            ->spa();
+            ->spa()
+            ->databaseNotifications();
     }
 }
