@@ -82,15 +82,25 @@ class CreateModulesTable extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
-            $table->decimal('price_all_modules', 12, 2)
+            $table->decimal('percentage_extra_price_all_modules', 12, 2)
                 ->nullable()
-                ->comment('Price for all modules');
-            $table->decimal('price_exam_right', 12, 2)
+                ->comment('Extra price for all modules');
+            $table->decimal('percentage_extra_price_exam_right', 12, 2)
                 ->nullable()
-                ->comment('Price for exam right');
-            $table->decimal('price_exam_right_all_modules', 12, 2)
+                ->comment('Extra price for exam right');
+            $table->decimal('percentage_extra_price_exam_right_all_modules', 12, 2)
                 ->nullable()
-                ->comment('Price for exam right for all modules');
+                ->comment('Extra price for exam right for all modules');
+
+            $table->decimal('extra_price_all_modules', 12, 2)
+                ->nullable()
+                ->comment('Extra price for all modules');
+            $table->decimal('extra_price_exam_right', 12, 2)
+                ->nullable()
+                ->comment('Extra price for exam right');
+            $table->decimal('extra_price_exam_right_all_modules', 12, 2)
+                ->nullable()
+                ->comment('Extra price for exam right for all modules');
 
             $table->timestamps();
             $table->softDeletes();

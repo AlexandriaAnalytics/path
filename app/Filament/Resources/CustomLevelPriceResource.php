@@ -12,6 +12,7 @@ use Closure;
 use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -64,21 +65,54 @@ class CustomLevelPriceResource extends Resource
                         ->first()?->id))
                     ->hiddenOn('edit'),
                 Forms\Components\Hidden::make('level_country_id'),
-                Forms\Components\TextInput::make('price_all_modules')
-                    ->label('Exam price with all modules')
-                    ->required()
-                    ->numeric(),
-                // Fieldset::make('Exam Right')
-                //     ->schema([
-                //         Forms\Components\TextInput::make('price_exam_right')
-                //             ->label('Base price')
-                //             ->hint('Price without some modules')
-                //             ->numeric(),
-                //         Forms\Components\TextInput::make('price_exam_right_all_modules')
-                //             ->label('Discounted price')
-                //             ->hint('Price for exam with all modules')
-                //             ->numeric(),
-                //     ]),
+                Fieldset::make('Exam Right')
+                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit != 'ARS')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('extra_price_all_modules')
+                            ->label('Extra Complete Price')
+                            ->suffix('ARS')
+                            ->helperText('Extra price for exam with all modules')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0),
+                        TextInput::make('extra_price_exam_right')
+                            ->label('Extra Incomplete Exam Right')
+                            ->suffix('ARS')
+                            ->helperText('Extra price for exam without some modules')
+                            ->numeric()
+                            ->minValue(0),
+                        TextInput::make('extra_price_exam_right_all_modules')
+                            ->label('Extra Complete Exam Right')
+                            ->suffix('ARS')
+                            ->helperText('Extra price for exam with all modules')
+                            ->numeric()
+                            ->minValue(0),
+                    ]),
+                Fieldset::make('Exam Right')
+                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit == 'ARS')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('percentage_extra_price_all_modules')
+                            ->label('Extra Complete Price')
+                            ->helperText('Extra price for exam with all modules')
+                            ->suffix('%')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0),
+                        TextInput::make('percentage_extra_price_exam_right')
+                            ->label('Extra Incomplete Exam Right')
+                            ->suffix('%')
+                            ->helperText('Extra price for exam without some modules')
+                            ->numeric()
+                            ->minValue(0),
+                        TextInput::make('percentage_extra_price_exam_right_all_modules')
+                            ->label('Extra Complete Exam Right')
+                            ->suffix('%')
+                            ->helperText('Extra price for exam with all modules')
+                            ->numeric()
+                            ->minValue(0),
+                    ]),
             ]);
     }
 
@@ -89,12 +123,6 @@ class CustomLevelPriceResource extends Resource
                 Tables\Columns\TextColumn::make('levelCountry.level.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('levelCountry.country.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price_all_modules')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price_exam_right_all_modules')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -114,7 +142,7 @@ class CustomLevelPriceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -138,7 +166,7 @@ class CustomLevelPriceResource extends Resource
             'index' => Pages\ListCustomLevelPrices::route('/'),
             'create' => Pages\CreateCustomLevelPrice::route('/create'),
             'view' => Pages\ViewCustomLevelPrice::route('/{record}'),
-            'edit' => Pages\EditCustomLevelPrice::route('/{record}/edit'),
+            // 'edit' => Pages\EditCustomLevelPrice::route('/{record}/edit'),
         ];
     }
 

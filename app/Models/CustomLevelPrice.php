@@ -17,8 +17,12 @@ class CustomLevelPrice extends Model
     protected $fillable = [
         'institute_id',
         'level_country_id',
-        'price_all_modules',
-        'price_exam_right_all_modules',
+        'extra_price_all_modules',
+        'extra_price_exam_right',
+        'extra_price_exam_right_all_modules',
+        'percentage_extra_price_all_modules',
+        'percentage_extra_price_exam_right',
+        'percentage_extra_price_exam_right_all_modules',
     ];
 
     public function institute(): BelongsTo
