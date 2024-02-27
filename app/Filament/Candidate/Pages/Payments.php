@@ -77,15 +77,17 @@ class Payments extends Page implements HasForms
                     $actions,
                     [
                         Action::make('paypal_financing')
-                            ->label('financing in paypal ' . $this->instalment_number . ' instalments')
+                            ->label('financing with paypal ' . $this->instalment_number . ' instalments')
                             ->icon('heroicon-o-currency-dollar')
                             ->action(fn () => $this->paypalFinaciament()),
                     ]
                 );
-            } else if (in_array(ucwords(str_replace('_', ' ', PaymentMethod::MERCADO_PAGO->value)), $this->candidate_payment_methods)) {
+            } else if (
+                in_array(PaymentMethod::PAYPAL->value, $this->candidate_payment_methods)
+            ) {
                 $actions = array_merge($actions, [
                     Action::make('MP_financing')
-                        ->label('financing in Mercado pago ' . $this->instalment_number . ' instalments')
+                        ->label('financing with Mercado pago ' . $this->instalment_number . ' instalments')
                         ->icon('heroicon-o-currency-dollar')
                         ->action(fn () => $this->mercadoPagoFinanciament()),
                 ]);
