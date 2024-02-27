@@ -44,11 +44,12 @@ class PaymentController extends Controller
         $validated = $request->validated();
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
+           
 
             /** @var \App\Models\Candidate $candidate */
             $candidate = session('candidate');
 
-            switch ($validated['payment_method']) {
+            switch (str_replace('_', ' ', strtolower($validated['payment_method']))) {
                 case 'paypal':
                     $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
                     $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
