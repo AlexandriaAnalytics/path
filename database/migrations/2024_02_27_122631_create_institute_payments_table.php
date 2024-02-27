@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('institute_id');
             $table->string('ticket_link');
             $table->decimal('monthly_amount');
-            $table->text('description')->default('');
+            $table->text('description');
             $table->timestamps();
         });
     }

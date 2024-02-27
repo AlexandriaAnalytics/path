@@ -13,8 +13,10 @@ use App\Models\InstitutePayment;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Forms\Components\Textarea;
 
 class ListFinancings extends ListRecords
 {
@@ -56,14 +58,18 @@ class ListFinancings extends ListRecords
 
                     TextInput::make('tiket_link')
                         ->label('Link to Tiket')
-                        ->required()
+                        ->required(),
+
+                    TextArea::make('description')
+                    ->required(),
                 ])
 
-                ->action(function (mixed $value, array $attributes) {
+                ->action(function (array $data) {
                     InstitutePayment::create([
                         'institute_id' => Filament::getTenant()->id,
-                        'ticket_link' => $attributes['tiket_link'],
-                        'monthly_amount' => $attributes['monthly_amount'],
+                        'ticket_link' => $data['tiket_link'],
+                        'monthly_amount' => $data['monthly_amount'],
+                        'description' => $data['description'],
                     ]);
 
                     $financins = Financing::all()
