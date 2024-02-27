@@ -30,6 +30,11 @@ class CandidateExporter extends Exporter
             ExportColumn::make('pendingModules.name')->label('Pending Modules'),
             ExportColumn::make('type_of_certificate')
                 ->label('Type of Certificate'),
+
+            ExportColumn::make('student.institute.name')->label('Institute Name'),
+            ExportColumn::make('modules.name')->label('Module Name'),
+            ExportColumn::make('pendingModules.name')->label('Pending Modules'),
+
         ];
     }
 
