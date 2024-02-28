@@ -251,7 +251,7 @@ class CandidateResource extends Resource
                         ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
-                        // ->relationship('institute.name')
+                        ->relationship('student', 'institute_id')
                         ->options(Institute::all()->pluck('name', 'id'))
                         ->searchable()
                         ->preload()
