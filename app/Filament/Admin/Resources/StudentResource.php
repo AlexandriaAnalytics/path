@@ -10,36 +10,21 @@ use Filament\Tables\Actions\BulkAction;
 
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 
-use App\Enums\TypeOfCertificate;
-use App\Enums\UserStatus;
-use App\Filament\Admin\Resources\CandidateResource\Pages;
-use App\Filament\Exports\CandidateExporter;
 use App\Models\Candidate;
-use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
 use Closure;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
-use Filament\Support\Colors\Color;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportBulkAction;
-use Filament\Tables\Columns\ColumnGroup;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+
 class StudentResource extends Resource
 {
     protected static ?string $model = Student::class;
@@ -77,6 +62,16 @@ class StudentResource extends Resource
                             ->native(false)
                             ->placeholder('dd/mm/yyyy')
                             ->required(),
+                    ]),
+                Components\Section::make('Contact Information')
+                    ->columns(2)
+                    ->schema([
+                        Components\TextInput::make('email')
+                            ->label('Email')
+                            ->required()
+                            ->unique('students', 'email', ignoreRecord: true)
+                            ->placeholder('john.doe@example.com')
+                            ->helperText('Required for instalments'),
                     ]),
                 Components\Section::make('Country of residence')
                     ->columns(2)
@@ -130,43 +125,42 @@ class StudentResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     BulkAction::make('create_bulk_candidates')
-                    ->form([
-                        Select::make('level_id')
-                        ->label('Exam')
-                        ->placeholder('Select an exam')
-                        ->options(Level::all()->pluck('name', 'id'))
-                        ->searchable()
-                        ->reactive()
-                        ->required()
-                        ->preload()
-                        ->rules([
-                            fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
-                                $level = Level::find($get('level_id'));
-                                if (!$level) {
-                                    return;
-                                }
+                        ->form([
+                            Select::make('level_id')
+                                ->label('Exam')
+                                ->placeholder('Select an exam')
+                                ->options(Level::all()->pluck('name', 'id'))
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload()
+                                ->rules([
+                                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                        $level = Level::find($get('level_id'));
+                                        if (!$level) {
+                                            return;
+                                        }
 
-                                $student = Student::find($value);
+                                        $student = Student::find($value);
 
-                                if (
-                                    $level->minimum_age && $student->age < $level->minimum_age
-                                    || $level->maximum_age && $student->age > $level->maximum_age
-                                ) {
-                                    $fail("The student's age is not within the range of the selected level");
-                                }
-                            },
-                        ]),
-                        Select::make('modules')
-                        ->multiple()
-                        ->required()
-                        ->live()
-                        ->relationship(name: 'modules', titleAttribute: 'name')
-                        ->options(Module::all()->pluck('name', 'id'))
-                        ->preload(),
-                        
-                    ])->action(function() {
+                                        if (
+                                            $level->minimum_age && $student->age < $level->minimum_age
+                                            || $level->maximum_age && $student->age > $level->maximum_age
+                                        ) {
+                                            $fail("The student's age is not within the range of the selected level");
+                                        }
+                                    },
+                                ]),
+                            Select::make('modules')
+                                ->multiple()
+                                ->required()
+                                ->live()
+                                ->relationship(name: 'modules', titleAttribute: 'name')
+                                ->options(Module::all()->pluck('name', 'id'))
+                                ->preload(),
 
-                    }),
+                        ])->action(function () {
+                        }),
                     ExportBulkAction::make()
                         ->exporter(StudentExporter::class),
                     DeleteBulkAction::make(),

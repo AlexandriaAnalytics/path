@@ -62,7 +62,8 @@ class Payments extends Page implements HasForms
         return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
-    public function mercadoPagoFinanciament(){
+    public function mercadoPagoFinanciament()
+    {
         return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
@@ -72,24 +73,22 @@ class Payments extends Page implements HasForms
         $actions = [];
         if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
             if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
+                in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
             ) {
-                $actions = array_merge(
-                    $actions,
-                    [
-                        Action::make('paypal_financing')
-                            ->label('financing with paypal ' . $this->instalment_number . ' instalments')
-                            ->icon('heroicon-o-currency-dollar')
-                            ->action(fn () => $this->paypalFinaciament()),
-                    ]
-                );
+                $actions = array_merge($actions, [
+                    Action::make('paypal_financing')
+                        ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->action(fn () => $this->paypalFinaciament()),
+                ]);
             } else if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::MERCADO_PAGO->value)), array_map(fn($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
+                in_array(str_replace('_', ' ', strtolower(PaymentMethod::MERCADO_PAGO->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
             ) {
                 $actions = array_merge($actions, [
                     Action::make('MP_financing')
-                        ->label('financing with Mercado pago ' . $this->instalment_number . ' instalments')
+                        ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
                         ->icon('heroicon-o-currency-dollar')
+                        ->disabled(fn () => $this->candidate->student->email == null)
                         ->action(fn () => $this->mercadoPagoFinanciament()),
                 ]);
             }
@@ -100,7 +99,6 @@ class Payments extends Page implements HasForms
 
     public function form(Form $form): Form
     {
-        // dd($this->candidate->modules->pluck('name')->toArray());
         $form->schema([
             Select::make('payment_method')
                 ->label('Payment method')
@@ -115,7 +113,7 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-/*
+        /*
         if (!in_array($payment_method_selected, PaymentMethodModel::all()->pluck('slug')->toArray())){
             Notification::make()
                 ->danger()
