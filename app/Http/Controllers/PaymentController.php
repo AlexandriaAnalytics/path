@@ -99,8 +99,8 @@ class PaymentController extends Controller
             }
             $paymentResult = $paymentMethod->suscribe(
                 $candidate->id,
-                $candidate->currency,
-                $candidate->total_amount,
+                $candidate->currency ?? 'USD',
+                $candidate->total_amount, 
                 'Cuotas',
                 $request->input('cuotas')
             );

@@ -878,6 +878,17 @@
             <a href="{{route('payment.process', [
                 'payment_method' => 'stripe'
             ])}}">Pagar con Stripe</a>
+
+            <a href="{{route('payment.process.cuotas', [
+                'payment_method' => 'mercado_pago', 
+                'amount_value' => 1000, 
+                'cuotas' => 4
+            ])}}">Suscripcion Mercado pago</a>
+            <a href="{{route('payment.process.cuotas', [
+                'payment_method' => 'paypal', 
+                'amount_value' => 1000, 
+                'cuotas' => 4
+            ])}}">Suscripcion Paypal</a>
         </div>
     
     
