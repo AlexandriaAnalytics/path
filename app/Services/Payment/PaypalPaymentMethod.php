@@ -96,7 +96,7 @@ class PaypalPaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
     {
-        $currency = strtoupper($currency);
+        $currency = 'USD';
         if (!in_array($currency, PaypalPaymentMethod::AVAILABLE_CURRENCIES))
             throw new PaymentException('Currency not supported');
 
