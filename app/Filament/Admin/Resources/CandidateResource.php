@@ -251,8 +251,9 @@ class CandidateResource extends Resource
                         ->label('Member or centre')
                         ->placeholder('Select an institute')
                         ->required()
-                        // ->relationship('institute.name')
+                        ->relationship('student', 'institute_id')
                         ->options(Institute::all()->pluck('name', 'id'))
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->institute->name}")
                         ->searchable()
                         ->preload()
                         ->reactive()
@@ -264,6 +265,7 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->live()
+                        ->relationship('student')
                         ->options(function (callable $get) {
                             $instituteId = $get('institute_id');
 
@@ -279,7 +281,8 @@ class CandidateResource extends Resource
                                     return [$student->id => "{$student->name} {$student->surname}"];
                                 })
                                 ->all();
-                        }),
+                        })
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
                 ]),
         ];
     }

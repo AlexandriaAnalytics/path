@@ -9,7 +9,6 @@ use App\Models\Payment;
 use App\Services\Payment\StripePaymentMethod;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
 
 class WebHookPaymentsController extends Controller
 {
@@ -73,7 +72,7 @@ class WebHookPaymentsController extends Controller
                 break;
         }
 
-        return Response::json(['status' => 'success']);
+        return response()->json(['status' => 'success']);
     }
 
     public function stripeWebhook(Request $request)
@@ -83,67 +82,75 @@ class WebHookPaymentsController extends Controller
         $stripePaymentMethod = new StripePaymentMethod();
         $stripePaymentMethod->processWebhook($request);
 
-        return Response::json([
-            'status' => 'succes'
-        ]);
+        return response()->json(['status' => 'success']);
     }
 
     public function mercadopagoWebhook(Request $request)
     {
-        $action = $request->input('action');
-        Log::info($action);
-        if (!isset($action) || $action == null) {
-            return Response::json(['status' => 'do_nothing']);
-        }
+        $type = $request->string('type')->toString();
+        ray($type, $request->all());
 
-        switch ($action) {
-            case 'payment.created':
-                $this->handleActionsMPPaymentCreated($request);
-                break;
-            
-        }
-        return Response::json(['status' => 'success']);
+        return match ($type) {
+            'payment' => $this->handleMercadoPagoPayment($request),
+            'subscription_preapproval',  'subscription_authorized_payment' =>
+            $this->handleMercadoPagoSubscription($request),
+            default => response()->json(['status' => 'not_implemented'], 501),
+        };
     }
 
-    private function handleActionsMPPaymentCreated(Request $request)
+    private function handleMercadoPagoPayment(Request $request)
     {
         $orderId = $request->input('data.id');
-
-        $token = config('mercadopago.mode') == 'sandbox' ? config('mercadopago.sandbox.access_token') : config('mercadopago.live.access_token');
-
-
-        $headers = [
-            'Authorization' => 'Bearer ' . $token,
-        ];
+        $token = config('mercadopago.access_token');
 
         $url = 'https://api.mercadopago.com/v1/payments/' . $orderId;
 
-        $response = Http::withToken($token)->get($url);
+        $response = Http::withToken($token)
+            ->get($url);
 
-        if ($response->successful()) {
-            $result = $response->body();
-            $data = json_decode($result, true);
+        ray($response->json());
 
-            $candidateId = $data['external_reference'];
-
-            Payment::create([
-                'candidate_id' => $candidateId,
-                'payment_method' => 'mercado_pago',
-                'payment_id' => $orderId,
-                'currency' => $data['currency_id'],
-                'amount' => $data['additional_info']['items'][0]['unit_price'],
-                'status' => 'approved',
-            ]);
-
-            $candidate = Candidate::find($candidateId);
-            $candidate->status = 'paid';
-            $candidate->save();
+        if ($response->failed()) {
+            return response()->json(['status' => 'payment_not_found'], 500);
         }
 
-       
+        $result = $response->body();
+        $data = json_decode($result, true);
+
+        $candidateId = $data['external_reference'];
+
+        Payment::firstOrCreate([
+            'payment_method' => 'mercado_pago',
+            'payment_id' => $orderId,
+        ], [
+            'candidate_id' => $candidateId,
+            'currency' => $data['currency_id'],
+            'amount' => $data['additional_info']['items'][0]['unit_price'],
+            'status' => 'approved',
+        ]);
+
+        $candidate = Candidate::find($candidateId);
+        $candidate->status = 'paid';
+        $candidate->save();
+
+        return response()->json(['status' => 'success']);
     }
 
-    private function handleActionMPSuscription(Request $request){
+    private function handleMercadoPagoSubscription(Request $request)
+    {
+        $subscriptionId = $request->input('data.id');
 
+        $token = config('mercadopago.access_token');
+
+        $url = 'https://api.mercadopago.com/preapproval/' . $subscriptionId;
+
+        $response = Http::withToken($token)
+            ->get($url);
+
+        if ($response->failed()) {
+            return response()->json(['status' => 'error'], 500);
+        }
+
+        return response()->json(['status' => 'not_implemented'], 500);
     }
 }

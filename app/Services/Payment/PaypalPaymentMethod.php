@@ -42,7 +42,7 @@ class PaypalPaymentMethod extends AbstractPayment
         'USD'
     ];
 
-    public function pay(string $id, string $description, string $currency, string $amount_value, $mode = 'single'): PaymentResult
+    public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult
     {
 
         if (!is_numeric($amount_value))
@@ -94,7 +94,7 @@ class PaypalPaymentMethod extends AbstractPayment
         return new PaymentResult(PaymentMethodResult::SUCCESS, 'Payment was successful');
     }
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
         $currency = 'USD';
         if (!in_array($currency, PaypalPaymentMethod::AVAILABLE_CURRENCIES))
@@ -161,15 +161,14 @@ class PaypalPaymentMethod extends AbstractPayment
                 ],
             ]);
 
-            
+
 
             if (isset($response['id']) && $response['id'] != null) {
 
                 foreach ($response['links'] as $links) {
                     if ($links['rel'] == 'approve') {
 
-                        for($instalment = 1; $instalment <= $instalment_number; $instalment++)
-                        {
+                        for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
                             Payment::create([
                                 'candidate_id' => $id,
                                 'payment_method' => 'paypal',
@@ -177,7 +176,7 @@ class PaypalPaymentMethod extends AbstractPayment
                                 'amount' => $amount,
                                 'suscription_code' => $response['id'],
                                 'instalment_number' => $instalment_number,
-                                'current_instalment' => $instalment 
+                                'current_instalment' => $instalment
                             ]);
                         }
 

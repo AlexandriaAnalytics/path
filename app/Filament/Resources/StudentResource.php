@@ -55,6 +55,14 @@ class StudentResource extends Resource
                     ->label('Date of birth')
                     ->native(false)
                     ->placeholder('dd/mm/yyyy'),
+                Forms\Components\Section::make('Contact Information')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->placeholder('john.doe@example.com')
+                            ->helperText('Required for instalments'),
+                    ]),
                 Forms\Components\RichEditor::make('personal_educational_needs')
                     ->columnSpanFull()
 
@@ -75,7 +83,10 @@ class StudentResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(function (Student $record) {
-                        return !Candidate::where('student_id', $record->id)->exists();
+                        return Candidate::query()
+                            ->where('student_id', $record->id)
+                            ->where('status', 'paid')
+                            ->doesntExist();
                     }),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -136,9 +147,9 @@ class StudentResource extends Resource
                                 ]);
                             }
                             Notification::make()
-                            ->title('Candidates create successfully')
-                            ->success()
-                            ->send();
+                                ->title('Candidates create successfully')
+                                ->success()
+                                ->send();
                         }),
                     BulkAction::make('export-excel')
                         ->label('Download as Excel')

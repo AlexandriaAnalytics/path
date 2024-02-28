@@ -18,7 +18,7 @@ use Stripe\StripeClient;
 class StripePaymentMethod extends AbstractPayment
 {
 
-    public function pay(string $id, string $description, string $currency, string $amount_value, string $mode = 'single'): PaymentResult
+    public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult
     {
         Stripe::setApiKey($this->getAccessToken());
 
@@ -67,9 +67,9 @@ class StripePaymentMethod extends AbstractPayment
         }
     }
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number, string $mode = 'subscription'): PaymentResult
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
-        $amountPerInstalment = $total_amount_value  / $instalment_number;  
+        $amountPerInstalment = $total_amount_value  / $instalment_number;
 
         Stripe::setApiKey($this->getAccessToken());
 
@@ -131,21 +131,21 @@ class StripePaymentMethod extends AbstractPayment
         $data = $request->input('data');
         $type = $request->input('type');
         $stripe = new StripeClient($this->getAccessToken());
-        
-        $stripeSessionCode = $data['object']['id']; 
+
+        $stripeSessionCode = $data['object']['id'];
 
         switch ($type) {
             case 'checkout.session.completed':
                 //$sessionCompleted = $stripe->checkout->sessions->retrieve($data['object']['id']);
                 if ($data['object']['status'] == 'complete') {
                     $payment = Payment::where('payment_id', $stripeSessionCode)->first();
-                    if($payment != null){
-                        Log::info($payment );
+                    if ($payment != null) {
+                        Log::info($payment);
                         $payment->status = 'approved';
                         $payment->save();
-    
+
                         $candidate = Candidate::find($payment->candidate_id);
-                        if($candidate != null){
+                        if ($candidate != null) {
                             $candidate->status = UserStatus::Paid->value;
                             Log::alert('Candidate state ' . $candidate->status);
                             $candidate->save();
