@@ -1,32 +1,63 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8" style="background-color: rgb(249 250 251);">
-    <div class="p-4 card shadow rounded max-w-md w-full space-y-8 bg-white shadow-md overflow-hidden sm:rounded-lg p-6">
-        <header class="mb-4">
-            <h1 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Login Candidate 🧑‍🎓
-            </h1>
-        </header>
-        <main >
-            <div class="">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+         @import url('https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap');
+
+       body {
+        display: grid;
+        place-content: center;
+        height: 100vh;
+        font-family: 'Montserrat', sans-serif;
+       }
+
+       .input-number {
+        border: none;
+        background-color: #f3f3f3;
+       }
+
+       .input-number:focus {
+        border: none;
+        outline: none;
+       }
+
+       .submit {
+        background-color: #22526d;
+        padding: 10px 0;
+        color: #fff;
+        margin-top: 10px;
+        border-radius: 10px;
+       }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="image">
+            <img src="{{ asset('images/logo/01-regular.png') }}" alt="">
+        </div>
+        <div class="formulario">
+            <div class="error">
                 @if (session('error'))
-                    <div class="text-red-600 text-center">
-                        <p>{{ session('error') }}</p>
-                    </div>
+                    <p style="color: red;">{{ session('error') }}</p>
                 @endif
             </div>
-            <form wire:submit.prevent="handleLoginCandidate" class="mt-8 space-y-6">
-                <div class="rounded-md shadow-sm -space-y-px">
-                    <div>
-                        <label for="id" class="sr-only">Email</label>
-                        <input type="number" wire:model="id" id="id" placeholder="write you own candidate number" class="rounded appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm">
-                        @error('id') <span class="error text-red-500">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-                <div class="flex items-center justify-center">
-                    <button type="submit" class="w-full p-2 text-white rounded" style="background-color: rgb(14 165 233);">
-                        Login
-                    </button>
-                </div>
+            <form wire:submit.prevent="handleLoginCandidate" style="display: flex; flex-direction:column;">
+                <label for="id">Candidate number</label>
+                <input type="number" wire:model="id" id="id" placeholder="Enter your candidate number" class="input-number">
+                @error('id')
+                    <span style="color: red;">{{ $message }}</span>
+                @enderror
+                <button type="submit" class="submit">Login</button>
             </form>
-        </main>
+        </div>
     </div>
-</div>
+</body>
+
+</html>
