@@ -3,6 +3,7 @@
 namespace App\Filament\Candidate\Pages;
 
 use App\Enums\PaymentMethod;
+use App\Models\Candidate;
 use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
@@ -30,7 +31,7 @@ class Payments extends Page implements HasForms
 
     public function __construct()
     {
-        $this->candidate = \App\Models\Candidate::find(session('candidate')->id);
+        $this->candidate = Candidate::find(session('candidate')->id);
         $this->candidate_payment_methods = $this->candidate->student->region->paymentMethods()->pluck('name')->toArray();
         $this->country = $this->candidate->student->region->name;
 
@@ -71,7 +72,7 @@ class Payments extends Page implements HasForms
         $actions = [];
         if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
             if (
-                in_array(PaymentMethod::PAYPAL->value, $this->candidate_payment_methods)
+                in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
             ) {
                 $actions = array_merge(
                     $actions,
@@ -83,7 +84,7 @@ class Payments extends Page implements HasForms
                     ]
                 );
             } else if (
-                in_array(PaymentMethod::PAYPAL->value, $this->candidate_payment_methods)
+                in_array(str_replace('_', ' ', strtolower(PaymentMethod::MERCADO_PAGO->value)), array_map(fn($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
             ) {
                 $actions = array_merge($actions, [
                     Action::make('MP_financing')
