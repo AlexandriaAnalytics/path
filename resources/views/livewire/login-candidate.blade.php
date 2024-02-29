@@ -10,8 +10,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap');
 
         body {
-            display: grid;
-            place-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            padding-right: 15%;
             height: 100vh;
             width: 100vw;
             font-family: 'Montserrat', sans-serif;
@@ -41,14 +43,16 @@
         .container-formulario {
             display: grid;
             place-content: center;
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.7);
             border-radius: 10px;
-            padding: 25% 0;
+            padding: 10% 0 20% 0;
+            width: 90%;
         }
 
         .formulario {
             width: 400px;
-            margin-top: 10%; 
+            margin-top: 10%;
+            padding: 0 5%;
         }
 
         .input-number {
@@ -97,6 +101,24 @@
             font-size: 4.5rem;
             border-bottom: 1px solid #fff;
             margin-bottom: 6%;
+            animation-duration: 4s;
+            animation-name: slidein;
+        }
+
+        @keyframes slidein {
+            0% {
+                margin-left: 100%;
+                width: 120%;
+            }
+
+            50% {
+                width: 170%;
+            }
+
+            100% {
+                margin-left: 0%;
+                width: 100%;
+            }
         }
 
         .subtitle {
@@ -104,13 +126,24 @@
             background-color: #22526d;
             padding: 2%;
             font-size: 1.1rem;
+            animation-duration: 4s;
+            animation-name: slidein;
         }
 
         @media only screen and (max-width: 1100px) {
+            body {
+                justify-content: center;
+            padding-right: 0%;
+            }
+
             .container {
                 width: 90vw;
                 display: flex;
                 flex-direction: column;
+            }
+
+            .container-formulario {
+                width: 100%;
             }
 
             .title-container {
@@ -118,8 +151,8 @@
             }
 
             .formulario {
-            padding: 0 10%;
-        }
+                padding: 0 10%;
+            }
         }
     </style>
 </head>
@@ -127,33 +160,33 @@
 <body>
     <div>
         <div class="filtro"></div>
-    <div class="container">
-        <div class="title-container">
-            <h1 class="title">Welcome</h1>
-            <h2 class="subtitle">to the Path Examinations platform</h2>
-        </div>
-        <div class="container-formulario">
-            <div class="image-container">
-                <img src="{{ asset('images/logo/01-regular.png') }}" alt="" class="image">
+        <div class="container">
+            <div class="title-container">
+                <h1 class="title">Welcome</h1>
+                <h2 class="subtitle">Sinapsis ™</h2>
             </div>
-            <div class="formulario">
-                <div class="error">
-                    @if (session('error'))
-                        <p style="color: red;">{{ session('error') }}</p>
-                    @endif
+            <div class="container-formulario">
+                <div class="filtro-formulario"></div>
+                <div class="image-container">
+                    <img src="{{ asset('images/logo/01-regular.png') }}" alt="" class="image">
                 </div>
-                <form wire:submit.prevent="handleLoginCandidate" style="display: flex; flex-direction:column;">
-                    <label for="id">Candidate number</label>
-                    <input type="number" wire:model="id" id="id" placeholder="Enter your candidate number"
-                        class="input-number">
-                    @error('id')
-                        <span style="color: red;">{{ $message }}</span>
-                    @enderror
-                    <button type="submit" class="submit">Login</button>
-                </form>
+                <div class="formulario">
+                    <div class="error">
+                        @if (session('error'))
+                            <p style="color: red;">{{ session('error') }}</p>
+                        @endif
+                    </div>
+                    <form wire:submit.prevent="handleLoginCandidate" style="display: flex; flex-direction:column;">
+                        <input type="number" wire:model="id" id="id" placeholder="Enter your candidate number"
+                            class="input-number">
+                        @error('id')
+                            <span style="color: red;">{{ $message }}</span>
+                        @enderror
+                        <button type="submit" class="submit">Login</button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </body>
 
