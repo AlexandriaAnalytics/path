@@ -33,17 +33,17 @@ class ManagementPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo/01-regular.png'))
             ->brandLogoHeight('4rem')
             ->login(
-                \App\Filament\Pages\Auth\Login::class
+                \App\Filament\Management\Pages\Auth\Login::class
             )
             ->colors([
                 'primary' => '#22526d',
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverResources(in: app_path('Filament/Management/Resources'), for: 'App\\Filament\\Management\\Resources')
+            ->discoverPages(in: app_path('Filament/Management/Pages'), for: 'App\\Filament\\Management\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Management/Widgets'), for: 'App\\Filament\\Management\\Widgets')
             ->widgets([
                 // Widgets\AccountWidget::class,
                 // Widgets\FilamentInfoWidget::class,

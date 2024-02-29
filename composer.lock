@@ -1912,13 +1912,13 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Filament\\Widgets\\WidgetsServiceProvider"
+                        "Filament\\Management\\Widgets\\WidgetsServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Filament\\Widgets\\": "src"
+                    "Filament\\Management\\Widgets\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
