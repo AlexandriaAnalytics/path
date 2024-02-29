@@ -50,12 +50,12 @@ class ManagementPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make()
-                    ->label('Centre Files')
+                    ->label('My files')
                     ->icon('heroicon-o-folder')
                     ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
                     ->visible(fn () => Filament::getTenant()->files_url != null),
                 NavigationItem::make()
-                    ->label('All Files')
+                    ->label('General files')
                     ->icon('heroicon-o-folder')
                     ->url(fn () => Filament::getTenant()->instituteType->files_url, shouldOpenInNewTab: true)
                     ->visible(fn () => Filament::getTenant()->instituteType->files_url != null),

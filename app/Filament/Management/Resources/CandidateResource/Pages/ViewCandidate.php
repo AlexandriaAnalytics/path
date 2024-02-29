@@ -38,12 +38,12 @@ class ViewCandidate extends ViewRecord
                     ->schema([
                         TextEntry::make('name'),
                         TextEntry::make('surname')
-                            ->label('Last Name'),
+                            ->label('Surname'),
                         TextEntry::make('institute.name')
                             ->label('Institute'),
                     ]),
                 TextEntry::make('level.name')
-                    ->label('Level'),
+                    ->label('Exam'),
                 RepeatableEntry::make('exams')
                     ->columns(3)
                     ->schema([
@@ -107,7 +107,7 @@ class ViewCandidate extends ViewRecord
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
                     Select::make('exam_id')
-                        ->label('Exam Session')
+                        ->label('Exam session')
                         ->options(function (callable $get, Candidate $record) {
                             $moduleId = $get('module');
                             $levelId = $record->level_id;

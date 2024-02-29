@@ -48,7 +48,7 @@ class CandidateResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Exam Management';
+    protected static ?string $navigationGroup = 'Exam management';
 
     protected static ?int $navigationSort = 1;
 
@@ -121,7 +121,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('student.surname')
-                    ->label('Last Name')
+                    ->label('Surname')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('level.name')
@@ -160,6 +160,10 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
+                TextColumn::make('created_at')
+                    ->label('Created on')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -200,10 +204,8 @@ class CandidateResource extends Resource
                             $fincancing->payments()->save($payment);
                         }
 
-                        Candidate::find($candidate->id)->update(['status' => UserStatus::Paying]);
-
-
-
+                        Candidate::find($candidate->id)
+                            ->update(['status' => UserStatus::Paying]);
 
                         Notification::make()
                             ->title('Financiament was created successfully')

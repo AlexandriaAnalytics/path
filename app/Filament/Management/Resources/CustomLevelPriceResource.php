@@ -33,7 +33,7 @@ class CustomLevelPriceResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('level_id')
-                    ->label('Level')
+                    ->label('Exam')
                     ->options(Level::all()->pluck('name', 'id'))
                     ->required()
                     ->native(false)

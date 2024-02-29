@@ -23,7 +23,9 @@ class PeriodResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationLabel = 'Registration Periods';
+    protected static bool $hasTitleCaseModelLabel = false;
+
+    protected static ?string $navigationLabel = 'Registration periods';
 
     protected static ?string $heading = 'Periods in which institutes can register students for exams';
 

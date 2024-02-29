@@ -21,7 +21,7 @@ class ViewCustomLevelPrice extends ViewRecord
         return $infolist
             ->schema([
                 TextEntry::make('levelCountry.level.name')
-                    ->label('Level'),
+                    ->label('Exam'),
                 TextEntry::make('levelCountry.country.name')
                     ->label('Country'),
                 Fieldset::make('Exam Right')
