@@ -15,26 +15,40 @@
             height: 100vh;
             width: 100vw;
             font-family: 'Montserrat', sans-serif;
-            background-color: #22526d;
+            background: url('../images/fondo-login.jpg') center/cover no-repeat;
         }
 
         .container {
             width: 50vw;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            border-radius: 20px;
             overflow: hidden;
+            position: relative;
+            z-index: 10;
+        }
+
+        .filtro {
+            background-color: #22526d;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            filter: opacity(.3);
+            z-index: 0;
         }
 
         .container-formulario {
             display: grid;
             place-content: center;
-            background-color: #fff
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 25% 0;
         }
 
         .formulario {
             width: 400px;
-            padding: 10%;
+            margin-top: 10%; 
         }
 
         .input-number {
@@ -64,7 +78,7 @@
         }
 
         .image {
-            width: 200px;
+            width: 170px;
         }
 
         .image-student {
@@ -73,19 +87,51 @@
             object-fit: cover;
         }
 
+        .title-container {
+            display: grid;
+            place-content: center;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 4.5rem;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 6%;
+        }
+
+        .subtitle {
+            color: #fff;
+            background-color: #22526d;
+            padding: 2%;
+            font-size: 1.1rem;
+        }
+
         @media only screen and (max-width: 1100px) {
             .container {
                 width: 90vw;
                 display: flex;
-                flex-direction: column-reverse;
+                flex-direction: column;
             }
+
+            .title-container {
+                margin-bottom: 5%;
+            }
+
+            .formulario {
+            padding: 0 10%;
+        }
         }
     </style>
 </head>
 
 <body>
+    <div>
+        <div class="filtro"></div>
     <div class="container">
-        <img src="{{ asset('images/student.jpg') }}" alt="" class="image-student">
+        <div class="title-container">
+            <h1 class="title">Welcome</h1>
+            <h2 class="subtitle">to the Path Examinations platform</h2>
+        </div>
         <div class="container-formulario">
             <div class="image-container">
                 <img src="{{ asset('images/logo/01-regular.png') }}" alt="" class="image">
@@ -108,7 +154,7 @@
             </div>
         </div>
     </div>
-
+    </div>
 </body>
 
 </html>
