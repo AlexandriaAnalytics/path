@@ -43,7 +43,7 @@
         .container-formulario {
             display: grid;
             place-content: center;
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.6);
             border-radius: 10px;
             padding: 10% 0 20% 0;
             width: 90%;
@@ -134,6 +134,8 @@
             body {
                 justify-content: center;
             padding-right: 0%;
+            background: url('../images/fondo-login.jpg') 15% no-repeat;
+            background-size: cover;
             }
 
             .container {
