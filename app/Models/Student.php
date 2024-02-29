@@ -76,6 +76,11 @@ class Student extends Authenticatable
         return Carbon::now()->diffInYears($this->birth_date);
     }
 
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
     public function exams(): BelongsToMany
     {
         return $this->belongsToMany(Exam::class, 'candidates')
@@ -89,6 +94,9 @@ class Student extends Authenticatable
         return $this->belongsTo(Institute::class);
     }
 
+    /**
+     * @deprecated Use the `country` relationship instead.
+     */
     public function region(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');

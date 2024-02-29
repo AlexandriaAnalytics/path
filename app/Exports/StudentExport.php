@@ -32,8 +32,8 @@ class StudentExport implements FromQuery, WithHeadings, WithMapping, WithStyles
     public function headings(): array
     {
         return [
-            'First Name',
-            'Last Name',
+            'First name',
+            'Surname',
             'Institute'
         ];
     }

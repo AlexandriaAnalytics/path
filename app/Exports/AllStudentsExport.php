@@ -31,7 +31,7 @@ class AllStudentsExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Student Number', 'First Name', 'Last Name', 'Institute'];
+        return ['Student Number', 'First Name', 'Surname', 'Institute'];
     }
 
     /**

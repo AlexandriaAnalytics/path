@@ -23,7 +23,7 @@ class UsersRelationManager extends RelationManager
     {
         return UserResource::table($table)
             ->recordTitleAttribute('name')
-            ->heading('Authorised Users')
+            ->heading('Authorised users')
             ->description('Users authorised to access and manage this institute via the management portal')
             ->recordUrl(
                 fn (Model $record): string => UserResource::getUrl('view', ['record' => $record]),
