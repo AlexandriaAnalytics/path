@@ -103,6 +103,7 @@ class InstituteResource extends Resource
                                     ->required(),
                                 TextInput::make('number')
                                     ->numeric()
+                                    ->required()
                                     ->minValue(1),
                                 TextInput::make('city')
                                     ->required()
