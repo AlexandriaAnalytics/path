@@ -26,8 +26,8 @@ class CandidateExporter extends Exporter
             ExportColumn::make('level.name')
                 ->label('Exam'),
             ExportColumn::make('modules.name')->label('Module Name'),
-            ExportColumn::make('student.institute.name')->label('Member or Center Name'),
-            ExportColumn::make('pendingModules.name')->label('Pending Modules'),
+            ExportColumn::make('student.institute.name')->label('Member or center'),
+            ExportColumn::make('pendingModules.name')->label('Exams session'),
             ExportColumn::make('type_of_certificate')
                 ->label('Type of Certificate'),
 
