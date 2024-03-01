@@ -126,6 +126,7 @@ class InstituteResource extends Resource
                             ->label('Specific files URL')
                             ->type('url'),
                         Toggle::make('can_add_candidates')
+                        ->label('Can register candidates')
                             ->default(true)
                             ->helperText('If enabled, the institution will be able to register candidates.'),
                         Toggle::make('can_view_price_details')
