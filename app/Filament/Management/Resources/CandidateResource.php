@@ -214,15 +214,15 @@ class CandidateResource extends Resource
                     })
                     ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
 
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('pdf')
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
-                    Action::make('pdf')
-                        ->label('PDF')
-                        ->icon('heroicon-o-document')
-                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     ViewAction::make(),
                     EditAction::make()
                         ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
