@@ -16,7 +16,8 @@ class ListInstitutes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+            ->label('New members and centres'),
             Actions\Action::make('download')
             ->label('Download Excel All Members')
             ->color('success')
