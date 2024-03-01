@@ -68,10 +68,9 @@ class StudentResource extends Resource
                     ->schema([
                         Components\TextInput::make('email')
                             ->label('Email')
-                            ->required()
                             ->unique('students', 'email', ignoreRecord: true)
                             ->placeholder('john.doe@example.com')
-                            ->helperText('Required for instalments'),
+                            ->helperText('Required for installments'),
                     ]),
                 Components\Section::make('Country of residence')
                     ->columns(2)

@@ -76,13 +76,11 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                //Candidate
                 TextColumn::make('id')
                     ->label('Candidate No.')
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
@@ -93,39 +91,38 @@ class CandidateResource extends Resource
                         'paying' => 'warning',
                         'processing payment' => 'warning'
                     }),
-                //Student
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('student.surname')
-                    ->label('Last Name')
+                    ->label('Surname')
                     ->sortable()
                     ->searchable(),
-
                 TextColumn::make('modules.name')
                     ->badge(),
                 TextColumn::make('level.name')
+                    ->label('Exam')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                //Institute
                 TextColumn::make('student.institute.name')
-                    ->label('Member or centre Name')
+                    ->label('Member or centre')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                //Exam
                 IconColumn::make('modules')
-                    ->alignCenter()
                     ->label('Exam session')
+                    ->alignCenter()
                     ->icon(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
                     ->tooltip(fn (Candidate $record) => $record->pendingModules->isNotEmpty()
                         ? "Pending modules: {$record->pendingModules->pluck('name')->join(', ')}"
                         : 'All modules assigned')
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
+                TextColumn::make('created_at')
+                    ->label('Created on')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
@@ -135,23 +132,24 @@ class CandidateResource extends Resource
                     ->multiple()
                     ->preload(),
                 SelectFilter::make('exam_id')
-                    ->label('Exam')
+                    ->label('Exam session')
                     ->relationship('exams', 'session_name')
                     ->searchable()
                     ->multiple()
                     ->preload(),
             ])
             ->actions([
-                Action::make('qr-code')
-                    ->label('QR Code')
-                    ->icon('heroicon-o-qr-code')
-                    ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                Action::make('pdf')
+                    ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+
                 ActionGroup::make([
-                    Action::make('pdf')
-                        ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
-                        ->label('PDF')
-                        ->icon('heroicon-o-document')
-                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
@@ -205,7 +203,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('student.surname')
-                    ->label('Last Name')
+                    ->label('Surname')
                     ->sortable()
                     ->searchable(),
             ]),

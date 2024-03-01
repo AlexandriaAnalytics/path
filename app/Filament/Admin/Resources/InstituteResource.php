@@ -20,6 +20,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -34,7 +35,7 @@ class InstituteResource extends Resource
 {
     protected static ?string $model = Institute::class;
 
-    protected static ?string $modelLabel = 'Member or centre';
+    protected static ?string $modelLabel = 'Members and centres';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -53,7 +54,7 @@ class InstituteResource extends Resource
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('name')
-                            ->helperText('If omitted, the name will be generated from the first user added to the institute.')
+                            ->helperText('If omitted, the name will be generated from the first user added to the institution.')
                             ->label('Name of institution')
                             ->maxLength(255),
 
@@ -102,6 +103,7 @@ class InstituteResource extends Resource
                                     ->required(),
                                 TextInput::make('number')
                                     ->numeric()
+                                    ->required()
                                     ->minValue(1),
                                 TextInput::make('city')
                                     ->required()
@@ -124,25 +126,17 @@ class InstituteResource extends Resource
                             ->label('Specific files URL')
                             ->type('url'),
                         Toggle::make('can_add_candidates')
+                        ->label('Can register candidates')
                             ->default(true)
-                            ->helperText('If enabled, the institute will be able to add candidates to exams.'),
+                            ->helperText('If enabled, the institution will be able to register candidates.'),
                         Toggle::make('can_view_price_details')
                             ->default(false),
-
-                        /*
-                            ->disabled(
-                                fn (Institute $record) => (
-                                    ($record->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record->can_view_price_details)
-                                    && $record->instituteType->slug !== 'premium_exam_centre'
-                            )
-                            ->helperText('This option will be enabled after 30 candidates are added in the current year.')
-                            */
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('maximum_cumulative_discount')
-                            ->label('Maximum cumulative discount')
+                            ->label('Maximum scholarship discount')
                             ->type('number')
                             ->default(0)
                             ->minValue(0),
@@ -187,8 +181,9 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('files_url')
-                    ->url(fn ($record) => $record->files_url, shouldOpenInNewTab: true)
+                TextColumn::make('files_url')
+                    ->label('Files URL')
+                    ->url(fn (Institute $record) => $record->files_url, shouldOpenInNewTab: true)
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()

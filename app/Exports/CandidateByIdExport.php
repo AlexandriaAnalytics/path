@@ -39,8 +39,8 @@ class CandidateByIdExport implements FromQuery, WithHeadings, WithMapping, WithS
             'Name',
             'Surname',
             'Modules',
-            'Level',
-            'Exam Session'
+            'Exam',
+            'Exam session'
         ];
     }
 

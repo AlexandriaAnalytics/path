@@ -34,7 +34,7 @@ class AllCandidateExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Candidate Number', 'Status', 'First Name', 'Last Name'];
+        return ['Candidate Number', 'Status', 'First Name', 'Surname'];
     }
 
     /**

@@ -14,9 +14,22 @@ class StudentExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('name'),
-            ExportColumn::make('surname'),
-            ExportColumn::make('institute.name'),
+            ExportColumn::make('id')
+                ->label('ID'),
+            ExportColumn::make('institute.name')
+                ->label('Institute'),
+            ExportColumn::make('country.name')
+                ->label('Country'),
+            ExportColumn::make('name')
+                ->label('Name'),
+            ExportColumn::make('surname')
+                ->label('Surname'),
+            ExportColumn::make('email')
+                ->label('Email'),
+            ExportColumn::make('birth_date')
+                ->label('Birth Date'),
+            ExportColumn::make('cbu')
+                ->label('CBU'),
         ];
     }
 

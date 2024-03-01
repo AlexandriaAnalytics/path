@@ -16,11 +16,12 @@ class LevelResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $modelLabel = 'Levels';
+    protected static ?string $navigationLabel = 'Exams';
 
-    //protected static ?string $navigationParentItem = 'Exams';
+    protected static ?string $modelLabel = 'Exam';
 
-    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $pluralModelLabel = 'Exams';
+
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form

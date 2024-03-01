@@ -22,11 +22,13 @@ class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationGroup = 'Exam Management';
+    protected static ?string $navigationGroup = 'Exam management';
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
-    protected static ?string $modelLabel = 'Exam sessions';
+    protected static bool $hasTitleCaseModelLabel = false;
+
+    protected static ?string $modelLabel = 'Exam session';
 
     protected static ?int $navigationSort = 0;
 

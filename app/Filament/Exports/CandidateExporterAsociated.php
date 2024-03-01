@@ -25,14 +25,14 @@ class CandidateExporterAsociated extends Exporter
             ExportColumn::make('granted_discount')
                 ->label('Discount'),
             ExportColumn::make('level.name')
-                ->label('Level'),
+                ->label('Exam'),
             ExportColumn::make('status'),
             ExportColumn::make('modules.name')->label('Module Name'),
-            ExportColumn::make('pendingModules.name')->label('Pending Modules'),
+            ExportColumn::make('pendingModules.name')->label('Exams Session'),
         ];
     }
 
-    
+
 
     public static function getCompletedNotificationBody(Export $export): string
     {
