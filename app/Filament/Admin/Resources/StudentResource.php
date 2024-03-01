@@ -2,19 +2,27 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Enums\Country;
-use App\Enums\Module;
-use App\Models\Student;
+use App\Filament\Exports\StudentExporter;
 use Filament\Forms\Components;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
-use Filament\Tables\Columns\ColumnGroup;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Actions\BulkAction;
+
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+
+use App\Models\Candidate;
+use App\Models\Level;
+use App\Models\Module;
+use App\Models\Student;
+use Closure;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class StudentResource extends Resource
@@ -25,6 +33,8 @@ class StudentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-user-group';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -32,64 +42,51 @@ class StudentResource extends Resource
                 Components\Section::make('Personal Information')
                     ->columns(2)
                     ->schema([
-                        Components\TextInput::make('first_name')
-                            ->label('First Name')
+                        Components\TextInput::make('name')
+                            ->label('Names')
                             ->required()
                             ->placeholder('John'),
-                        Components\TextInput::make('last_name')
-                            ->label('Last Name')
+                        Components\TextInput::make('surname')
+                            ->label('Surnames')
                             ->required()
                             ->placeholder('Doe'),
                         Components\Select::make('institute_id')
-                            ->label('Institute')
+                            ->label('Member or centre')
                             ->relationship('institute', 'name')
                             ->searchable()
+                            ->preload()
                             ->native(false)
                             ->required(),
-                        Components\TextInput::make('phone')
-                            ->autofocus()
-                            ->placeholder('0118-999-881-999-119-725-3'),
-                        Components\TextInput::make('national_id')
-                            ->label('National ID')
-                            ->placeholder('20-12345678-9')
-                            ->mask('99-99999999-9')
-                            ->autofocus()
-                            ->required(),
-                        Components\TextInput::make('birth_date')
-                            ->autofocus()
-                            ->type('date')
+                        Components\DatePicker::make('birth_date')
+                            ->label('Date of birth')
+                            ->native(false)
+                            ->placeholder('dd/mm/yyyy')
                             ->required(),
                     ]),
-                Components\Section::make('Address')
+                Components\Section::make('Contact Information')
+                    ->columns(2)
+                    ->schema([
+                        Components\TextInput::make('email')
+                            ->label('Email')
+                            ->unique('students', 'email', ignoreRecord: true)
+                            ->placeholder('john.doe@example.com')
+                            ->helperText('Required for installments'),
+                    ]),
+                Components\Section::make('Country of residence')
                     ->columns(2)
                     ->collapsible()
                     ->schema([
-                        Components\Select::make('country')
+                        Components\Select::make('country_id')
                             ->label('Country')
-                            ->searchable()
+                            ->relationship('region', 'name')
                             ->required()
-                            ->options(Country::class)
-                            ->enum(Country::class)
+                            ->searchable()
+                            ->preload()
                             ->native(false),
-                        Components\TextInput::make('address')
-                            ->autofocus()
-                            ->placeholder('Evergreen Terrace 742'),
                     ]),
-                Components\Section::make('Additional Information')
-                    ->columns(2)
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema([
-                        Components\TextInput::make('cbu')
-                            ->label('CBU')
-                            ->autofocus()
-                            ->placeholder('1234567890123456789012')
-                            ->required(),
-                        Components\Select::make('status')
-                            ->label('Status')
-                            ->options(['active' => 'active', 'inactive' => 'inactive'])
-                            ->placeholder('Select Status')
-                    ])
+                Components\RichEditor::make('personal_educational_needs')
+                    ->label('Personal Educational Needs')
+                    ->columnSpanFull()
             ]);
     }
 
@@ -98,16 +95,14 @@ class StudentResource extends Resource
         return $table
             ->columns([
                 ...static::getStudentColumns(),
-                ColumnGroup::make('Institute', [
-                    TextColumn::make('institute.name')
-                        ->searchable()
-                        ->sortable(),
-                ]),
+                TextColumn::make('institute.name')
+                    ->searchable()
+                    ->sortable(),
                 ...static::getMetadataColumns(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('institute_id')
-                    ->label('Institute')
+                    ->label('Member or centre')
                     ->relationship('institute', 'name')
                     ->native(false)
                     ->searchable()
@@ -115,17 +110,59 @@ class StudentResource extends Resource
                     ->preload(),
                 Tables\Filters\QueryBuilder::make()
                     ->constraints([
-                        DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')->label('Created on')
                             ->label('Registered at'),
                     ]),
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(function (Student $record) {
+                        return !Candidate::where('student_id', $record->id)->exists();
+                    }),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    BulkAction::make('create_bulk_candidates')
+                        ->form([
+                            Select::make('level_id')
+                                ->label('Exam')
+                                ->placeholder('Select an exam')
+                                ->options(Level::all()->pluck('name', 'id'))
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload()
+                                ->rules([
+                                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                        $level = Level::find($get('level_id'));
+                                        if (!$level) {
+                                            return;
+                                        }
+
+                                        $student = Student::find($value);
+
+                                        if (
+                                            $level->minimum_age && $student->age < $level->minimum_age
+                                            || $level->maximum_age && $student->age > $level->maximum_age
+                                        ) {
+                                            $fail("The student's age is not within the range of the selected level");
+                                        }
+                                    },
+                                ]),
+                            Select::make('modules')
+                                ->multiple()
+                                ->required()
+                                ->live()
+                                ->relationship(name: 'modules', titleAttribute: 'name')
+                                ->options(Module::all()->pluck('name', 'id'))
+                                ->preload(),
+
+                        ])->action(function () {
+                        }),
+                    ExportBulkAction::make()
+                        ->exporter(StudentExporter::class),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -150,37 +187,41 @@ class StudentResource extends Resource
     public static function getStudentColumns(): array
     {
         return [
-            ColumnGroup::make('Personal Information', [
-                TextColumn::make('national_id')
-                    ->label('National ID')
-                    ->searchable(isIndividual: true)
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('first_name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('last_name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('birth_date')
-                    ->date()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('name')
+                ->label('Names')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('surname')
+                ->label('Surnames')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('region.name')
+                ->label('Region')
+                ->searchable()
+                ->badge()
+                ->sortable(),
+            TextColumn::make('personal_educational_needs')
+                ->label('PENs')
+                ->wrap()
+                ->default('-'),
+            TextColumn::make('birth_date')
+                ->label('Date of birth')
+                ->date()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 
     public static function getMetadataColumns(): array
     {
         return [
-            ColumnGroup::make('Metadata', [
-                TextColumn::make('created_at')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ]),
+            TextColumn::make('created_at')->label('Created on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
+            TextColumn::make('updated_at')->label('Updated on')
+                ->date()
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: true),
         ];
     }
 }

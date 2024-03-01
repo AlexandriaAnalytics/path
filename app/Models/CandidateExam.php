@@ -2,26 +2,33 @@
 
 namespace App\Models;
 
-use App\Models\ExamSession;
+use App\Models\Exam;
 use App\Models\Candidate;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use App\Models\Module;
+use Illuminate\Database\Eloquent\Model;
 
-class CandidateExam extends Pivot
+class CandidateExam extends Model
 {
     protected $table = 'candidate_exam';
 
     protected $fillable = [
-        'examsession_id',
+        'exam_id',
         'candidate_id',
+        'module_id'
     ];
-
-    public function examSession()
-    {
-        return $this->belongsTo(ExamSession::class);
-    }
 
     public function candidate()
     {
         return $this->belongsTo(Candidate::class);
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
+    }
+
+    public function module()
+    {
+        return $this->belongsTo(Module::class);
     }
 }

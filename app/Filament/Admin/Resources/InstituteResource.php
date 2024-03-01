@@ -2,81 +2,144 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Institute;
-use App\Filament\admin\Resources\UserResource\Pages\ViewUser;
+use App\Models\InstituteLevel;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
+use Mpdf\Tag\FieldSet as TagFieldSet;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
+use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
+use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
 
 class InstituteResource extends Resource
 {
     protected static ?string $model = Institute::class;
 
+    protected static ?string $modelLabel = 'Members and centres';
+
+    protected static bool $hasTitleCaseModelLabel = false;
+
     protected static ?string $navigationGroup = 'Corporate';
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->columns(3)
             ->schema([
-                Forms\Components\Section::make('Information')
+                Fieldset::make('Information')
+                    ->columnSpanFull()
                     ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->helperText('If omitted, the name will be generated from the first user added to the institute.')
+                        TextInput::make('name')
+                            ->helperText('If omitted, the name will be generated from the first user added to the institution.')
+                            ->label('Name of institution')
                             ->maxLength(255),
 
-                        Forms\Components\Select::make('owner_id')
+                        Select::make('institute_type_id')
+                            ->relationship('instituteType', 'name')
                             ->required()
-                            ->label('owner')
+                            ->label('Type')
+                            ->native(false),
+                        Select::make('owner_id')
+                            ->required()
+                            ->label('Head')
                             ->relationship('owner', 'name')
                             ->placeholder('Select a user')
                             ->preload()
                             ->searchable()
                             ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
-                                    ->helperText('If omitted, the name will be generated from the first user added to the institute.')
-                                    ->maxLength(255),
-                                Forms\Components\Select::make('type')
+                                TextInput::make('name')
+                                    ->label('Full name')
                                     ->required()
-                                    ->options(\App\Enums\InstituteType::class)
-                                    ->enum(\App\Enums\InstituteType::class)
-                                    ->native(false),
+                                    ->maxLength(255),
+                                TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('password')
+                                    ->password()
+                                    ->revealable()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                                    ->dehydrated(fn (?string $state): bool => filled($state)),
                             ]),
-                        Forms\Components\Select::make('institute_type_id')
-                            ->required()
-                            ->label('type')
-                            ->relationship('instituteType', 'name')
-                            ->native(true),
+                        Fieldset::make('Contact Information')
+                            ->schema([
+                                PhoneInput::make('phone'),
+                                TextInput::make('email')
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Fieldset::make('Address')
+                            ->columnSpan(2)
+                            ->columns(3)
+                            ->schema([
+                                TextInput::make('street_name')
+                                    ->required(),
+                                TextInput::make('number')
+                                    ->numeric()
+                                    ->required()
+                                    ->minValue(1),
+                                TextInput::make('city')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('postcode')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('province')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('country')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
                     ]),
-                Forms\Components\TextInput::make('address')
-                    ->required(),
-                Forms\Components\TextInput::make('phone')
-                    ->required(),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required(),
-                Forms\Components\Section::make('Administration')
-                    ->collapsible()
-                    ->collapsed()
-                    ->columnSpan(1)
+                Fieldset::make('Administration')
+                    ->columnSpanFull()
                     ->schema([
-                        Forms\Components\TextInput::make('files_url')
-                            ->type('url')
-                            ->url()
-                            ->helperText('URL to shared web folder, such as Dropbox, OneDrive, etc.'),
-                        Forms\Components\Toggle::make('can_add_candidates')
+                        TextInput::make('files_url')
+                            ->label('Specific files URL')
+                            ->type('url'),
+                        Toggle::make('can_add_candidates')
+                        ->label('Can register candidates')
                             ->default(true)
-                            ->helperText('If enabled, the institute will be able to add candidates to exams.'),
+                            ->helperText('If enabled, the institution will be able to register candidates.'),
+                        Toggle::make('can_view_price_details')
+                            ->default(false),
+                    ]),
+                Fieldset::make('Exams and payments')
+                    ->columnSpanFull()
+                    ->schema([
+                        TextInput::make('maximum_cumulative_discount')
+                            ->label('Maximum scholarship discount')
+                            ->type('number')
+                            ->default(0)
+                            ->minValue(0),
                     ]),
             ]);
     }
@@ -89,47 +152,60 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('(unnamed)')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: false),
+
+                Tables\Columns\TextColumn::make('instituteType.name')
+                    ->badge()
+                    ->color(function (string $type) {
+                        return match ($type) {
+                            'Exam Centre' => 'green',
+                            'Premium Exam Centre' => 'primary',
+                            'Training Centre' => 'yellow',
+                            'Premium Training Centre' => 'primary',
+                            default => 'gray',
+                        };
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
+
                 Tables\Columns\TextColumn::make('owner.name')
                     ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
                     ->placeholder('(no owner)')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('email')
+                    ->url(fn ($record) => 'mailto:' . $record->email, shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                PhoneColumn::make('phone')->displayFormat(PhoneInputNumberType::NATIONAL)
+                    ->url(fn ($record) => 'https://api.whatsapp.com/send?phone=' . preg_replace("/[^\d]/", "", $record->phone), shouldOpenInNewTab: true)
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('files_url')
-                    ->url(fn ($record) => $record->files_url)
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('files_url')
+                    ->label('Files URL')
+                    ->url(fn (Institute $record) => $record->files_url, shouldOpenInNewTab: true)
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('instituteType.name')
                     ->badge()
                     ->sortable()
                     ->alignCenter()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('updated_at')->label('Updated on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('deleted_at')->label('Deleted on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make()
@@ -144,6 +220,10 @@ class InstituteResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx')),
                 ]),
             ]);
     }

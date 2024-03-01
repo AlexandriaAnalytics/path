@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Filament\Admin\Resources\UserResource\RelationManagers;
+use App\Filament\Exports\UserExporter;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
@@ -27,8 +28,10 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
                 Fieldset::make('User Information')
+                    ->columnSpan(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -47,6 +50,17 @@ class UserResource extends Resource
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->hiddenOn(['view']),
                     ]),
+                Fieldset::make('Access Control')
+                    ->columnSpan(1)
+                    ->schema([
+                        Forms\Components\Select::make('roles')
+                            ->relationship(
+                                name: 'roles',
+                                titleAttribute: 'name',
+                            )
+                            ->multiple()
+                            ->preload(true),
+                    ]),
             ]);
     }
 
@@ -64,20 +78,20 @@ class UserResource extends Resource
                 ]),
                 ColumnGroup::make('Institutes', [
                     Tables\Columns\TextColumn::make('institutes_count')
-                        ->label('Institute Count')
+                        ->label('Member or centre Count')
                         ->counts('institutes')
                         ->alignEnd()
                         ->toggleable(isToggledHiddenByDefault: true),
                 ]),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updated_at')->label('Updated on')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('deleted_at')
+                Tables\Columns\TextColumn::make('deleted_at')->label('Deleted on')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -110,7 +124,9 @@ class UserResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
-                    Tables\Actions\BulkAction::make('download')->action(fn () => redirect('/download/candidate'))
+                    Tables\Actions\ExportBulkAction::make()
+                        ->label('Export Users')
+                        ->exporter(UserExporter::class),
                 ]),
             ]);
     }

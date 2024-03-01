@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,13 +19,9 @@ class StudentFactory extends Factory
     {
         return [
             'institute_id' => \App\Models\Institute::factory(),
-            'national_id' => fake()->numerify('##-########-#'),
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'slug' => fake()->slug(),
-            'country' => fake()->randomElement(\App\Enums\Country::values()),
-            'address' => fake()->address(),
-            'phone' => fake()->phoneNumber(),
+            'country_id' => Country::all()->random()->id,
+            'name' => fake()->firstName(),
+            'surname' => fake()->lastName(),
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',

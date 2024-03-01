@@ -2,35 +2,38 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Casts\ExamModules;
-use App\Enums\Module;
+use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
-use App\Models\AvailableModule;
+use App\Filament\Exports\CandidateExporter;
 use App\Models\Candidate;
-use App\Models\CandidateModule;
-use App\Models\Exam;
-use App\Models\ExamModule;
 use App\Models\Institute;
+use App\Models\Level;
+use App\Models\Module;
 use App\Models\Student;
-use Filament\Forms\Components\Builder;
+use Closure;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\Column as ColumnsColumn;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
-use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 class CandidateResource extends Resource
 {
@@ -38,17 +41,34 @@ class CandidateResource extends Resource
     protected static ?string $navigationGroup = 'Corporate';
     protected static ?string $navigationIcon = 'heroicon-m-academic-cap';
 
+    protected static ?int $navigationSort = 3;
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
-                Select::make('status')
-                    ->options(\App\Enums\UserStatus::class)
-                    ->native(false)
-                    ->required()
-                    ->enum(\App\Enums\UserStatus::class),
+                Fieldset::make('Certificate and payment')
+                    ->schema([
+                        Select::make('type_of_certificate')
+                            ->options(TypeOfCertificate::class)
+                            ->required()
+                            ->native(false),
+                        ToggleButtons::make('status')
+                            ->options(UserStatus::class)
+                            ->enum(UserStatus::class)
+                            ->required()
+                            ->inline()
+                            ->colors([
+                                '1' => 'info',
+                                '2' => 'danger',
+                                '3' => 'success',
+                                '4' => 'warning',
+                                '5' => 'warning',
+                            ])
+                            ->hiddenOn('create'),
+                    ]),
             ]);
     }
 
@@ -56,84 +76,92 @@ class CandidateResource extends Resource
     {
         return $table
             ->columns([
-                ...static::getCandidateColumns(),
-                ...static::getStudentColumns(),
-                ...static::getInstituteColumns(),
-                ...static::getExamColumns(),
+                TextColumn::make('id')
+                    ->label('Candidate No.')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric(),
+                TextColumn::make('status')
+                    ->label('Payment Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
+                        'paying' => 'warning',
+                        'processing payment' => 'warning'
+                    }),
+                TextColumn::make('student.name')
+                    ->label('Names')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('student.surname')
+                    ->label('Surname')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('modules.name')
+                    ->badge(),
+                TextColumn::make('level.name')
+                    ->label('Exam')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('student.institute.name')
+                    ->label('Member or centre')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('modules')
+                    ->label('Exam session')
+                    ->alignCenter()
+                    ->icon(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? 'heroicon-o-clock' : 'heroicon-o-check-circle')
+                    ->tooltip(fn (Candidate $record) => $record->pendingModules->isNotEmpty()
+                        ? "Pending modules: {$record->pendingModules->pluck('name')->join(', ')}"
+                        : 'All modules assigned')
+                    ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
+                TextColumn::make('created_at')
+                    ->label('Created on')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
-                    ->label('Institute')
+                    ->label('Member or centre')
                     ->relationship('student.institute', 'name')
                     ->searchable()
                     ->multiple()
                     ->preload(),
                 SelectFilter::make('exam_id')
-                    ->label('Exam')
-                    ->relationship('exam', 'session_name')
+                    ->label('Exam session')
+                    ->relationship('exams', 'session_name')
                     ->searchable()
                     ->multiple()
                     ->preload(),
             ])
+            ->actions([
+                Action::make('pdf')
+                    ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
+                    ->label('PDF')
+                    ->icon('heroicon-o-document')
+                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+
+                ActionGroup::make([
+                    Action::make('qr-code')
+                        ->label('QR Code')
+                        ->icon('heroicon-o-qr-code')
+                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
+            ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListCandidates::route('/'),
-            // 'create' => Pages\CreateCandidate::route('/create'),
-            'view' => Pages\ViewCandidate::route('/{record}'),
-            // 'edit' => Pages\EditCandidate::route('/{record}/edit'),
-        ];
-    }
-
-    public static function getStudentFields(): array
-    {
-        return [
-            Fieldset::make('Student')
-                ->schema([
-                    Select::make('institute_id')
-                        ->label('Institute')
-                        ->placeholder('Select an institute')
-                        ->options(Institute::all()->pluck('name', 'id'))
-                        ->searchable()
-                        ->reactive()
-                        ->afterStateUpdated(fn (callable $set) => $set('student_id', null)),
-                    Select::make('student_id')
-                        ->label('Student')
-                        ->placeholder('Select a student')
-                        ->searchable()
-                        ->live()
-                        ->options(function (callable $get) {
-                            $instituteId = $get('institute_id');
-
-                            if (!$instituteId) {
-                                return [];
-                            }
-
-                            return Student::query()
-                                ->whereInstituteId($instituteId)
-                                ->select(['first_name', 'last_name', 'id']) // Seleccionar first_name y last_name
-                                ->get()
-                                ->mapWithKeys(function ($student) {
-                                    return [$student->id => "{$student->first_name} {$student->last_name}"];
-                                })
-                                ->all();
-                        })
-                ]),
-        ];
     }
 
     public static function getCandidateColumns(): array
@@ -148,16 +176,21 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment Status')
                     ->badge()
-                    ->color(fn (UserStatus $state): string => match ($state) {
-                        UserStatus::Cancelled => 'gray',
-                        UserStatus::Unpaid => 'danger',
-                        UserStatus::Paid => 'success',
-                        UserStatus::PaymentWithDraw => 'warning',
+                    ->color(fn (string $state): string => match ($state) {
+                        'cancelled' => 'gray',
+                        'unpaid' => 'danger',
+                        'paid' => 'success',
                     }),
                 TextColumn::make('modules.name')
-                    ->label('Modules')
-                    ->badge()
-            ]),
+                    ->badge(),
+
+                //Institute
+                TextColumn::make('student.institute.name')
+                    ->label('Member or centre Name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
         ];
     }
 
@@ -165,16 +198,12 @@ class CandidateResource extends Resource
     {
         return [
             ColumnGroup::make('Student', [
-                TextColumn::make('student.national_id')
-                    ->label('National ID')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('student.first_name')
-                    ->label('First Name')
+                TextColumn::make('student.name')
+                    ->label('Names')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.last_name')
-                    ->label('Last Name')
+                TextColumn::make('student.surname')
+                    ->label('Surname')
                     ->sortable()
                     ->searchable(),
             ]),
@@ -186,7 +215,7 @@ class CandidateResource extends Resource
         return [
             ColumnGroup::make('Institute', [
                 TextColumn::make('student.institute.name')
-                    ->label('Institute Name')
+                    ->label('Member or centre Name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -194,13 +223,65 @@ class CandidateResource extends Resource
         ];
     }
 
-    public static function getExamColumns(): array
+    public static function getRelations(): array
     {
         return [
-            ColumnGroup::make('Exam', [
-                TextColumn::make('exam.session_name')
-                    ->label('Session Name'),
-            ]),
+            //
+        ];
+    }
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListCandidates::route('/'),
+            'create' => Pages\CreateCandidate::route('/create'),
+            'view' => Pages\ViewCandidate::route('/{record}'),
+            'edit' => Pages\EditCandidate::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getStudentFields(): array
+    {
+        return [
+            Fieldset::make('Student')
+                ->disabledOn('edit')
+                ->schema([
+                    Select::make('institute_id')
+                        ->label('Member or centre')
+                        ->placeholder('Select an institute')
+                        ->required()
+                        ->relationship('student', 'institute_id')
+                        ->options(Institute::all()->pluck('name', 'id'))
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->institute->name}")
+                        ->searchable()
+                        ->preload()
+                        ->reactive()
+                        ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
+                    Select::make('student_id')
+                        ->label('Student Code')
+                        ->placeholder('Select a student')
+                        ->required()
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->relationship('student')
+                        ->options(function (callable $get) {
+                            $instituteId = $get('institute_id');
+
+                            if (!$instituteId) {
+                                return [];
+                            }
+
+                            return Student::query()
+                                ->whereInstituteId($instituteId)
+                                ->select(['name', 'surname', 'id']) // Seleccionar first_name y surnames
+                                ->get()
+                                ->mapWithKeys(function ($student) {
+                                    return [$student->id => "{$student->name} {$student->surname}"];
+                                })
+                                ->all();
+                        })
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
+                ]),
         ];
     }
 
@@ -209,31 +290,40 @@ class CandidateResource extends Resource
         return [
             Fieldset::make('Exam')
                 ->schema([
-                    Select::make('exam_id')
+                    Select::make('level_id')
                         ->label('Exam')
                         ->placeholder('Select an exam')
-                        ->options(Exam::all()->pluck('session_name', 'id'))
+                        ->options(fn (Get $get) => Level::query()
+                            ->whereHas('countries', fn ($query) => $query->whereHas('students', fn ($query) => $query->where('id', $get('student_id'))))
+                            ->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()
                         ->required()
-                        ->afterStateUpdated(fn (callable $set) => $set('modules', null)),
+                        ->preload()
+                        ->rules([
+                            fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                $level = Level::find($get('level_id'));
+                                if (!$level) {
+                                    return;
+                                }
+
+                                $student = Student::find($value);
+
+                                if (
+                                    $level->minimum_age && $student->age < $level->minimum_age
+                                    || $level->maximum_age && $student->age > $level->maximum_age
+                                ) {
+                                    $fail("The student's age is not within the range of the selected level");
+                                }
+                            },
+                        ]),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
-                        ->options(function (callable $get) {
-                            $examId = $get('exam_id');
-
-                            if (!$examId) {
-                                return [];
-                            }
-                            return ExamModule::query()
-                                ->whereExamId($examId)
-                                ->join('modules', 'modules.id', '=', 'exam_module.module_id')
-                                ->pluck('modules.name', 'modules.id');
-                        })
-                        ->preload()
+                        ->options(Module::all()->pluck('name', 'id'))
+                        ->preload(),
                 ]),
         ];
     }

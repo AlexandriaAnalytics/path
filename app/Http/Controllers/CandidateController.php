@@ -11,7 +11,6 @@ class CandidateController extends Controller
 
     public function confirm(Request $request)
     {
-        dd('hola');
         $examId = $request->input('exam_id');
         $selectedCandidates = $request->input('selected_candidates');
 
@@ -31,7 +30,7 @@ class CandidateController extends Controller
 
     public function show($id)
     {
-        $candidate = Candidate::with(['student', 'exam'])->find($id);
+        $candidate = Candidate::with(['student', 'exams'])->find($id);
 
         if (!$candidate) {
             abort(404, 'Candidate not found');
@@ -41,6 +40,6 @@ class CandidateController extends Controller
             'candidate' => $candidate,
         ];
 
-        return view('example', $data);
+        return view('candidate-pdf', $data);
     }
 }

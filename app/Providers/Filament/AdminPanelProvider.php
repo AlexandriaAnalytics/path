@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Models\Category;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -28,10 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandLogo(asset('images/logo/01-regular.png'))
-            ->brandLogoHeight('5rem')
+            ->brandLogoHeight('4rem')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => '#22526d',
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
@@ -42,12 +41,12 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Corporate'),
                 NavigationGroup::make()
-                    ->label('Exam Management'),
+                    ->label('Exam management'),
                 NavigationGroup::make()
                     ->label('User Management'),
                 NavigationGroup::make()
                     ->label('Settings')
-                   
+
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
@@ -67,6 +66,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->spa()
+            ->databaseNotifications();
     }
 }

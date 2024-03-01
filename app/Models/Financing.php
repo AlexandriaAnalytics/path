@@ -1,0 +1,84 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\UserStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+class Financing extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'country_id',
+        'candidate_id',
+        'institute_id',
+        'currency',
+    ];
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function candidate(): BelongsTo
+    {
+        return $this->belongsTo(Candidate::class);
+    }
+
+    // App\Models\Financing.php
+    public function institute(): BelongsTo
+    {
+        return $this->belongsTo(Institute::class);
+    }
+
+    public function currentPayment(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->payments()
+                ->orderBy('current_instalment', 'ASC')
+                ->first()
+        );
+    }
+
+    public function currentInstalment(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)
+                ->orderBy('current_instalment', 'ASC')
+                ->first()->current_instalment
+        );
+    }
+
+
+
+    public function totalAmount(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->payments()->sum('amount')
+        );
+    }
+
+    public function totalPaid(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->payments()->where('status', UserStatus::Paid->value)->sum('amount')
+        );
+    }
+
+    public function totalUnPaid(): Attribute
+    {
+        return new Attribute(
+            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount')
+        );
+    }
+}

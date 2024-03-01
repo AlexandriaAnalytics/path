@@ -6,7 +6,8 @@ use App\Models\Student;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
-use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Carbon;
 
 class StudentImporter extends Importer
 {
@@ -15,47 +16,49 @@ class StudentImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('national_id')
-                ->label('National ID')
+            ImportColumn::make('name')
                 ->requiredMapping()
-                ->rules(['required', 'max:32']),
-            ImportColumn::make('first_name')
-                ->label('First Name')
+                ->rules(['required', 'max:255'])
+                ->example('John'),
+            ImportColumn::make('surname')
                 ->requiredMapping()
-                ->rules(['required', 'max:255']),
-            ImportColumn::make('last_name')
-                ->label('Last Name')
-                ->requiredMapping()
-                ->rules(['required', 'max:255']),
-            ImportColumn::make('country')
-                ->label('Country')
-                ->requiredMapping()
-                ->rules(['required', 'max:255']),
-            ImportColumn::make('address')
-                ->label('Address')
-                ->rules(['max:255']),
-            ImportColumn::make('phone')
-                ->label('Phone')
-                ->rules(['max:255']),
-            ImportColumn::make('cbu')
-                ->label('CBU')
-                ->rules(['max:22']),
+                ->rules(['required', 'max:255'])
+                ->example('Doe'),
+            ImportColumn::make('email')
+                ->rules(['email', 'max:255', 'unique:students,email'])
+                ->example('john.doe@example.com'),
             ImportColumn::make('birth_date')
-                ->label('Birth Date')
                 ->requiredMapping()
-                ->rules(['required', 'date']),
+                ->rules(['required', 'date_format:d/m/Y'])
+                ->example('23/04/1999')
+                ->castStateUsing(function (string $state): ?Carbon {
+                    if (blank($state)) {
+                        return null;
+                    }
+
+                    // Try to parse the date using the format `d-m-Y`.
+                    try {
+                        return Carbon::createFromFormat('d-m-Y', $state);
+                    } catch (\Exception $e) {
+                        // If the date is not in the expected format, return the original value.
+                        return null;
+                    }
+                }),
         ];
     }
 
     public function resolveRecord(): ?Student
     {
-        return Student::firstOrNew([
-            // Update existing records, matching them by `$this->data['column_name']`
-            'institute_id' => Filament::getTenant()->id,
-            'national_id' => $this->data['national_id'],
-        ]);
+        // return Student::firstOrNew([
+        //     // Update existing records, matching them by `$this->data['column_name']`
+        //     'email' => $this->data['email'],
+        // ]);
 
-        // return new Student();
+        return Student::make([
+            'institute_id' => $this->options['institute_id'],
+            'country_id' => $this->options['country_id'],
+            'email' => $this->data['email'],
+        ]);
     }
 
     public static function getCompletedNotificationBody(Import $import): string
@@ -67,5 +70,21 @@ class StudentImporter extends Importer
         }
 
         return $body;
+    }
+
+    public static function getOptionsFormComponents(): array
+    {
+        return [
+            Select::make('institute_id')
+                ->relationship('institute', 'name')
+                ->required()
+                ->searchable()
+                ->preload(),
+            Select::make('country_id')
+                ->relationship('country', 'name')
+                ->required()
+                ->searchable()
+                ->preload(),
+        ];
     }
 }

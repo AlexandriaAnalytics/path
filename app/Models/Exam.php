@@ -7,7 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
 
+/**
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Level> $levels
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Student> $students
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Evaluation> $evaluations
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Candidate> $candidates
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Country> $CountryExams
+ * @property int $id
+ * @property string $session_name
+ * @property \Illuminate\Support\Carbon $scheduled_date
+ * @property string $type
+ * @property int $maximum_number_of_students
+ * @property string $comments
+ * @property bool $is_able_to_price_pack
+ * 
+ */
 class Exam extends Model
 {
     use HasFactory;
@@ -19,12 +36,19 @@ class Exam extends Model
         'type',
         'maximum_number_of_students',
         'comments',
+        'payment_deadline'
     ];
 
     protected $casts = [
         'scheduled_date' => 'datetime',
         'type' => \App\Enums\ExamType::class,
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function levels(): BelongsToMany
     {
@@ -34,7 +58,7 @@ class Exam extends Model
 
     public function modules(): BelongsToMany
     {
-        return $this->belongsToMany(Module::class)
+        return $this->belongsToMany(Module::class, 'exam_module')
             ->withTimestamps();
     }
 
@@ -42,17 +66,20 @@ class Exam extends Model
     {
         return $this->belongsToMany(Student::class, 'candidates')
             ->using(Candidate::class)
-            ->withPivot(['id', 'modules'])
+            ->withPivot(['id'])
             ->withTimestamps();
     }
 
-    public function evaluations(): HasMany
+    public function candidates(): BelongsToMany
     {
-        return $this->hasMany(Evaluation::class);
+        return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
+            ->withPivot('module_id')
+            ->withTimestamps();
     }
 
-    public function candidates(): HasMany
+    public function getIsAbleToPricePackAttribute(): bool
     {
-        return $this->hasMany(Candidate::class);
+        // TODO: Complete this method
+        return false;
     }
 }

@@ -18,15 +18,8 @@ class LevelFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $name = fake()->name(),
-            'slug' => Str::slug($name),
+            'name' => fake()->name(),
             'description' => fake()->optional()->realText(),
-            'price' => fake()->randomFloat(2, 0, 100),
-            'complete_price' => fake()->randomFloat(2, 0, 100),
-            'minimum_age' => $minimumAge = fake()->numberBetween(1, 20),
-            'maximum_age' => fake()->numberBetween($minimumAge, 85),
-            'modules' => fake()->optional()->text(),
-            'tier' => fake()->optional()->numberBetween(1, 3),
         ];
     }
 }

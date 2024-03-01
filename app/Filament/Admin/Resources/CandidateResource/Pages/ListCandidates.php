@@ -3,8 +3,10 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Filament\Exports\CandidateExporter;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListCandidates extends ListRecords
 {
@@ -13,18 +15,12 @@ class ListCandidates extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\ExportAction::make()
+                ->label('Export Candidates')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color(Color::Green)
+                ->exporter(CandidateExporter::class),
             Actions\CreateAction::make(),
-            Actions\Action::make('download')
-                ->label('Download Candidate')
-                ->color('success')
-                ->outlined()
-                ->url('/users-excel'),
-                Actions\Action::make('download')
-                ->label('Download Candidate')
-                ->color('danger')
-                ->outlined()
-                ->url('/download/candidate')
-
         ];
     }
 }

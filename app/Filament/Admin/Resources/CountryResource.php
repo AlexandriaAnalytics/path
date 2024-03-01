@@ -19,17 +19,19 @@ class CountryResource extends Resource
     protected static ?string $model = Country::class;
     protected static ?string $navigationGroup = 'Settings';
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Select::make('name')
+                    ->options(array_combine(\App\Enums\Country::values(), \App\Enums\Country::values()))
                     ->autofocus()
                     ->required()
-                    ->placeholder('Name'),
-
-                    Forms\Components\Select::make('paymentMethods')
+                    ->placeholder('Name')
+                    ->enum(\App\Enums\Country::class),
+                Forms\Components\Select::make('paymentMethods')
                     ->relationship('paymentMethods', 'name')
                     ->multiple()
                     ->preload()
@@ -47,14 +49,14 @@ class CountryResource extends Resource
                     ]),
 
                 Forms\Components\Select::make('monetary_unit_symbol')
-                ->placeholder('Monetary Unit Symbol')
-                ->required()
-                ->options([
-                    '$' => '$',
-                    '€' => '€',
-                    '₱' => '₱',
-                    '£' => '£',
-                ]),
+                    ->placeholder('Monetary Unit Symbol')
+                    ->required()
+                    ->options([
+                        '$' => '$',
+                        '€' => '€',
+                        '₱' => '₱',
+                        '£' => '£',
+                    ]),
             ]);
     }
 
@@ -62,25 +64,24 @@ class CountryResource extends Resource
     {
         return $table
             ->columns([
-               TextColumn::make('name')
-               ->searchable()
-               ->sortable(),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
 
-               // show string from the model string method (monetaryString)
+                // show string from the model string method (monetaryString)
                 TextColumn::make('monetary_unit')
-                //->money('EUR')    
-                ->searchable()
+                    //->money('EUR')    
+                    ->searchable()
                     ->sortable(),
 
                 TextColumn::make('paymentMethods.name')
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color(fn($state) => match ($state) {
+                    ->color(fn ($state) => match ($state) {
                         'Mercado Pago' => 'primary',
                         'Paypal' => 'success',
                         'Stripe' => 'warning',
-                        
                     })
                     ->label('Payment Methods'),
             ])

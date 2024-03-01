@@ -7,16 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Module extends Model
 {
     use HasFactory;
+    use LogsActivity;
     use SoftDeletes;
 
     protected $fillable = [
         'name',
-        'price'
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
 
     public function exams(): BelongsToMany
     {
@@ -27,11 +35,24 @@ class Module extends Model
     public function candidates(): BelongsToMany
     {
         return $this->belongsToMany(Candidate::class, 'candidate_module', 'candidate_id', 'module_id')
+            ->withTimestamps()
+            ->withPivot('status');
+    }
+
+    public function candidateExams(): HasMany
+    {
+        return $this->hasMany(CandidateExam::class);
+    }
+
+    public function levelCountries(): BelongsToMany
+    {
+        return $this->belongsToMany(LevelCountry::class, 'level_country_module')
+            ->withPivot('price')
             ->withTimestamps();
     }
 
-    public function examSessions(): HasMany
+    public function levelCountryModules(): HasMany
     {
-        return $this->hasMany(ExamSession::class);
+        return $this->hasMany(LevelCountryModule::class);
     }
 }

@@ -18,6 +18,9 @@ class InstituteTypeResource extends Resource
     protected static ?string $model = InstituteType::class;
     protected static ?string $navigationGroup = 'Settings';
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $modelLabel = 'Membership';
+    protected static bool $hasTitleCaseModelLabel = false;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -26,6 +29,10 @@ class InstituteTypeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('files_url')
+                    ->maxLength(255)
+                    ->url()
+                    ->hint('The URL to the files for this institute type.'),
             ]);
     }
 
@@ -36,6 +43,12 @@ class InstituteTypeResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('files_url')
+                    ->label('Files URL')
+                    ->wrap()
+                    ->placeholder('(no url)')
+                    ->url(fn ($record) => $record->files_url, shouldOpenInNewTab: true)
+                    ->toggleable(),
             ])
             ->filters([
                 //
