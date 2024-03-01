@@ -18,7 +18,7 @@ class ListInstitutes extends ListRecords
         return [
             Actions\CreateAction::make(),
             Actions\Action::make('download')
-            ->label('Download Excel All Members')
+            ->label('Download list of members and centres')
             ->color('success')
             ->outlined()
             ->url('/members-excel'),
