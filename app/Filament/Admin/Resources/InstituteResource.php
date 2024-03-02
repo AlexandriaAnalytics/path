@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
@@ -234,6 +235,7 @@ class InstituteResource extends Resource
         return [
             RelationManagers\UsersRelationManager::class,
             RelationManagers\StudentsRelationManager::class,
+            RelationManagers\CandidatesRelationManager::class
         ];
     }
 
