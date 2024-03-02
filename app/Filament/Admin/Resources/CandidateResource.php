@@ -99,18 +99,17 @@ class CandidateResource extends Resource
                     ->label('Surname')
                     ->sortable()
                     ->searchable(),
+                    TextColumn::make('level.name')
+                        ->label('Exam')
+                        ->sortable()
+                        ->searchable(),
+                       
                 TextColumn::make('modules.name')
                     ->badge(),
-                TextColumn::make('level.name')
-                    ->label('Exam')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->alignCenter()
@@ -133,8 +132,8 @@ class CandidateResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('created_at')
                     ->label('Created on')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                    
             ])
             ->filters([
                 SelectFilter::make('institute_id')
