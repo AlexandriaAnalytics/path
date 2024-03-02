@@ -6,10 +6,16 @@ use App\Filament\Admin\Resources\CandidateResource;
 use App\Models\CustomLevelPrice;
 use App\Models\Module;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreateCandidate extends CreateRecord
 {
     protected static string $resource = CandidateResource::class;
+
+    public function getTitle(): string | Htmlable
+    {
+        return __('Create candidate');
+    }
 
     protected function afterCreate(): void
     {

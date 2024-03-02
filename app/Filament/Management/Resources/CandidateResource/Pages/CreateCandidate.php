@@ -9,10 +9,16 @@ use App\Models\Period;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreateCandidate extends CreateRecord
 {
     protected static string $resource = CandidateResource::class;
+
+    public function getTitle(): string | Htmlable
+    {
+        return __('Create candidate');
+    }
 
     protected function beforeCreate(): void
     {

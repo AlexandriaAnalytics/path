@@ -99,18 +99,17 @@ class CandidateResource extends Resource
                     ->label('Surname')
                     ->sortable()
                     ->searchable(),
+                    TextColumn::make('level.name')
+                        ->label('Exam')
+                        ->sortable()
+                        ->searchable(),
+                       
                 TextColumn::make('modules.name')
                     ->badge(),
-                TextColumn::make('level.name')
-                    ->label('Exam')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->alignCenter()
@@ -121,8 +120,8 @@ class CandidateResource extends Resource
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
                 TextColumn::make('created_at')
                     ->label('Created on')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                    
             ])
             ->filters([
                 SelectFilter::make('institute_id')
@@ -257,7 +256,7 @@ class CandidateResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
                     Select::make('student_id')
-                        ->label('Student Code')
+                        ->label('Student')
                         ->placeholder('Select a student')
                         ->required()
                         ->searchable()
