@@ -95,7 +95,7 @@ class StudentResource extends Resource
                     ->collapsible()
                     ->schema([
                         Components\Select::make('country_id')
-                            ->label('Country')
+                            ->label('Country of residence')
                             ->relationship('region', 'name')
                             ->required()
                             ->searchable()
@@ -217,7 +217,7 @@ class StudentResource extends Resource
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('region.name')
-                ->label('Region')
+                ->label('Country of residence')
                 ->searchable()
                 ->badge()
                 ->sortable()
