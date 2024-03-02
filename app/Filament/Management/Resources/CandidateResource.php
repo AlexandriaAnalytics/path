@@ -126,8 +126,7 @@ class CandidateResource extends Resource
                     ->searchable(),
                 TextColumn::make('level.name')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
                 TextColumn::make('modules.name')
                     ->badge(),
                 IconColumn::make('modules')
@@ -160,10 +159,13 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
+                TextColumn::make('student.institute.name')
+                    ->label('Member or centre')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
             ->filters([
                 //
