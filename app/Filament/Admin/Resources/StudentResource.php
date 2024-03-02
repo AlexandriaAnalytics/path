@@ -224,7 +224,14 @@ class StudentResource extends Resource
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('personal_educational_needs')
                 ->label('PENs')
-                ->wrap()
+                ->badge()
+                ->formatStateUsing(function (string $state) {
+                    if ($state != '-') {
+                        return 'Yes';
+                    } else {
+                        return '-';
+                    }
+                })
                 ->default('-')
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('birth_date')
