@@ -16,6 +16,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
@@ -122,7 +124,7 @@ class InstituteResource extends Resource
                                     ->options(Country::all()->pluck('name', 'id'))
                                     ->preload()
                                     ->searchable()
-                            ]),
+                            ])
                     ]),
                 Fieldset::make('Administration')
                     ->columnSpanFull()
@@ -154,6 +156,10 @@ class InstituteResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('unique_number')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()

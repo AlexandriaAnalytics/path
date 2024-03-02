@@ -376,6 +376,7 @@ CREATE TABLE `institutes` (
   `discounted_price_diferencial` decimal(12,2) NOT NULL,
   `discounted_price_percentage` decimal(12,2) NOT NULL,
   `rigth_exam_diferencial` decimal(12,2) NOT NULL,
+  `unique_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
