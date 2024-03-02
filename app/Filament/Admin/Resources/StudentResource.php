@@ -61,9 +61,10 @@ class StudentResource extends Resource
                             ->label('Date of birth')
                             ->native(false)
                             ->placeholder('dd/mm/yyyy')
+                            ->displayFormat('d/m/Y')
                             ->required(),
                     ]),
-                Components\Section::make('Contact Information')
+                Components\Section::make('Contact information')
                     ->columns(2)
                     ->schema([
                         Components\TextInput::make('email')
