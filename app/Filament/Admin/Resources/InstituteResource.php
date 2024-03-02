@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
+use App\Models\Country;
 use App\Models\Institute;
 use App\Models\InstituteLevel;
 use Filament\Forms;
@@ -22,6 +23,7 @@ use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -115,9 +117,11 @@ class InstituteResource extends Resource
                                 TextInput::make('province')
                                     ->required()
                                     ->maxLength(255),
-                                TextInput::make('country')
+                                Select::make('country')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->options(Country::all()->pluck('name', 'id'))
+                                    ->preload()
+                                    ->searchable()
                             ]),
                     ]),
                 Fieldset::make('Administration')
@@ -199,6 +203,11 @@ class InstituteResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make()
                     ->native(false),
+                SelectFilter::make('country')
+                    ->options(Country::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

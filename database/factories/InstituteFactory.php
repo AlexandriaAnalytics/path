@@ -27,7 +27,7 @@ class InstituteFactory extends Factory
             'city' => fake()->city(),
             'province' => fake()->state(),
             'postcode' => fake()->postcode(),
-            'country' => fake()->country(),
+            'country' => \App\Models\Country::all()->random()->id,
         ];
     }
 }
