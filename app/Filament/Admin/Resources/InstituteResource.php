@@ -137,6 +137,7 @@ class InstituteResource extends Resource
                     ->schema([
                         TextInput::make('maximum_cumulative_discount')
                             ->label('Maximum scholarship discount')
+                            ->suffix('%')
                             ->type('number')
                             ->default(0)
                             ->minValue(0),
