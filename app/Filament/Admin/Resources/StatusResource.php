@@ -22,7 +22,7 @@ class StatusResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
     protected static ?string $modelLabel = 'Payment status';
-
+    protected static bool $hasTitleCaseModelLabel = false;
     protected static ?string $pluralModelLabel = 'Payment status';
 
     public static function form(Form $form): Form
