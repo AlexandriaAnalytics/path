@@ -45,11 +45,28 @@ class StudentResource extends Resource
                         Components\TextInput::make('name')
                             ->label('Names')
                             ->required()
-                            ->placeholder('John'),
+                            ->placeholder('John')
+                            ->rules([
+                                function () {
+                                    return function (string $attribute, $value, Closure $fail) {
+                                        if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                            $fail('The name field can only contain letters, accents and apostrophes');
+                                        }
+                                    };
+                                }
+                            ]),
                         Components\TextInput::make('surname')
                             ->label('Surnames')
                             ->required()
-                            ->placeholder('Doe'),
+                            ->placeholder('Doe')->rules([
+                                function () {
+                                    return function (string $attribute, $value, Closure $fail) {
+                                        if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                            $fail('The surname field can only contain letters, accents and apostrophes');
+                                        }
+                                    };
+                                }
+                            ]),
                         Components\Select::make('institute_id')
                             ->label('Member or centre')
                             ->relationship('institute', 'name')
@@ -179,7 +196,7 @@ class StudentResource extends Resource
     {
         return [
             'index' => StudentResource\Pages\ListStudents::route('/'),
-            // 'create' => StudentResource\Pages\CreateStudent::route('/create'),
+            'create' => StudentResource\Pages\CreateStudent::route('/create'),
             'edit' => StudentResource\Pages\EditStudent::route('/{record}/edit'),
             'view' => StudentResource\Pages\ViewStudent::route('/{record}'),
         ];
