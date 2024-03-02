@@ -153,7 +153,7 @@ class StudentResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('create_bulk_candidates')
+                    /* BulkAction::make('create_bulk_candidates')
                         ->form([
                             Select::make('level_id')
                                 ->label('Exam')
@@ -189,7 +189,7 @@ class StudentResource extends Resource
                                 ->preload(),
 
                         ])->action(function () {
-                        }),
+                        }), */
                     ExportBulkAction::make()
                         ->exporter(StudentExporter::class),
                     DeleteBulkAction::make(),
