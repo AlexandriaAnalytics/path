@@ -59,9 +59,9 @@ class InstituteResource extends Resource
                             ->maxLength(255),
 
                         Select::make('institute_type_id')
+                            ->label('Membership')
                             ->relationship('instituteType', 'name')
                             ->required()
-                            ->label('Type')
                             ->native(false),
                         Select::make('owner_id')
                             ->required()
@@ -156,16 +156,8 @@ class InstituteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('instituteType.name')
+                    ->label('Membership')
                     ->badge()
-                    ->color(function (string $type) {
-                        return match ($type) {
-                            'Exam Centre' => 'green',
-                            'Premium Exam Centre' => 'primary',
-                            'Training Centre' => 'yellow',
-                            'Premium Training Centre' => 'primary',
-                            default => 'gray',
-                        };
-                    })
                     ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('owner.name')
@@ -189,11 +181,6 @@ class InstituteResource extends Resource
                     ->placeholder('(no url)')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('instituteType.name')
-                    ->badge()
-                    ->sortable()
-                    ->alignCenter()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
