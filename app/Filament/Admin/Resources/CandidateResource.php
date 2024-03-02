@@ -99,18 +99,18 @@ class CandidateResource extends Resource
                     ->label('Surname')
                     ->sortable()
                     ->searchable(),
+                    TextColumn::make('level.name')
+                        ->label('Exam')
+                        ->sortable()
+                        ->searchable(),
+                        // ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('modules.name')
                     ->badge(),
-                TextColumn::make('level.name')
-                    ->label('Exam')
-                    ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+                    // ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->alignCenter()
@@ -121,8 +121,8 @@ class CandidateResource extends Resource
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
                 TextColumn::make('created_at')
                     ->label('Created on')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
+                    // ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('institute_id')
