@@ -11,10 +11,12 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 
 use App\Models\Candidate;
+use App\Models\Country;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
 use Closure;
+use Doctrine\DBAL\Query\SelectQuery;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -23,7 +25,10 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class StudentResource extends Resource
 {
@@ -146,6 +151,21 @@ class StudentResource extends Resource
                         DateConstraint::make('created_at')->label('Created on')
                             ->label('Registered at'),
                     ]),
+                SelectFilter::make('country_id')
+                    ->options(Country::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+                TernaryFilter::make('personal_educational_needs')
+                    ->placeholder('All students')
+                    ->trueLabel('Students with PENs')
+                    ->falseLabel('Students without PENs')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('personal_educational_needs'),
+                        false: fn (Builder $query) => $query->whereNull('personal_educational_needs'),
+                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                    )
+
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
