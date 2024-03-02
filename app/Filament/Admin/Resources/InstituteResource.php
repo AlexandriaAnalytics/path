@@ -127,7 +127,7 @@ class InstituteResource extends Resource
                             ->type('url'),
                         Toggle::make('can_add_candidates')
                             ->label('Can register candidates')
-                            ->default(true)
+                            ->default(false)
                             ->helperText('If enabled, the institution will be able to register candidates.'),
                         Toggle::make('can_view_price_details')
                             ->default(false),
@@ -225,6 +225,19 @@ class InstituteResource extends Resource
                         ->label('Download as Excel')
                         ->icon('heroicon-o-document')
                         ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx')),
+                    BulkAction::make('can_register_candidates')
+                        ->icon('heroicon-o-user-group')
+                        ->form([
+                            Toggle::make('can_add_candidates')
+                                ->label('Can register candidates')
+                                ->default(false)
+                        ])
+                        ->action(function ($records) {
+                            foreach ($records as $institute) {
+                                $institute->can_add_candidates = 1;
+                                $institute->save();
+                            }
+                        })
                 ]),
             ]);
     }
