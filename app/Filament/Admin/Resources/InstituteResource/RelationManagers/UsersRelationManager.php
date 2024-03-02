@@ -39,6 +39,22 @@ class UsersRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),
+                Tables\Actions\Action::make('impersonate')
+                    ->label('Impersonate')
+                    ->icon('heroicon-o-finger-print')
+                    ->requiresConfirmation()
+                    ->modalHeading('Log in as this user?')
+                    ->modalDescription('Are you sure you want to log in as this user? You will be logged out of your current session.')
+                    ->modalSubmitActionLabel('Yes, I am sure')
+                    ->action(function (User $user) {
+                        // Save the current user's ID to the session so we can log them back in later.
+                        session()->put('impersonator_id', auth()->id());
+
+                        auth()->login($user);
+
+                        return redirect()
+                            ->to(route('filament.management.tenant'));
+                    }),
             ])
             ->paginated([5, 10, 25])
             ->defaultPaginationPageOption(5);
