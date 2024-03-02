@@ -114,6 +114,7 @@ class StudentResource extends Resource
             ->columns([
                 ...static::getStudentColumns(),
                 TextColumn::make('institute.name')
+                    ->label('Institution')
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
