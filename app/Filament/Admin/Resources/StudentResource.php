@@ -119,6 +119,19 @@ class StudentResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 ...static::getMetadataColumns(),
+                TextColumn::make('Is candidate')
+                    ->badge()
+                    ->formatStateUsing(function (Student $record) {
+                        if (!Candidate::query()
+                            ->where('student_id', $record->id)
+                            ->doesntExist()) {
+                            return 'Yes';
+                        } else {
+                            return 'No';
+                        }
+                    })
+                    ->default('No')
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('institute_id')
@@ -137,9 +150,6 @@ class StudentResource extends Resource
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(function (Student $record) {
-                        return !Candidate::where('student_id', $record->id)->exists();
-                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
