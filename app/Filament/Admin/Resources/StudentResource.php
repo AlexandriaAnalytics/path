@@ -115,7 +115,8 @@ class StudentResource extends Resource
                 ...static::getStudentColumns(),
                 TextColumn::make('institute.name')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 ...static::getMetadataColumns(),
             ])
             ->filters([
@@ -208,24 +209,28 @@ class StudentResource extends Resource
             TextColumn::make('name')
                 ->label('Names')
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('surname')
                 ->label('Surnames')
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('region.name')
                 ->label('Region')
                 ->searchable()
                 ->badge()
-                ->sortable(),
+                ->sortable()
+                ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('personal_educational_needs')
                 ->label('PENs')
                 ->wrap()
-                ->default('-'),
+                ->default('-')
+                ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('birth_date')
                 ->label('Date of birth')
                 ->date()
-                ->toggleable(isToggledHiddenByDefault: true),
+                ->toggleable(isToggledHiddenByDefault: false),
         ];
     }
 
@@ -235,11 +240,11 @@ class StudentResource extends Resource
             TextColumn::make('created_at')->label('Created on')
                 ->date()
                 ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('updated_at')->label('Updated on')
                 ->date()
                 ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                ->toggleable(isToggledHiddenByDefault: false),
         ];
     }
 }
