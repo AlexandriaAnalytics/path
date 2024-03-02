@@ -257,7 +257,7 @@ class CandidateResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
                     Select::make('student_id')
-                        ->label('Student Code')
+                        ->label('Student')
                         ->placeholder('Select a student')
                         ->required()
                         ->searchable()

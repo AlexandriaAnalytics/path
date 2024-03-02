@@ -11,6 +11,8 @@ class CreateCandidate extends CreateRecord
 {
     protected static string $resource = CandidateResource::class;
 
+    protected static ?string $title = 'Create candidate';
+
     protected function afterCreate(): void
     {
         /** @var \App\Models\Candidate $candidate */
