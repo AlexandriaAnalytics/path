@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
+use App\Models\Country;
 use App\Models\Institute;
 use App\Models\InstituteLevel;
 use Filament\Forms;
@@ -15,12 +16,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -59,9 +64,9 @@ class InstituteResource extends Resource
                             ->maxLength(255),
 
                         Select::make('institute_type_id')
+                            ->label('Membership')
                             ->relationship('instituteType', 'name')
                             ->required()
-                            ->label('Type')
                             ->native(false),
                         Select::make('owner_id')
                             ->required()
@@ -114,10 +119,12 @@ class InstituteResource extends Resource
                                 TextInput::make('province')
                                     ->required()
                                     ->maxLength(255),
-                                TextInput::make('country')
+                                Select::make('country')
                                     ->required()
-                                    ->maxLength(255),
-                            ]),
+                                    ->options(Country::all()->pluck('name', 'id'))
+                                    ->preload()
+                                    ->searchable()
+                            ])
                     ]),
                 Fieldset::make('Administration')
                     ->columnSpanFull()
@@ -126,8 +133,8 @@ class InstituteResource extends Resource
                             ->label('Specific files URL')
                             ->type('url'),
                         Toggle::make('can_add_candidates')
-                        ->label('Can register candidates')
-                            ->default(true)
+                            ->label('Can register candidates')
+                            ->default(false)
                             ->helperText('If enabled, the institution will be able to register candidates.'),
                         Toggle::make('can_view_price_details')
                             ->default(false),
@@ -137,6 +144,7 @@ class InstituteResource extends Resource
                     ->schema([
                         TextInput::make('maximum_cumulative_discount')
                             ->label('Maximum scholarship discount')
+                            ->suffix('%')
                             ->type('number')
                             ->default(0)
                             ->minValue(0),
@@ -148,6 +156,10 @@ class InstituteResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('unique_number')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
@@ -155,16 +167,8 @@ class InstituteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('instituteType.name')
+                    ->label('Membership')
                     ->badge()
-                    ->color(function (string $type) {
-                        return match ($type) {
-                            'Exam Centre' => 'green',
-                            'Premium Exam Centre' => 'primary',
-                            'Training Centre' => 'yellow',
-                            'Premium Training Centre' => 'primary',
-                            default => 'gray',
-                        };
-                    })
                     ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('owner.name')
@@ -189,11 +193,6 @@ class InstituteResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('instituteType.name')
-                    ->badge()
-                    ->sortable()
-                    ->alignCenter()
-                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
@@ -210,6 +209,11 @@ class InstituteResource extends Resource
             ->filters([
                 Tables\Filters\TrashedFilter::make()
                     ->native(false),
+                SelectFilter::make('country')
+                    ->options(Country::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -224,6 +228,19 @@ class InstituteResource extends Resource
                         ->label('Download as Excel')
                         ->icon('heroicon-o-document')
                         ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx')),
+                    BulkAction::make('can_register_candidates')
+                        ->icon('heroicon-o-user-group')
+                        ->form([
+                            Toggle::make('can_add_candidates')
+                                ->label('Can register candidates')
+                                ->default(false)
+                        ])
+                        ->action(function ($records) {
+                            foreach ($records as $institute) {
+                                $institute->can_add_candidates = 1;
+                                $institute->save();
+                            }
+                        })
                 ]),
             ]);
     }
@@ -233,6 +250,7 @@ class InstituteResource extends Resource
         return [
             RelationManagers\UsersRelationManager::class,
             RelationManagers\StudentsRelationManager::class,
+            RelationManagers\CandidatesRelationManager::class
         ];
     }
 

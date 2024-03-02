@@ -52,6 +52,7 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('pivot.module_id')
                             ->label('Module')
                             ->formatStateUsing(fn ($state) => Module::find($state)->name),
+                        TextEntry::make('type')
                     ])
                     ->columnSpanFull()
                     ->grid(2),

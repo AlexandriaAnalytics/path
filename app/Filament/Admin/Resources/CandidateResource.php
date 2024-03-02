@@ -118,6 +118,18 @@ class CandidateResource extends Resource
                         ? "Pending modules: {$record->pendingModules->pluck('name')->join(', ')}"
                         : 'All modules assigned')
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
+                TextColumn::make('student.personal_educational_needs')
+                    ->label('PENs')
+                    ->badge()
+                    ->formatStateUsing(function (string $state) {
+                        if ($state != '-') {
+                            return 'Yes';
+                        } else {
+                            return '-';
+                        }
+                    })
+                    ->default('-')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable(),
@@ -173,7 +185,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
                 TextColumn::make('status')
-                    ->label('Payment Status')
+                    ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',

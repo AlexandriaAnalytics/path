@@ -36,6 +36,7 @@ class Institute extends Model
         'postcode',
         'country',
         'maximum_cumulative_discount',
+        'unique_number'
     ];
 
     protected $attributes = [

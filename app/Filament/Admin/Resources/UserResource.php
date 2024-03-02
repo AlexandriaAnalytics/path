@@ -30,7 +30,7 @@ class UserResource extends Resource
         return $form
             ->columns(3)
             ->schema([
-                Fieldset::make('User Information')
+                Fieldset::make('User information')
                     ->columnSpan(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -68,7 +68,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ColumnGroup::make('User Information', [
+                ColumnGroup::make('User information', [
                     Tables\Columns\TextColumn::make('name')
                         ->sortable()
                         ->searchable(),

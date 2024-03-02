@@ -9,6 +9,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateStatus extends CreateRecord
 {
     protected static string $resource = StatusResource::class;
+    protected static ?string $title = 'Create payment status';
 
     protected function getRedirectUrl(): string
     {
