@@ -75,7 +75,7 @@ class CandidateResource extends Resource
                     ->enum(TypeOfCertificate::class)
                     ->required(),
                 TextInput::make('granted_discount')
-                    ->label('Discount')
+                    ->label('Scholarship')
                     ->postfix('%')
                     ->required()
                     ->numeric()

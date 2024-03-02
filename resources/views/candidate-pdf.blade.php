@@ -51,7 +51,7 @@
 
         .logo-img {
             width: 4rem;
-            height: 4rem;
+            height: 6rem;
             object-fit: contain;
         }
 
@@ -143,16 +143,11 @@
         <nav class="container-nav">
             <article class="logo">
                 <img src="{{ asset('/images/logo/02-regular.png') }}" alt="logo" class="logo-img">
-                <div class="texto-logo">
-                    <p>Intenational</p>
-                    <p>Examinations</p>
-                </div>
             </article>
             <article class="text-logo-int">
                 <div class="texto">
                     <h1>International exam confirmation</h1>
                     <h2> Path International Examinations </h2>
-
                 </div>
                 </div>
             </article>

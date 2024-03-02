@@ -49,7 +49,7 @@ class CandidateResource extends Resource
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
-                Fieldset::make('Certificate and payment')
+                Fieldset::make('Certificate')
                     ->schema([
                         Select::make('type_of_certificate')
                             ->options(TypeOfCertificate::class)
@@ -139,17 +139,17 @@ class CandidateResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Action::make('pdf')
-                    ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
-
                 ActionGroup::make([
-                    Action::make('qr-code')
-                        ->label('QR Code')
-                        ->icon('heroicon-o-qr-code')
-                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    // Action::make('qr-code')
+                    //     ->label('QR Code')
+                    //     ->icon('heroicon-o-qr-code')
+                    //     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    Action::make('pdf')
+                        ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty())
+                        ->label('PDF')
+                        ->icon('heroicon-o-document')
+                        ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
@@ -215,7 +215,7 @@ class CandidateResource extends Resource
         return [
             ColumnGroup::make('Institute', [
                 TextColumn::make('student.institute.name')
-                    ->label('Member or centre Name')
+                    ->label('Member or centre')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
