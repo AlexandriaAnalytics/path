@@ -105,7 +105,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
                 TextColumn::make('status')
-                    ->label('Payment Status')
+                    ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
