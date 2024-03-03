@@ -7,6 +7,7 @@ use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\StudentExport;
 use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
+use App\Filament\Admin\Resources\StudentResource\Pages\ViewStudent;
 use App\Filament\Management\Resources\StudentResource\Pages;
 use App\Models\Candidate;
 use App\Models\Country as ModelsCountry;
