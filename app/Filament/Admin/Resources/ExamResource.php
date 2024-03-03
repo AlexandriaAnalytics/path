@@ -113,6 +113,9 @@ class ExamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Exam::orderByDesc('created_at');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('session_name')
                     ->sortable()
