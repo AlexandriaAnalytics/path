@@ -3,6 +3,7 @@
 namespace App\Filament\Management\Resources\StudentResource\Pages;
 
 use App\Filament\Exports\StudentExporter;
+use App\Filament\Exports\StudentMagnamentExporter;
 use App\Filament\Imports\StudentImporter;
 use App\Filament\Management\Resources\StudentResource;
 use Filament\Actions;
@@ -26,7 +27,7 @@ class ListStudents extends ListRecords
                 ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color(Color::Green)
-                ->exporter(StudentExporter::class),
+                ->exporter(StudentMagnamentExporter::class),
             Actions\CreateAction::make(),
         ];
     }
