@@ -71,30 +71,32 @@ class UserResource extends Resource
                 ColumnGroup::make('User information', [
                     Tables\Columns\TextColumn::make('name')
                         ->sortable()
-                        ->searchable(),
+                        ->searchable()
+                        ->toggleable(isToggledHiddenByDefault: false),
                     Tables\Columns\TextColumn::make('email')
                         ->sortable()
-                        ->searchable(),
+                        ->searchable()
+                        ->toggleable(isToggledHiddenByDefault: false),
                 ]),
                 ColumnGroup::make('Institutes', [
                     Tables\Columns\TextColumn::make('institutes_count')
                         ->label('Member or centre Count')
                         ->counts('institutes')
                         ->alignEnd()
-                        ->toggleable(isToggledHiddenByDefault: true),
+                        ->toggleable(isToggledHiddenByDefault: false),
                 ]),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')->label('Updated on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('deleted_at')->label('Deleted on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
