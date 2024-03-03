@@ -24,7 +24,9 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
             'institute_types.name as membership',
             'institutes.email',
             'institutes.phone',
-            'institutes.files_url'
+            'institutes.files_url',
+            'institutes.created_at',
+            'institutes.updated_at'
         )->join('users', 'institutes.owner_id', '=', 'users.id')
          ->join('institute_types', 'institutes.institute_type_id', '=', 'institute_types.id')
          ->get()
@@ -37,6 +39,8 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
                  'Email' => $institute->email,
                  'Phone' => $institute->phone,
                  'File URL' => $institute->files_url,
+                 'Created At' => $institute->created_at,
+                 'Updated At' => $institute->updated_at,
              ];
          });
     }
@@ -46,7 +50,7 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Institute id', 'Institute Name', 'Owner', 'Membership', 'Email', 'Phone', 'File URL'];
+        return ['Institute id', 'Institute Name', 'Owner', 'Membership', 'Email', 'Phone', 'File URL', 'Created At', 'Updated At'];
     }
 
     /**
@@ -54,7 +58,7 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
      */
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:G1')->applyFromArray([
+        $sheet->getStyle('A1:I1')->applyFromArray([
             'font' => [
                 'color' => ['rgb' => 'FFFFFF'],
             ],
@@ -71,6 +75,8 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
         $sheet->getColumnDimension('E')->setWidth(40);
         $sheet->getColumnDimension('F')->setWidth(20);
         $sheet->getColumnDimension('G')->setWidth(70);
+        $sheet->getColumnDimension('H')->setWidth(30);
+        $sheet->getColumnDimension('I')->setWidth(30);
 
         $lastRow = $sheet->getHighestDataRow();
         $lastCol = $sheet->getHighestDataColumn();
