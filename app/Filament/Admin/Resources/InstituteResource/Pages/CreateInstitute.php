@@ -23,9 +23,14 @@ class CreateInstitute extends CreateRecord
         $country = Country::findOrFail($data['country']);
         $countryCode = strtoupper(substr($country->name, 0, 2));
         $lastInstitute = Institute::latest()->first()->unique_number;
-        if (preg_match('/^(\d+)/', $lastInstitute, $matches)) {
-            $numeros = $matches[1] + 1;
+        if ($lastInstitute == null || $lastInstitute == '') {
+            $numeros = 300;
+        } else {
+            if (preg_match('/^(\d+)/', $lastInstitute, $matches)) {
+                $numeros = $matches[1] + 1;
+            }
         }
+
 
         $data['unique_number'] = $numeros . $countryCode . substr(date('Y'), -2);;
 
