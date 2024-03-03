@@ -51,7 +51,8 @@ class ExamResource extends Resource
                                 'xl' => 2,
                             ]),
                         Forms\Components\TextInput::make('maximum_number_of_students')
-                            ->numeric(),
+                            ->numeric()
+                            ->label('Maximum number of candidates'),
                         Forms\Components\DateTimePicker::make('scheduled_date')
                             ->seconds(false)
                             ->minutesStep(5)
@@ -70,12 +71,12 @@ class ExamResource extends Resource
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),
                     ]),
-                Forms\Components\Section::make('Exams and modules')
+                Forms\Components\Section::make('Modules and Levels')
                     ->collapsible()
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('Exams')
+                        Forms\Components\Select::make('levels')
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
@@ -89,7 +90,7 @@ class ExamResource extends Resource
                                     ->action(function (Set $set) {
                                         $set('levels', Level::all()->pluck('id'));
                                     }),
-                            ),
+                            )->label('Exam'),
                         Forms\Components\Select::make('modules')
                             ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)
@@ -129,7 +130,7 @@ class ExamResource extends Resource
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
-                    ->label('Max. students')
+                    ->label('Max. Students')
                     ->prefix(function ($record) {
                         return $record->candidates->unique('id')->count() . ' / ';
                     })
