@@ -42,20 +42,23 @@ class StudentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Names'),
+                    ->label('Names')
+                    ->required(),
                 Forms\Components\TextInput::make('surname')
-                    ->label('Surnames'),
+                    ->label('Surnames')
+                    ->required(),
                 Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
                     ->relationship('region', 'name')
                     ->preload()
-                    ->searchable(),
-                Forms\Components\TextInput::make('cbu'),
+                    ->searchable()
+                    ->required(),
                 Forms\Components\DatePicker::make('birth_date')
                     ->label('Date of birth')
-                    ->native(false)
-                    ->placeholder('dd/mm/yyyy'),
-                Forms\Components\Section::make('Contact Information')
+                    ->placeholder('dd/mm/yyyy')
+                    ->displayFormat('d/m/Y')
+                    ->required(),
+                Forms\Components\Section::make('Contact information')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('email')

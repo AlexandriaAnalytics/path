@@ -10,6 +10,8 @@ class CreateStudent extends CreateRecord
 {
     protected static string $resource = StudentResource::class;
 
+    protected static ?string $title = 'Create student';
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

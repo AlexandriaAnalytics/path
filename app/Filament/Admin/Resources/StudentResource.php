@@ -81,7 +81,6 @@ class StudentResource extends Resource
                             ->required(),
                         Components\DatePicker::make('birth_date')
                             ->label('Date of birth')
-                            ->native(false)
                             ->placeholder('dd/mm/yyyy')
                             ->displayFormat('d/m/Y')
                             ->required(),
@@ -282,7 +281,7 @@ class StudentResource extends Resource
             TextColumn::make('updated_at')->label('Updated on')
                 ->date()
                 ->sortable(),
-                // ->toggleable(isToggledHiddenByDefault: false),
+            // ->toggleable(isToggledHiddenByDefault: false),
         ];
     }
 }

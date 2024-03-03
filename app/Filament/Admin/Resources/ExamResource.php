@@ -53,13 +53,11 @@ class ExamResource extends Resource
                         Forms\Components\TextInput::make('maximum_number_of_students')
                             ->numeric(),
                         Forms\Components\DateTimePicker::make('scheduled_date')
-                            ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
                             ->required()
                             ->minDate(now()),
                         Forms\Components\DateTimePicker::make('payment_deadline')
-                            ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
                             ->required()
