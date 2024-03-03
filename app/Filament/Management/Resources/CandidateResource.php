@@ -127,6 +127,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('level.name')
+                    ->label('Exam')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -170,7 +171,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('student.personal_educational_needs')
-                    ->label('PENs')
+                    ->label('Educational needs')
                     ->badge()
                     ->formatStateUsing(function (?string $state) {
                         if ($state !== null && $state !== '-') {

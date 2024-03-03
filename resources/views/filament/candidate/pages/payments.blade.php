@@ -32,7 +32,7 @@
                 button.submit {
                     border: 1px solid black;
                     padding: 1rem;
-                    background-color: #83a982;
+                    background-color: #044968;
                     border-radius: 10px;
                     font-weight: bold;
                     color: white;
