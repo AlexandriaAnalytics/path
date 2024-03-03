@@ -281,8 +281,8 @@ class StudentResource extends Resource
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('updated_at')->label('Updated on')
                 ->date()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: false),
+                ->sortable(),
+                // ->toggleable(isToggledHiddenByDefault: false),
         ];
     }
 }
