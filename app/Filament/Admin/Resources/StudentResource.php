@@ -168,7 +168,7 @@ class StudentResource extends Resource
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\ViewAction::make()
             ])
             ->bulkActions([
                 BulkActionGroup::make([
