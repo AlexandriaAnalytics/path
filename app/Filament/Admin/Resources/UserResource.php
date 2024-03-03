@@ -78,7 +78,7 @@ class UserResource extends Resource
                         ->searchable()
                         ->toggleable(isToggledHiddenByDefault: false),
                 ]),
-                ColumnGroup::make('Institutes', [
+                ColumnGroup::make('Institutions', [
                     Tables\Columns\TextColumn::make('institutes_count')
                         ->label('Member or centre Count')
                         ->counts('institutes')
