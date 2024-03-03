@@ -16,20 +16,26 @@ class StudentExporter extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('ID'),
-            ExportColumn::make('institute.name')
-                ->label('Institute'),
-            ExportColumn::make('country.name')
-                ->label('Country'),
             ExportColumn::make('name')
                 ->label('Name'),
             ExportColumn::make('surname')
                 ->label('Surname'),
-            ExportColumn::make('email')
-                ->label('Email'),
+            ExportColumn::make('country.name')
+                ->label('Country'),
+            // ExportColumn::make('email')
+            // ->label('Email'),
+            ExportColumn::make('personal_educational_needs')
+                ->label('PENs'),
             ExportColumn::make('birth_date')
                 ->label('Birth Date'),
+            ExportColumn::make('created_at')
+                ->label('Created on'),
+                ExportColumn::make('updated_at')
+                ->label('updated on'),
             ExportColumn::make('cbu')
                 ->label('CBU'),
+            ExportColumn::make('institute.name')
+                ->label('Institute'),
         ];
     }
 
