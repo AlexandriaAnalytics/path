@@ -26,7 +26,7 @@ class WidgetCandidate extends BaseWidget
                 return $concatenatedNames;
             }),
             
-            Stat::make('Exam Date', '2021-10-10'), // i want to show the exam date here from session variable call candidate
+            Stat::make('Exam session', '2021-10-10'), // i want to show the exam date here from session variable call candidate
 
 
             /*
