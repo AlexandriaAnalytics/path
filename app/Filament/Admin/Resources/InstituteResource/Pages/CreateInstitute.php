@@ -7,6 +7,7 @@ use App\Models\Country;
 use App\Models\Institute;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreateInstitute extends CreateRecord
 {

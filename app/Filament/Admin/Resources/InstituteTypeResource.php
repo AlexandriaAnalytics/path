@@ -32,7 +32,7 @@ class InstituteTypeResource extends Resource
                 Forms\Components\TextInput::make('files_url')
                     ->maxLength(255)
                     ->url()
-                    ->hint('The URL to the files for this institute type.'),
+                    ->label('Files URL'),
             ]);
     }
 
