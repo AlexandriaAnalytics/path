@@ -265,6 +265,7 @@ class StudentResource extends Resource
                     }
                 })
                 ->default('-')
+                ->sortable()
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('birth_date')
                 ->label('Date of birth')
