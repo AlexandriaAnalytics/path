@@ -43,10 +43,29 @@ class StudentResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->label('Names')
-                    ->required(),
+                    ->required()
+                    ->placeholder('John')
+                    ->rules([
+                        function () {
+                            return function (string $attribute, $value, Closure $fail) {
+                                if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                    $fail('The name field can only contain letters, accents and apostrophes');
+                                }
+                            };
+                        }
+                    ]),
                 Forms\Components\TextInput::make('surname')
                     ->label('Surnames')
-                    ->required(),
+                    ->required()
+                    ->placeholder('Doe')->rules([
+                        function () {
+                            return function (string $attribute, $value, Closure $fail) {
+                                if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                    $fail('The surname field can only contain letters, accents and apostrophes');
+                                }
+                            };
+                        }
+                    ]),
                 Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
                     ->relationship('region', 'name')
