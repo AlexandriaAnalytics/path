@@ -55,7 +55,7 @@ class StudentResource extends Resource
                                 function () {
                                     return function (string $attribute, $value, Closure $fail) {
                                         if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
-                                            $fail('The name field can only contain letters, accents and apostrophes');
+                                            $fail('This field can only contain letters, accent marks and apostrophes');
                                         }
                                     };
                                 }

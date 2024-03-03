@@ -158,10 +158,12 @@ class InstituteResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('unique_number')
                     ->searchable()
+                    ->label('Unique ID')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->label('Institution')
                     ->sortable()
                     ->placeholder('(unnamed)')
                     ->toggleable(isToggledHiddenByDefault: false),
