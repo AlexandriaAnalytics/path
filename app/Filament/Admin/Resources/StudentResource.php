@@ -153,6 +153,7 @@ class StudentResource extends Resource
                             ->label('Registered at'),
                     ]),
                 SelectFilter::make('country_id')
+                    ->label('Country')
                     ->options(Country::all()->pluck('name', 'id'))
                     ->searchable()
                     ->preload()
@@ -174,8 +175,8 @@ class StudentResource extends Resource
                     ),
                 TernaryFilter::make('personal_educational_needs')
                     ->placeholder('All students')
-                    ->trueLabel('Students with PENs')
-                    ->falseLabel('Students without PENs')
+                    ->trueLabel('Students with personal educational needs')
+                    ->falseLabel('Students without personal educational needs')
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('personal_educational_needs'),
                         false: fn (Builder $query) => $query->whereNull('personal_educational_needs'),
