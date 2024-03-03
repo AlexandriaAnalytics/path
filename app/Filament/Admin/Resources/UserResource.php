@@ -67,6 +67,9 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return User::orderByDesc('created_at');
+            })
             ->columns([
                 ColumnGroup::make('User information', [
                     Tables\Columns\TextColumn::make('name')
