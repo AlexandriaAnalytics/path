@@ -13,7 +13,7 @@ class CreateExam extends CreateRecord
 
     public function getTitle(): string | Htmlable
     {
-        return __('Create exam session');
+        return __('Create examNew member or centre session');
     }
 
     protected function getRedirectUrl(): string
