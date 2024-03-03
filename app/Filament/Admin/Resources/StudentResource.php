@@ -67,7 +67,7 @@ class StudentResource extends Resource
                                 function () {
                                     return function (string $attribute, $value, Closure $fail) {
                                         if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
-                                            $fail('The surname field can only contain letters, accents and apostrophes');
+                                            $fail('This field can only contain letters, accent marks and apostrophes');
                                         }
                                     };
                                 }
@@ -115,6 +115,9 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Student::orderByDesc('created_at');
+            })
             ->columns([
                 ...static::getStudentColumns(),
                 TextColumn::make('institute.name')
@@ -123,17 +126,19 @@ class StudentResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 ...static::getMetadataColumns(),
-                TextColumn::make('Candidate')
+                TextColumn::make('candidates.id')
+                    ->label('Candidate')
                     ->badge()
                     ->formatStateUsing(function (Student $record) {
                         if (!Candidate::query()
                             ->where('student_id', $record->id)
                             ->doesntExist()) {
-                            return 'Yes';
+                            return  Candidate::query()->where('student_id', $record->id)->get()->pluck('id')->implode(', ');
                         } else {
                             return 'No';
                         }
                     })
+                    ->sortable()
                     ->default('No')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
@@ -151,24 +156,40 @@ class StudentResource extends Resource
                             ->label('Registered at'),
                     ]),
                 SelectFilter::make('country_id')
+                    ->label('Country')
                     ->options(Country::all()->pluck('name', 'id'))
                     ->searchable()
                     ->preload()
                     ->multiple(),
+                TernaryFilter::make('candidates')
+                    ->placeholder('All students')
+                    ->trueLabel('Candidates')
+                    ->falseLabel('No candidates')
+                    ->queries(
+                        true: function (Builder $query) {
+                            return $query->whereHas('candidates');
+                        },
+                        false: function (Builder $query) {
+                            return $query->whereDoesntHave('candidates');
+                        },
+                        blank: function (Builder $query) {
+                            return $query;
+                        },
+                    ),
                 TernaryFilter::make('personal_educational_needs')
                     ->placeholder('All students')
-                    ->trueLabel('Students with PENs')
-                    ->falseLabel('Students without PENs')
+                    ->trueLabel('Students with personal educational needs')
+                    ->falseLabel('Students without personal educational needs')
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('personal_educational_needs'),
                         false: fn (Builder $query) => $query->whereNull('personal_educational_needs'),
-                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                        blank: fn (Builder $query) => $query,
                     )
 
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\ViewAction::make()
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -263,6 +284,7 @@ class StudentResource extends Resource
                     }
                 })
                 ->default('-')
+                ->sortable()
                 ->toggleable(isToggledHiddenByDefault: false),
             TextColumn::make('birth_date')
                 ->label('Date of birth')

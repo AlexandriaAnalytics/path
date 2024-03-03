@@ -7,8 +7,10 @@ use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Exports\StudentExport;
 use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
+use App\Filament\Admin\Resources\StudentResource\Pages\ViewStudent;
 use App\Filament\Management\Resources\StudentResource\Pages;
 use App\Models\Candidate;
+use App\Models\Country as ModelsCountry;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
@@ -24,7 +26,12 @@ use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
@@ -61,7 +68,7 @@ class StudentResource extends Resource
                         function () {
                             return function (string $attribute, $value, Closure $fail) {
                                 if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
-                                    $fail('The surname field can only contain letters, accents and apostrophes');
+                                    $fail('This field can only contain letters, accent marks and apostrophes');
                                 }
                             };
                         }
@@ -83,7 +90,7 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->placeholder('john.doe@example.com')
-                            ->helperText('Required for instalments'),
+                            ->helperText('Required for installments'),
                     ]),
                 Forms\Components\RichEditor::make('personal_educational_needs')
                     ->columnSpanFull()
@@ -100,9 +107,59 @@ class StudentResource extends Resource
             ->columns([
                 ...AdminStudentResource::getStudentColumns(),
                 ...AdminStudentResource::getMetadataColumns(),
+                TextColumn::make('candidates.id')
+                    ->label('Candidate')
+                    ->badge()
+                    ->formatStateUsing(function (Student $record) {
+                        if (!Candidate::query()
+                            ->where('student_id', $record->id)
+                            ->doesntExist()) {
+                            return  Candidate::query()->where('student_id', $record->id)->get()->pluck('id')->implode(', ');
+                        } else {
+                            return 'No';
+                        }
+                    })
+                    ->sortable()
+                    ->default('No')
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                //
+                Tables\Filters\QueryBuilder::make()
+                    ->constraints([
+                        DateConstraint::make('created_at')->label('Created on')
+                            ->label('Registered at'),
+                    ]),
+                SelectFilter::make('country_id')
+                    ->label('Country')
+                    ->options(ModelsCountry::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->multiple(),
+                TernaryFilter::make('candidates')
+                    ->placeholder('All students')
+                    ->trueLabel('Candidates')
+                    ->falseLabel('No candidates')
+                    ->queries(
+                        true: function (Builder $query) {
+                            return $query->whereHas('candidates');
+                        },
+                        false: function (Builder $query) {
+                            return $query->whereDoesntHave('candidates');
+                        },
+                        blank: function (Builder $query) {
+                            return $query;
+                        },
+                    ),
+                TernaryFilter::make('personal_educational_needs')
+                    ->placeholder('All students')
+                    ->trueLabel('Students with personal educational needs')
+                    ->falseLabel('Students without personal educational needs')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereNotNull('personal_educational_needs'),
+                        false: fn (Builder $query) => $query->whereNull('personal_educational_needs'),
+                        blank: fn (Builder $query) => $query,
+                    )
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

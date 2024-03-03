@@ -68,6 +68,8 @@ class ExamResource extends Resource
                             ->native(false)
                             ->required()
                             ->enum(\App\Enums\ExamType::class),
+                        Forms\Components\TextInput::make('location')
+                            ->columnSpanFull(),
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),
                     ]),
@@ -105,7 +107,7 @@ class ExamResource extends Resource
                                     ->action(function (Set $set) {
                                         $set('modules', Module::all()->pluck('id'));
                                     }),
-                            ),
+                            )
                     ])
             ]);
     }
@@ -113,6 +115,9 @@ class ExamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Exam::orderByDesc('created_at');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('session_name')
                     ->sortable()
@@ -135,6 +140,9 @@ class ExamResource extends Resource
                         return $record->candidates->unique('id')->count() . ' / ';
                     })
                     ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('location')
+                    ->default('-')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
