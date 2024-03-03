@@ -26,7 +26,7 @@ class CandidateExporterAsociated extends Exporter
             // ExportColumn::make('granted_discount')
             //     ->label('Discount'),
             ExportColumn::make('level.name')
-                ->label('Level'),
+                ->label('Exam'),
             ExportColumn::make('modules.name')->label('Modules'),
             ExportColumn::make('student.institute.name')->label('Member or center'),
             ExportColumn::make('pendingModules.name')->label('Exam session'),
