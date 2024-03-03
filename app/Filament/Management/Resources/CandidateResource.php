@@ -98,6 +98,9 @@ class CandidateResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Candidate::orderByDesc('created_at');
+            })
             ->columns([
                 //Candidate
                 TextColumn::make('id')
