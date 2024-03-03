@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Filament\Admin\Resources\CandidateResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Colors\Color;
 
 class EditCandidate extends EditRecord
 {
@@ -13,7 +14,7 @@ class EditCandidate extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->color(Color::hex('#c94f40')),
         ];
     }
 }

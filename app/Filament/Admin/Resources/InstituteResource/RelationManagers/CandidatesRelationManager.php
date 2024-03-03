@@ -7,6 +7,7 @@ use App\Models\Candidate;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -24,7 +25,7 @@ class CandidatesRelationManager extends RelationManager
         return CandidateResource::table($table)
 
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()->color(Color::hex('#0086b3')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

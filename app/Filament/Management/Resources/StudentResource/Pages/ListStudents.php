@@ -22,13 +22,14 @@ class ListStudents extends ListRecords
                 ->importer(StudentImporter::class)
                 ->options([
                     'institute_id' => Filament::getTenant()->id,
-                ]),
+                ])
+                ->color(Color::hex('#d4ac71')),
             Actions\ExportAction::make()
                 ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')
-                ->color(Color::Green)
+                ->color(Color::hex('#83a982'))
                 ->exporter(StudentMagnamentExporter::class),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }
