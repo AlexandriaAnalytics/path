@@ -33,7 +33,7 @@ Route::get('/prueba', function () {
     return view('example');
 });
 
-Route::get('/prueba/{id}', [CandidateController::class, 'show']);
+Route::get('/candidate/template/{id}', [CandidateController::class, 'show']);
 
 Route::get('/users-excel', [ExcelController::class, 'export']);
 Route::get('/students-excel', [ExcelController::class, 'exportAllStudents']);
