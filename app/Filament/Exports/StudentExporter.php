@@ -26,19 +26,17 @@ class StudentExporter extends Exporter
             // ExportColumn::make('email')
             // ->label('Email'),
             ExportColumn::make('personal_educational_needs')
-                ->label('PENs'),
+                ->label('Educational needs'),
             ExportColumn::make('birth_date')
-                ->label('Birth Date'),
+                ->label('Date of Birth'),
             ExportColumn::make('institute.name')
                 ->label('Institution'),
             ExportColumn::make('created_at')
                 ->label('Created on'),
             ExportColumn::make('updated_at')
-                ->label('updated on'),
-            // ExportColumn::make('cbu')
-            //     ->label('CBU'),
+                ->label('Updated on'),
             ExportColumn::make('is_candidate')
-            ->label('Is Candidate')
+            ->label('Candidate')
 
         ];
     }
