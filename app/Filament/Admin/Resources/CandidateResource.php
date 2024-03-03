@@ -121,8 +121,8 @@ class CandidateResource extends Resource
                 TextColumn::make('student.personal_educational_needs')
                     ->label('PENs')
                     ->badge()
-                    ->formatStateUsing(function (string $state) {
-                        if ($state != '-') {
+                    ->formatStateUsing(function (?string $state) {
+                        if ($state !== null && $state !== '-') {
                             return 'Yes';
                         } else {
                             return '-';

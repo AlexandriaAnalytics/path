@@ -17,7 +17,7 @@ class WidgetCandidate extends BaseWidget
         return [ // i want to show the candidate number here from session variable call candidate
             Stat::make('Candidate Number', $candidate->id),
             Stat::make('Student name', $candidate->student->full_name),
-            Stat::make('Payment Status', $candidate->status),
+            Stat::make('Payment status', $candidate->status),
             
             Stat::make('Modules', function () use ($candidate) {
                 $concatenatedNames = $candidate->modules->reduce(function ($carry, $module) {

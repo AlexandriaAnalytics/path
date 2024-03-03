@@ -35,7 +35,7 @@ class CandidateDahboard extends Dashboard  //implements HasTable
 
     public function getHeading(): string|Htmlable
     {
-        return 'Candidate Dashboard';
+        return 'Candidate dashboard';
     }
 
     public function getWidgets(): array
