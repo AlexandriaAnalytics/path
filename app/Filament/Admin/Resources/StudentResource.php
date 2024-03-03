@@ -157,6 +157,21 @@ class StudentResource extends Resource
                     ->searchable()
                     ->preload()
                     ->multiple(),
+                TernaryFilter::make('candidates')
+                    ->placeholder('All students')
+                    ->trueLabel('Candidates')
+                    ->falseLabel('No candidates')
+                    ->queries(
+                        true: function (Builder $query) {
+                            return $query->whereHas('candidates');
+                        },
+                        false: function (Builder $query) {
+                            return $query->whereDoesntHave('candidates');
+                        },
+                        blank: function (Builder $query) {
+                            return $query;
+                        },
+                    ),
                 TernaryFilter::make('personal_educational_needs')
                     ->placeholder('All students')
                     ->trueLabel('Students with PENs')
@@ -164,7 +179,7 @@ class StudentResource extends Resource
                     ->queries(
                         true: fn (Builder $query) => $query->whereNotNull('personal_educational_needs'),
                         false: fn (Builder $query) => $query->whereNull('personal_educational_needs'),
-                        blank: fn (Builder $query) => $query, // In this example, we do not want to filter the query when it is blank.
+                        blank: fn (Builder $query) => $query,
                     )
 
             ])
