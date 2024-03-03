@@ -123,7 +123,8 @@ class StudentResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 ...static::getMetadataColumns(),
-                TextColumn::make('Candidate')
+                TextColumn::make('candidates.id')
+                    ->label('Candidate')
                     ->badge()
                     ->formatStateUsing(function (Student $record) {
                         if (!Candidate::query()
@@ -134,6 +135,7 @@ class StudentResource extends Resource
                             return 'No';
                         }
                     })
+                    ->sortable()
                     ->default('No')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
