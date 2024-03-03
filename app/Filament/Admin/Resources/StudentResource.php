@@ -129,7 +129,7 @@ class StudentResource extends Resource
                         if (!Candidate::query()
                             ->where('student_id', $record->id)
                             ->doesntExist()) {
-                            return 'Yes';
+                            return  Candidate::query()->where('student_id', $record->id)->get()->pluck('id')->implode(', ');
                         } else {
                             return 'No';
                         }
