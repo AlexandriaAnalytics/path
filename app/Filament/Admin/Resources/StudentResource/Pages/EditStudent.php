@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\StudentResource\Pages;
 use App\Filament\Admin\Resources\StudentResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Str;
 
 class EditStudent extends EditRecord
@@ -14,7 +15,7 @@ class EditStudent extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->color(Color::hex('#c94f40')),
         ];
     }
 

@@ -18,9 +18,9 @@ class ListCandidates extends ListRecords
             Actions\ExportAction::make()
                 ->label('Export candidates')
                 ->icon('heroicon-o-document-arrow-down')
-                ->color(Color::Green)
+                ->color(Color::hex('#83a982'))
                 ->exporter(CandidateExporter::class),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }

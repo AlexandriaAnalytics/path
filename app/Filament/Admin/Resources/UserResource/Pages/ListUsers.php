@@ -18,9 +18,9 @@ class ListUsers extends ListRecords
             Actions\ExportAction::make()
                 ->label('Export Users')
                 ->icon('heroicon-o-document-arrow-down')
-                ->color(Color::Green)
+                ->color(Color::hex('#83a982'))
                 ->exporter(UserExporter::class),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }
