@@ -53,13 +53,11 @@ class ExamResource extends Resource
                         Forms\Components\TextInput::make('maximum_number_of_students')
                             ->numeric(),
                         Forms\Components\DateTimePicker::make('scheduled_date')
-                            ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
                             ->required()
                             ->minDate(now()),
                         Forms\Components\DateTimePicker::make('payment_deadline')
-                            ->native(false)
                             ->seconds(false)
                             ->minutesStep(5)
                             ->required()
@@ -117,24 +115,26 @@ class ExamResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('session_name')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('scheduled_date')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('modules.name')
                     ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
                     ->label('Max. Students')
                     ->prefix(function ($record) {
                         return $record->candidates->unique('id')->count() . ' / ';
                     })
                     ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

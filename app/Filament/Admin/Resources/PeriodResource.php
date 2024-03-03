@@ -41,7 +41,6 @@ class PeriodResource extends Resource
                         Forms\Components\TextInput::make('description')
                             ->maxLength(255),
                         Forms\Components\DateTimePicker::make('starts_at')
-                            ->native(false)
                             ->closeOnDateSelection()
                             ->minutesStep(5)
                             ->seconds(false)
@@ -61,7 +60,6 @@ class PeriodResource extends Resource
                                 },
                             ]),
                         Forms\Components\DateTimePicker::make('ends_at')
-                            ->native(false)
                             ->closeOnDateSelection()
                             ->minutesStep(5)
                             ->seconds(false)

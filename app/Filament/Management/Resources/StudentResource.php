@@ -42,20 +42,42 @@ class StudentResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Names'),
+                    ->label('Names')
+                    ->required()
+                    ->placeholder('John')
+                    ->rules([
+                        function () {
+                            return function (string $attribute, $value, Closure $fail) {
+                                if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                    $fail('The name field can only contain letters, accents and apostrophes');
+                                }
+                            };
+                        }
+                    ]),
                 Forms\Components\TextInput::make('surname')
-                    ->label('Surnames'),
+                    ->label('Surnames')
+                    ->required()
+                    ->placeholder('Doe')->rules([
+                        function () {
+                            return function (string $attribute, $value, Closure $fail) {
+                                if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                    $fail('The surname field can only contain letters, accents and apostrophes');
+                                }
+                            };
+                        }
+                    ]),
                 Forms\Components\Select::make('country_id')
                     ->label('Country of residence')
                     ->relationship('region', 'name')
                     ->preload()
-                    ->searchable(),
-                Forms\Components\TextInput::make('cbu'),
+                    ->searchable()
+                    ->required(),
                 Forms\Components\DatePicker::make('birth_date')
                     ->label('Date of birth')
-                    ->native(false)
-                    ->placeholder('dd/mm/yyyy'),
-                Forms\Components\Section::make('Contact Information')
+                    ->placeholder('dd/mm/yyyy')
+                    ->displayFormat('d/m/Y')
+                    ->required(),
+                Forms\Components\Section::make('Contact information')
                     ->columns(2)
                     ->schema([
                         Forms\Components\TextInput::make('email')
@@ -72,6 +94,9 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Student::orderByDesc('created_at');
+            })
             ->columns([
                 ...AdminStudentResource::getStudentColumns(),
                 ...AdminStudentResource::getMetadataColumns(),
