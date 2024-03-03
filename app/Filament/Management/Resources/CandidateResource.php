@@ -104,7 +104,8 @@ class CandidateResource extends Resource
                     ->label('Candidate No.')
                     ->sortable()
                     ->searchable()
-                    ->numeric(),
+                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
@@ -114,8 +115,8 @@ class CandidateResource extends Resource
                         'paid' => 'success',
                         'processing payment' => 'warning',
                         'paying' => 'warning',
-                    }),
-
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
                 //Student
                 TextColumn::make('student.name')
                     ->label('Names')
