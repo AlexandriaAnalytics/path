@@ -83,7 +83,7 @@ class StudentResource extends Resource
                         Forms\Components\TextInput::make('email')
                             ->label('Email')
                             ->placeholder('john.doe@example.com')
-                            ->helperText('Required for instalments'),
+                            ->helperText('Required for installments'),
                     ]),
                 Forms\Components\RichEditor::make('personal_educational_needs')
                     ->columnSpanFull()
