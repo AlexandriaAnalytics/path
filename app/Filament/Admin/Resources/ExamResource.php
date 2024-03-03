@@ -70,12 +70,12 @@ class ExamResource extends Resource
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),
                     ]),
-                Forms\Components\Section::make('Modules and Levels')
+                Forms\Components\Section::make('Exams and modules')
                     ->collapsible()
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\Select::make('levels')
+                        Forms\Components\Select::make('Exams')
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
