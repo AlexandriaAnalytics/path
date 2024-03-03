@@ -18,17 +18,22 @@ class CandidateExporterAsociated extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('Candidate No.'),
+            ExportColumn::make('status'),
             ExportColumn::make('student.name')
                 ->label('Name'),
             ExportColumn::make('student.surname')
                 ->label('Surname'),
-            ExportColumn::make('granted_discount')
-                ->label('Discount'),
+            // ExportColumn::make('granted_discount')
+            //     ->label('Discount'),
             ExportColumn::make('level.name')
                 ->label('Exam'),
-            ExportColumn::make('status'),
-            ExportColumn::make('modules.name')->label('Module Name'),
-            ExportColumn::make('pendingModules.name')->label('Exams Session'),
+            ExportColumn::make('modules.name')->label('Modules'),
+            ExportColumn::make('student.institute.name')->label('Member or center'),
+            ExportColumn::make('pendingModules.name')->label('Exam session'),
+            ExportColumn::make('created_at')
+                ->label('Created on'),
+            ExportColumn::make('type_of_certificate')
+                ->label('Type of Certificate'),
         ];
     }
 

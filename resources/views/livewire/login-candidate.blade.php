@@ -13,7 +13,7 @@
             display: flex;
             align-items: center;
             justify-content: end;
-            padding-right: 15%;
+            padding-right: 10%;
             height: 100vh;
             width: 100vw;
             font-family: 'Montserrat', sans-serif;
@@ -101,7 +101,7 @@
             font-size: 4.5rem;
             border-bottom: 1px solid #fff;
             margin-bottom: 6%;
-            animation-duration: 4s;
+            animation-duration: 2s;
             animation-name: slidein;
         }
 
@@ -126,16 +126,16 @@
             background-color: #22526d;
             padding: 2%;
             font-size: 1.1rem;
-            animation-duration: 4s;
+            animation-duration: 2s;
             animation-name: slidein;
         }
 
         @media only screen and (max-width: 1100px) {
             body {
                 justify-content: center;
-            padding-right: 0%;
-            background: url('../images/fondo-login.jpg') 15% no-repeat;
-            background-size: cover;
+                padding-right: 0%;
+                background: url('../images/fondo-login.jpg') 15% no-repeat;
+                background-size: cover;
             }
 
             .container {

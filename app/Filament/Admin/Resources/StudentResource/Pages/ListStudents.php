@@ -22,7 +22,7 @@ class ListStudents extends ListRecords
                 ->color(Color::Amber)
                 ->importer(StudentImporter::class),
             Actions\ExportAction::make()
-                ->label('Export all')
+                ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color(Color::Green)
                 ->exporter(StudentExporter::class),

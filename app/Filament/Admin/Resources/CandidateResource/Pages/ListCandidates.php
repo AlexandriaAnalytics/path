@@ -16,7 +16,7 @@ class ListCandidates extends ListRecords
     {
         return [
             Actions\ExportAction::make()
-                ->label('Export Candidates')
+                ->label('Export candidates')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color(Color::Green)
                 ->exporter(CandidateExporter::class),

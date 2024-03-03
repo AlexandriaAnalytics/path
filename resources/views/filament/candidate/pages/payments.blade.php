@@ -12,12 +12,12 @@
             <h2>Payment in process</h2>
         @else 
         <x-filament-panels::form wire:submit="selectPaymentMethod">
-            <h2 class="">Total Amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
+            <h2 class="">Total amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
             <section>
-                <h3>Examen date: <span>{{$examDate}}</span></h3>
+                <h3>Exam session: <span>{{$examDate}}</span></h3>
             </section>            
             <blockquote>
-                <h3>Detail</h3>
+                <h3>Details</h3>
                 @foreach ($this->modules as $module)  
                     <ul>
                         <li>{{$module['name']}} - {{$this->candidate->getMonetaryString()}} {{$module['price']}}</li>
@@ -32,7 +32,7 @@
                 button.submit {
                     border: 1px solid black;
                     padding: 1rem;
-                    background-color: #92b8fe;
+                    background-color: #83a982;
                     border-radius: 10px;
                     font-weight: bold;
                     color: white;
@@ -44,7 +44,7 @@
                 }
             </style>
             <button class="submit" type="submit">
-                process payment
+                Process payment
             </button>
         </x-filament-panels::form>
         @endif

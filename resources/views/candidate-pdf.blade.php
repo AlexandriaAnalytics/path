@@ -30,7 +30,7 @@
         }
 
         .rounded-br-full {
-            border-bottom-right-radius: 150px;
+            border-bottom-right-radius: 60px;
         }
 
         .container {
@@ -50,14 +50,14 @@
         }
 
         .logo-img {
-            width: 4rem;
-            height: 4rem;
+            width: 8rem;
+            height: 6rem;
             object-fit: contain;
         }
 
         .container-nav {
             display: grid;
-            grid-template-columns: 1fr 3fr;
+            grid-template-columns: 1fr 24px 3.5fr;
             grid-template-rows: 1fr
         }
 
@@ -133,6 +133,15 @@
             padding: 1.5em;
             /* width: 100%; */
         }
+
+        .line {
+            display: inline;
+            padding: 8px;
+        }
+
+        .line > svg {
+            display: inline;
+        }
     </style>
     <title>Document</title>
 
@@ -143,16 +152,16 @@
         <nav class="container-nav">
             <article class="logo">
                 <img src="{{ asset('/images/logo/02-regular.png') }}" alt="logo" class="logo-img">
-                <div class="texto-logo">
-                    <p>Intenational</p>
-                    <p>Examinations</p>
-                </div>
             </article>
+            <div class="line">
+                <svg width="4" height="100">
+                    <line x1="2" y1="0" x2="2" y2="100" stroke="white" stroke-width="4" />
+                </svg>
+            </div>
             <article class="text-logo-int">
                 <div class="texto">
                     <h1>International exam confirmation</h1>
                     <h2> Path International Examinations </h2>
-
                 </div>
                 </div>
             </article>

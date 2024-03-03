@@ -83,7 +83,7 @@ class CountryResource extends Resource
                         'Paypal' => 'success',
                         'Stripe' => 'warning',
                     })
-                    ->label('Payment Methods'),
+                    ->label('Payment methods'),
             ])
 
             ->filters([

@@ -75,7 +75,7 @@ class CandidateResource extends Resource
                     ->enum(TypeOfCertificate::class)
                     ->required(),
                 TextInput::make('granted_discount')
-                    ->label('Discount')
+                    ->label('Scholarship')
                     ->postfix('%')
                     ->required()
                     ->numeric()
@@ -119,17 +119,20 @@ class CandidateResource extends Resource
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('student.surname')
                     ->label('Surname')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('level.name')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('modules.name')
-                    ->badge(),
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->icon(function (Candidate $candidate) {
@@ -159,11 +162,29 @@ class CandidateResource extends Resource
                             })->exists();
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
-                    }),
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('student.institute.name')
+                    ->label('Member or centre')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('student.personal_educational_needs')
+                    ->label('PENs')
+                    ->badge()
+                    ->formatStateUsing(function (?string $state) {
+                        if ($state !== null && $state !== '-') {
+                            return 'Yes';
+                        } else {
+                            return '-';
+                        }
+                    })
+                    ->default('-')
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 //
@@ -219,10 +240,10 @@ class CandidateResource extends Resource
                     ->icon('heroicon-o-document')
                     ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
-                    Action::make('qr-code')
-                        ->label('QR Code')
-                        ->icon('heroicon-o-qr-code')
-                        ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    // Action::make('qr-code')
+                    //     ->label('QR Code')
+                    //     ->icon('heroicon-o-qr-code')
+                    //     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     ViewAction::make(),
                     EditAction::make()
                         ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
