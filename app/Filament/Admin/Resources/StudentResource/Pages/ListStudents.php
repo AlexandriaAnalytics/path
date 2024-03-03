@@ -19,14 +19,14 @@ class ListStudents extends ListRecords
             Actions\ImportAction::make()
                 ->label('Import')
                 ->icon('heroicon-o-document-arrow-up')
-                ->color(Color::Amber)
+                ->color(Color::hex('#d4ac71'))
                 ->importer(StudentImporter::class),
             Actions\ExportAction::make()
                 ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')
-                ->color(Color::Green)
+                ->color(Color::hex('#83a982'))
                 ->exporter(StudentExporter::class),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }

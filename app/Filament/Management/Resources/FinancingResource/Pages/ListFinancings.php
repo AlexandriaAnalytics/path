@@ -18,6 +18,7 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Forms\Components\Textarea;
+use Filament\Support\Colors\Color;
 
 class ListFinancings extends ListRecords
 {
@@ -82,7 +83,9 @@ class ListFinancings extends ListRecords
                             'payment_id' => 'pid-' . (Carbon::now()->timestamp + random_int())
                         ]);
                     }
-                }),
+                })
+                
+                ->color(Color::hex('#0086b3')),
         ];
     }
 }

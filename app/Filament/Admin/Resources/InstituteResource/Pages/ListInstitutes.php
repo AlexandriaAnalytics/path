@@ -8,6 +8,7 @@ use Filament\Actions;
 use Filament\Resources\Components;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\Support\Htmlable;
+use Filament\Support\Colors\Color;
 
 class ListInstitutes extends ListRecords
 {
@@ -17,10 +18,10 @@ class ListInstitutes extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label('New members and centres'),
+            ->label('New member and centre')->color(Color::hex('#0086b3')),
             Actions\Action::make('download')
             ->label('Download list of members and centres')
-            ->color('success')
+            ->color(Color::hex('#83a982'))
             ->outlined()
             ->url('/members-excel'),
         ];

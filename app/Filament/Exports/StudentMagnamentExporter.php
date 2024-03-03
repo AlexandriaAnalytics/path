@@ -8,7 +8,7 @@ use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 
-class StudentExporter extends Exporter
+class StudentMagnamentExporter extends Exporter
 {
     protected static ?string $model = Student::class;
 
@@ -22,21 +22,16 @@ class StudentExporter extends Exporter
             ExportColumn::make('surname')
                 ->label('Surname'),
             ExportColumn::make('country.name')
-                ->label('Country'),
-            // ExportColumn::make('email')
-            // ->label('Email'),
+                ->label('Country of residence'),
             ExportColumn::make('personal_educational_needs')
-                ->label('Educational needs'),
+                ->label('PENs'),
             ExportColumn::make('birth_date')
-                ->label('Date of Birth'),
-            ExportColumn::make('institute.name')
-                ->label('Institution'),
+                ->label('Birth Date'),
             ExportColumn::make('created_at')
                 ->label('Created on'),
             ExportColumn::make('updated_at')
-                ->label('Updated on'),
-            ExportColumn::make('is_candidate')
-            ->label('Candidate')
+                ->label('updated on'),
+     
 
         ];
     }

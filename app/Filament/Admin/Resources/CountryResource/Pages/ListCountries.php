@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\CountryResource\Pages;
 use App\Filament\Admin\Resources\CountryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListCountries extends ListRecords
 {
@@ -14,7 +15,7 @@ class ListCountries extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('New country'),
+                ->label('New country')->color(Color::hex('#0086b3')),
         ];
     }
 }

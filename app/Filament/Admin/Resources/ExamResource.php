@@ -51,7 +51,8 @@ class ExamResource extends Resource
                                 'xl' => 2,
                             ]),
                         Forms\Components\TextInput::make('maximum_number_of_students')
-                            ->numeric(),
+                            ->numeric()
+                            ->label('Maximum number of candidates'),
                         Forms\Components\DateTimePicker::make('scheduled_date')
                             ->seconds(false)
                             ->minutesStep(5)
@@ -89,7 +90,7 @@ class ExamResource extends Resource
                                     ->action(function (Set $set) {
                                         $set('levels', Level::all()->pluck('id'));
                                     }),
-                            ),
+                            )->label('Exam'),
                         Forms\Components\Select::make('modules')
                             ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)

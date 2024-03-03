@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\InstituteTypeResource\Pages;
 use App\Filament\Admin\Resources\InstituteTypeResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Colors\Color;
 
 class EditInstituteType extends EditRecord
 {
@@ -13,7 +14,7 @@ class EditInstituteType extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->color(Color::hex('#c94f40')),
         ];
     }
 }

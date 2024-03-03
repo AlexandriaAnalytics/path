@@ -5,6 +5,7 @@ namespace App\Filament\Management\Resources\CustomLevelPriceResource\Pages;
 use App\Filament\Management\Resources\CustomLevelPriceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListCustomLevelPrices extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListCustomLevelPrices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }

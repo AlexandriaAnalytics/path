@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\PeriodResource\Pages;
 use App\Filament\Admin\Resources\PeriodResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListPeriods extends ListRecords
 {
@@ -13,7 +14,7 @@ class ListPeriods extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 }

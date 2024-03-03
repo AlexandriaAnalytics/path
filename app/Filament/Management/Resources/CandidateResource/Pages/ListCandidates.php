@@ -9,6 +9,7 @@ use App\Filament\Management\Resources\CandidateResource\Widgets\CandidatesPaymen
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Colors\Color;
 
 class ListCandidates extends ListRecords
 {
@@ -20,13 +21,13 @@ class ListCandidates extends ListRecords
     {
         return [
             Actions\ExportAction::make()
-                ->label('Export all')
                 ->icon('heroicon-o-document-arrow-down')
+                ->color(Color::hex('#83a982'))
                 ->exporter(CandidateExporter::class)
                 ->options([
                     'institute_id' => Filament::getTenant()->id,
                 ]),
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }
 
