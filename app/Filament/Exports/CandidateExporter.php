@@ -29,7 +29,7 @@ class CandidateExporter extends Exporter
             ExportColumn::make('student.institute.name')->label('Member or center'),
             ExportColumn::make('exam.session_name')->label('Exam session'),
             ExportColumn::make('student.personal_educational_needs')
-            ->label('PENs'),
+            ->label('Educactional needs'),
             ExportColumn::make('created_at')
             ->label('Created on'),
             ExportColumn::make('type_of_certificate')

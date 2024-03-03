@@ -129,7 +129,7 @@ class ExamResource extends Resource
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('maximum_number_of_students')
-                    ->label('Max. Students')
+                    ->label('Max. students')
                     ->prefix(function ($record) {
                         return $record->candidates->unique('id')->count() . ' / ';
                     })
