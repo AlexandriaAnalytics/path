@@ -132,8 +132,9 @@ class Candidate extends Pivot
 
     public function getInstalmentCounterAttribute():string
     {
-        if($this->payments->last()->instalment_number == null)
-            return '1/1';
+        if(count($this->payments) == 0 ) return "";
+
+        if($this->payments->last()->instalment_number == null) return '1/1';
         else {
             $lastInstalment =  $this->payments()->where('instalment_number', '!=', 'null')->where('status', '!=', 'paid')->orderBy('current_instalment', 'asc')->first()->current_instalment;
             return $lastInstalment . '/' . $this->payments()->where('instalment_number', '!=', 'null')->first()->instalment_number;
