@@ -55,6 +55,7 @@ class LevelResource extends Resource
                 Forms\Components\Select::make('modules')
                     ->relationship(titleAttribute: 'name')
                     ->multiple()
+                    ->required()
                     ->preload(),
                 Forms\Components\Select::make('modalities')
                     ->relationship(titleAttribute: 'name')
