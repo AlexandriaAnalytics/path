@@ -105,6 +105,7 @@ class CandidateResource extends Resource
                     }),
 
                 TextColumn::make('instalment_counter')
+                    ->label('Installment counter')
                     ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Names')

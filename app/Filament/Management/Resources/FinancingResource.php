@@ -44,7 +44,7 @@ class FinancingResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->badge(),
                 Tables\Columns\TextColumn::make('current_instalment')
-                    ->label('current instalment'),
+                    ->label('Current installment'),
                 Tables\Columns\TextColumn::make('current_payment.amount')
                     ->label('amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
