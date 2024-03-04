@@ -46,4 +46,5 @@ class Payment extends Model
     {
         return $this->belongsTo(Financing::class);
     }
+
 }

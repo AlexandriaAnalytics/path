@@ -41,6 +41,7 @@ class Candidate extends Pivot
         'status',
         'type_of_certificate',
         'granted_discount',
+        'payment_ticket_link',
     ];
 
     protected $casts = [

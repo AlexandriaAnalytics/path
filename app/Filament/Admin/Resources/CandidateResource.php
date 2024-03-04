@@ -42,6 +42,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToArray;
 
 class CandidateResource extends Resource
@@ -185,14 +186,25 @@ class CandidateResource extends Resource
                         ->action(function (Collection $candidates) {
                             try {
                                 $candidatesList = $candidates->map(fn (Candidate $candidate) => env('APP_URL') . '/candidate/template/' . $candidate->id)->toArray();
-                                $candidateListString = $string = '[' . implode(', ', $candidatesList) . ']';
-                                Http::get(env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString);
-                                Notification::make('download_success')
-                                    ->title('Download susscessfull')
-                                    ->color('success')
-                                    ->send();
+                                $candidateListString = '[' . implode(',', $candidatesList) . ']';
+                                $urlRequest = env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString;
+
+                                //  dd($urlRequest);
+
+                                $response = Http::get($urlRequest);
+
+                                if ($response->successful())
+                                    Notification::make('download_success')
+                                        ->title('Download susscessfull')
+                                        ->color('success')
+                                        ->send();
+                                else
+                                    Notification::make('download_no_success')
+                                        ->title('somthing was grong')
+                                        ->color('warning')
+                                        ->send();
                             } catch (Exception $e) {
-                                Notification::make('download_success')
+                                Notification::make('download_exception')
                                     ->title('Can not download pdf now try later')
                                     ->color('danger')
                                     ->send();

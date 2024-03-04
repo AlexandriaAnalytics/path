@@ -4,12 +4,14 @@ namespace App\Filament\Candidate\Pages;
 
 use App\Enums\PaymentMethod;
 use App\Models\Candidate;
+use App\Models\Payment;
 use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
 use DateTime;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -71,6 +73,34 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         $actions = [];
+        $actions = array_merge($actions, [
+            Action::make('deposit_pay')
+                ->label('make a deposit')
+                ->form([
+                    TextInput::make('total_amount')
+                        ->default(fn () => ($this->candidate->total_amount))
+                        ->prefix(fn () => $this->candidate->currency . ' $')
+                        ->readOnly(),
+                    TextInput::make('payment_id')
+                        ->required(),
+                    TextInput::make('paymeny_ticket_link')
+                        ->required()
+
+                ])
+                ->action(function (array $data) {
+                    Payment::create([
+                        'payment_method' => 'deposit',
+                        'payment_id' => $data['payment_id'],
+                        'amount' => $data['total_amount'],
+                        'status' => 'pending',
+                        'candidate_id' => $this->candidate->id,
+                        'currency' => $this->candidate->currency,
+                        'paymeny_ticket_link' => $data['paymeny_ticket_link']
+                    ]);
+
+                    $this->candidate->update(['status' => 'processing', 'payment_ticker_link'=> $data['paymeny_ticket_link']]);
+                })
+        ]);
         if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
             if (
                 in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
