@@ -22,20 +22,11 @@ class CreateCustomLevelPrice extends CreateRecord
 
         unset($data['level_id'], $data['country_id']);
 
-        if (isset($data['percentage_extra_price_all_modules'])) {
-            // If the percentage is set, we don't need the fixed price
-            unset($data['extra_price_all_modules'], $data['extra_price_exam_right'], $data['extra_price_exam_right_all_modules']);
-        } else {
-            // If the fixed price is set, we don't need the percentage
-            unset($data['percentage_extra_price_exam_right'], $data['percentage_extra_price_exam_right_all_modules']);
-        }
-
         return $data;
     }
 
     protected function afterFill(): void
     {
-        debug($this->data);
         $levelCountry = LevelCountry::find($this->data['level_country_id'] ?? null);
 
         if (!$levelCountry) {

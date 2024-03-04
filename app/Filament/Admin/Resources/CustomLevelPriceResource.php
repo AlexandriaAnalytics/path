@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\CustomPricing;
 use App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 use App\Filament\Admin\Resources\CustomLevelPriceResource\RelationManagers;
 use App\Models\Country;
@@ -40,7 +41,6 @@ class CustomLevelPriceResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(3)
             ->schema([
                 Forms\Components\Select::make('institute')
                     ->label('Member or centre')
@@ -84,52 +84,35 @@ class CustomLevelPriceResource extends Resource
                         ->first()?->id))
                     ->hiddenOn('edit'),
                 Forms\Components\Hidden::make('level_country_id'),
-                Fieldset::make('Exam Right')
-                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit == 'ARS')
-                    ->columns(3)
+                Forms\Components\Select::make('type')
+                    ->label('Pricing type')
+                    ->options(CustomPricing::class)
+                    ->enum(CustomPricing::class)
+                    ->default(CustomPricing::Fixed)
+                    ->required()
+                    ->native(false)
+                    ->helperText('Fixed: The price is a fixed value. Percentage: The price is a percentage of the exam price')
+                    ->reactive()
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('exam_registration_fee', null);
+                        $set('module_registration_fee', null);
+                    })
+                    ->hiddenOn('edit'),
+                Fieldset::make('Exam right')
                     ->schema([
-                        TextInput::make('extra_price_all_modules')
-                            ->label('Extra Complete Price')
-                            ->suffix('ARS')
-                            ->helperText('Extra price for exam with all modules')
+                        TextInput::make('exam_registration_fee')
+                            ->label('Exam registration fee')
                             ->required()
                             ->numeric()
+                            ->suffix(fn (Get $get) => $get('type') === CustomPricing::Percentage ? '%' : null)
+                            ->helperText(fn (Get $get) => $get('type') === CustomPricing::Percentage ? '100% is the base price' : null)
                             ->minValue(0),
-                        TextInput::make('extra_price_exam_right')
-                            ->label('Extra Incomplete Exam Right')
-                            ->suffix('ARS')
-                            ->helperText('Extra price for exam without some modules')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('extra_price_exam_right_all_modules')
-                            ->label('Extra Complete Exam Right')
-                            ->suffix('ARS')
-                            ->helperText('Extra price for exam with all modules')
-                            ->numeric()
-                            ->minValue(0),
-                    ]),
-                Fieldset::make('Exam Right')
-                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit != 'ARS')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('percentage_extra_price_all_modules')
-                            ->label('Extra Complete Price')
-                            ->helperText('Extra price for exam with all modules')
-                            ->suffix('%')
+                        TextInput::make('module_registration_fee')
+                            ->label('Module registration fee')
                             ->required()
                             ->numeric()
-                            ->minValue(0),
-                        TextInput::make('percentage_extra_price_exam_right')
-                            ->label('Extra Incomplete Exam Right')
-                            ->suffix('%')
-                            ->helperText('Extra price for exam without some modules')
-                            ->numeric()
-                            ->minValue(0),
-                        TextInput::make('percentage_extra_price_exam_right_all_modules')
-                            ->label('Extra Complete Exam Right')
-                            ->suffix('%')
-                            ->helperText('Extra price for exam with all modules')
-                            ->numeric()
+                            ->suffix(fn (Get $get) => $get('type') === CustomPricing::Percentage ? '%' : null)
+                            ->helperText(fn (Get $get) => $get('type') === CustomPricing::Percentage ? '100% is the base price' : null)
                             ->minValue(0),
                     ]),
             ]);

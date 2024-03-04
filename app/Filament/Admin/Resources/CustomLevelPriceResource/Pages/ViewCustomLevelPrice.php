@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 
+use App\Enums\CustomPricing;
 use App\Filament\Admin\Resources\CustomLevelPriceResource;
 use App\Models\Country;
 use App\Models\CustomLevelPrice;
@@ -28,32 +29,17 @@ class ViewCustomLevelPrice extends ViewRecord
                 TextEntry::make('levelCountry.country.name')
                     ->label('Country'),
                 Fieldset::make('Exam Right')
-                    ->visible(fn (CustomLevelPrice $record) => isset($record->extra_price_all_modules))
                     ->columns(3)
                     ->schema([
-                        TextEntry::make('extra_price_all_modules')
-                            ->label('Complete Exam Price (extra fee)')
-                            ->suffix(' ARS'),
-                        TextEntry::make('extra_price_exam_right')
-                            ->label('Incomplete Exam Right (extra fee)')
-                            ->suffix(' ARS'),
-                        TextEntry::make('extra_price_exam_right_all_modules')
-                            ->label('Complete Exam Right (extra fee)')
-                            ->suffix(' ARS'),
-                    ]),
-                Fieldset::make('Exam Right')
-                    ->visible(fn (CustomLevelPrice $record) => isset($record->percentage_extra_price_all_modules))
-                    ->columns(3)
-                    ->schema([
-                        TextEntry::make('percentage_extra_price_all_modules')
-                            ->label('Complete Exam Price (extra fee)')
-                            ->suffix('%'),
-                        TextEntry::make('percentage_extra_price_exam_right')
-                            ->label('Incomplete Exam Right (extra fee)')
-                            ->suffix('%'),
-                        TextEntry::make('percentage_extra_price_exam_right_all_modules')
-                            ->label('Complete Exam Right (extra fee)')
-                            ->suffix('%'),
+                        TextEntry::make('type')
+                            ->label('Discount type')
+                            ->formatStateUsing(fn (CustomLevelPrice $record) => CustomPricing::from($record->type)->getLabel()),
+                        TextEntry::make('exam_registration_fee')
+                            ->label('Exam registration fee')
+                            ->suffix(fn (CustomLevelPrice $record) => $record->type === CustomPricing::Percentage ? '%' : null),
+                        TextEntry::make('module_registration_fee')
+                            ->label('Module registration fee')
+                            ->suffix(fn (CustomLevelPrice $record) => $record->type === CustomPricing::Percentage ? '%' : null),
                     ]),
             ]);
     }

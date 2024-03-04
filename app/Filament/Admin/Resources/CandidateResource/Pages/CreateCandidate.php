@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
+use App\Enums\CustomPricing;
 use App\Filament\Admin\Resources\CandidateResource;
 use App\Models\CustomLevelPrice;
 use App\Models\LevelCountry;
@@ -27,7 +28,7 @@ class CreateCandidate extends CreateRecord
         $candidate = $this->record;
         $billed_concepts = $candidate->billed_concepts;
         $missingModules = Module::all()->diff($candidate->modules);
-        $instituteExtraPrice = CustomLevelPrice::query()
+        $instituteCustomPrice = CustomLevelPrice::query()
             ->whereHas('institute', fn ($query) => $query->where('id', $candidate->student->institute_id))
             ->whereHas('levelCountry', fn ($query) => $query
                 ->where('level_id', $candidate->level_id)
@@ -44,13 +45,6 @@ class CreateCandidate extends CreateRecord
                 ->firstWhere('id', $candidate->student->region->id)
                 ->pivot
                 ->price_all_modules;
-
-            // Or, if the institute has a custom price for the level, apply it
-            if ($instituteExtraPrice?->extra_price_all_modules) {
-                $examPrice += $instituteExtraPrice->extra_price_all_modules;
-            } else if ($instituteExtraPrice?->percentage_extra_price_all_modules) {
-                $examPrice *= 1 + $instituteExtraPrice->percentage_extra_price_all_modules / 100;
-            }
 
             $billed_concepts->push([
                 'concept' => 'Complete price',
@@ -99,39 +93,37 @@ class CreateCandidate extends CreateRecord
             ->firstWhere('id', $candidate->student->region->id)
             ->pivot;
 
-        if ($instituteExtraPrice?->extra_price_exam_right) {
-            $countryPrice->price_exam_right += $instituteExtraPrice->extra_price_exam_right;
-        } else if ($instituteExtraPrice?->percentage_extra_price_exam_right) {
-            $countryPrice->price_exam_right *= 1 + $instituteExtraPrice->percentage_extra_price_exam_right / 100;
-        }
-
-        if ($instituteExtraPrice?->extra_price_exam_right_all_modules) {
-            $countryPrice->price_exam_right_all_modules += $instituteExtraPrice->extra_price_exam_right_all_modules;
-        } else if ($instituteExtraPrice?->percentage_extra_price_exam_right_all_modules) {
-            $countryPrice->price_exam_right_all_modules *= 1 + $instituteExtraPrice->percentage_extra_price_exam_right_all_modules / 100;
-        }
+        $concept = 'Exam right';
+        $examRightPrice = $countryPrice->price_exam_right;
 
         if ($missingModules->isEmpty()) {
-            $billed_concepts->push([
-                'concept' => 'Exam Right (all modules)',
-                'currency' => $candidate
-                    ->level
-                    ->countries
-                    ->firstWhere('id', $candidate->student->region->id)
-                    ->monetary_unit,
-                'amount' => $countryPrice->price_exam_right_all_modules,
-            ]);
-        } else {
-            $billed_concepts->push([
-                'concept' => 'Exam Right',
-                'currency' => $candidate
-                    ->level
-                    ->countries
-                    ->firstWhere('id', $candidate->student->region->id)
-                    ->monetary_unit,
-                'amount' => $countryPrice->price_exam_right,
-            ]);
+            $concept = 'Exam right (all modules)';
+            $examRightPrice = $countryPrice->price_exam_right_all_modules;
         }
+
+        if ($instituteCustomPrice?->type === CustomPricing::Percentage) {
+            if ($missingModules->isEmpty()) {
+                $examRightPrice *= $instituteCustomPrice->exam_registration_fee / 100;
+            } else {
+                $examRightPrice *= $instituteCustomPrice->module_registration_fee / 100;
+            }
+        } elseif ($instituteCustomPrice?->type === CustomPricing::Fixed) {
+            if ($missingModules->isEmpty()) {
+                $examRightPrice = $instituteCustomPrice->exam_registration_fee;
+            } else {
+                $examRightPrice = $instituteCustomPrice->module_registration_fee;
+            }
+        }
+
+        $billed_concepts->push([
+            'concept' => $concept,
+            'currency' => $candidate
+                ->level
+                ->countries
+                ->firstWhere('id', $candidate->student->region->id)
+                ->monetary_unit,
+            'amount' => $examRightPrice,
+        ]);
 
         // If the student has a discount, apply it
         $discount = $candidate->granted_discount;
