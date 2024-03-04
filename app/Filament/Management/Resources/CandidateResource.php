@@ -198,11 +198,11 @@ class CandidateResource extends Resource
             ->actions([
 
                 Action::make('financing')
-                    ->label('financing')
+                    ->label('Installments')
                     ->icon('heroicon-o-document')
                     ->form([
                         TextInput::make('instalments')
-                            ->label('Number of instalments')
+                            ->label('Number of installments')
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(12)

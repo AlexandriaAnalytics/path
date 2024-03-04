@@ -3,23 +3,23 @@
 namespace App\Filament\Management\Resources;
 
 use App\Filament\Management\Resources\FinancingResource\Pages;
-use App\Filament\Management\Resources\FinancingResource\RelationManagers;
 use App\Models\Financing;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class FinancingResource extends Resource
 {
     protected static ?string $model = Financing::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
+    protected static ?string $modelLabel = 'Installment';
 
+    protected static ?string $pluralModelLabel = 'Installments';
+
+    protected static bool $hasTitleCaseModelLabel = false;
 
     public static function form(Form $form): Form
     {
