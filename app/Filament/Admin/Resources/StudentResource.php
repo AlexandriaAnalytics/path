@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\TypeOfCertificate;
+use App\Enums\UserStatus;
 use App\Filament\Exports\StudentExporter;
 use Filament\Forms\Components;
 use Filament\Support\Enums\MaxWidth;
@@ -17,9 +19,11 @@ use App\Models\Module;
 use App\Models\Student;
 use Closure;
 use Doctrine\DBAL\Query\SelectQuery;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -29,6 +33,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class StudentResource extends Resource
 {
@@ -196,7 +201,8 @@ class StudentResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    /* BulkAction::make('create_bulk_candidates')
+                    BulkAction::make('create_bulk_candidates')
+                        ->icon('heroicon-o-document')
                         ->form([
                             Select::make('level_id')
                                 ->label('Exam')
@@ -227,12 +233,37 @@ class StudentResource extends Resource
                                 ->multiple()
                                 ->required()
                                 ->live()
-                                ->relationship(name: 'modules', titleAttribute: 'name')
                                 ->options(Module::all()->pluck('name', 'id'))
                                 ->preload(),
 
-                        ])->action(function () {
-                        }), */
+                            Select::make('type_of_certificate')
+                                ->options(TypeOfCertificate::class)
+                                ->required()
+                                ->native(false),
+
+                        ])->action(function (Collection $records, array $data): void {
+                            $jsonObject = '[{"amount": "4374.00","concept": "Complete price","currency": "ARS"},{"amount": "1530.00","concept": "Exam Right (all modules)","currency": "ARS"}]';;
+
+
+                            foreach ($records as $record) {
+
+                                $newCandidate = Candidate::create([
+                                    'student_id' => $record->id,
+                                    'level_id' => $data['level_id'],
+                                    'status' => UserStatus::Unpaid,
+                                    'grant_discount' => 0,
+                                    'type_of_certificate' => $data['type_of_certificate'],
+                                    'billed_concepts' => json_decode($jsonObject),
+                                ]);
+
+                                $newCandidate->modules()->attach($data['modules']);
+                                $newCandidate->save();
+                            }
+                            Notification::make()
+                                ->title('Candidates create successfully')
+                                ->success()
+                                ->send();
+                        }),
                     ExportBulkAction::make()
                         ->exporter(StudentExporter::class),
                     DeleteBulkAction::make(),
