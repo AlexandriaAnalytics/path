@@ -17,12 +17,13 @@ class CustomLevelPrice extends Model
     protected $fillable = [
         'institute_id',
         'level_country_id',
-        'extra_price_all_modules',
-        'extra_price_exam_right',
-        'extra_price_exam_right_all_modules',
-        'percentage_extra_price_all_modules',
-        'percentage_extra_price_exam_right',
-        'percentage_extra_price_exam_right_all_modules',
+        'type',
+        'exam_registration_fee',
+        'module_registration_fee',
+    ];
+
+    protected $type = [
+        'type' => \App\Enums\CustomPricing::class,
     ];
 
     public function institute(): BelongsTo

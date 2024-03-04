@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidate;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class CandidateController extends Controller
@@ -32,14 +33,18 @@ class CandidateController extends Controller
     {
         $candidate = Candidate::with(['student', 'exams'])->find($id);
 
-        if (!$candidate) {
-            abort(404, 'Candidate not found');
-        }
+        // if (!$candidate) {
+        //     abort(404, 'Candidate not found');
+        // }
 
-        $data = [
+        // $data = [
+        //     'candidate' => $candidate,
+        // ];
+
+        return Pdf::loadView('pdf.candidate', [
             'candidate' => $candidate,
-        ];
-
-        return view('candidate-pdf', $data);
+        ])
+            // ->setOption('debugCss', true)
+            ->stream();
     }
 }

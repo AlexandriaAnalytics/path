@@ -50,7 +50,7 @@ class DownloadController extends Controller
             'candidate' => $candidate,
             'qrCode' => $qrCode,
         ];
-        
+
         $pdf = PDF::loadHTML(view('qrCandidate', $data)->render());
 
         return $pdf->stream('downloaded_pdf_with_qr_' . $id . '.pdf');

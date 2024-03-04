@@ -34,7 +34,10 @@ class Level extends Model
         'description',
         'minimum_age',
         'maximum_age',
+        
     ];
+
+  
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -58,5 +61,17 @@ class Level extends Model
     public function levelCountries(): HasMany
     {
         return $this->hasMany(LevelCountry::class);
+    }
+
+    public function modules(): BelongsToMany {
+        return $this->belongsToMany(Module::class, 'level_module', 'level_id', 'module_id');
+    }
+    
+    public function certificateTypes(): BelongsToMany {
+        return $this->belongsToMany(CertificateType::class, 'level_certificate_type', 'level_id', 'certificate_type_id');
+    }
+    
+    public function modalities(): BelongsToMany {
+        return $this->belongsToMany(Modality::class, 'level_modality', 'level_id', 'modality_id');
     }
 }

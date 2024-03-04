@@ -4,12 +4,14 @@ namespace App\Filament\Candidate\Pages;
 
 use App\Enums\PaymentMethod;
 use App\Models\Candidate;
+use App\Models\Payment;
 use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
 use DateTime;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -68,30 +70,79 @@ class Payments extends Page implements HasForms
     }
 
 
-    protected function getActions(): array
+
+
+    private  function renderDepositPayment()
     {
+        return [
+            Action::make('deposit_pay')
+                ->label('make a deposit')
+                ->form([
+                    TextInput::make('total_amount')
+                        ->default(fn () => ($this->candidate->total_amount))
+                        ->prefix(fn () => $this->candidate->currency . ' $')
+                        ->readOnly(),
+                    TextInput::make('payment_id')
+                        ->required(),
+                    TextInput::make('paymeny_ticket_link')
+                        ->required()
+
+                ])
+                ->action(function (array $data) {
+                    Payment::create([
+                        'payment_method' => 'deposit',
+                        'payment_id' => $data['payment_id'],
+                        'amount' => $data['total_amount'],
+                        'status' => 'pending',
+                        'candidate_id' => $this->candidate->id,
+                        'currency' => $this->candidate->currency,
+                        'paymeny_ticket_link' => $data['paymeny_ticket_link']
+                    ]);
+
+                    $this->candidate->update(['status' => 'processing', 'payment_ticker_link' => $data['paymeny_ticket_link']]);
+                })
+        ];
+    }
+
+    private function renderPaypalFinancing()
+    {
+        return  [
+            Action::make('paypal_financing')
+                ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->paypalFinaciament()),
+        ];
+    }
+
+    private function renderMercadoPagoFinancing()
+    {
+        return  [
+            Action::make('MP_financing')
+                ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                ->disabled(fn () => $this->candidate->student->email == null)
+                ->action(fn () => $this->mercadoPagoFinanciament()),
+        ];
+    }
+
+    private  function currencyInListOfCurrencies(PaymentMethod $paymentMethodEnum)
+    {
+        return in_array(str_replace('_', ' ', strtolower($paymentMethodEnum->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()));
+    }
+
+
+    protected function getActions(): array {
         $actions = [];
-        if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
-            if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
-            ) {
-                $actions = array_merge($actions, [
-                    Action::make('paypal_financing')
-                        ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->action(fn () => $this->paypalFinaciament()),
-                ]);
-            } else if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::MERCADO_PAGO->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
-            ) {
-                $actions = array_merge($actions, [
-                    Action::make('MP_financing')
-                        ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->disabled(fn () => $this->candidate->student->email == null)
-                        ->action(fn () => $this->mercadoPagoFinanciament()),
-                ]);
-            }
+
+        $actions += $this->renderDepositPayment();
+        $instituteCategory = $this->candidate->student->institute->instituteType()->first()->name;
+
+
+        if ($instituteCategory == 'Premium Exam Centre' || $this->candidate->student->institute->can_financiate) { // puedo acceder a cuotas
+            if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
+                $actions += $this->renderPaypalFinancing();
+            else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
+                $actions += $this->renderMercadoPagoFinancing();
         }
 
         return $actions;

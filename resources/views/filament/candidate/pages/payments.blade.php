@@ -10,14 +10,31 @@
             <h2>Exam Paid</h2>
         @elseif ($candidate->status == 'processing payment')
             <h2>Payment in process</h2>
+
+        @elseif ($candidate->status == 'paying')
+            <div>
+                <header>
+                    <h2>Payment State</h2>
+                    <p>now you ar financing the exam </p>
+                </header>
+                <section>
+                    <p>Instalments: <span>{{$candidate->instalment_counter}}</span></p>
+                    <p>amount per coute: <span>{{$candidate->currency. '$ ' .$candidate->payments->first()->amount}}</span></p>
+                    
+                </section>
+
+
+            </div>
         @else 
-        <x-filament-panels::form wire:submit="selectPaymentMethod">
+        <div style="display: grid">
+            <x-filament-panels::form wire:submit="selectPaymentMethod">
             <h2 class="">Total amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
             <section>
                 <h3>Exam session: <span>{{$examDate}}</span></h3>
             </section>            
             <blockquote>
                 <h3>Details</h3>
+
                 @foreach ($this->modules as $module)  
                     <ul>
                         <li>{{$module['name']}} - {{$this->candidate->getMonetaryString()}} {{$module['price']}}</li>
@@ -47,6 +64,8 @@
                 Process payment
             </button>
         </x-filament-panels::form>
+        </div>
+        
         @endif
     </div>
 

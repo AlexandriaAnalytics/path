@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Enums\ModuleType;
+use App\Models\CertificateType;
 use App\Models\Country;
 use App\Models\Exam;
 use App\Models\Institute;
@@ -31,8 +32,11 @@ class DatabaseSeeder extends Seeder
             LevelSeeder::class,
             ModuleSeeder::class,
             RoleSeeder::class,
-            StatusSeeder::class
+            StatusSeeder::class,
+            ModalitySeeder::class,
+            CertificateTypeSeeder::class,
         ]);
+
 
 
 

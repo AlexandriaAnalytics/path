@@ -1,20 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
 
-    {{-- Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap" rel="stylesheet">
-
-    <style>
-        html {
-            -webkit-print-color-adjust: exact;
-        }
-
+    {{-- <style>
         @page {
             margin: 0cm 0cm;
         }
@@ -26,7 +16,7 @@
         }
 
         .bg-blue-800 {
-            background-color: #014b66;
+        background-color: #014b66;
         }
 
         .rounded-br-full {
@@ -142,13 +132,13 @@
         .line > svg {
             display: inline;
         }
-    </style>
+    </style> --}}
     <title>Document</title>
 
 </head>
 
 <body>
-    <header class="bg-blue-800 text-white rounded-br-full">
+    {{-- <header class="bg-blue-800 text-white rounded-br-full">
         <nav class="container-nav">
             <article class="logo">
                 <img src="{{ asset('/images/logo/02-regular.png') }}" alt="logo" class="logo-img">
@@ -166,8 +156,8 @@
                 </div>
             </article>
         </nav>
-    </header>
-    <main class="container mx-auto">
+    </header> --}}
+    {{-- <main class="container mx-auto">
         <section>
             <blockquote>
                 <p>
@@ -235,7 +225,7 @@
                     {{ implode(', ', $candidate->exams->pluck('comments')->filter()->toArray()) }}
                 </p>
             </blockquote>
-    </main>
+    </main> --}}
 </body>
 
 </html>

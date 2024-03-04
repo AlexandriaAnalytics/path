@@ -11,6 +11,7 @@ use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
@@ -43,6 +44,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Concerns\ToArray;
+use ZipArchive;
 
 class CandidateResource extends Resource
 {
@@ -181,28 +183,43 @@ class CandidateResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     BulkAction::make('download_pdfs')
-                        ->label('download as PDF')
+                        ->label('Download PDFs')
+                        ->icon('heroicon-o-document-duplicate')
                         ->action(function (Collection $candidates) {
-                            try {
-                                $candidatesList = $candidates->map(fn (Candidate $candidate) => env('APP_URL') . '/candidate/template/' . $candidate->id)->toArray();
-                                $candidateListString = $string = '[' . implode(', ', $candidatesList) . ']';
-                                Http::get(env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString);
-                                Notification::make('download_success')
-                                    ->title('Download susscessfull')
-                                    ->color('success')
-                                    ->send();
-                            } catch (Exception $e) {
-                                Notification::make('download_success')
-                                    ->title('Can not download pdf now try later')
-                                    ->color('danger')
-                                    ->send();
+                            $pdfDir = storage_path('app/public/pdf');
+                            if (!file_exists($pdfDir)) {
+                                mkdir($pdfDir, 0777, true);
                             }
+
+                            // Generate PDF for each candidate
+                            foreach ($candidates as $candidate) {
+                                $pdfPath = $pdfDir . "/{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}.pdf";
+                                Pdf::loadView('pdf.candidate', ['candidate' => $candidate])
+                                    ->save($pdfPath);
+                            }
+
+                            $filename = "candidates-" . now()->format('Y_m_d_H_i_s') . ".zip";
+                            $zipPath = storage_path("app/public/{$filename}");
+                            $zip = new \ZipArchive();
+                            if ($zip->open($zipPath, \ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                                $files = glob($pdfDir . '/*.pdf');
+                                foreach ($files as $file) {
+                                    $zip->addFile($file, basename($file));
+                                }
+                                $zip->close();
+                            }
+
+                            array_map('unlink', glob($pdfDir . '/*.pdf'));
+                            rmdir($pdfDir);
+
+                            return redirect()->to(asset('storage/' . $filename));
                         }),
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getCandidateColumns(): array
@@ -296,7 +313,10 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('student_id', null);
+                            $set('exam_id', null);
+                        }),
                     Select::make('student_id')
                         ->label('Student')
                         ->placeholder('Select a student')
@@ -321,7 +341,10 @@ class CandidateResource extends Resource
                                 })
                                 ->all();
                         })
-                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('exam_id', null);
+                        }),
                 ]),
         ];
     }
