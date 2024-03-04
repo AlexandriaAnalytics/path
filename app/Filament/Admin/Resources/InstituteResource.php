@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\InstituteLevel;
+use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
@@ -206,6 +207,12 @@ class InstituteResource extends Resource
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('students')
+                    ->formatStateUsing(function (Institute $record) {
+                        return $record->students->count();
+                    })
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
