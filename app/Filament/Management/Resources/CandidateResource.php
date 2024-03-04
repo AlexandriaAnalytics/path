@@ -36,6 +36,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -283,6 +284,24 @@ class CandidateResource extends Resource
                     ->label('Payment status')
                     ->options(UserStatus::class)
                     ->searchable(),
+                TernaryFilter::make('personal_educational_needs')
+                    ->label('Educational needs')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereDoesntHave('student', fn (Builder $query) => $query->whereNull('personal_educational_needs')),
+                        false: fn (Builder $query) => $query->whereHas('student', fn (Builder $query) => $query->whereNull('personal_educational_needs')),
+                    )
+                    ->native(false),
+                TernaryFilter::make('pending_modules')
+                    ->label('Modules')
+                    ->trueLabel('Pending assignment')
+                    ->falseLabel('All assigned')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereHas('pendingModules'),
+                        false: fn (Builder $query) => $query->whereDoesntHave('pendingModules'),
+                    )
+                    ->native(false),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated([5, 10, 25])
