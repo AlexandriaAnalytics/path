@@ -50,7 +50,7 @@ class AllInstitutesExport implements FromCollection, WithHeadings, WithStyles
      */
     public function headings(): array
     {
-        return ['Institute id', 'Institute Name', 'Owner', 'Membership', 'Email', 'Phone', 'File URL', 'Created At', 'Updated At'];
+        return ['Unique ID', 'Institution', 'Owner', 'Membership', 'Email', 'Phone', 'File URLS', 'Created on', 'Updated on'];
     }
 
     /**
