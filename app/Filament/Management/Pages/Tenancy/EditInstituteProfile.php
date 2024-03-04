@@ -11,7 +11,7 @@ class EditInstituteProfile extends EditTenantProfile
 {
     public static function getLabel(): string
     {
-        return 'Institute Profile';
+        return 'My profile';
     }
 
     public function form(Form $form): Form
