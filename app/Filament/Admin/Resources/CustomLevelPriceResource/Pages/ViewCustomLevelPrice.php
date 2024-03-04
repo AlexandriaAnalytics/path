@@ -28,14 +28,14 @@ class ViewCustomLevelPrice extends ViewRecord
                     ->label('Exam'),
                 TextEntry::make('levelCountry.country.name')
                     ->label('Country'),
-                Fieldset::make('Exam Right')
+                Fieldset::make('Registration fees')
                     ->columns(3)
                     ->schema([
                         TextEntry::make('type')
                             ->label('Discount type')
                             ->formatStateUsing(fn (CustomLevelPrice $record) => CustomPricing::from($record->type)->getLabel()),
                         TextEntry::make('exam_registration_fee')
-                            ->label('Exam registration fee')
+                            ->label('Full exam registration fee')
                             ->suffix(fn (CustomLevelPrice $record) => $record->type === CustomPricing::Percentage ? '%' : null),
                         TextEntry::make('module_registration_fee')
                             ->label('Module registration fee')
