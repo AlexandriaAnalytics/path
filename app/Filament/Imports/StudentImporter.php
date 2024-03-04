@@ -77,8 +77,9 @@ class StudentImporter extends Importer
     {
         return [
             Select::make('institute_id')
+                ->label('Member or centre')
                 ->relationship('institute', 'name')
-                ->hidden(fn () => Filament::getPanel()->getId() === 'management')
+                ->visible(fn () => Filament::getCurrentPanel()->getId() === 'admin')
                 ->required()
                 ->searchable()
                 ->preload(),
