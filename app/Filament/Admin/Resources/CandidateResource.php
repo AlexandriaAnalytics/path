@@ -202,7 +202,8 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getCandidateColumns(): array
