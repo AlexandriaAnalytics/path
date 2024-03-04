@@ -16,6 +16,7 @@ use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -34,12 +35,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Concerns\ToArray;
 use ZipArchive;
 
 class CandidateResource extends Resource
@@ -98,17 +102,16 @@ class CandidateResource extends Resource
                         'paying' => 'warning',
                         'processing payment' => 'warning'
                     }),
-                TextColumn::make('total_amount'),
-                
 
                 TextColumn::make('instalment_counter'),
-                TextColumn::make('instalment_amount_and_total'),
-                TextColumn::make('fullname')
-                    ->default(fn(Candidate $candidate) => ($candidate->student->name . ' ' . $candidate->student->surname)) 
-                    ->label('Full name')
+                TextColumn::make('student.name')
+                    ->label('Names')
                     ->sortable()
                     ->searchable(),
-               
+                TextColumn::make('student.surname')
+                    ->label('Surname')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
@@ -159,11 +162,6 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
-                Filter::make('is_paid')
-                    ->label('is paid')
-                    ->toggle()
-                    ->query(fn( $query) => $query->where('status','paid')),
-                
             ])
             ->actions([
                 ActionGroup::make([
@@ -188,20 +186,33 @@ class CandidateResource extends Resource
                         ->label('Download PDFs')
                         ->icon('heroicon-o-document-duplicate')
                         ->action(function (Collection $candidates) {
-                            try {
-                                $candidatesList = $candidates->map(fn (Candidate $candidate) => env('APP_URL') . '/candidate/template/' . $candidate->id)->toArray();
-                                $candidateListString = $string = '[' . implode(', ', $candidatesList) . ']';
-                                Http::get(env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString);
-                                Notification::make('download_success')
-                                    ->title('Download susscessfull')
-                                    ->color('success')
-                                    ->send();
-                            } catch (Exception $e) {
-                                Notification::make('download_success')
-                                    ->title('Can not download pdf now try later')
-                                    ->color('danger')
-                                    ->send();
+                            $pdfDir = storage_path('app/public/pdf');
+                            if (!file_exists($pdfDir)) {
+                                mkdir($pdfDir, 0777, true);
                             }
+
+                            // Generate PDF for each candidate
+                            foreach ($candidates as $candidate) {
+                                $pdfPath = $pdfDir . "/{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}.pdf";
+                                Pdf::loadView('pdf.candidate', ['candidate' => $candidate])
+                                    ->save($pdfPath);
+                            }
+
+                            $filename = "candidates-" . now()->format('Y_m_d_H_i_s') . ".zip";
+                            $zipPath = storage_path("app/public/{$filename}");
+                            $zip = new \ZipArchive();
+                            if ($zip->open($zipPath, \ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                                $files = glob($pdfDir . '/*.pdf');
+                                foreach ($files as $file) {
+                                    $zip->addFile($file, basename($file));
+                                }
+                                $zip->close();
+                            }
+
+                            array_map('unlink', glob($pdfDir . '/*.pdf'));
+                            rmdir($pdfDir);
+
+                            return redirect()->to(asset('storage/' . $filename));
                         }),
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class),
