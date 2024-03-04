@@ -165,6 +165,11 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
+                SelectFilter::make('status')
+                    ->label('Payment status')
+                    ->options(UserStatus::class)
+                    ->nullable()
+                    ->searchable(),
             ])
             ->actions([
                 ActionGroup::make([

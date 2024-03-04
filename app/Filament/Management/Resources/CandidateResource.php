@@ -35,6 +35,7 @@ use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -276,6 +277,13 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporterAsociated::class),
                     DeleteBulkAction::make(),
                 ]),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Payment status')
+                    ->options(UserStatus::class)
+                    ->nullable()
+                    ->searchable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated([5, 10, 25])
