@@ -282,7 +282,6 @@ class CandidateResource extends Resource
                 SelectFilter::make('status')
                     ->label('Payment status')
                     ->options(UserStatus::class)
-                    ->nullable()
                     ->searchable(),
             ])
             ->defaultSort('created_at', 'desc')
