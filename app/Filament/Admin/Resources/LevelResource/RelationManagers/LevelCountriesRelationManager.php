@@ -101,7 +101,8 @@ class LevelCountriesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Exam fees'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
