@@ -21,7 +21,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static ?string $navigationGroup = 'User management';
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
@@ -67,34 +67,39 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return User::orderByDesc('created_at');
+            })
             ->columns([
                 ColumnGroup::make('User information', [
                     Tables\Columns\TextColumn::make('name')
                         ->sortable()
-                        ->searchable(),
+                        ->searchable()
+                        ->toggleable(isToggledHiddenByDefault: false),
                     Tables\Columns\TextColumn::make('email')
                         ->sortable()
-                        ->searchable(),
+                        ->searchable()
+                        ->toggleable(isToggledHiddenByDefault: false),
                 ]),
-                ColumnGroup::make('Institutes', [
+                ColumnGroup::make('Institutions', [
                     Tables\Columns\TextColumn::make('institutes_count')
                         ->label('Member or centre Count')
                         ->counts('institutes')
                         ->alignEnd()
-                        ->toggleable(isToggledHiddenByDefault: true),
+                        ->toggleable(isToggledHiddenByDefault: false),
                 ]),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')->label('Updated on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('deleted_at')->label('Deleted on')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

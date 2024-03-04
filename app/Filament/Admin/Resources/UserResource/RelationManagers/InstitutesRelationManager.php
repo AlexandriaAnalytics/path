@@ -24,7 +24,7 @@ class InstitutesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return InstituteResource::table($table)
-            ->description('Institutes managed by this user')
+            ->description('Institutions managed by this user')
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->url(fn (Institute $record) => InstituteResource::getUrl('view', [$record])),

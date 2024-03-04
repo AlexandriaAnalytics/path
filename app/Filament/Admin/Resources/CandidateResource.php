@@ -91,7 +91,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
                 TextColumn::make('status')
-                    ->label('Payment Status')
+                    ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
@@ -130,7 +130,7 @@ class CandidateResource extends Resource
                         : 'All modules assigned')
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
                 TextColumn::make('student.personal_educational_needs')
-                    ->label('PENs')
+                    ->label('Educational needs')
                     ->badge()
                     ->formatStateUsing(function (?string $state) {
                         if ($state !== null && $state !== '-') {
@@ -140,7 +140,8 @@ class CandidateResource extends Resource
                         }
                     })
                     ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable(),
