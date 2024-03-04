@@ -5,9 +5,11 @@ namespace App\Filament\Admin\Resources;
 use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
+use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\InstituteLevel;
+use App\Models\Student;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
@@ -92,6 +94,9 @@ class InstituteResource extends Resource
                                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                                     ->dehydrated(fn (?string $state): bool => filled($state)),
                             ]),
+                        TextInput::make('unique_number')
+                            ->label('Unique ID')
+                            ->hiddenOn('create'),
                         Fieldset::make('Contact Information')
                             ->schema([
                                 PhoneInput::make('phone'),
@@ -142,6 +147,7 @@ class InstituteResource extends Resource
                             ->helperText('when is enabled, the institution can financiate our candidates'),
                         Toggle::make('can_view_price_details'),
                         Toggle::make('can_view_registration_fee')
+                            ->helperText('If enabled and provided 30 candidates or more are registered, the institution will be able to see the exam fee and the registration fee separately')
                             ->disabled(
                                 fn (?Institute $record) => (
                                     ($record?->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record?->can_view_price_details)
@@ -206,6 +212,28 @@ class InstituteResource extends Resource
                     ->wrap()
                     ->placeholder('(no url)')
                     ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('students')
+                    ->formatStateUsing(function (Institute $record) {
+                        return $record->students->count();
+                    })
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('candidates')
+                    ->formatStateUsing(function (Institute $record) {
+                        $students = $record->students;
+                        $candidates = 0;
+                        foreach ($students as $student) {
+                            if (Candidate::query()
+                                ->where('student_id', $student->id)->exists()
+                            ) {
+                                $candidates++;
+                            }
+                        }
+                        return $candidates;
+                    })
+                    ->default(0)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')

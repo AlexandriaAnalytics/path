@@ -139,7 +139,7 @@ class StudentResource extends Resource
                             return 'No';
                         }
                     })
-                    ->sortable()
+                    ->searchable()
                     ->default('No')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
