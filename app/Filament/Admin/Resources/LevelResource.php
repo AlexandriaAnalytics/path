@@ -81,7 +81,7 @@ class LevelResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('modules.name')->badge(),
-                Tables\Columns\TextColumn::make('modalities.name')->badge(),
+                //Tables\Columns\TextColumn::make('modalities.name')->badge(),
                 Tables\Columns\TextColumn::make('certificateTypes.name')->badge(),
                 Tables\Columns\TextColumn::make('description'),
             ])
