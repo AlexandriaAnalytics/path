@@ -19,6 +19,8 @@ class LevelCountriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'levelCountries';
 
+    protected static ?string $title = 'Exam fees per country';
+
     public function form(Form $form): Form
     {
         return $form
@@ -102,7 +104,7 @@ class LevelCountriesRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
-                    ->label('Exam fees'),
+                    ->label('New exam fees'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
