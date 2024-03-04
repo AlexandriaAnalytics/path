@@ -18,7 +18,7 @@ class ListInstitutes extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->label('New member and centre')->color(Color::hex('#0086b3')),
+            ->label('New member or centre')->color(Color::hex('#0086b3')),
             Actions\Action::make('download')
             ->label('Download list of members and centres')
             ->color(Color::hex('#83a982'))

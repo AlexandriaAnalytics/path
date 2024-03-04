@@ -208,6 +208,7 @@ class StudentResource extends Resource
                                 ->live()
                                 ->options(Module::all()->pluck('name', 'id'))
                                 ->preload(),
+
                             Select::make('type_of_certificate')
                                 ->options(TypeOfCertificate::class)
                                 ->required()
@@ -215,18 +216,22 @@ class StudentResource extends Resource
 
                         ])->action(function (Collection $records, array $data): void {
                             $jsonObject = '[{"amount": "4374.00","concept": "Complete price","currency": "ARS"},{"amount": "1530.00","concept": "Exam Right (all modules)","currency": "ARS"}]';;
+                            
+                            
                             foreach ($records as $record) {
 
-                                Candidate::create([
+                                $newCandidate = Candidate::create([
                                     'student_id' => $record->id,
                                     'institute_id' => Filament::getTenant()->id,
                                     'level_id' => $data['level_id'],
-                                    'modules' => $data['modules'],
                                     'status' => UserStatus::Unpaid,
                                     'grant_discount' => 0,
                                     'type_of_certificate' => $data['type_of_certificate'],
                                     'billed_concepts' => json_decode($jsonObject),
                                 ]);
+
+                                $newCandidate->modules()->attach($data['modules']);
+                                $newCandidate->save();
                             }
                             Notification::make()
                                 ->title('Candidates create successfully')

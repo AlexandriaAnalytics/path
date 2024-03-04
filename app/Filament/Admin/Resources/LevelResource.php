@@ -3,12 +3,17 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\LevelResource\Pages;
+use App\Models\CertificateType;
 use App\Models\Level;
+use App\Models\Modality;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use NunoMaduro\PhpInsights\Application\Console\Formatters\Multiple;
+
+use function Laravel\Prompts\multiselect;
 
 class LevelResource extends Resource
 {
@@ -47,6 +52,24 @@ class LevelResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->gte('minimum_age'),
+                Forms\Components\Select::make('modules')
+                    ->relationship(titleAttribute: 'name')
+                    ->multiple()
+                    ->preload(),
+                Forms\Components\Select::make('modalities')
+                    ->relationship(titleAttribute: 'name')
+                    ->preload()
+                    ->required()
+                    ->multiple(),
+
+
+                Forms\Components\Select::make('certificateTypes')
+                    ->relationship(titleAttribute: 'name')
+                    ->preload()
+                    ->multiple()
+                    ->required(),
+
+
             ]);
     }
 
@@ -55,6 +78,9 @@ class LevelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
+                Tables\Columns\TextColumn::make('modules.name')->badge(),
+                Tables\Columns\TextColumn::make('modalities.name')->badge(),
+                Tables\Columns\TextColumn::make('certificateTypes.name')->badge(),
                 Tables\Columns\TextColumn::make('description'),
             ])
             ->filters([

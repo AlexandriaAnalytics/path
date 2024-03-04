@@ -29,18 +29,22 @@ class CountryResource extends Resource
                     ->options(array_combine(\App\Enums\Country::values(), \App\Enums\Country::values()))
                     ->autofocus()
                     ->required()
+                    ->searchable()
                     ->placeholder('Name')
                     ->enum(\App\Enums\Country::class),
                 Forms\Components\Select::make('paymentMethods')
                     ->relationship('paymentMethods', 'name')
                     ->multiple()
                     ->preload()
+                    ->searchable()
                     ->required()
                     ->placeholder('Payment Methods'),
 
                 Forms\Components\Select::make('monetary_unit')
                     ->placeholder('Monetary Unit')
                     ->required()
+                    ->searchable()
+                    
                     ->options([
                         'USD' => 'USD',
                         'ARS' => 'ARS',
