@@ -125,6 +125,7 @@ class ExamResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('modules.name')
                     ->badge()
@@ -138,6 +139,7 @@ class ExamResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('location')
                     ->default('-')
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
