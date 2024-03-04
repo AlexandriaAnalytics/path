@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Exports\InstituteByIdExport;
 use App\Filament\Admin\Resources\InstituteResource\Pages;
 use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
+use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\InstituteLevel;
@@ -213,6 +214,22 @@ class InstituteResource extends Resource
                     ->formatStateUsing(function (Institute $record) {
                         return $record->students->count();
                     })
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('candidates')
+                    ->formatStateUsing(function (Institute $record) {
+                        $students = $record->students;
+                        $candidates = 0;
+                        foreach ($students as $student) {
+                            if (Candidate::query()
+                                ->where('student_id', $student->id)->exists()
+                            ) {
+                                $candidates++;
+                            }
+                        }
+                        return $candidates;
+                    })
+                    ->default(0)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')->label('Created on')
