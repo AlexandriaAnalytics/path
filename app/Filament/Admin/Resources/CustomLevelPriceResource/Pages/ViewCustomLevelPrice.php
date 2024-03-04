@@ -32,13 +32,13 @@ class ViewCustomLevelPrice extends ViewRecord
                     ->columns(3)
                     ->schema([
                         TextEntry::make('extra_price_all_modules')
-                            ->label('Complete Exam Price (extra price)')
+                            ->label('Complete Exam Price (extra fee)')
                             ->suffix(' ARS'),
                         TextEntry::make('extra_price_exam_right')
-                            ->label('Incomplete Exam Right (extra price)')
+                            ->label('Incomplete Exam Right (extra fee)')
                             ->suffix(' ARS'),
                         TextEntry::make('extra_price_exam_right_all_modules')
-                            ->label('Complete Exam Right (extra price)')
+                            ->label('Complete Exam Right (extra fee)')
                             ->suffix(' ARS'),
                     ]),
                 Fieldset::make('Exam Right')
@@ -46,13 +46,13 @@ class ViewCustomLevelPrice extends ViewRecord
                     ->columns(3)
                     ->schema([
                         TextEntry::make('percentage_extra_price_all_modules')
-                            ->label('Complete Exam Price (extra price)')
+                            ->label('Complete Exam Price (extra fee)')
                             ->suffix('%'),
                         TextEntry::make('percentage_extra_price_exam_right')
-                            ->label('Incomplete Exam Right (extra price)')
+                            ->label('Incomplete Exam Right (extra fee)')
                             ->suffix('%'),
                         TextEntry::make('percentage_extra_price_exam_right_all_modules')
-                            ->label('Complete Exam Right (extra price)')
+                            ->label('Complete Exam Right (extra fee)')
                             ->suffix('%'),
                     ]),
             ]);

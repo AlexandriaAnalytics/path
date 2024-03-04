@@ -29,11 +29,11 @@ class CustomLevelPriceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'custom exam prices';
+    protected static ?string $navigationLabel = 'Custom exam fees';
 
-    protected static ?string $modelLabel = 'custom exam price';
+    protected static ?string $modelLabel = 'custom exam fees';
 
-    protected static ?string $pluralModelLabel = 'Custom exam prices';
+    protected static ?string $pluralModelLabel = 'Custom exam fees';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
