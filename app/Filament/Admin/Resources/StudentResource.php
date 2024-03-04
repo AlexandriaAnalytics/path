@@ -115,6 +115,7 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            
             ->columns([
                 ...static::getStudentColumns(),
                 TextColumn::make('institute.name')
@@ -168,7 +169,7 @@ class StudentResource extends Resource
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
-                Tables\Actions\EditAction::make()
+                //Tables\Actions\EditAction::make()
             ])
             ->bulkActions([
                 BulkActionGroup::make([
