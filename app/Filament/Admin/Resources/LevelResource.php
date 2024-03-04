@@ -65,6 +65,7 @@ class LevelResource extends Resource
 
 
                 Forms\Components\Select::make('certificateTypes')
+                    ->label('Type of certificate')
                     ->relationship(titleAttribute: 'name')
                     ->preload()
                     ->multiple()
