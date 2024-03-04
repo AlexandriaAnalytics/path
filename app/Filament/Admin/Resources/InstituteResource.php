@@ -136,6 +136,10 @@ class InstituteResource extends Resource
                             ->label('Can register candidates')
                             ->default(false)
                             ->helperText('If enabled, the institution will be able to register candidates.'),
+                        Toggle::make('can_financiate')
+                            ->label('Can enable financiament features ')
+                            ->default(false)
+                            ->helperText('when is enabled, the institution can financiate our candidates'),
                         Toggle::make('can_view_price_details')
                             ->default(false),
                     ]),

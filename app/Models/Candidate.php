@@ -133,12 +133,28 @@ class Candidate extends Pivot
 
     public function getInstalmentCounterAttribute():string
     {
-        if(count($this->payments) == 0 ) return "";
+        if(count($this->payments) == 0 ) return "payment not register";
 
         if($this->payments->last()->instalment_number == null) return '1/1';
         else {
             $lastInstalment =  $this->payments()->where('instalment_number', '!=', 'null')->where('status', '!=', 'paid')->orderBy('current_instalment', 'asc')->first()->current_instalment;
             return $lastInstalment . '/' . $this->payments()->where('instalment_number', '!=', 'null')->first()->instalment_number;
         }
+    }
+
+    public function getInstalmentAmountAndTotalAttribute() {
+        $totalAmount = $this->payments()->sum('amount');
+        $incrementalAmount = $this->payments()->where('status', 'paid')->sum('amount');
+        return $this->currency . '$ ' . $incrementalAmount . '/' . $totalAmount;
+    }
+
+    public function getPaymentTypeAttribute(){
+        if(count($this->payments) == 0) return 'no payments register';
+        if(count($this->payments->where('instalment_number', null)->get()->toArray() )!= 0) return 'payment totaly';
+        if(count($this->payments->where('instalment_number','!=',  null)->get()->toArray() )!= 0) return 'payment financiated';
+    }
+
+    public function getPaymentCurrentInstalmentAttribute() {
+        return $this->payments->where('instalment_number', '!=' , null)->where('state', '!=', 'paid')->orderBy('current_instalment', 'asc')->first();
     }
 }

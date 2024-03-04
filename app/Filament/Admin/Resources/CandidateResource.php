@@ -15,7 +15,6 @@ use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -34,16 +33,12 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\Layout\Panel;
-use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\ToArray;
 
 class CandidateResource extends Resource
 {
@@ -101,16 +96,17 @@ class CandidateResource extends Resource
                         'paying' => 'warning',
                         'processing payment' => 'warning'
                     }),
+                TextColumn::make('total_amount'),
+                
 
                 TextColumn::make('instalment_counter'),
-                TextColumn::make('student.name')
-                    ->label('Names')
+                TextColumn::make('instalment_amount_and_total'),
+                TextColumn::make('fullname')
+                    ->default(fn(Candidate $candidate) => ($candidate->student->name . ' ' . $candidate->student->surname)) 
+                    ->label('Full name')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('student.surname')
-                    ->label('Surname')
-                    ->sortable()
-                    ->searchable(),
+               
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
@@ -161,6 +157,11 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
+                Filter::make('is_paid')
+                    ->label('is paid')
+                    ->toggle()
+                    ->query(fn( $query) => $query->where('status','paid')),
+                
             ])
             ->actions([
                 ActionGroup::make([

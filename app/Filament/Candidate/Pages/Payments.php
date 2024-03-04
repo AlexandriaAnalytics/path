@@ -70,10 +70,11 @@ class Payments extends Page implements HasForms
     }
 
 
-    protected function getActions(): array
+
+
+    private  function renderDepositPayment()
     {
-        $actions = [];
-        $actions = array_merge($actions, [
+        return [
             Action::make('deposit_pay')
                 ->label('make a deposit')
                 ->form([
@@ -98,30 +99,50 @@ class Payments extends Page implements HasForms
                         'paymeny_ticket_link' => $data['paymeny_ticket_link']
                     ]);
 
-                    $this->candidate->update(['status' => 'processing', 'payment_ticker_link'=> $data['paymeny_ticket_link']]);
+                    $this->candidate->update(['status' => 'processing', 'payment_ticker_link' => $data['paymeny_ticket_link']]);
                 })
-        ]);
-        if ($this->candidate->student->institute->instituteType()->first()->name == 'Premium Exam Centre') {
-            if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::PAYPAL->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
-            ) {
-                $actions = array_merge($actions, [
-                    Action::make('paypal_financing')
-                        ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->action(fn () => $this->paypalFinaciament()),
-                ]);
-            } else if (
-                in_array(str_replace('_', ' ', strtolower(PaymentMethod::MERCADO_PAGO->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()))
-            ) {
-                $actions = array_merge($actions, [
-                    Action::make('MP_financing')
-                        ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
-                        ->icon('heroicon-o-currency-dollar')
-                        ->disabled(fn () => $this->candidate->student->email == null)
-                        ->action(fn () => $this->mercadoPagoFinanciament()),
-                ]);
-            }
+        ];
+    }
+
+    private function renderPaypalFinancing()
+    {
+        return  [
+            Action::make('paypal_financing')
+                ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->paypalFinaciament()),
+        ];
+    }
+
+    private function renderMercadoPagoFinancing()
+    {
+        return  [
+            Action::make('MP_financing')
+                ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                ->disabled(fn () => $this->candidate->student->email == null)
+                ->action(fn () => $this->mercadoPagoFinanciament()),
+        ];
+    }
+
+    private  function currencyInListOfCurrencies(PaymentMethod $paymentMethodEnum)
+    {
+        return in_array(str_replace('_', ' ', strtolower($paymentMethodEnum->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()));
+    }
+
+
+    protected function getActions(): array {
+        $actions = [];
+
+        $actions += $this->renderDepositPayment();
+        $instituteCategory = $this->candidate->student->institute->instituteType()->first()->name;
+
+
+        if ($instituteCategory == 'Premium Exam Centre' || $this->candidate->student->institute->can_financiate) { // puedo acceder a cuotas
+            if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
+                $actions += $this->renderPaypalFinancing();
+            else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
+                $actions += $this->renderMercadoPagoFinancing();
         }
 
         return $actions;
