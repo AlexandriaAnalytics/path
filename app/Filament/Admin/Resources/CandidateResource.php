@@ -95,6 +95,7 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
@@ -103,7 +104,8 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning'
                     }),
 
-                TextColumn::make('instalment_counter'),
+                TextColumn::make('instalment_counter')
+                    ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
@@ -234,6 +236,7 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
