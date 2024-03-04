@@ -145,12 +145,11 @@ class InstituteResource extends Resource
                             ->label('Can enable financiament features ')
                             ->default(false)
                             ->helperText('when is enabled, the institution can financiate our candidates'),
-                        Toggle::make('can_view_price_details'),
                         Toggle::make('can_view_registration_fee')
                             ->helperText('If enabled and provided 30 candidates or more are registered, the institution will be able to see the exam fee and the registration fee separately')
                             ->disabled(
                                 fn (?Institute $record) => (
-                                    ($record?->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record?->can_view_price_details)
+                                    ($record?->candidates()->whereYear('candidates.created_at', now()->year)->count() < 30) || $record?->can_view_registration_fee)
                                     && $record?->instituteType->slug !== 'premium_exam_centre'
                             )
                             ->default(false),
