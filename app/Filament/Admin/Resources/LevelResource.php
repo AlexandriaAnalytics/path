@@ -57,11 +57,11 @@ class LevelResource extends Resource
                     ->multiple()
                     ->required()
                     ->preload(),
-                Forms\Components\Select::make('modalities')
+                /* Forms\Components\Select::make('modalities')
                     ->relationship(titleAttribute: 'name')
                     ->preload()
                     ->required()
-                    ->multiple(),
+                    ->multiple(), */
 
 
                 Forms\Components\Select::make('certificateTypes')
