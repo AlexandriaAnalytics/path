@@ -98,10 +98,10 @@ class CustomLevelPriceResource extends Resource
                         $set('module_registration_fee', null);
                     })
                     ->hiddenOn('edit'),
-                Fieldset::make('Exam right')
+                Fieldset::make('Registration fees')
                     ->schema([
                         TextInput::make('exam_registration_fee')
-                            ->label('Exam registration fee')
+                            ->label('Full exam registration fee')
                             ->required()
                             ->numeric()
                             ->suffix(fn (Get $get) => $get('type') === CustomPricing::Percentage ? '%' : null)

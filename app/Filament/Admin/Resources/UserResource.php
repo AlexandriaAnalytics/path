@@ -50,7 +50,7 @@ class UserResource extends Resource
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->hiddenOn(['view']),
                     ]),
-                Fieldset::make('Access Control')
+                Fieldset::make('Access control')
                     ->columnSpan(1)
                     ->schema([
                         Forms\Components\Select::make('roles')
@@ -83,8 +83,8 @@ class UserResource extends Resource
                 ]),
                 ColumnGroup::make('Institutions', [
                     Tables\Columns\TextColumn::make('institutes_count')
-                        ->label('Member or centre Count')
-                        ->counts('institutes')
+                        ->label('Member or centre count')
+                        ->counts('institutions')
                         ->alignEnd()
                         ->toggleable(isToggledHiddenByDefault: false),
                 ]),
@@ -130,7 +130,7 @@ class UserResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                     Tables\Actions\ExportBulkAction::make()
-                        ->label('Export Users')
+                        ->label('Export users')
                         ->exporter(UserExporter::class),
                 ]),
             ]);
