@@ -108,7 +108,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
@@ -119,26 +119,26 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning',
                         'paying' => 'warning',
                     })
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 //Student
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('student.surname')
                     ->label('Surname')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('modules.name')
                     ->badge()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->icon(function (Candidate $candidate) {
@@ -169,12 +169,12 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     })
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('student.personal_educational_needs')
                     ->label('Educational needs')
                     ->badge()
@@ -186,11 +186,11 @@ class CandidateResource extends Resource
                         }
                     })
                     ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(),
             ])
             ->filters([
                 //
