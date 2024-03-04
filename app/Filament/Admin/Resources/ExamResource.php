@@ -54,14 +54,10 @@ class ExamResource extends Resource
                             ->label('Maximum number of candidates'),
                         Forms\Components\DateTimePicker::make('scheduled_date')
                             ->seconds(false)
-                            ->minutesStep(5)
-                            ->required()
-                            ->minDate(now()),
+                            ->required(),
                         Forms\Components\DateTimePicker::make('payment_deadline')
                             ->seconds(false)
-                            ->minutesStep(5)
-                            ->required()
-                            ->minDate(now()),
+                            ->required(),
                         Forms\Components\Select::make('type')
                             ->options(\App\Enums\ExamType::class)
                             ->native(false)
