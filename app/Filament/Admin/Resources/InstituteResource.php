@@ -94,6 +94,9 @@ class InstituteResource extends Resource
                                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                                     ->dehydrated(fn (?string $state): bool => filled($state)),
                             ]),
+                        TextInput::make('unique_number')
+                            ->label('Unique ID')
+                            ->hiddenOn('create'),
                         Fieldset::make('Contact Information')
                             ->schema([
                                 PhoneInput::make('phone'),
