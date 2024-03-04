@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Management\Resources\CustomLevelPriceResource\Pages;
+namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 
-use App\Filament\Management\Resources\CustomLevelPriceResource;
+use App\Filament\Admin\Resources\CustomLevelPriceResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

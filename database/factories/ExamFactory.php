@@ -19,6 +19,7 @@ class ExamFactory extends Factory
         return [
             'session_name' => str(fake()->word())->title(),
             'scheduled_date' => fake()->date(),
+            'location' => fake()->address(),
             'type' => fake()->randomElement(\App\Enums\ExamType::values()),
             'maximum_number_of_students' => fake()->numberBetween(1, 100),
             'comments' => fake()->optional()->sentence(),
