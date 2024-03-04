@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Filament\Management\Resources;
+namespace App\Filament\Admin\Resources;
 
-use App\Filament\Management\Resources\CustomLevelPriceResource\Pages;
-use App\Filament\Management\Resources\CustomLevelPriceResource\RelationManagers;
+use App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
+use App\Filament\Admin\Resources\CustomLevelPriceResource\RelationManagers;
 use App\Models\Country;
 use App\Models\CustomLevelPrice;
+use App\Models\Institute;
 use App\Models\Level;
 use App\Models\LevelCountry;
 use Closure;
@@ -28,10 +29,28 @@ class CustomLevelPriceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'custom exam prices';
+
+    protected static ?string $modelLabel = 'custom exam price';
+
+    protected static ?string $pluralModelLabel = 'Custom exam prices';
+
+    protected static bool $hasTitleCaseModelLabel = false;
+
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
+                Forms\Components\Select::make('institute')
+                    ->label('Member or centre')
+                    ->helperText('The member or centre that this custom exam price is for')
+                    ->relationship('institute', 'name')
+                    ->required()
+                    ->preload()
+                    ->native(false)
+                    ->searchable()
+                    ->hiddenOn('edit'),
                 Forms\Components\Select::make('level_id')
                     ->label('Exam')
                     ->options(Level::all()->pluck('name', 'id'))
@@ -49,13 +68,13 @@ class CustomLevelPriceResource extends Resource
                     ->rules([
                         fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
                             if (CustomLevelPrice::query()
-                                ->where('institute_id', Filament::getTenant()->id)
+                                ->where('institute_id', $get('institute'))
                                 ->whereHas('levelCountry', fn (Builder $query) => $query
                                     ->where('level_id', $get('level_id'))
                                     ->where('country_id', $value))
                                 ->exists()
                             ) {
-                                $fail('The selected level and country combination already exists.');
+                                $fail('The selected institute, level and country combination already exists.');
                             }
                         },
                     ])
@@ -66,7 +85,7 @@ class CustomLevelPriceResource extends Resource
                     ->hiddenOn('edit'),
                 Forms\Components\Hidden::make('level_country_id'),
                 Fieldset::make('Exam Right')
-                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit != 'ARS')
+                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit == 'ARS')
                     ->columns(3)
                     ->schema([
                         TextInput::make('extra_price_all_modules')
@@ -90,7 +109,7 @@ class CustomLevelPriceResource extends Resource
                             ->minValue(0),
                     ]),
                 Fieldset::make('Exam Right')
-                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit == 'ARS')
+                    ->visible(fn (Get $get) => LevelCountry::find($get('level_country_id'))?->country->monetary_unit != 'ARS')
                     ->columns(3)
                     ->schema([
                         TextInput::make('percentage_extra_price_all_modules')
@@ -120,6 +139,10 @@ class CustomLevelPriceResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('institute.name')
+                    ->label('Member or centre')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('levelCountry.level.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('levelCountry.country.name')
@@ -138,6 +161,12 @@ class CustomLevelPriceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('institute_id')
+                    ->label('Member or centre')
+                    ->relationship('institute', 'name')
+                    ->options(Institute::all()->pluck('name', 'id'))
+                    ->preload()
+                    ->searchable(),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([

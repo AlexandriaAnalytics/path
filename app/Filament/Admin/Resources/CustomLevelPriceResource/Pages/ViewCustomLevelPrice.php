@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Management\Resources\CustomLevelPriceResource\Pages;
+namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 
-use App\Filament\Management\Resources\CustomLevelPriceResource;
+use App\Filament\Admin\Resources\CustomLevelPriceResource;
 use App\Models\Country;
 use App\Models\CustomLevelPrice;
 use Filament\Actions;
@@ -19,7 +19,10 @@ class ViewCustomLevelPrice extends ViewRecord
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
+            ->columns(3)
             ->schema([
+                TextEntry::make('institute.name')
+                    ->label('Member or centre'),
                 TextEntry::make('levelCountry.level.name')
                     ->label('Exam'),
                 TextEntry::make('levelCountry.country.name')
