@@ -53,7 +53,7 @@ class CountryResource extends Resource
                     ]),
 
                 Forms\Components\Select::make('monetary_unit_symbol')
-                    ->placeholder('Monetary Unit Symbol')
+                    ->placeholder('Monetary unit symbol')
                     ->required()
                     ->options([
                         '$' => '$',
