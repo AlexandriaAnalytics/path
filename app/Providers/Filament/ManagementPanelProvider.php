@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Management\Pages\Tenancy\EditInstituteProfile;
 use App\Models\Institute;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
@@ -81,6 +82,7 @@ class ManagementPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->tenant(Institute::class)
+            ->tenantProfile(EditInstituteProfile::class)
             ->spa()
             ->databaseNotifications();
     }

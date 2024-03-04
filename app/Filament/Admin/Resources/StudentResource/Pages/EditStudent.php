@@ -6,12 +6,17 @@ use App\Filament\Admin\Resources\StudentResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Colors\Color;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Str;
 
 class EditStudent extends EditRecord
 {
     protected static string $resource = StudentResource::class;
 
+    public function getTitle(): string | Htmlable
+    {
+        return __('Edit student');
+    }
     protected function getHeaderActions(): array
     {
         return [

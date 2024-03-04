@@ -11,6 +11,7 @@ use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
@@ -39,6 +40,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
+use ZipArchive;
 
 class CandidateResource extends Resource
 {
@@ -183,29 +185,19 @@ class CandidateResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     BulkAction::make('download_pdfs')
-                        ->label('download as PDF')
+                        ->label('Download PDFs')
+                        ->icon('heroicon-o-document-duplicate')
                         ->action(function (Collection $candidates) {
                             try {
                                 $candidatesList = $candidates->map(fn (Candidate $candidate) => env('APP_URL') . '/candidate/template/' . $candidate->id)->toArray();
-                                $candidateListString = '[' . implode(',', $candidatesList) . ']';
-                                $urlRequest = env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString;
-
-                                //  dd($urlRequest);
-
-                                $response = Http::get($urlRequest);
-
-                                if ($response->successful())
-                                    Notification::make('download_success')
-                                        ->title('Download susscessfull')
-                                        ->color('success')
-                                        ->send();
-                                else
-                                    Notification::make('download_no_success')
-                                        ->title('somthing was grong')
-                                        ->color('warning')
-                                        ->send();
+                                $candidateListString = $string = '[' . implode(', ', $candidatesList) . ']';
+                                Http::get(env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString);
+                                Notification::make('download_success')
+                                    ->title('Download susscessfull')
+                                    ->color('success')
+                                    ->send();
                             } catch (Exception $e) {
-                                Notification::make('download_exception')
+                                Notification::make('download_success')
                                     ->title('Can not download pdf now try later')
                                     ->color('danger')
                                     ->send();
@@ -215,7 +207,8 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getCandidateColumns(): array
@@ -309,7 +302,10 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('student_id', null);
+                            $set('exam_id', null);
+                        }),
                     Select::make('student_id')
                         ->label('Student')
                         ->placeholder('Select a student')
@@ -334,7 +330,10 @@ class CandidateResource extends Resource
                                 })
                                 ->all();
                         })
-                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('exam_id', null);
+                        }),
                 ]),
         ];
     }
