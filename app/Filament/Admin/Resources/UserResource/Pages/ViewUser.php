@@ -8,11 +8,16 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ViewUser extends ViewRecord
 {
     protected static string $resource = UserResource::class;
 
+    public function getTitle(): string | Htmlable
+    {
+        return __('View user');
+    }
     protected function getHeaderActions(): array
     {
         return [

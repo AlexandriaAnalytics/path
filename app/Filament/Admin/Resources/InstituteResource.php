@@ -155,13 +155,18 @@ class InstituteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Institute::orderByDesc('created_at');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('unique_number')
                     ->searchable()
+                    ->label('Unique ID')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
+                    ->label('Institution')
                     ->sortable()
                     ->placeholder('(unnamed)')
                     ->toggleable(isToggledHiddenByDefault: false),

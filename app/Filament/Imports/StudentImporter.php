@@ -6,6 +6,7 @@ use App\Models\Student;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Carbon;
 
@@ -77,6 +78,7 @@ class StudentImporter extends Importer
         return [
             Select::make('institute_id')
                 ->relationship('institute', 'name')
+                ->hidden(fn () => Filament::getPanel()->getId() === 'management')
                 ->required()
                 ->searchable()
                 ->preload(),

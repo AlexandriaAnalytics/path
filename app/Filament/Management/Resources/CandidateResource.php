@@ -67,6 +67,7 @@ class CandidateResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
+                            ->multiple()
                     ]),
                 ...AdminCandidateResource::getExamFields(),
                 Select::make('type_of_certificate')
@@ -97,15 +98,19 @@ class CandidateResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Candidate::orderByDesc('created_at');
+            })
             ->columns([
                 //Candidate
                 TextColumn::make('id')
                     ->label('Candidate No.')
                     ->sortable()
                     ->searchable()
-                    ->numeric(),
+                    ->numeric()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('status')
-                    ->label('Payment Status')
+                    ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
@@ -113,8 +118,8 @@ class CandidateResource extends Resource
                         'paid' => 'success',
                         'processing payment' => 'warning',
                         'paying' => 'warning',
-                    }),
-
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
                 //Student
                 TextColumn::make('student.name')
                     ->label('Names')
@@ -193,11 +198,11 @@ class CandidateResource extends Resource
             ->actions([
 
                 Action::make('financing')
-                    ->label('financing')
+                    ->label('Installments')
                     ->icon('heroicon-o-document')
                     ->form([
                         TextInput::make('instalments')
-                            ->label('Number of instalments')
+                            ->label('Number of installments')
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(12)

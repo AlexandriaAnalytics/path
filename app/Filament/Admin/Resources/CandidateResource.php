@@ -12,6 +12,7 @@ use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
 use Closure;
+use Exception;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,10 +20,12 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -31,9 +34,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Concerns\ToArray;
 
 class CandidateResource extends Resource
 {
@@ -82,7 +91,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric(),
                 TextColumn::make('status')
-                    ->label('Payment Status')
+                    ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
@@ -91,6 +100,8 @@ class CandidateResource extends Resource
                         'paying' => 'warning',
                         'processing payment' => 'warning'
                     }),
+
+                TextColumn::make('instalment_counter'),
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
@@ -99,11 +110,11 @@ class CandidateResource extends Resource
                     ->label('Surname')
                     ->sortable()
                     ->searchable(),
-                    TextColumn::make('level.name')
-                        ->label('Exam')
-                        ->sortable()
-                        ->searchable(),
-                       
+                TextColumn::make('level.name')
+                    ->label('Exam')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('modules.name')
                     ->badge(),
                 TextColumn::make('student.institute.name')
@@ -119,7 +130,7 @@ class CandidateResource extends Resource
                         : 'All modules assigned')
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
                 TextColumn::make('student.personal_educational_needs')
-                    ->label('PENs')
+                    ->label('Educational needs')
                     ->badge()
                     ->formatStateUsing(function (?string $state) {
                         if ($state !== null && $state !== '-') {
@@ -129,11 +140,12 @@ class CandidateResource extends Resource
                         }
                     })
                     ->default('-')
-                    ->toggleable(isToggledHiddenByDefault: false),
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable(),
-                    
+
             ])
             ->filters([
                 SelectFilter::make('institute_id')
@@ -168,6 +180,24 @@ class CandidateResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('download_pdfs')
+                        ->label('download as PDF')
+                        ->action(function (Collection $candidates) {
+                            try {
+                                $candidatesList = $candidates->map(fn (Candidate $candidate) => env('APP_URL') . '/candidate/template/' . $candidate->id)->toArray();
+                                $candidateListString = $string = '[' . implode(', ', $candidatesList) . ']';
+                                Http::get(env('PDF_DOWNLOAD_API') . '/download/pdf?urls=' . $candidateListString);
+                                Notification::make('download_success')
+                                    ->title('Download susscessfull')
+                                    ->color('success')
+                                    ->send();
+                            } catch (Exception $e) {
+                                Notification::make('download_success')
+                                    ->title('Can not download pdf now try later')
+                                    ->color('danger')
+                                    ->send();
+                            }
+                        }),
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),

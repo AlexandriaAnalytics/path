@@ -190,6 +190,7 @@ CREATE TABLE `exams` (
   `maximum_number_of_students` int NOT NULL,
   `comments` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_deadline` timestamp NOT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
