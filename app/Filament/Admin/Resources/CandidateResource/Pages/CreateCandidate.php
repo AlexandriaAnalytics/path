@@ -4,9 +4,12 @@ namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
 use App\Models\CustomLevelPrice;
+use App\Models\LevelCountry;
+use App\Models\LevelCountryModule;
 use App\Models\Module;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 
 class CreateCandidate extends CreateRecord
 {
@@ -73,13 +76,16 @@ class CreateCandidate extends CreateRecord
             $billed_modules->each(function ($module) use ($billed_concepts, $candidate) {
                 $billed_concepts->push([
                     'concept' => "Module - {$module->name}",
-                    'currency' => $module
-                        ->levelCountries
-                        ->first()
-                        ->country
+                    'currency' => $candidate
+                        ->level
+                        ->countries
+                        ->firstWhere('id', $candidate->student->region->id)
                         ->monetary_unit,
-                    'amount' => $module
-                        ->levelCountries
+                    'amount' => LevelCountryModule::query()
+                        ->whereHas('levelCountry', fn (Builder $query) => $query
+                            ->where('country_id', $candidate->student->country_id)
+                            ->where('level_id', $candidate->level_id))
+                        ->where('module_id', $module->id)
                         ->first()
                         ->price,
                 ]);

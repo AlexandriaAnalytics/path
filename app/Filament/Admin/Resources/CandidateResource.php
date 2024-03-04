@@ -296,7 +296,10 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(fn (Set $set) => $set('student_id', null)),
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('student_id', null);
+                            $set('exam_id', null);
+                        }),
                     Select::make('student_id')
                         ->label('Student')
                         ->placeholder('Select a student')
@@ -321,7 +324,10 @@ class CandidateResource extends Resource
                                 })
                                 ->all();
                         })
-                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
+                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
+                        ->afterStateUpdated(function (Set $set) {
+                            $set('exam_id', null);
+                        }),
                 ]),
         ];
     }
