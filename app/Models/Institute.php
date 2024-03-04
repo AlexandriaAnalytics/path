@@ -36,10 +36,12 @@ class Institute extends Model
         'postcode',
         'country',
         'maximum_cumulative_discount',
-        'unique_number'
+        'unique_number',
+        'can_view_registration_fee',
     ];
 
     protected $attributes = [
+        'can_view_registration_fee' => false,
         'can_add_candidates' => true,
         'maximum_cumulative_discount' => 0,
         'discounted_price_diferencial' => 0,
