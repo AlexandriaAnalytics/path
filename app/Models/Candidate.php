@@ -74,6 +74,11 @@ class Candidate extends Pivot
             ->withTimestamps();
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'candidate_id');
+    }
+
     /**
      * Get the pending modules to be assigned to the candidate.
      * 
@@ -123,5 +128,15 @@ class Candidate extends Pivot
     public function getMonetaryString()
     {
         return $this->student->region->monetary_unit . $this->student->region->monetary_unit_symbol;
+    }
+
+    public function getInstalmentCounterAttribute():string
+    {
+        if($this->payments->last()->instalment_number == null)
+            return '1/1';
+        else {
+            $lastInstalment =  $this->payments()->where('instalment_number', '!=', 'null')->where('status', '!=', 'paid')->orderBy('current_instalment', 'asc')->first()->current_instalment;
+            return $lastInstalment . '/' . $this->payments()->where('instalment_number', '!=', 'null')->first()->instalment_number;
+        }
     }
 }

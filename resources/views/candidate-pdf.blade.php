@@ -225,7 +225,7 @@
 
             <blockquote>
                 <p>
-                    <strong>Exam type</strong>: {{ $candidate->exams->first()->type->getLabel() }}
+                    <strong>Exam type</strong>: {{ $candidate->exams->first() &&  $candidate->exams->first()->type->getLabel() }}
                 </p>
             </blockquote>
 

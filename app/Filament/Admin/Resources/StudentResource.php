@@ -115,6 +115,7 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+
             ->query(function () {
                 return Student::orderByDesc('created_at');
             })
@@ -189,7 +190,9 @@ class StudentResource extends Resource
             ])
             ->filtersFormWidth(MaxWidth::TwoExtraLarge)
             ->actions([
+
                 Tables\Actions\ViewAction::make()
+
             ])
             ->bulkActions([
                 BulkActionGroup::make([
