@@ -15,6 +15,7 @@ use App\Models\Financing;
 use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Closure;
 use Filament\Tables\Actions\ActionGroup;
@@ -43,6 +44,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ZipArchive;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\File;
 
 class CandidateResource extends Resource
 {
@@ -135,9 +139,15 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('student.birth_date')
+<<<<<<< HEAD
                     ->label('Date of birth')
                     ->date('d/m/Y')
                     ->sortable(),
+=======
+                    ->label('Date of Birth')
+                    ->sortable()
+                    ->searchable(),
+>>>>>>> origin/develop
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
@@ -254,7 +264,34 @@ class CandidateResource extends Resource
 
                 Action::make('pdf')
                     ->label('PDF')
+<<<<<<< HEAD
                     ->icon('heroicon-o-document'),
+=======
+                    ->icon('heroicon-o-document')
+                    ->icon('heroicon-o-document')
+                    ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty()) // Disable if pending modules exist
+                    ->action(function (Candidate $candidate) {
+                        try {
+                            $filename = "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}.pdf";
+                            $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
+
+                            // Ensure the temporary directory exists and has write permissions
+                            if (!File::exists(storage_path('app/temp_pdfs'))) {
+                                File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                            }
+
+
+                            Pdf::loadView('pdf.candidate', ['candidate' => $candidate])
+                                ->save($pdfPath);
+
+                            return response()->download($pdfPath, $filename, [
+                                'Content-Type' => 'application/pdf',
+                            ]);
+                        } catch (\Exception $e) {
+                            return response()->json(['error' => 'PDF generation or download failed'], 500);
+                        }
+                    }),
+>>>>>>> origin/develop
                 // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
                     // Action::make('qr-code')
@@ -283,6 +320,33 @@ class CandidateResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('download_pdfs')
+                        ->label('Download PDFs')
+                        ->icon('heroicon-o-document-duplicate')
+                        ->action(function (Collection $candidates) {
+                            $tempDir = sys_get_temp_dir() . '/filament-pdfs-' . uniqid();
+                            mkdir($tempDir);
+                            foreach ($candidates as $candidate) {
+                                $pdfPath = $tempDir . "/{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}.pdf";
+                                Pdf::loadView('pdf.candidate', ['candidate' => $candidate])
+                                    ->save($pdfPath);
+                            }
+
+                            $filename = "candidates-" . now()->format('Ymd_His') . ".zip";
+                            $zipPath = $tempDir . '/' . $filename;
+                            $zip = new \ZipArchive();
+                            if ($zip->open($zipPath, \ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+                                $files = glob($tempDir . '/*.pdf');
+                                foreach ($files as $file) {
+                                    $zip->addFile($file, basename($file));
+                                }
+                                $zip->close();
+                            }
+                            return response()->download($zipPath, $filename, [
+                                'Content-Type' => 'application/zip',
+                            ])->deleteFileAfterSend(true);
+                            FileSystem::deleteDirectory($tempDir);
+                        }),
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class),
                     DeleteBulkAction::make(),

@@ -14,17 +14,12 @@ class WebHookPaymentsController extends Controller
 {
     public function paypalWebhook(Request $request)
     {
-        Log::alert('data recibida ', $request->all());
         $eventType = $request->input('event_type');
         $resource = $request->input('resource');
         $payment_id = $resource['id'];
 
-
-        Log::info('paypal webhook -> ' . $eventType .  ' id ' . $payment_id);
-
         switch ($eventType) {
             case 'CHECKOUT.ORDER.APPROVED':
-
                 $payment = Payment::where('payment_id', $resource['id'])->first();
                 if ($payment != null) {
                     $payment->status = 'approved';
@@ -36,7 +31,6 @@ class WebHookPaymentsController extends Controller
                 }
                 break;
             case 'PAYMENT.SALE.COMPLETED':
-
                 if (Payment::where('payment_id', $payment_id)->first() != null) break; // payment exists
 
                 $billing_agreement_id = $request->input('resource.billing_agreement_id');;
@@ -45,11 +39,8 @@ class WebHookPaymentsController extends Controller
                     ->orderBy('current_instalment', 'ASC')
                     ->first();
 
-                Log::info('suscription  paid', [$billing_agreement_id, $currentPayment]);
-
                 if ($currentPayment != null && $currentPayment->payment_id != null) // payment was processed
                     break;
-
 
                 else if ($currentPayment  != null) {
                     $currentPayment->update(['status' => 'approved', 'payment_id' => $payment_id]);
@@ -61,8 +52,6 @@ class WebHookPaymentsController extends Controller
                     Log::error('currentInstalment not found');
                     break;
                 }
-
-
 
             case 'BILLING.SUBSCRIPTION.ACTIVATED':
                 Log::info('suscription activated', $request->all());

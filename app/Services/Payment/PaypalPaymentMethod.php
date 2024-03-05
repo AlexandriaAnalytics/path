@@ -44,7 +44,6 @@ class PaypalPaymentMethod extends AbstractPayment
 
     public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult
     {
-
         if (!is_numeric($amount_value))
             return new PaymentResult(PaymentMethodResult::ERROR, 'Amount value must be a number');
 
@@ -83,10 +82,9 @@ class PaypalPaymentMethod extends AbstractPayment
             foreach ($response['links'] as $links) {
                 if ($links['rel'] == 'approve') {
                     return new PaymentResult(PaymentMethodResult::REDIRECT, null, $links['href']);
-                    // return redirect()->away($links['href']);
                 }
             }
-            return new PaymentResult(PaymentMethodResult::ERROR, 'Something went wrong.');
+            return new PaymentResult(PaymentMethodResult::ERROR, 'Something went wrong in paypal payment.');
         } else {
             return new PaymentResult(PaymentMethodResult::ERROR, $response['message'] ?? 'Something went wrong.');
         }
@@ -152,7 +150,6 @@ class PaypalPaymentMethod extends AbstractPayment
                 ],
             ];
 
-
             $plan = $provider->createPlan($plan_request);
             $response = $provider->createSubscription([
                 'plan_id' => $plan['id'],
@@ -160,8 +157,6 @@ class PaypalPaymentMethod extends AbstractPayment
                     "shipping_preference" => "NO_SHIPPING",
                 ],
             ]);
-
-
 
             if (isset($response['id']) && $response['id'] != null) {
 

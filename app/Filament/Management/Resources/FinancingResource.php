@@ -15,7 +15,7 @@ class FinancingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
-    protected static ?string $modelLabel = 'Installment';
+    protected static ?string $modelLabel = 'Deposits';
 
     protected static ?string $pluralModelLabel = 'Installments';
 
