@@ -25,6 +25,8 @@ class ListFinancings extends ListRecords
     protected static string $resource = FinancingResource::class;
 
 
+    protected static ?string $title = 'Financing';
+
     protected function getHeaderWidgets(): array
     {
         return [
@@ -44,7 +46,7 @@ class ListFinancings extends ListRecords
                 ->table([
                     TextInput::make('monthly_amount')
 
-                        ->label('Total amount')
+                        ->label('Monthly Amount')
                         ->default(function () {
                             $financins = Financing::all()
                                 ->where('institute_id', Filament::getTenant()->id)
@@ -60,7 +62,7 @@ class ListFinancings extends ListRecords
 
 
                     TextInput::make('tiket_link')
-                        ->label('Link to ticket')
+                        ->label('Link to Tiket')
                         ->required(),
 
                     TextArea::make('description')
