@@ -15,9 +15,11 @@ use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Get;
 use Filament\Support\Colors\Color;
 
 class ListFinancings extends ListRecords
@@ -38,10 +40,33 @@ class ListFinancings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-
+        $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
+        $currenciesAvailables = array_unique($currenciesAvailables);
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
+                ->form([
+                    Select::make('currency')
+                        ->options($currenciesAvailables)
+                        ->live(),
+                    TextInput::make('monthly_amount')
+                        ->default(function (Get $get) {
+                            ray($get('currency'));
+                            return $get('currency');
+                        }),
+                    /*
+                        ->default(function(Get $get) {
+                            $financiatesTotal = Financing::all()
+                                ->where('institution_id', Filament::getTenant()->id)
+                                ->where('currency', $get('currency'))
+                                ->where('status', 'stak' )
+                                ->sum('amount');
+                                return $financiatesTotal;
+                        })
+                        */
+
+
+                ])
                 /*
                 ->table([
                     TextInput::make('monthly_amount')
@@ -90,6 +115,6 @@ class ListFinancings extends ListRecords
                 
                 */
                 ->color(Color::hex('#0086b3')),
-                ];
-            }
+        ];
+    }
 }
