@@ -55,8 +55,8 @@ class PaymentController extends Controller
                     $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
                     break;
                 case 'mercado_pago':
-                    $paymentMethod->setRedirectSuccess(route('payment.mp.success'));
-                    $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
+                    $paymentMethod->setRedirectSuccess('https://success.com');
+                    $paymentMethod->setRedirectCancel('https://success.com');
                     break;
             }
 
