@@ -62,7 +62,7 @@ class ListFinancings extends ListRecords
 
 
                     TextInput::make('tiket_link')
-                        ->label('Link to Tiket')
+                        ->label('Link to Ticket')
                         ->required(),
 
                     TextArea::make('description')
