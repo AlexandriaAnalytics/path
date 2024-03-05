@@ -16,6 +16,8 @@ class InstitutesRelationManager extends RelationManager
 {
     protected static string $relationship = 'institutes';
 
+    protected static ?string $title = 'Institutions';
+
     public function form(Form $form): Form
     {
         return InstituteResource::form($form);
