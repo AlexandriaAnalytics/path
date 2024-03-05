@@ -282,7 +282,7 @@ class InstituteResource extends Resource
                         })
                 ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('institutes.created_at', 'desc');
     }
 
     public static function getRelations(): array
