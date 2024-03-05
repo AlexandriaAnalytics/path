@@ -54,6 +54,7 @@ class NotificationResource extends Resource
                 Tables\Columns\TextColumn::make('body')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created on')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),

@@ -74,9 +74,9 @@ class CreateCandidate extends CreateRecord
                 ])
                 ->get();
 
-            $instituteModulePrice = $instituteCustomPrice?->customModulePrices;
+            $instituteModulePrices = $instituteCustomPrice?->customModulePrices;
 
-            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrice) {
+            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrices) {
                 $billed_concepts->push([
                     'concept' => "Module - {$module->name}",
                     'currency' => $candidate
@@ -85,7 +85,7 @@ class CreateCandidate extends CreateRecord
                         ->firstWhere('id', $candidate->student->region->id)
                         ->monetary_unit,
                     // Use the custom price if it exists, otherwise use the default price
-                    'amount' => $instituteModulePrice->firstWhere('module_id', $module->id)?->price
+                    'amount' => $instituteModulePrices?->firstWhere('module_id', $module->id)?->price
                         ?? LevelCountryModule::query()
                         ->whereHas('levelCountry', fn (Builder $query) => $query
                             ->where('country_id', $candidate->student->country_id)

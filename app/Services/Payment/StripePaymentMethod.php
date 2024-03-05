@@ -32,7 +32,8 @@ class StripePaymentMethod extends AbstractPayment
 
         try {
             $session = Session::create([
-                'success_url' => 'https://example.com/success',
+                'success_url' => $this->getRedirectSuccess(),
+                'cancel_url' => $this->getRedirectCancel(),
                 'line_items' => [
                     [
                         'price' => $price->id,
@@ -86,8 +87,8 @@ class StripePaymentMethod extends AbstractPayment
 
         try {
             $session = Session::create([
-                'success_url' => 'https://example.com/success',
-                'cancel_url' => 'https://example.com/success',
+                //'success_url' => 'https://example.com/success',
+                'success_url' => $this->getRedirectSuccess(),
                 'line_items' => [
                     [
                         'price' => $price->id,
@@ -99,11 +100,22 @@ class StripePaymentMethod extends AbstractPayment
                     'id' => $id
                 ]
             ]);
-
-
+            ray('session', $session);
             $candidate = Candidate::find($id);
-            $candidate->status = UserStatus::Processing_payment->value;
-            $candidate->save();
+            $candidate->update(['status', UserStatus::Processing_payment->value]);
+
+            for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
+                Payment::create([
+                    'candidate_id' => $id,
+                    'payment_method' => 'mercado_pago',
+                    'currency' => $currency,
+                    'amount' => $amountPerInstalment,
+                    'suscription_code' => $session->id,
+                    'instalment_number' => $instalment_number,
+                    'current_instalment' => $instalment,
+                    'status' => 'pending',
+                ]);
+            }
 
             Payment::create([
                 'candidate_id' => $candidate->id,
@@ -122,38 +134,61 @@ class StripePaymentMethod extends AbstractPayment
         }
     }
 
-    private function getAccessToken(): string
-    {
-        return config('stripe.access_token');
-    }
-
     public function processWebhook(Request $request)
     {
         $data = $request->input('data');
-        $type = $request->input('type');
         $stripe = new StripeClient($this->getAccessToken());
-
-        $stripeSessionCode = $data['object']['id'];
-
-        switch ($type) {
-            case 'checkout.session.completed':
-                //$sessionCompleted = $stripe->checkout->sessions->retrieve($data['object']['id']);
-                if ($data['object']['status'] == 'complete') {
-                    $payment = Payment::where('payment_id', $stripeSessionCode)->first();
-                    if ($payment != null) {
-                        Log::info($payment);
-                        $payment->status = 'approved';
-                        $payment->save();
-
-                        $candidate = Candidate::find($payment->candidate_id);
-                        if ($candidate != null) {
-                            $candidate->status = UserStatus::Paid->value;
-                            Log::alert('Candidate state ' . $candidate->status);
-                            $candidate->save();
-                        }
-                    }
-                }
-                break;
+        ray('stripe', $request);
+        if ($request->input('type') == 'checkout.session.completed' && $data['object']['status'] == 'complete') {
+            return match ($data['object']['mode']) {
+                'payment' => $this->processPayment($data),
+                'subscription' => $this->processSuscription($data),
+                default => response()->json(['status' => 'not_implemented'], 501)
+            };
         }
+    }
+
+    private function processPayment($data)
+    {
+        $payment = Payment::where('payment_id', $data['object']['id'])->first();
+        if ($payment != null) {
+            Log::info($payment);
+            $payment->status = 'approved';
+            $payment->save();
+
+            $candidate = Candidate::find($payment->candidate_id);
+            if ($candidate != null) {
+                $candidate->status = UserStatus::Paid->value;
+                Log::alert('Candidate state ' . $candidate->status);
+                $candidate->save();
+            }
+        }
+        return response()->json(['status' => 'ok'], 200);
+    }
+
+    private function processSuscription($data)
+    {
+        $candidateId = $data['object']['metadata']['id'];
+        $installments = Payment::where('suscription_code', $data['object']['id']);
+
+        $currentInstallment = $installments
+            ->where('status', 'pending')
+            ->orderBy('current_instalment', 'ASC')
+            ->first();
+
+        if($currentInstallment != null && $currentInstallment->payment_id != null)
+            return response()->json(['status' => 'no current installment'], 500);
+
+        if($currentInstallment != null){
+            $currentInstallment->update(['status' => 'approved', 'payment_id' => 's-scr-'.$data['object']['id']]);
+            Candidate::find($candidateId)->update(['status' => UserStatus::Paying->value]);
+        }
+
+        return response()->json(['status' => 'ok'], 200);
+    }
+
+    private function getAccessToken(): string
+    {
+        return config('stripe.access_token');
     }
 }

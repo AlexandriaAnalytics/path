@@ -24,30 +24,8 @@ class CreateCandidate extends CreateRecord
         return __('Create candidate');
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['student_id'] = null;
-
-        return $data;
-    }
-
     protected function beforeCreate(): void
     {
-        $students = $this->data['student_id'];
-        $levelId = $this->data['level_id'];
-        $typeOfCertificate = $this->data['type_of_certificate'];
-        $modules = $this->data['modules'];
-
-        $this->data['student_id'] = null;
-
-        foreach ($students as $studentId) {
-            $candidate = new Candidate();
-            $candidate->student_id = $studentId;
-            $candidate->level_id = $levelId;
-            $candidate->type_of_certificate = $typeOfCertificate;
-            $candidate->save();
-            $candidate->modules()->attach($modules);
-        }
 
         if (Period::active()->doesntExist()) {
             Notification::make()
@@ -113,9 +91,9 @@ class CreateCandidate extends CreateRecord
                 ])
                 ->get();
 
-            $instituteModulePrice = $instituteCustomPrice?->customModulePrices;
+            $instituteModulePrices = $instituteCustomPrice?->customModulePrices;
 
-            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrice) {
+            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrices) {
                 $billed_concepts->push([
                     'concept' => "Module - {$module->name}",
                     'currency' => $candidate
@@ -124,7 +102,7 @@ class CreateCandidate extends CreateRecord
                         ->firstWhere('id', $candidate->student->region->id)
                         ->monetary_unit,
                     // Use the custom price if it exists, otherwise use the default price
-                    'amount' => $instituteModulePrice->firstWhere('module_id', $module->id)?->price
+                    'amount' => $instituteModulePrices?->firstWhere('module_id', $module->id)?->price
                         ?? LevelCountryModule::query()
                         ->whereHas('levelCountry', fn (Builder $query) => $query
                             ->where('country_id', $candidate->student->country_id)
