@@ -90,6 +90,7 @@ class CandidateResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
+                    ->visible(fn () => Filament::getTenant()->maximum_cumulative_discount != 0)
                     ->hint(fn () => 'Available discount: ' . Filament::getTenant()->remaining_discount . '%')
                     ->rules([
                         fn (): Closure => function (string $attribute, $value, Closure $fail) {
@@ -139,15 +140,9 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('student.birth_date')
-<<<<<<< HEAD
                     ->label('Date of birth')
                     ->date('d/m/Y')
                     ->sortable(),
-=======
-                    ->label('Date of Birth')
-                    ->sortable()
-                    ->searchable(),
->>>>>>> origin/develop
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
@@ -264,9 +259,6 @@ class CandidateResource extends Resource
 
                 Action::make('pdf')
                     ->label('PDF')
-<<<<<<< HEAD
-                    ->icon('heroicon-o-document'),
-=======
                     ->icon('heroicon-o-document')
                     ->icon('heroicon-o-document')
                     ->disabled(fn (Candidate $record) => !$record->pendingModules->isEmpty()) // Disable if pending modules exist
@@ -291,7 +283,6 @@ class CandidateResource extends Resource
                             return response()->json(['error' => 'PDF generation or download failed'], 500);
                         }
                     }),
->>>>>>> origin/develop
                 // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
                     // Action::make('qr-code')
