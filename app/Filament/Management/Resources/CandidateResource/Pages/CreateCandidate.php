@@ -24,30 +24,8 @@ class CreateCandidate extends CreateRecord
         return __('Create candidate');
     }
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['student_id'] = null;
-
-        return $data;
-    }
-
     protected function beforeCreate(): void
     {
-        $students = $this->data['student_id'];
-        $levelId = $this->data['level_id'];
-        $typeOfCertificate = $this->data['type_of_certificate'];
-        $modules = $this->data['modules'];
-
-        $this->data['student_id'] = null;
-
-        foreach ($students as $studentId) {
-            $candidate = new Candidate();
-            $candidate->student_id = $studentId;
-            $candidate->level_id = $levelId;
-            $candidate->type_of_certificate = $typeOfCertificate;
-            $candidate->save();
-            $candidate->modules()->attach($modules);
-        }
 
         if (Period::active()->doesntExist()) {
             Notification::make()

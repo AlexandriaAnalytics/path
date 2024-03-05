@@ -69,7 +69,6 @@ class CandidateResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->multiple()
                     ]),
                 ...AdminCandidateResource::getExamFields(),
                 Select::make('type_of_certificate')
