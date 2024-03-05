@@ -100,30 +100,11 @@ class StripePaymentMethod extends AbstractPayment
                     'id' => $id
                 ]
             ]);
-            ray('session', $session);
             $candidate = Candidate::find($id);
             $candidate->update(['status', UserStatus::Processing_payment->value]);
 
-            for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
-                Payment::create([
-                    'candidate_id' => $id,
-                    'payment_method' => 'mercado_pago',
-                    'currency' => $currency,
-                    'amount' => $amountPerInstalment,
-                    'suscription_code' => $session->id,
-                    'instalment_number' => $instalment_number,
-                    'current_instalment' => $instalment,
-                    'status' => 'pending',
-                ]);
-            }
-
-            Payment::create([
-                'candidate_id' => $candidate->id,
-                'payment_method' => 'stripe',
-                'payment_id' => $session->id,
-                'currency' => $currency,
-                'amount' => $amountPerInstalment,
-            ]);
+           $this->createGroupOfInstallments($id, 'stripe', $currency, $amountPerInstalment, $session->id, $instalment_number);
+            
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
         } catch (PaymentException $pe) {

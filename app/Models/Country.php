@@ -65,7 +65,7 @@ class Country extends Model
     {
         return $this->belongsToMany(PaymentMethod::class, 'country_payment_method')->withTimestamps();
     }
-
+// ->student->region->paymentMethods()->pluck('name')->toArray()
     public function countryExams(): HasMany
     {
         return $this->hasMany(CountryExam::class);

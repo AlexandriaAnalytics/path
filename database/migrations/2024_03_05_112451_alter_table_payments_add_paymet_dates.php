@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('institutes', function (Blueprint $table) {
-            $table->boolean('installment_plans')->default(false);
-            $table->decimal('mora', 10, 2)->default(0);
+        Schema::table('payments', function (Blueprint $table) {
+            $table->date('expiration_date');
+            $table->date('current_period');
         });
     }
 
@@ -22,10 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('institutes', function (Blueprint $table) {
-            $table->dropColumn('installment_plans');
-            $table->dropColumn('mora');
-
+        Schema::table('payments', function (Blueprint $table) {
+            //
         });
     }
 };
