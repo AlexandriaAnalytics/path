@@ -44,7 +44,7 @@ class ListFinancings extends ListRecords
 
                     TextInput::make('monthly_amount')
 
-                        ->label('Monthly Amount')
+                        ->label('Total amount')
                         ->default(function () {
                             $financins = Financing::all()
                                 ->where('institute_id', Filament::getTenant()->id)
@@ -60,7 +60,7 @@ class ListFinancings extends ListRecords
 
 
                     TextInput::make('tiket_link')
-                        ->label('Link to Ticket')
+                        ->label('Link to ticket')
                         ->required(),
 
                     TextArea::make('description')
