@@ -135,15 +135,6 @@ class StudentResource extends Resource
                 TextColumn::make('candidates.id')
                     ->label('Candidate')
                     ->badge()
-                    ->formatStateUsing(function (Student $record) {
-                        if (!Candidate::query()
-                            ->where('student_id', $record->id)
-                            ->doesntExist()) {
-                            return  Candidate::query()->where('student_id', $record->id)->get()->pluck('id')->implode(', ');
-                        } else {
-                            return 'No';
-                        }
-                    })
                     ->searchable()
                     ->default('No')
                     ->toggleable(isToggledHiddenByDefault: false),
