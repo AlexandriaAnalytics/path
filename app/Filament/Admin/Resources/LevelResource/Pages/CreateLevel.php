@@ -16,8 +16,8 @@ class CreateLevel extends CreateRecord
         return __('Create exam');
     }
 
-    protected function getRedirectUrl(): string
+    /*protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
-    }
+        return $this->getResource()::getUrl('edit');
+    }*/
 }

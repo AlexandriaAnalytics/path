@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\LevelResource\Pages;
+use App\Filament\Admin\Resources\LevelResource\RelationManagers\LevelCountriesRelationManager;
 use App\Models\CertificateType;
 use App\Models\Level;
 use App\Models\Modality;
@@ -70,8 +71,6 @@ class LevelResource extends Resource
                     ->preload()
                     ->multiple()
                     ->required(),
-
-
             ]);
     }
 
@@ -99,7 +98,7 @@ class LevelResource extends Resource
     public static function getRelations(): array
     {
         return [
-            LevelResource\RelationManagers\LevelCountriesRelationManager::class,
+            LevelCountriesRelationManager::class,
         ];
     }
 
@@ -108,7 +107,7 @@ class LevelResource extends Resource
         return [
             'index' => Pages\ListLevels::route('/'),
             'create' => Pages\CreateLevel::route('/create'),
-            'view' => Pages\ViewLevel::route('/{record}'),
+            //'view' => Pages\ViewLevel::route('/{record}'),
             'edit' => Pages\EditLevel::route('/{record}/edit'),
         ];
     }
