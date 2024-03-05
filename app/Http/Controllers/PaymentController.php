@@ -86,7 +86,7 @@ class PaymentController extends Controller
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-
+            
             $paymentMethod->setRedirectSuccess(route('filament.candidate.pages.payments'));
             $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
             if ($validated['payment_method'] == 'paypal') { //TODO: sacar este horrible switch e implementar algun tipo de interfaz

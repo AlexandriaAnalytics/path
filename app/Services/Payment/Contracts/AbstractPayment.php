@@ -39,7 +39,7 @@ abstract class AbstractPayment implements IPayment
                          'candidate_id' => $id,
                          'payment_method' => $paymentMethod,
                          'currency' => $currency,
-                         'amount' => $$amountPerMonth,
+                         'amount' => $amountPerMonth,
                          'suscription_code' => $suscriptionCode,
                          'instalment_number' => $installmentNumber,
                          'current_instalment' => $instalment,
