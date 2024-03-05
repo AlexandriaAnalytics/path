@@ -23,6 +23,8 @@ class CandidateExporterAsociated extends Exporter
                 ->label('Name'),
             ExportColumn::make('student.surname')
                 ->label('Surname'),
+            ExportColumn::make('birth_date')
+                ->label('Date of Birth'),
             ExportColumn::make('level.name')
                 ->label('Exam'),
             ExportColumn::make('modules.name')->label('Modules'),

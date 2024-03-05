@@ -59,8 +59,8 @@ class CandidateResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Fieldset::make('Student')
+            ->schema([
+                Fieldset::make('Student')
                     ->schema([
                         Select::make('student_id')
                             ->relationship(
@@ -134,6 +134,10 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('student.birth_date')
+                    ->label('Date of Birth')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
@@ -229,7 +233,7 @@ class CandidateResource extends Resource
                                 'suscription_code' => $suscriptionCode,
                                 'instalment_number' => $data['instalments'],
                                 'current_instalment' => $index,
-                                'expiration_date'=> $currentDate,
+                                'expiration_date' => $currentDate,
                                 'current_period' => $expirationDate,
                             ]);
 
@@ -251,7 +255,7 @@ class CandidateResource extends Resource
                 Action::make('pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-document'),
-                    // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
                     // Action::make('qr-code')
                     //     ->label('QR Code')

@@ -21,6 +21,8 @@ class CandidateExporter extends Exporter
                 ->label('Name'),
             ExportColumn::make('student.surname')
                 ->label('Surname'),
+            ExportColumn::make('birth_date')
+                ->label('Date of Birth'),
             // ExportColumn::make('granted_discount')
             //     ->label('Discount'),
             ExportColumn::make('level.name')
@@ -29,9 +31,9 @@ class CandidateExporter extends Exporter
             ExportColumn::make('student.institute.name')->label('Member or center'),
             ExportColumn::make('exam.session_name')->label('Exam session'),
             ExportColumn::make('student.personal_educational_needs')
-            ->label('Educactional needs'),
+                ->label('Educactional needs'),
             ExportColumn::make('created_at')
-            ->label('Created on'),
+                ->label('Created on'),
             ExportColumn::make('type_of_certificate')
                 ->label('Type of Certificate'),
 

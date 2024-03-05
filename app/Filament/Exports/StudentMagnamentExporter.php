@@ -21,6 +21,8 @@ class StudentMagnamentExporter extends Exporter
                 ->label('Name'),
             ExportColumn::make('surname')
                 ->label('Surname'),
+             ExportColumn::make('birth_date')
+                ->label('Date of Birth'),
             ExportColumn::make('country.name')
                 ->label('Country of residence'),
             ExportColumn::make('personal_educational_needs')
