@@ -19,6 +19,8 @@ class LevelCountriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'levelCountries';
 
+    protected static ?string $title = 'Exam fees per country';
+
     public function form(Form $form): Form
     {
         return $form
@@ -40,20 +42,20 @@ class LevelCountriesRelationManager extends RelationManager
                     ->columns(3)
                     ->schema([
                         TextInput::make('price_all_modules')
-                            ->label('Complete Exam Price')
+                            ->label('Full exam fee')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->default(0),
                         TextInput::make('price_exam_right_all_modules')
-                            ->label('Complete Exam Right')
+                            ->label('Full exam registration fee')
                             ->helperText('When all modules are taken')
                             ->required()
                             ->numeric()
                             ->minValue(0)
                             ->default(0),
                         TextInput::make('price_exam_right')
-                            ->label('Incomplete Exam Right')
+                            ->label('Module registration fee')
                             ->helperText('When not all modules are taken')
                             ->required()
                             ->numeric()
@@ -101,7 +103,8 @@ class LevelCountriesRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('New exam fees'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -3,6 +3,8 @@
 namespace App\Filament\Management\Pages\Tenancy;
 
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Pages\Tenancy\EditTenantProfile;
@@ -19,7 +21,7 @@ class EditInstituteProfile extends EditTenantProfile
         return $form
             ->columns(2)
             ->schema([
-                Fieldset::make('Institute information')
+                Fieldset::make('General information')
                     ->columnSpan(1)
                     ->columns(1)
                     ->schema([
@@ -27,10 +29,11 @@ class EditInstituteProfile extends EditTenantProfile
                             ->label('Unique ID')
                             ->disabled(),
                         TextInput::make('name')
-                            ->label('Name')
+                            ->label('Institution')
                             ->disabled(),
-                        TextInput::make('instituteType.name')
-                            ->label('Type')
+                        Select::make('instituteType')
+                            ->label('Membership type')
+                            ->relationship('instituteType', 'name')
                             ->disabled(),
                     ]),
                 Fieldset::make('Contact information')

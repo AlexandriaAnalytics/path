@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('institute_custom_level_price', function (Blueprint $table) {
+        Schema::table('custom_level_price', function (Blueprint $table) {
             $table->unsignedBigInteger('institute_id')->nullable()->change();
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('institute_custom_level_price', function (Blueprint $table) {
+        Schema::table('custom_level_price', function (Blueprint $table) {
             $table->unsignedBigInteger('institute_id')->nullable(false)->change();
         });
     }

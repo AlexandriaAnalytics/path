@@ -14,7 +14,7 @@ class ListExams extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3'))->label('New exam session'),
         ];
     }
 }

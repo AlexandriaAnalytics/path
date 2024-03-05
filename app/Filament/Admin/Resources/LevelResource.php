@@ -55,15 +55,17 @@ class LevelResource extends Resource
                 Forms\Components\Select::make('modules')
                     ->relationship(titleAttribute: 'name')
                     ->multiple()
+                    ->required()
                     ->preload(),
-                Forms\Components\Select::make('modalities')
+                /* Forms\Components\Select::make('modalities')
                     ->relationship(titleAttribute: 'name')
                     ->preload()
                     ->required()
-                    ->multiple(),
+                    ->multiple(), */
 
 
                 Forms\Components\Select::make('certificateTypes')
+                    ->label('Type of certificate')
                     ->relationship(titleAttribute: 'name')
                     ->preload()
                     ->multiple()
@@ -79,7 +81,7 @@ class LevelResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->sortable(),
                 Tables\Columns\TextColumn::make('modules.name')->badge(),
-                Tables\Columns\TextColumn::make('modalities.name')->badge(),
+                //Tables\Columns\TextColumn::make('modalities.name')->badge(),
                 Tables\Columns\TextColumn::make('certificateTypes.name')->badge(),
                 Tables\Columns\TextColumn::make('description'),
             ])

@@ -40,7 +40,9 @@ use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Concerns\ToArray;
@@ -95,6 +97,7 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
@@ -103,7 +106,9 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning'
                     }),
 
-                TextColumn::make('instalment_counter'),
+                TextColumn::make('instalment_counter')
+                    ->label('Installment counter')
+                    ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Names')
                     ->sortable()
@@ -162,6 +167,28 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->multiple()
                     ->preload(),
+                SelectFilter::make('status')
+                    ->label('Payment status')
+                    ->options(UserStatus::class)
+                    ->searchable(),
+                TernaryFilter::make('personal_educational_needs')
+                    ->label('Educational needs')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereDoesntHave('student', fn (Builder $query) => $query->whereNull('personal_educational_needs')),
+                        false: fn (Builder $query) => $query->whereHas('student', fn (Builder $query) => $query->whereNull('personal_educational_needs')),
+                    )
+                    ->native(false),
+                TernaryFilter::make('pending_modules')
+                    ->label('Modules')
+                    ->trueLabel('Pending assignment')
+                    ->falseLabel('All assigned')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereHas('pendingModules'),
+                        false: fn (Builder $query) => $query->whereDoesntHave('pendingModules'),
+                    )
+                    ->native(false),
             ])
             ->actions([
                 ActionGroup::make([
@@ -234,6 +261,7 @@ class CandidateResource extends Resource
                 TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
+                    ->sortable()
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',

@@ -13,7 +13,7 @@ class CertificateTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        CertificateType::create(['name' => 'on-line']);
-        CertificateType::create(['name' => 'on-site']);
+        CertificateType::create(['name' => 'Digital']);
+        CertificateType::create(['name' => 'Printed']);
     }
 }

@@ -286,24 +286,25 @@ CREATE TABLE `imports` (
   CONSTRAINT `imports_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `institute_custom_level_price`;
+DROP TABLE IF EXISTS `custom_level_price`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `institute_custom_level_price` (
+CREATE TABLE `custom_level_price` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `institute_id` bigint unsigned NOT NULL,
   `level_country_id` bigint unsigned NOT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exam_registration_fee` decimal(12,2) DEFAULT NULL COMMENT 'Extra price for all modules',
-  `module_registration_fee` decimal(12,2) DEFAULT NULL COMMENT 'Extra price for exam right',
+  `full_exam_fee` decimal(12,2) DEFAULT NULL COMMENT 'Price for the complete exam',
+  `full_exam_registration_fee` decimal(12,2) DEFAULT NULL COMMENT 'Fee for the complete exam',
+  `module_registration_fee` decimal(12,2) DEFAULT NULL COMMENT 'Fee for an incomplete exam',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `institute_custom_level_price_institute_id_foreign` (`institute_id`),
-  KEY `institute_custom_level_price_level_country_id_foreign` (`level_country_id`),
-  CONSTRAINT `institute_custom_level_price_institute_id_foreign` FOREIGN KEY (`institute_id`) REFERENCES `institutes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `institute_custom_level_price_level_country_id_foreign` FOREIGN KEY (`level_country_id`) REFERENCES `level_country` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `custom_level_price_institute_id_foreign` (`institute_id`),
+  KEY `custom_level_price_level_country_id_foreign` (`level_country_id`),
+  CONSTRAINT `custom_level_price_institute_id_foreign` FOREIGN KEY (`institute_id`) REFERENCES `institutes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `custom_level_price_level_country_id_foreign` FOREIGN KEY (`level_country_id`) REFERENCES `level_country` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `institute_payments`;

@@ -54,14 +54,10 @@ class ExamResource extends Resource
                             ->label('Maximum number of candidates'),
                         Forms\Components\DateTimePicker::make('scheduled_date')
                             ->seconds(false)
-                            ->minutesStep(5)
-                            ->required()
-                            ->minDate(now()),
+                            ->required(),
                         Forms\Components\DateTimePicker::make('payment_deadline')
                             ->seconds(false)
-                            ->minutesStep(5)
-                            ->required()
-                            ->minDate(now()),
+                            ->required(),
                         Forms\Components\Select::make('type')
                             ->options(\App\Enums\ExamType::class)
                             ->native(false)
@@ -129,6 +125,7 @@ class ExamResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->badge()
                     ->alignCenter()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('modules.name')
                     ->badge()
@@ -142,6 +139,7 @@ class ExamResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('location')
                     ->default('-')
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([

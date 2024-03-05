@@ -12,10 +12,10 @@ class DownloadController extends Controller
     public function downloadCandidate()
     {
         $data = [];
-        $html = view('candidate-pdf', $data)->render();
+        $html = view('pdf.candidate', $data)->render();
 
         $pdf = PDF::loadHTML($html);
-        return $pdf->download('downloaded_pdf.pdf');
+        return $pdf->download();
     }
 
     public function downloadCandidateById($id)
@@ -30,10 +30,10 @@ class DownloadController extends Controller
             'candidate' => $candidate,
         ];
 
-        $html = view('candidate-pdf', $data)->render();
+        $html = view('pdf.candidate', $data)->render();
 
         $pdf = PDF::loadHTML($html);
-        return $pdf->stream('downloaded_pdf_' . $id . '.pdf');
+        return $pdf->stream();
     }
 
     public function generateQrCode($id)

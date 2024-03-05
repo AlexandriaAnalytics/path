@@ -38,7 +38,8 @@ class ListFinancings extends ListRecords
     {
 
         return [
-            Actions\Action::make('send pay')
+            Actions\Action::make('send_payment')
+                ->label('Send payment')
                 ->form([
 
                     TextInput::make('monthly_amount')
@@ -84,7 +85,7 @@ class ListFinancings extends ListRecords
                         ]);
                     }
                 })
-                
+
                 ->color(Color::hex('#0086b3')),
         ];
     }
