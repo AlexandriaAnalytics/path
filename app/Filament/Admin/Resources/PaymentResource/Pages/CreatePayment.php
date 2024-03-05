@@ -10,6 +10,8 @@ class CreatePayment extends CreateRecord
 {
     protected static string $resource = PaymentResource::class;
 
+    protected static ?string $title = 'Create payment';
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

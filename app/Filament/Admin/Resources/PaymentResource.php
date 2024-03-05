@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
+    protected static ?string $navigationLabel = 'Payments method';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

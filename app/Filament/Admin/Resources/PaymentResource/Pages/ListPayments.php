@@ -8,7 +8,8 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
 
 class ListPayments extends ListRecords
-{
+{   
+    protected static ?string $title = 'Payments methods';
     protected static string $resource = PaymentResource::class;
 
     protected function getHeaderActions(): array
