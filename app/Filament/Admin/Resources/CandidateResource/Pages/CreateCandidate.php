@@ -46,6 +46,13 @@ class CreateCandidate extends CreateRecord
                 ->pivot
                 ->price_all_modules;
 
+            // If the institute has a custom price, apply it
+            if ($instituteCustomPrice?->type === CustomPricing::Percentage) {
+                $examPrice *= $instituteCustomPrice->full_exam_fee / 100;
+            } elseif ($instituteCustomPrice?->type === CustomPricing::Fixed) {
+                $examPrice = $instituteCustomPrice->full_exam_fee;
+            }
+
             $billed_concepts->push([
                 'concept' => 'Complete price',
                 'currency' => $candidate
@@ -67,7 +74,9 @@ class CreateCandidate extends CreateRecord
                 ])
                 ->get();
 
-            $billed_modules->each(function ($module) use ($billed_concepts, $candidate) {
+            $instituteModulePrices = $instituteCustomPrice?->customModulePrices;
+
+            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrices) {
                 $billed_concepts->push([
                     'concept' => "Module - {$module->name}",
                     'currency' => $candidate
@@ -75,7 +84,9 @@ class CreateCandidate extends CreateRecord
                         ->countries
                         ->firstWhere('id', $candidate->student->region->id)
                         ->monetary_unit,
-                    'amount' => LevelCountryModule::query()
+                    // Use the custom price if it exists, otherwise use the default price
+                    'amount' => $instituteModulePrices?->firstWhere('module_id', $module->id)?->price
+                        ?? LevelCountryModule::query()
                         ->whereHas('levelCountry', fn (Builder $query) => $query
                             ->where('country_id', $candidate->student->country_id)
                             ->where('level_id', $candidate->level_id))
@@ -103,13 +114,13 @@ class CreateCandidate extends CreateRecord
 
         if ($instituteCustomPrice?->type === CustomPricing::Percentage) {
             if ($missingModules->isEmpty()) {
-                $examRightPrice *= $instituteCustomPrice->exam_registration_fee / 100;
+                $examRightPrice *= $instituteCustomPrice->full_exam_registration_fee / 100;
             } else {
                 $examRightPrice *= $instituteCustomPrice->module_registration_fee / 100;
             }
         } elseif ($instituteCustomPrice?->type === CustomPricing::Fixed) {
             if ($missingModules->isEmpty()) {
-                $examRightPrice = $instituteCustomPrice->exam_registration_fee;
+                $examRightPrice = $instituteCustomPrice->full_exam_registration_fee;
             } else {
                 $examRightPrice = $instituteCustomPrice->module_registration_fee;
             }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomLevelPrice extends Model
@@ -12,13 +13,14 @@ class CustomLevelPrice extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'institute_custom_level_price';
+    protected $table = 'custom_level_price';
 
     protected $fillable = [
         'institute_id',
         'level_country_id',
         'type',
-        'exam_registration_fee',
+        'full_exam_fee',
+        'full_exam_registration_fee',
         'module_registration_fee',
     ];
 
@@ -34,5 +36,10 @@ class CustomLevelPrice extends Model
     public function levelCountry(): BelongsTo
     {
         return $this->belongsTo(LevelCountry::class);
+    }
+
+    public function customModulePrices(): HasMany
+    {
+        return $this->hasMany(CustomModulePrice::class);
     }
 }

@@ -18,19 +18,27 @@ class StudentImporter extends Importer
     {
         return [
             ImportColumn::make('name')
+                ->label('Name')
                 ->requiredMapping()
                 ->rules(['required', 'max:255'])
+                ->exampleHeader('Name')
                 ->example('John'),
             ImportColumn::make('surname')
+                ->label('Surname')
                 ->requiredMapping()
                 ->rules(['required', 'max:255'])
+                ->exampleHeader('Surname')
                 ->example('Doe'),
             ImportColumn::make('email')
+                ->label('Email address')
                 ->rules(['email', 'max:255', 'unique:students,email'])
+                ->exampleHeader('Email address')
                 ->example('john.doe@example.com'),
             ImportColumn::make('birth_date')
+                ->label('Date of birth')
                 ->requiredMapping()
                 ->rules(['required', 'date_format:d/m/Y'])
+                ->exampleHeader('Date of birth')
                 ->example('23/04/1999')
                 ->castStateUsing(function (string $state): ?Carbon {
                     if (blank($state)) {
@@ -45,6 +53,18 @@ class StudentImporter extends Importer
                         return null;
                     }
                 }),
+            ImportColumn::make('personal_educational_needs')
+                ->label('Educational needs')
+                ->rules(['max:255'])
+                ->exampleHeader('Educational needs')
+                ->example('Needs x, y, z')
+                ->castStateUsing(function (string $state): ?string {
+                    if (blank($state)) {
+                        return null;
+                    }
+
+                    return $state;
+                })
         ];
     }
 
