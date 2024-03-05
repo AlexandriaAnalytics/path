@@ -19,7 +19,9 @@ class ListPayments extends ListRecords
     {
         return [
             'All' => Components\Tab::make(),
-            'Mercado Pago' => Components\Tab::make()
+            'Mercado Pago' => Components\Tab::make(),
+            'Paypal' => Components\Tab::make(),
+            'Stripe' => Components\Tab::make()
             //->modifyQueryUsing(fn(Builder $query) => $query->where('payment_method', 'mercado_pago')),
 
         ];

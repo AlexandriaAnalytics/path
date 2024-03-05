@@ -143,9 +143,9 @@ class InstituteResource extends Resource
                             ->default(false),
 
                             Toggle::make('installment_plans')
-                            ->helperText('when is enabled allows to associates to finaciate our candidates')
+                            ->helperText('If enabled, the institution will be able to offer subscription payments')
                             ->default(false)
-                            ->label('Installment Plans'),
+                            ->label('Installment plans'),
 
                            
                             
@@ -160,7 +160,7 @@ class InstituteResource extends Resource
                             ->default(0)
                             ->minValue(0),
                             TextInput::make('mora')
-                                    ->label('tax expired pay for deposits (percentage)')
+                                    ->label('Late payment fee')
                                     ->numeric()
                                     ->postfix('%')
                     ]),
