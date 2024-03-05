@@ -27,6 +27,8 @@ class ListFinancings extends ListRecords
     protected static string $resource = FinancingResource::class;
 
 
+    protected static ?string $title = 'Financing';
+
     protected function getHeaderWidgets(): array
     {
         return [
@@ -69,7 +71,7 @@ class ListFinancings extends ListRecords
                 ->table([
                     TextInput::make('monthly_amount')
 
-                        ->label('Monthly Amount')
+                        ->label('Total amount')
                         ->default(function () {
                             $financins = Financing::all()
                                 ->where('institute_id', Filament::getTenant()->id)
@@ -85,25 +87,25 @@ class ListFinancings extends ListRecords
 
 
                     TextInput::make('tiket_link')
-                        ->label('Link to Tiket')
+                        ->label('Link to ticket')
                         ->required(),
 
                     TextArea::make('description')
-                        ->required(),
-                        ])
-                        
-                        ->action(function (array $data) {
-                            InstitutePayment::create([
-                                'institute_id' => Filament::getTenant()->id,
-                                'ticket_link' => $data['tiket_link'],
-                                'monthly_amount' => $data['monthly_amount'],
-                                'description' => $data['description'],
-                                ]);
-                                
-                                $financins = Financing::all()
-                                ->where('institute_id', Filament::getTenant()->id)
-                                ->where('currency', 'GBP');
-                                foreach ($financins as $finance) {
+                        ->label('Description'),
+                ])
+
+                ->action(function (array $data) {
+                    InstitutePayment::create([
+                        'institute_id' => Filament::getTenant()->id,
+                        'ticket_link' => $data['tiket_link'],
+                        'monthly_amount' => $data['monthly_amount'],
+                        'description' => $data['description'],
+                    ]);
+
+                    $financins = Financing::all()
+                        ->where('institute_id', Filament::getTenant()->id)
+                        ->where('currency', 'GBP');
+                    foreach ($financins as $finance) {
                         $finance->current_payment->update([
                             'status' => UserStatus::Processing_payment->value,
                             'payment_id' => 'pid-' . (Carbon::now()->timestamp + random_int())

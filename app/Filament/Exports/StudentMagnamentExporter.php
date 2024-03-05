@@ -26,11 +26,11 @@ class StudentMagnamentExporter extends Exporter
             ExportColumn::make('personal_educational_needs')
                 ->label('Educational needs'),
             ExportColumn::make('birth_date')
-                ->label('Birth Date'),
+                ->label('Date of birth'),
             ExportColumn::make('created_at')
                 ->label('Created on'),
             ExportColumn::make('updated_at')
-                ->label('updated on'),
+                ->label('Updated on'),
      
 
         ];

@@ -33,7 +33,7 @@ abstract class AbstractPayment implements IPayment
 
      protected function createGroupOfInstallments($id, $paymentMethod, $currency, $amountPerMonth, $suscriptionCode, $installmentNumber) {
           $currentDate = Carbon::now()->day(1);
-          
+
           for ($instalment = 1; $instalment <= $installmentNumber; $instalment++)
                Payment::create([
                          'candidate_id' => $id,
