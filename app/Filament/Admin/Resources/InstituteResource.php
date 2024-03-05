@@ -143,9 +143,9 @@ class InstituteResource extends Resource
                             ->default(false),
 
                             Toggle::make('installment_plans')
-                            ->helperText('when is enabled allows to associates to finaciate our candidates')
+                            ->helperText('If enabled, the institution will be able to offer subscription payments')
                             ->default(false)
-                            ->label('Installment Plans'),
+                            ->label('Installment plans'),
 
                            
                             
