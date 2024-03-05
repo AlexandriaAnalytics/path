@@ -69,7 +69,7 @@ class StripePaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
-        $amountPerInstalment = $total_amount_value  / $instalment_number;
+        $amountPerInstalment = round($total_amount_value  / $instalment_number);
 
         Stripe::setApiKey($this->getAccessToken());
 
@@ -87,13 +87,14 @@ class StripePaymentMethod extends AbstractPayment
         try {
             $session = Session::create([
                 'success_url' => 'https://example.com/success',
+                'cancel_url' => 'https://example.com/success',
                 'line_items' => [
                     [
                         'price' => $price->id,
                         'quantity' => 1,
                     ],
                 ],
-                'mode' => 'payment',
+                'mode' => 'subscription',
                 'metadata' => [
                     'id' => $id
                 ]
@@ -123,7 +124,7 @@ class StripePaymentMethod extends AbstractPayment
 
     private function getAccessToken(): string
     {
-        return config('stripe.mode') === 'sandbox' ? config('stripe.sandbox.access_token') : config('stripe.live.access_token');
+        return config('stripe.access_token');
     }
 
     public function processWebhook(Request $request)

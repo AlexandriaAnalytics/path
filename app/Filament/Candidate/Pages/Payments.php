@@ -69,6 +69,15 @@ class Payments extends Page implements HasForms
         return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
     }
 
+    public function strypeFinanciament()
+    {
+        return redirect()->route('payment.process.cuotas', [ 
+            'payment_method' => 'stripe',
+            'amount_value' => $this->total_amount,
+            'cuotas' => $this->instalment_number
+        ]);
+    }
+
 
 
 
@@ -120,7 +129,6 @@ class Payments extends Page implements HasForms
             Action::make('MP_financing')
                 ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
                 ->icon('heroicon-o-currency-dollar')
-                ->disabled(fn () => $this->candidate->student->email == null)
                 ->action(fn () => $this->mercadoPagoFinanciament()),
         ];
     }
@@ -138,14 +146,22 @@ class Payments extends Page implements HasForms
         $instituteCategory = $this->candidate->student->institute->instituteType()->first()->name;
 
 
-        if ($instituteCategory == 'Premium Exam Centre' || $this->candidate->student->institute->can_financiate) { // puedo acceder a cuotas
-            if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
-                $actions += $this->renderPaypalFinancing();
-            else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
-                $actions += $this->renderMercadoPagoFinancing();
-        }
+       // if ( true || $instituteCategory == 'Premium Exam Centre' || $this->candidate->student->institute->can_financiate)  // puedo acceder a cuotas
+            //if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
+              //  $actions += $this->renderPaypalFinancing();
+            //else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
+            $actions += $this->renderMercadoPagoFinancing();
+            
 
-        return $actions;
+        return [Action::make('MP_financing')
+                ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                //->disabled(fn () => $this->candidate->student->email == null)
+                ->action(fn () => $this->mercadoPagoFinanciament()),  Action::make('stripe_financing')
+                ->label('Financing with stripe (' . $this->instalment_number . ' instalments)')
+                ->icon('heroicon-o-currency-dollar')
+                ->action(fn () => $this->strypeFinanciament()),
+        ];
     }
 
     public function form(Form $form): Form
@@ -164,15 +180,7 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-        /*
-        if (!in_array($payment_method_selected, PaymentMethodModel::all()->pluck('slug')->toArray())){
-            Notification::make()
-                ->danger()
-                ->title('Payment method not selected')
-                ->send();
-            return;
-            }
-*/
+    
         return redirect()
             ->route(
                 'payment.process',
@@ -190,7 +198,6 @@ class Payments extends Page implements HasForms
                 ->submitTo('submit')
                 ->message('Payment method updated successfully.')
                 ->successToast(),
-            //      ->redirect('/candidate/payment'),
         ];
     }
 }
