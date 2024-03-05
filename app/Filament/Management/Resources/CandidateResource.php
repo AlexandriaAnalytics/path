@@ -12,6 +12,7 @@ use App\Filament\Management\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
 use App\Models\Change;
 use App\Models\Financing;
+use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Student;
 use Carbon\Carbon;
@@ -41,6 +42,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CandidateResource extends Resource
 {
@@ -57,8 +59,8 @@ class CandidateResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Fieldset::make('Student')
+        ->schema([
+            Fieldset::make('Student')
                     ->schema([
                         Select::make('student_id')
                             ->relationship(
@@ -216,7 +218,8 @@ class CandidateResource extends Resource
 
                         $amount = $candidate->total_amount / $data['instalments'];
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
-
+                        $currentDate = Carbon::now()->day(1);
+                        $expirationDate = Carbon::now()->addMonth()->day(1);
                         for ($index = 1; $index <= $data['instalments']; $index++) {
                             $payment = Payment::create([
                                 'candidate_id' => $candidate->id,
@@ -225,8 +228,13 @@ class CandidateResource extends Resource
                                 'amount' => $amount,
                                 'suscription_code' => $suscriptionCode,
                                 'instalment_number' => $data['instalments'],
-                                'current_instalment' => $index
+                                'current_instalment' => $index,
+                                'expiration_date'=> $currentDate,
+                                'current_period' => $expirationDate,
                             ]);
+
+                            $currentDate->addMonth();
+                            $expirationDate->addMonth();
                             $fincancing->payments()->save($payment);
                         }
 
@@ -238,12 +246,12 @@ class CandidateResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value),
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value && Filament::getTenant()->installment_plans),
 
                 Action::make('pdf')
                     ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
+                    ->icon('heroicon-o-document'),
+                    // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
                     // Action::make('qr-code')
                     //     ->label('QR Code')

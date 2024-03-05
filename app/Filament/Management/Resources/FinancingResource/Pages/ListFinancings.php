@@ -40,8 +40,8 @@ class ListFinancings extends ListRecords
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
-                ->form([
-
+                /*
+                ->table([
                     TextInput::make('monthly_amount')
 
                         ->label('Monthly Amount')
@@ -65,28 +65,29 @@ class ListFinancings extends ListRecords
 
                     TextArea::make('description')
                         ->required(),
-                ])
-
-                ->action(function (array $data) {
-                    InstitutePayment::create([
-                        'institute_id' => Filament::getTenant()->id,
-                        'ticket_link' => $data['tiket_link'],
-                        'monthly_amount' => $data['monthly_amount'],
-                        'description' => $data['description'],
-                    ]);
-
-                    $financins = Financing::all()
-                        ->where('institute_id', Filament::getTenant()->id)
-                        ->where('currency', 'GBP');
-                    foreach ($financins as $finance) {
+                        ])
+                        
+                        ->action(function (array $data) {
+                            InstitutePayment::create([
+                                'institute_id' => Filament::getTenant()->id,
+                                'ticket_link' => $data['tiket_link'],
+                                'monthly_amount' => $data['monthly_amount'],
+                                'description' => $data['description'],
+                                ]);
+                                
+                                $financins = Financing::all()
+                                ->where('institute_id', Filament::getTenant()->id)
+                                ->where('currency', 'GBP');
+                                foreach ($financins as $finance) {
                         $finance->current_payment->update([
                             'status' => UserStatus::Processing_payment->value,
                             'payment_id' => 'pid-' . (Carbon::now()->timestamp + random_int())
                         ]);
                     }
                 })
-
+                
+                */
                 ->color(Color::hex('#0086b3')),
-        ];
-    }
+                ];
+            }
 }

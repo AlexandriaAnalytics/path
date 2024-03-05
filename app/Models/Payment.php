@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,10 @@ class Payment extends Model
         'candidate_id',
         'payment_type',
         'financing_id',
+        'current_period',
+        'expiration_date'
     ];
+
 
     protected $attributes = [
         'status' => 'pending'
@@ -45,6 +49,13 @@ class Payment extends Model
     public function financing(): BelongsTo
     {
         return $this->belongsTo(Financing::class);
+    }
+
+    public function getIsExpiredAttribute()
+    {
+        $currentPeriod = $this->current_period;
+        $expiredDate = $this->expiration_date;
+      return Carbon::createFromDate($currentPeriod)->diff(Carbon::createFromDate($expiredDate), 'month',true);
     }
 
 }

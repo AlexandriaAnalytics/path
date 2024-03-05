@@ -60,7 +60,6 @@ class Financing extends Model
     }
 
 
-
     public function totalAmount(): Attribute
     {
         return new Attribute(
@@ -80,5 +79,13 @@ class Financing extends Model
         return new Attribute(
             get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount')
         );
+    }
+
+    public function getCurrentPaidAttribute() {
+        return $this->candidate->payments()->first()->amount;
+    }
+
+    public function getIsExpiredAttribute() {
+        return $this->student->payment_current_istallment->current_period;
     }
 }
