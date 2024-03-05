@@ -14,6 +14,7 @@ use MercadoPago\Client\PreApproval\PreApprovalClient;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\MercadoPagoConfig;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat\Wizard\Currency;
 
 class MercadoPagoPaymentMethod extends AbstractPayment
 {
@@ -25,14 +26,13 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         if (!is_numeric($amount_value)) {
             throw new PaymentException('Must be insert a correct amount');
         }
-
         if (!in_array($currency, MercadoPagoPaymentMethod::AVAILABLE_CURRENCIES)) {
             throw new PaymentException('currency not supported');
         }
 
         $numeric_amount = round(floatval($amount_value));
 
-        MercadoPagoConfig::setAccessToken($this->getAccessToken());
+        MercadoPagoConfig::setAccessToken($this->getAccessToken($currency));
         $client = new PreferenceClient();
         try {
 
@@ -55,8 +55,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
             );
         }
 
-
-
         $preference->redirect_urls = [
             'success' => $this->getRedirectSuccess(),
             'failure' => $this->getRedirectCancel(),
@@ -76,14 +74,12 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
-        if (!in_array($currency, MercadoPagoPaymentMethod::AVAILABLE_CURRENCIES)) {
-            throw new PaymentException('currency not supported');
-        }
+
 
         $amount = round(floatval($total_amount_value) / $instalment_number, 2);
         $candidate = Candidate::with('student')->findOrFail($id);
 
-        MercadoPagoConfig::setAccessToken($this->getAccessToken());
+        MercadoPagoConfig::setAccessToken($this->getAccessToken($currency));
         try {
             $preapproval = (new PreApprovalClient)
                 ->create([
@@ -97,33 +93,34 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                         "currency_id" => 'ARS', //$currency,
                     ],
                     "back_url" => $this->getRedirectSuccess(),
-                    "payer_email" => env('APP_ENV') == 'local' ? 'test_user@testuser.com' : $candidate->student?->email,
+                    "payer_email" => env('APP_ENV') == 'local' ? 'test_user_1279746686@testuser.com' : $candidate->student?->email,
                     "reason" => "Exam Payment",
                 ]);
+
+            ray('preaproval', $preapproval);
+            for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
+                Payment::create([
+                    'candidate_id' => $id,
+                    'payment_method' => 'mercado_pago',
+                    'currency' => $currency,
+                    'amount' => $amount,
+                    'suscription_code' => $preapproval->id,
+                    'instalment_number' => $instalment_number,
+                    'current_instalment' => $instalment,
+                ]);
+            }
+
+            return new PaymentResult(
+                PaymentMethodResult::REDIRECT,
+                null,
+                $preapproval->init_point
+            );
         } catch (MPApiException $e) {
             return new PaymentResult(
                 PaymentMethodResult::ERROR,
                 join(' / ', $e->getApiResponse()->getContent())
             );
         }
-
-        for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
-            Payment::create([
-                'candidate_id' => $id,
-                'payment_method' => 'mercado_pago',
-                'currency' => $currency,
-                'amount' => $amount,
-                'suscription_code' => $preapproval->id,
-                'instalment_number' => $instalment_number,
-                'current_instalment' => $instalment,
-            ]);
-        }
-
-        return new PaymentResult(
-            PaymentMethodResult::REDIRECT,
-            null,
-            $preapproval->init_point
-        );
     }
 
     public function processWebhook(Request $request)
@@ -131,9 +128,11 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         // make Logic
     }
 
-    private function getAccessToken(): string
+    private function getAccessToken($currency): string
     {
-        return config('mercadopago.access_token');
+        $currency = 'ARG';
+
+        return config('mercadopago.access_token.' . $currency);
     }
 
 
@@ -144,4 +143,19 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         'PYG',
         'BRL',
     ];
+    private function getAccessTokenByCurrency(string $currency): string
+    {
+        switch ($currency) {
+            case 'ARG':
+                return config('mercadopago.access_token.ARG');
+            case 'UYU':
+                return config('mercadopago.access_token.UYU');
+            case 'CLP':
+                return config('mercadopago.access_token.CLP');
+            case 'PYG':
+                return config('mercadopago.access_token.PYG');
+            case 'BRS':
+                return config('mercadopago.access_token.BRS');
+        }
+    }
 }

@@ -8,22 +8,12 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
-use App\Models\InstituteLevel;
-use App\Models\Student;
-use Filament\Forms;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Resources\RelationManagers\RelationGroup;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
-use Filament\Support\Markdown;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
@@ -33,10 +23,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Collection;
-use Mpdf\Tag\FieldSet as TagFieldSet;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use Ysfkaya\FilamentPhoneInput\PhoneInputNumberType;
 use Ysfkaya\FilamentPhoneInput\Tables\PhoneColumn;
+
 
 class InstituteResource extends Resource
 {
@@ -137,15 +127,13 @@ class InstituteResource extends Resource
                         TextInput::make('files_url')
                             ->label('Specific files URL')
                             ->type('url'),
-                        Toggle::make('can_add_candidates')
+                        
+                            Toggle::make('can_add_candidates')
                             ->label('Can register candidates')
                             ->default(false)
                             ->helperText('If enabled, the institution will be able to register candidates.'),
-                        Toggle::make('can_financiate')
-                            ->label('Can enable financiament features ')
-                            ->default(false)
-                            ->helperText('when is enabled, the institution can financiate our candidates'),
-                        Toggle::make('can_view_registration_fee')
+                        
+                           Toggle::make('can_view_registration_fee')
                             ->helperText('If enabled and provided 30 candidates or more are registered, the institution will be able to see the exam fee and the registration fee separately')
                             ->disabled(
                                 fn (?Institute $record) => (
@@ -153,6 +141,11 @@ class InstituteResource extends Resource
                                     && $record?->instituteType->slug !== 'premium_exam_centre'
                             )
                             ->default(false),
+
+                            Toggle::make('installment_plans')
+                            ->helperText('when is enabled allows to associates to finaciate our candidates')
+                            ->default(false)
+                            ->label('Installment Plans')
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()

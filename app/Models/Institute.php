@@ -38,6 +38,8 @@ class Institute extends Model
         'maximum_cumulative_discount',
         'unique_number',
         'can_view_registration_fee',
+        'installment_plans',
+        'can_add_candidates'
     ];
 
     protected $attributes = [

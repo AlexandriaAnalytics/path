@@ -74,4 +74,10 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return $this->belongsToMany(Institute::class, 'institute_user')
             ->withTimestamps();
     }
+
+    public function institutions(): BelongsToMany
+    {
+        return $this->belongsToMany(Institute::class, 'institute_user')
+            ->withTimestamps();
+    }
 }
