@@ -153,6 +153,11 @@ class StripePaymentMethod extends AbstractPayment
                         }
                     }
                 }
+                case 'payment_intent.succeeded':
+                    break;
+
+                case 'payment_method.attached':
+                    break;
                 break;
         }
     }
