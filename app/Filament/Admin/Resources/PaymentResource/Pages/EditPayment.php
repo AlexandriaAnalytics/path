@@ -11,6 +11,8 @@ class EditPayment extends EditRecord
 {
     protected static string $resource = PaymentResource::class;
 
+    protected static ?string $title = 'Edit payment';
+
     protected function getHeaderActions(): array
     {
         return [

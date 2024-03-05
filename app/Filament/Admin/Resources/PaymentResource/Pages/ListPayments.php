@@ -11,7 +11,8 @@ use Filament\Support\Colors\Color;
 use Filament\Resources\Components;
 
 class ListPayments extends ListRecords
-{
+{   
+    protected static ?string $title = 'Payments methods';
     protected static string $resource = PaymentResource::class;
 
     public function getTabs(): array
