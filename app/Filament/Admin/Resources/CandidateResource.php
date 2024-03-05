@@ -117,6 +117,10 @@ class CandidateResource extends Resource
                     ->label('Surname')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('student.birth_date')
+                    ->label('Date of birth')
+                    ->date('d/m/Y')
+                    ->sortable(),
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()
