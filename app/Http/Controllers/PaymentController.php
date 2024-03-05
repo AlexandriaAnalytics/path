@@ -9,6 +9,7 @@ use App\Models\Candidate;
 use App\Models\Payment;
 use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
+use Carbon\Carbon;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -135,7 +136,9 @@ class PaymentController extends Controller
                 'payment_id' => $request->input('token'),
                 'currency' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'],
                 'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'],
-            ]);
+                'current_period' => Carbon::now()->day(1),
+                'expiration_date' => Carbon::now()->addMonth()->day(1),
+                ]);
             return 'Transaction complete.';
         } else {
             return  $response['message'] ?? 'Something went wrong.';
