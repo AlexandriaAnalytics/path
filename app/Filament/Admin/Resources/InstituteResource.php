@@ -160,7 +160,7 @@ class InstituteResource extends Resource
                             ->default(0)
                             ->minValue(0),
                             TextInput::make('mora')
-                                    ->label('tax expired pay for deposits (percentage)')
+                                    ->label('Late payment fee')
                                     ->numeric()
                                     ->postfix('%')
                     ]),
