@@ -27,7 +27,7 @@ class ListFinancings extends ListRecords
     protected static string $resource = FinancingResource::class;
 
 
-    protected static ?string $title = 'Financing';
+    protected static ?string $title = 'Installments';
 
     protected function getHeaderWidgets(): array
     {
