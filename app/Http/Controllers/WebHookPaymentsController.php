@@ -74,7 +74,7 @@ class WebHookPaymentsController extends Controller
 
         return response()->json(['status' => 'success']);
     }
-
+    
     public function stripeWebhook(Request $request)
     {
         $stripePaymentMethod = new StripePaymentMethod();

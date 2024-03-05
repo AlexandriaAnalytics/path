@@ -27,7 +27,7 @@ class PaymentController extends Controller
 
     public function createTransaction()
     {
-        if(env('APP_ENV', 'local'))
+        if (env('APP_ENV', 'local'))
             return view('welcome');
         else
             abort(403, 'Page not available');
@@ -44,7 +44,7 @@ class PaymentController extends Controller
         $validated = $request->validated();
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-           
+
 
             /** @var \App\Models\Candidate $candidate */
             $candidate = session('candidate');
@@ -65,7 +65,7 @@ class PaymentController extends Controller
                 $candidate->student->name ?? 'DESCRIPTION',
                 $candidate->currency ?? 'USD', //$candidate->student->region->monetary_unit,
                 $candidate->total_amount,
-             
+
             );
 
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {
@@ -87,20 +87,17 @@ class PaymentController extends Controller
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
 
-            switch ($validated['payment_method']) { //TODO: sacar este horrible switch e implementar algun tipo de interfaz
-                case 'paypal':
-                    $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
-                    $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
-                    break;
-                case 'mercado_pago':
-                    $paymentMethod->setRedirectSuccess(route('filament.candidate.pages.payments'));
-                    $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
-                    break;
+            $paymentMethod->setRedirectSuccess(route('filament.candidate.pages.payments'));
+            $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
+            if ($validated['payment_method'] == 'paypal') { //TODO: sacar este horrible switch e implementar algun tipo de interfaz
+                $paymentMethod->setRedirectSuccess(route('payment.paypal.success'));
+                $paymentMethod->setRedirectCancel(route('payment.paypal.cancel'));
             }
+
             $paymentResult = $paymentMethod->suscribe(
                 $candidate->id,
                 $candidate->currency ?? 'USD',
-                $candidate->total_amount, 
+                $candidate->total_amount,
                 'Cuotas',
                 $request->input('cuotas')
             );
@@ -145,11 +142,17 @@ class PaymentController extends Controller
         }
     }
 
+    /**
+        @deprecated in the future this route action will be desapear
+    */
     public function mpSuccessTransaction(Request $request)
     {
         return $request['message'] ?? 'success';
     }
 
+    /**
+        @deprecated in the future this route action will be reemplace by a generic view
+    */
     public function mpCancelTransaction(Request $request)
     {
         return 'something went wrong';
@@ -169,5 +172,5 @@ class PaymentController extends Controller
     {
         Log::info('notification ' . $request->all());
         return Response::json(['message' => 'success']);
-    } 
+    }
 }
