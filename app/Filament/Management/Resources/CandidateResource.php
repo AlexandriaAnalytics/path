@@ -139,8 +139,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('modules.name')
-                    ->badge()
-                    ->toggleable(),
+                    ->badge(),
                 IconColumn::make('modules')
                     ->label('Exam session')
                     ->icon(function (Candidate $candidate) {
@@ -170,8 +169,7 @@ class CandidateResource extends Resource
                             })->exists();
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
-                    })
-                    ->toggleable(),
+                    }),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
