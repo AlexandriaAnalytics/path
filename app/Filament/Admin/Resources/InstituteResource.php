@@ -145,7 +145,10 @@ class InstituteResource extends Resource
                             Toggle::make('installment_plans')
                             ->helperText('when is enabled allows to associates to finaciate our candidates')
                             ->default(false)
-                            ->label('Installment Plans')
+                            ->label('Installment Plans'),
+
+                           
+                            
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
@@ -156,6 +159,10 @@ class InstituteResource extends Resource
                             ->type('number')
                             ->default(0)
                             ->minValue(0),
+                            TextInput::make('mora')
+                                    ->label('tax expired pay for deposits (percentage)')
+                                    ->numeric()
+                                    ->postfix('%')
                     ]),
             ]);
     }

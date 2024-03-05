@@ -97,19 +97,8 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                     "reason" => "Exam Payment",
                 ]);
 
-            ray('preaproval', $preapproval);
-            for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
-                Payment::create([
-                    'candidate_id' => $id,
-                    'payment_method' => 'mercado_pago',
-                    'currency' => $currency,
-                    'amount' => $amount,
-                    'suscription_code' => $preapproval->id,
-                    'instalment_number' => $instalment_number,
-                    'current_instalment' => $instalment,
-                ]);
-            }
-
+            $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $instalment_number);
+            
             return new PaymentResult(
                 PaymentMethodResult::REDIRECT,
                 null,

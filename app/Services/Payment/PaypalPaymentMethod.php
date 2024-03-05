@@ -167,20 +167,8 @@ class PaypalPaymentMethod extends AbstractPayment
 
                 foreach ($response['links'] as $links) {
                     if ($links['rel'] == 'approve') {
-
-                        for ($instalment = 1; $instalment <= $instalment_number; $instalment++) {
-                            Payment::create([
-                                'candidate_id' => $id,
-                                'payment_method' => 'paypal',
-                                'currency' => $currency,
-                                'amount' => $amount,
-                                'suscription_code' => $response['id'],
-                                'instalment_number' => $instalment_number,
-                                'current_instalment' => $instalment
-                            ]);
-                        }
-
-
+                        $this->createGroupOfInstallments($id, 'paypal', $currency, $amount, $response['id'], $instalment_number);
+                        
                         Candidate::where('id', $id)->update(['status' => UserStatus::Processing_payment]);
                         return new PaymentResult(PaymentMethodResult::REDIRECT, null, $links['href']);
                         // return redirect()->away($links['href']);

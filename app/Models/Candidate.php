@@ -156,7 +156,7 @@ class Candidate extends Pivot
         if (count($this->payments->where('instalment_number', '!=',  null)->get()->toArray()) != 0) return 'payment financiated';
     }
 
-    public function getPaymentCurrentInstalmentAttribute()
+    public function getPaymentCurrentInstallmentAttribute()
     {
         return $this->payments->where('instalment_number', '!=', null)->where('state', '!=', 'paid')->orderBy('current_instalment', 'asc')->first();
     }

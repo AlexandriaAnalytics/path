@@ -146,9 +146,9 @@ class Payments extends Page implements HasForms
         $instituteCategory = $this->candidate->student->institute->instituteType()->first()->name;
 
 
-       // if ( true || $instituteCategory == 'Premium Exam Centre' || $this->candidate->student->institute->can_financiate)  // puedo acceder a cuotas
-            //if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
-              //  $actions += $this->renderPaypalFinancing();
+       if ( $this->candidate->student->institute->installment_plans)  // puedo acceder a cuotas
+            if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
+                $actions += $this->renderPaypalFinancing();
             //else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
             $actions += $this->renderMercadoPagoFinancing();
             

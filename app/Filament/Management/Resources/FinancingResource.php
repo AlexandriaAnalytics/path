@@ -35,23 +35,31 @@ class FinancingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('candidate.id'),
-                Tables\Columns\TextColumn::make('country.name')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('candidate.instalment_counter')
+                    ->label('installments'),
                 Tables\Columns\TextColumn::make('currency')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amount')
-                    ->badge(),
+                Tables\Columns\TextColumn::make('current_payment.current_period')->date()
+                    ->prefix('$'),
                 Tables\Columns\TextColumn::make('current_instalment')
                     ->label('Current installment'),
                 Tables\Columns\TextColumn::make('current_payment.amount')
                     ->label('amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
+                Tables\Columns\TextColumn::make('current_instalment.is_expired'),
+                Tables\Columns\SelectColumn::make('state')
+                    ->options([
+                        'complete' => 'complete',
+                        'stak' => 'stak',
+                        'pending' => 'pending',
+                    ]),
+
 
             ])
             ->filters([])
             ->actions([
+               
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

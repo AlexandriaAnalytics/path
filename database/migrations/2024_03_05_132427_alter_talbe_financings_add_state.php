@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('institutes', function (Blueprint $table) {
-            $table->boolean('installment_plans')->default(false);
-            $table->decimal('mora', 10, 2)->default(0);
+        Schema::table('financings', function (Blueprint $table) {
+            $table->enum('state', ['complete','stack','pending'])->default('pending');
         });
     }
 
@@ -22,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('institutes', function (Blueprint $table) {
-            $table->dropColumn('installment_plans');
-            $table->dropColumn('mora');
-
+        Schema::table('financings', function (Blueprint $table) {
+            $table->dropColumn('state');
         });
     }
 };

@@ -7,7 +7,6 @@ use App\Filament\Admin\Resources\InstituteResource;
 use Filament\Actions;
 use Filament\Resources\Components;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Contracts\Support\Htmlable;
 use Filament\Support\Colors\Color;
 
 class ListInstitutes extends ListRecords
@@ -29,8 +28,6 @@ class ListInstitutes extends ListRecords
 
     public function getTabs(): array
     {
-
-
         // Create tabs for each institute type.
         return [
             'All' => Components\Tab::make(),
