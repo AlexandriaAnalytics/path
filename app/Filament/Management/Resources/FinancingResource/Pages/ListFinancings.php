@@ -64,7 +64,7 @@ class ListFinancings extends ListRecords
                         ->required(),
 
                     TextArea::make('description')
-                        ->required(),
+                        ->label('Description'),
                 ])
 
                 ->action(function (array $data) {
