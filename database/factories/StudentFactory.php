@@ -25,6 +25,7 @@ class StudentFactory extends Factory
             'cbu' => fake()->bankAccountNumber(),
             'birth_date' => fake()->date(),
             'status' => 'active',
+            'email' => fake()->email(),
         ];
     }
 }

@@ -74,20 +74,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         );
     }
 
-    private function getAccessToken(): string
-    {
-
-        return config('mercadopago.access_token');
-    }
-
-    private const AVAILABLE_CURRENCIES = [
-        'ARS',
-        'UYU',
-        'CLP',
-        'PYG',
-        'BRL',
-    ];
-
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
         if (!in_array($currency, MercadoPagoPaymentMethod::AVAILABLE_CURRENCIES)) {
@@ -108,10 +94,10 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                         "start_date" => now()->toISOString(),
                         "end_date" => now()->addMonths($instalment_number)->toISOString(),
                         "transaction_amount" => $amount,
-                        "currency_id" => $currency,
+                        "currency_id" => 'ARS', //$currency,
                     ],
                     "back_url" => $this->getRedirectSuccess(),
-                    "payer_email" => $candidate->student?->email,
+                    "payer_email" => env('APP_ENV') == 'local' ? 'test_user@testuser.com' : $candidate->student?->email,
                     "reason" => "Exam Payment",
                 ]);
         } catch (MPApiException $e) {
@@ -144,4 +130,18 @@ class MercadoPagoPaymentMethod extends AbstractPayment
     {
         // make Logic
     }
+
+    private function getAccessToken(): string
+    {
+        return config('mercadopago.access_token');
+    }
+
+
+    private const AVAILABLE_CURRENCIES = [
+        'ARS',
+        'UYU',
+        'CLP',
+        'PYG',
+        'BRL',
+    ];
 }
