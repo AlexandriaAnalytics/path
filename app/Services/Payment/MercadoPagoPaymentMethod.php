@@ -64,6 +64,15 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         $preference->auto_return = "approved";
 
         redirect($preference->init_point);
+        Payment::create([
+            'candidate_id' => $id,
+            'payment_method' => 'mercado_pago',
+            'payment_id' => $preference->id,
+            'currency' => $currency,
+            'amount' => round($amount_value),
+            'current_period' => Carbon::now()->day(1),
+            'expiration_date' => Carbon::now()->addMonth()->day(1),
+        ]);
 
         return new PaymentResult(
             PaymentMethodResult::REDIRECT,
@@ -74,8 +83,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
     {
-
-
         $amount = round(floatval($total_amount_value) / $instalment_number, 2);
         $candidate = Candidate::with('student')->findOrFail($id);
 
@@ -98,7 +105,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                 ]);
 
             $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $instalment_number);
-            
+
             return new PaymentResult(
                 PaymentMethodResult::REDIRECT,
                 null,

@@ -9,6 +9,7 @@ use App\Services\Payment\PaymentResult;
 use App\Enums\PaymentMethodResult;
 use App\Enums\UserStatus;
 use App\Exceptions\PaymentException;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Stripe\Checkout\Session;
@@ -32,8 +33,8 @@ class StripePaymentMethod extends AbstractPayment
 
         try {
             $session = Session::create([
-                'success_url' => $this->getRedirectSuccess(),
-                'cancel_url' => $this->getRedirectCancel(),
+                'success_url' => 'https://www.google.com/', //$this->getRedirectSuccess(),
+                //'cancel_url' => $this->getRedirectCancel(),
                 'line_items' => [
                     [
                         'price' => $price->id,
@@ -57,6 +58,8 @@ class StripePaymentMethod extends AbstractPayment
                 'payment_id' => $session->id,
                 'currency' => $currency,
                 'amount' => round($amount_value),
+                'current_period' => Carbon::now()->day(1),
+                'expiration_date' => Carbon::now()->addMonth()->day(1),
             ]);
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
@@ -103,8 +106,8 @@ class StripePaymentMethod extends AbstractPayment
             $candidate = Candidate::find($id);
             $candidate->update(['status', UserStatus::Processing_payment->value]);
 
-           $this->createGroupOfInstallments($id, 'stripe', $currency, $amountPerInstalment, $session->id, $instalment_number);
-            
+            $this->createGroupOfInstallments($id, 'stripe', $currency, $amountPerInstalment, $session->id, $instalment_number);
+
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
         } catch (PaymentException $pe) {
@@ -157,11 +160,11 @@ class StripePaymentMethod extends AbstractPayment
             ->orderBy('current_instalment', 'ASC')
             ->first();
 
-        if($currentInstallment != null && $currentInstallment->payment_id != null)
+        if ($currentInstallment != null && $currentInstallment->payment_id != null)
             return response()->json(['status' => 'no current installment'], 500);
 
-        if($currentInstallment != null){
-            $currentInstallment->update(['status' => 'approved', 'payment_id' => 's-scr-'.$data['object']['id']]);
+        if ($currentInstallment != null) {
+            $currentInstallment->update(['status' => 'approved', 'payment_id' => 's-scr-' . $data['object']['id']]);
             Candidate::find($candidateId)->update(['status' => UserStatus::Paying->value]);
         }
 
