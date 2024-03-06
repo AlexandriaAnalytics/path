@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::table('institutes', function (Blueprint $table) {
             $table->boolean('installment_plans')->default(false);
+            $table->boolean('internal_payment_administration')->default(false);
             $table->decimal('mora', 10, 2)->default(0);
-            $table->date('expiration_date')->nullable();
+            $table->integer('expiration_day_inferior')->nullable();
+            $table->integer('expiration_dat_superior')->nullable();
         });
     }
 

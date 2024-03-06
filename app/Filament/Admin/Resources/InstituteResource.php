@@ -8,8 +8,10 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
+use Doctrine\DBAL\Schema\Column;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -17,6 +19,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\Column as ColumnsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -148,6 +151,11 @@ class InstituteResource extends Resource
                             ->default(false)
                             ->label('Installment plans'),
 
+                            Toggle::make('internal_payment_administration')
+                            ->helperText('If enabled, the candidates of this institution can pay our exams in installments')
+                            ->default(false)
+                            ->label('Internal Payment Administration'),
+
                            
                             
                     ]),
@@ -165,7 +173,19 @@ class InstituteResource extends Resource
                                     ->numeric()
                                     ->default(0)
                                     ->postfix('%'),
-                                    DatePicker::make('expiration_date')->format('d-y')
+                            Grid::make('late_paymet_fee')
+                            ->schema([
+                                TextInput::make('expiration_day_inferior')
+                                ->label('late payment fee inferior (init day)')
+                                ->numeric()
+                                ->minValue(1)
+                                ->maxValue(31),
+                                TextInput::make('expiration_day_superior')
+                                ->label('late payment fee superior (last day)')
+                                ->numeric()
+                                ->minValue(1)
+                                ->maxValue(31)
+                            ])->columns(2)
                     ]),
             ]);
     }

@@ -8,10 +8,6 @@ use Carbon\Carbon;
 
 abstract class AbstractPayment implements IPayment
 {
-     protected PaymentResourceService $paymentService;
-     public function __construct(PaymentResourceService $paymentResourceService){
-          $this->paymentService;     
-     }
 
      private string $redirectSuccess = '/';
      private string $redirectCancel = '/';

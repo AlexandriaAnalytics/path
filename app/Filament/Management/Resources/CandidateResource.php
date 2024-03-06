@@ -104,7 +104,7 @@ class CandidateResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
+    {   ray(Filament::getTenant());
         return $table
             ->query(function () {
                 return Candidate::orderByDesc('created_at');
@@ -255,7 +255,7 @@ class CandidateResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value && Filament::getTenant()->installment_plans),
+                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value && Filament::getTenant()->internal_payment_administration),
 
                 Action::make('pdf')
                     ->label('PDF')
@@ -336,7 +336,7 @@ class CandidateResource extends Resource
                             return response()->download($zipPath, $filename, [
                                 'Content-Type' => 'application/zip',
                             ])->deleteFileAfterSend(true);
-                            FileSystem::deleteDirectory($tempDir);
+                            FileSystem::deleteDirectory($tempDir); // TODO: revisar esto posible bug
                         }),
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class),

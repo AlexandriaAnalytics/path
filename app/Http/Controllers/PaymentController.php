@@ -137,7 +137,6 @@ class PaymentController extends Controller
                 'currency' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'],
                 'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'],
                 'current_period' => Carbon::now()->day(1),
-                'expiration_date' => Carbon::now()->addMonth()->day(1),
                 ]);
             return 'Transaction complete.';
         } else {
