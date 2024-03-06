@@ -55,7 +55,7 @@ class Financing extends Model
         return new Attribute(
             get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)
                 ->orderBy('current_instalment', 'ASC')
-                ->first()->current_instalment
+                ->first()->current_instalment ?? ''
         );
     }
 
@@ -70,19 +70,19 @@ class Financing extends Model
     public function totalPaid(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->payments()->where('status', UserStatus::Paid->value)->sum('amount')
+            get: fn() => $this->payments()->where('status', UserStatus::Paid->value)->sum('amount') ?? 0
         );
     }
 
     public function totalUnPaid(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount')
+            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount') ?? 0
         );
     }
 
     public function getCurrentPaidAttribute() {
-        return $this->candidate->payments()->first()->amount;
+        return $this->candidate->payments()->first()->amount ?? 0;
     }
 
     public function getIsExpiredAttribute() {

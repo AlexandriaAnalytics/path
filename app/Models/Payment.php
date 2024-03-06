@@ -23,10 +23,12 @@ class Payment extends Model
         'instalment_number',
         'current_instalment',
         'candidate_id',
-        'payment_type',
+        'payment_type', //TODO: eliminar campo
         'financing_id',
         'current_period',
-        'expiration_date'
+        'paid_date',
+        'institute_id',
+        'link_to_ticket',
     ];
 
 

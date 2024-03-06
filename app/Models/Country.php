@@ -61,6 +61,11 @@ class Country extends Model
         return $this->monetary_unit_symbol . $this->monetary_unit;
     }
 
+    public function pyMethods(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentMethod::class, 'country_payment_method', 'country_id', 'payment_method_id');
+    }
+
     public function paymentMethods(): BelongsToMany
     {
         return $this->belongsToMany(PaymentMethod::class, 'country_payment_method')->withTimestamps();
