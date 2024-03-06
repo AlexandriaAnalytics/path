@@ -90,6 +90,7 @@ class CandidateResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(100)
+                    ->visible(fn () => Filament::getTenant()->maximum_cumulative_discount != 0)
                     ->hint(fn () => 'Available discount: ' . Filament::getTenant()->remaining_discount . '%')
                     ->rules([
                         fn (): Closure => function (string $attribute, $value, Closure $fail) {
@@ -139,9 +140,9 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('student.birth_date')
-                    ->label('Date of Birth')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Date of birth')
+                    ->date('d/m/Y')
+                    ->sortable(),
                 TextColumn::make('level.name')
                     ->label('Exam')
                     ->sortable()

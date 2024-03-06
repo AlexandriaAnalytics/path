@@ -10,23 +10,30 @@ use App\Models\Candidate;
 
 class WidgetCandidate extends BaseWidget
 {
+
+    protected static bool $isLazy = false;
     protected function getStats(): array
     {
         $candidate =  Candidate::find(session('candidate')->id);
-        
+
         return [ // i want to show the candidate number here from session variable call candidate
             Stat::make('Candidate Number', $candidate->id),
             Stat::make('Student name', $candidate->student->full_name),
             Stat::make('Payment status', $candidate->status),
-            
+
             Stat::make('Modules', function () use ($candidate) {
-                $concatenatedNames = $candidate->modules->reduce(function ($carry, $module) {
+                $modules = $candidate->modules->reduce(function ($carry, $module) {
                     return $carry . $module->name . ' ';
                 }, '');
-                return $concatenatedNames;
+                return $modules;
             }),
-            
-            Stat::make('Exam session', '2021-10-10'), // i want to show the exam date here from session variable call candidate
+
+            Stat::make('Exam session', function () use ($candidate) {
+                $exams = $candidate->exams->reduce(function ($carry, $exam) {
+                    return $carry . $exam->scheduled_date->format('d-m-Y h:m') . ' ';
+                }, '');
+                return $exams;
+            }),
 
 
             /*

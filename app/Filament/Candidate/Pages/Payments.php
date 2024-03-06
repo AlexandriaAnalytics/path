@@ -2,15 +2,20 @@
 
 namespace App\Filament\Candidate\Pages;
 
+use App\Enums\Country;
 use App\Enums\PaymentMethod;
+use App\Enums\UserStatus;
 use App\Models\Candidate;
+use App\Models\Country as ModelsCountry;
 use App\Models\Payment;
 use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
 use Carbon\Doctrine\CarbonType;
 use DateTime;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -49,6 +54,7 @@ class Payments extends Page implements HasForms
     protected static string $view = 'filament.candidate.pages.payments';
 
 
+
     public static function canAccess(): bool
     {
         return isset(session('candidate')->id);
@@ -71,101 +77,96 @@ class Payments extends Page implements HasForms
 
     public function strypeFinanciament()
     {
-        return redirect()->route('payment.process.cuotas', [ 
+        return redirect()->route('payment.process.cuotas', [
             'payment_method' => 'stripe',
             'amount_value' => $this->total_amount,
             'cuotas' => $this->instalment_number
         ]);
     }
 
-
-
-
-    private  function renderDepositPayment()
+    private function renderTransference(bool $hidde)
     {
-        return [
-            Action::make('deposit_pay')
-                ->label('make a deposit')
-                ->form([
-                    TextInput::make('total_amount')
-                        ->default(fn () => ($this->candidate->total_amount))
-                        ->prefix(fn () => $this->candidate->currency . ' $')
-                        ->readOnly(),
-                    TextInput::make('payment_id')
-                        ->required(),
-                    TextInput::make('paymeny_ticket_link')
-                        ->required()
+        return  Action::make('deposit')
+            ->hidden(!$hidde)
+            ->label('Transferency')
+            ->form([
+                TextInput::make('amount')
+                    ->default(fn () => $this->candidate->total_amount)
+                    ->prefix(fn () => $this->candidate->currency)
+                    ->disabled(true),
 
-                ])
-                ->action(function (array $data) {
-                    Payment::create([
-                        'payment_method' => 'deposit',
-                        'payment_id' => $data['payment_id'],
-                        'amount' => $data['total_amount'],
-                        'status' => 'pending',
-                        'candidate_id' => $this->candidate->id,
-                        'currency' => $this->candidate->currency,
-                        'paymeny_ticket_link' => $data['paymeny_ticket_link']
-                    ]);
-
-                    $this->candidate->update(['status' => 'processing', 'payment_ticker_link' => $data['paymeny_ticket_link']]);
-                })
-        ];
+                TextInput::make('link_to_ticket')
+                    ->required()
+            ])
+            ->action(function (array $data) {
+                ray($data['link_to_ticket']);
+                Payment::create([
+                    'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
+                    'currency' => $this->candidate->currency,
+                    'amount' => $this->candidate->total_amount,
+                    'candidate_id' => $this->candidate->id,
+                    'link_to_ticket' => $data['link_to_ticket'],
+                    'current_period' => Carbon::now()->day(1),
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'transcerence',
+                    'status' => 'processing payment',
+                ]);
+                Candidate::find($this->candidate->id)->update(['status' => UserStatus::Processing_payment]);
+            });
     }
 
-    private function renderPaypalFinancing()
+    private function renderPaypalFinancing(bool $hidde)
     {
-        return  [
+        return
             Action::make('paypal_financing')
-                ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->paypalFinaciament()),
-        ];
+            ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
+            ->icon('heroicon-o-currency-dollar')
+            ->action(fn () => $this->paypalFinaciament())
+            ->hidden(!$hidde);
     }
 
-    private function renderMercadoPagoFinancing()
+    private function renderMercadoPagoFinancing(bool $hidde)
     {
-        return  [
+        return
             Action::make('MP_financing')
-                ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->mercadoPagoFinanciament()),
-        ];
+            ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
+            ->icon('heroicon-o-currency-dollar')
+            ->action(fn () => $this->mercadoPagoFinanciament())
+            ->hidden(!$hidde);
     }
 
-    private  function currencyInListOfCurrencies(PaymentMethod $paymentMethodEnum)
-    {
-        return in_array(str_replace('_', ' ', strtolower($paymentMethodEnum->value)), array_map(fn ($item) => strtolower($item), $this->candidate->student->region->paymentMethods()->pluck('name')->toArray()));
-    }
-
-
-    protected function getActions(): array {
-        $actions = [];
-
-        $actions += $this->renderDepositPayment();
-        $instituteCategory = $this->candidate->student->institute->instituteType()->first()->name;
-
-
-       if ( $this->candidate->student->institute->installment_plans)  // puedo acceder a cuotas
-            if ($this->currencyInListOfCurrencies(PaymentMethod::PAYPAL))
-                $actions += $this->renderPaypalFinancing();
-            //else if ($this->currencyInListOfCurrencies(PaymentMethod::MERCADO_PAGO))
-            $actions += $this->renderMercadoPagoFinancing();
-            
-
-        return [Action::make('MP_financing')
-                ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
-                ->icon('heroicon-o-currency-dollar')
-                //->disabled(fn () => $this->candidate->student->email == null)
-                ->action(fn () => $this->mercadoPagoFinanciament()),  Action::make('stripe_financing')
+    private function renderStripeFinancing(bool $hidde){
+        return
+        Action::make('stripe_financing')
                 ->label('Financing with stripe (' . $this->instalment_number . ' instalments)')
                 ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->strypeFinanciament()),
+                ->action(fn () => $this->strypeFinanciament())
+                ->hidden(!$hidde);
+    }
+
+    protected function getActions(): array
+    {
+        $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', 'ARS')->first()->pyMethods()->get()->pluck('slug')->toArray();
+        ray($paymentMethodsAvailable);
+        return [
+            $this->renderTransference(false && $this->candidate->status == 'unpaid'),
+            $this->renderPaypalFinancing(
+                Candidate::first()->student->institute->installment_plans 
+                && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                && $this->candidate->status == 'unpaid'
+                ),
+            $this->renderStripeFinancing(
+                Candidate::first()->student->institute->installment_plans 
+                && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                && $this->candidate->status == 'unpaid'
+                ),
+            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid')
         ];
     }
 
     public function form(Form $form): Form
     {
+
         $form->schema([
             Select::make('payment_method')
                 ->label('Payment method')
@@ -180,7 +181,7 @@ class Payments extends Page implements HasForms
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
-    
+
         return redirect()
             ->route(
                 'payment.process',

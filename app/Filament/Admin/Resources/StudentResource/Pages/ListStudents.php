@@ -20,7 +20,8 @@ class ListStudents extends ListRecords
                 ->label('Import')
                 ->icon('heroicon-o-document-arrow-up')
                 ->color(Color::hex('#d4ac71'))
-                ->importer(StudentImporter::class),
+                ->importer(StudentImporter::class)
+                ->csvDelimiter(';'),
             Actions\ExportAction::make()
                 ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')
