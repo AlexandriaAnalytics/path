@@ -127,7 +127,7 @@ class UserResource extends Resource
                         auth()->login($user);
 
                         return redirect()
-                            ->to(route('filament.management.tenant'));
+                            ->to(route('filament.management.auth.login'));
                     }),
             ])
             ->bulkActions([

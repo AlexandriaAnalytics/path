@@ -51,6 +51,7 @@ class ExamResource extends Resource
                             ]),
                         Forms\Components\TextInput::make('maximum_number_of_students')
                             ->numeric()
+                            ->required()
                             ->label('Maximum number of candidates'),
                         Forms\Components\DateTimePicker::make('scheduled_date')
                             ->seconds(false)
