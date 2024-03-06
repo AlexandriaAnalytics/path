@@ -17,6 +17,8 @@ class PaymentMethodSeeder extends Seeder
             'Mercado Pago',
             'Paypal',
             'Stripe',
+            'Transfer',
+            'Cash'
         ];
         
         foreach ($availablePaymentMethods as $paymentMethod) {
