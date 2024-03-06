@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PaymentResource\Pages;
 
+use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\PaymentResource;
 use App\Models\Candidate;
 use App\Models\Country;
@@ -77,9 +78,8 @@ class ListPayments extends ListRecords
                 TextInput::make('link_to_ticket')->required(),
 
                 Select::make('status')
-                    ->options([
-                        'pending' => 'pending', 'approved' => 'approved', 'processing payment' => 'processing payment'
-                    ])
+                    ->options(UserStatus::class)
+                    ->enum(UserStatus::class)
                     ->required(),
                 MarkdownEditor::make('description')->required()
 
@@ -137,9 +137,8 @@ class ListPayments extends ListRecords
                 TextInput::make('link_to_ticket')->required(),
 
                 Select::make('status')
-                    ->options([
-                        'pending' => 'pending', 'approved' => 'approved', 'processing payment' => 'processing payment'
-                    ])
+                    ->options(UserStatus::class)
+                    ->enum(UserStatus::class)
                     ->required(),
                 MarkdownEditor::make('description')->required()
 
