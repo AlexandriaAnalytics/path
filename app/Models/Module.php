@@ -44,6 +44,11 @@ class Module extends Model
         return $this->hasMany(CandidateExam::class);
     }
 
+    public function levels(): BelongsToMany
+    {
+        return $this->belongsToMany(Level::class);
+    }
+
     public function levelCountries(): BelongsToMany
     {
         return $this->belongsToMany(LevelCountry::class, 'level_country_module')

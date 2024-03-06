@@ -58,7 +58,7 @@ class ViewCandidate extends ViewRecord
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('billed_concepts')
-                    ->hidden(fn () => Filament::getTenant()->can_view_registration_fee)
+                    ->hidden(fn () => Filament::getTenant()->can_view_registration_fee && Filament::getTenant()->candidates()->whereYear('created_at', now()->year)->count() >= 30)
                     ->columns(3)
                     ->schema([
                         TextEntry::make('concept')

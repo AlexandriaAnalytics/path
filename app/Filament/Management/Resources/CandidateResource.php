@@ -180,6 +180,11 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
+                TextColumn::make('total_amount')
+                    ->label('Total amount')
+                    ->money(
+                        currency: fn (Candidate $record) => $record->currency,
+                    ),
                 TextColumn::make('student.institute.name')
                     ->label('Member or centre')
                     ->sortable()
