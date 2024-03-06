@@ -143,6 +143,11 @@ class CandidateResource extends Resource
                         ? "Pending modules: {$record->pendingModules->pluck('name')->join(', ')}"
                         : 'All modules assigned')
                     ->color(fn (Candidate $record) => $record->pendingModules->isNotEmpty() ? Color::Yellow : Color::Green),
+                TextColumn::make('total_amount')
+                    ->label('Total amount')
+                    ->money(
+                        currency: fn (Candidate $record) => $record->currency,
+                    ),
                 TextColumn::make('student.personal_educational_needs')
                     ->label('Educational needs')
                     ->badge()
