@@ -52,7 +52,7 @@ class UsersRelationManager extends RelationManager
                         auth()->login($user);
 
                         return redirect()
-                            ->to(route('filament.management.tenant'));
+                            ->to(route('filament.management.auth.login'));
                     }),
             ])
             ->paginated([5, 10, 25])
