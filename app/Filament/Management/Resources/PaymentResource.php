@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Filament\Management\Resources;
+
+use App\Filament\Management\Resources\PaymentResource\Pages;
+use App\Filament\Management\Resources\PaymentResource\RelationManagers;
+use App\Models\Candidate;
+use App\Models\Payment;
+use Carbon\Carbon;
+use Filament\Facades\Filament;
+use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class PaymentResource extends Resource
+{
+    protected static ?string $model = Payment::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Select::make('candidate_id')
+                    ->label('Candidate')
+                    ->options(Candidate::all()->map(fn (Candidate $candidate) => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])->collapse()->toArray())
+                    ->searchable()
+                    ->live()
+                    ->afterStateUpdated(function (Set $set, string $state) {
+                        $candidate = Candidate::find($state + 1);
+                        $set('amount', $candidate->total_amount);
+                        $set('currency', $candidate->currency);
+                    }),
+
+                TextInput::make('currency')->hidden(false),
+                TextInput::make('payment_method')
+                    ->default('deposit'),
+                    //->disabled(true),
+                TextInput::make('status')->default('processing payment')->hidden(true),
+
+                TextInput::make('payment_id')
+                    ->default('d' . Carbon::now()->timestamp . rand(1000, 9000)),
+                    //->disabled(true),
+
+                //TextInput::make('institute_id')->default(Filament::getTenant()->id)->disabled(true),
+
+                TextInput::make('amount')
+                    ->prefix(
+                        function (Get $get) {
+
+                            $candidateId = $get('candidate_id');
+                            $currency = Candidate::find($candidateId + 1)->currency;
+                            return $currency;
+                        }
+                    ),
+                TextInput::make('link_to_ticket')
+                    ->required(),
+                DatePicker::make('current_period')
+                    ->default(Carbon::now()->day(1))
+                    ,
+                DatePicker::make('paid_date'),
+
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('candidate.student.name')->label('Student name'),
+                TextColumn::make('candidate.student.surname')->label('Student surname'),
+
+                TextColumn::make('candidate.id')->label('Candidate ID'),
+                TextColumn::make('candidate.total_amount')->prefix(fn(Payment $payment) => $payment->currency. '$'),
+                TextColumn::make('status')->badge()
+
+                ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPayments::route('/'),
+            'create' => Pages\CreatePayment::route('/create'),
+            'edit' => Pages\EditPayment::route('/{record}/edit'),
+        ];
+    }
+}

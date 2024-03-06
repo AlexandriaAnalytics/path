@@ -23,10 +23,12 @@ class Payment extends Model
         'instalment_number',
         'current_instalment',
         'candidate_id',
-        'payment_type',
+        'payment_type', //TODO: eliminar campo
         'financing_id',
         'current_period',
-        'expiration_date'
+        'paid_date',
+        'institute_id',
+        'link_to_ticket',
     ];
 
 
@@ -56,6 +58,11 @@ class Payment extends Model
         $currentPeriod = $this->current_period;
         $expiredDate = $this->expiration_date;
       return Carbon::createFromDate($currentPeriod)->diff(Carbon::createFromDate($expiredDate), 'month',true);
+    }
+
+    public function institute(): BelongsTo
+    {
+        return $this->belongsTo(Institute::class);
     }
 
 }

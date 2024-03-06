@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('institutes', function (Blueprint $table) {
             $table->boolean('installment_plans')->default(false);
             $table->decimal('mora', 10, 2)->default(0);
+            $table->date('expiration_date')->nullable();
         });
     }
 

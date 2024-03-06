@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\InstituteResource\RelationManagers;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -162,7 +163,8 @@ class InstituteResource extends Resource
                             TextInput::make('mora')
                                     ->label('Late payment fee')
                                     ->numeric()
-                                    ->postfix('%')
+                                    ->postfix('%'),
+                                    DatePicker::make('expiration_date')->format('d-y')
                     ]),
             ]);
     }

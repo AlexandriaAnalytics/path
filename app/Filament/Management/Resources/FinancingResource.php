@@ -8,17 +8,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use PhpParser\Node\Stmt\Static_;
 
 class FinancingResource extends Resource
 {
     protected static ?string $model = Financing::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
-
     protected static ?string $modelLabel = 'Deposits';
-
     protected static ?string $pluralModelLabel = 'Installments';
-
     protected static bool $hasTitleCaseModelLabel = false;
 
     public static function form(Form $form): Form
@@ -53,7 +50,7 @@ class FinancingResource extends Resource
                         'complete' => 'complete',
                         'stak' => 'stak',
                         'pending' => 'pending',
-                    ]),
+                    ])->disabled(fn ($state) => $state == 'complete'),
 
 
             ])
