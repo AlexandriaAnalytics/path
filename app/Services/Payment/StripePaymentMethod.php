@@ -52,15 +52,8 @@ class StripePaymentMethod extends AbstractPayment
             $candidate->status = UserStatus::Processing_payment->value;
             $candidate->save();
 
-            Payment::create([
-                'candidate_id' => $candidate->id,
-                'payment_method' => 'stripe',
-                'payment_id' => $session->id,
-                'currency' => $currency,
-                'amount' => round($amount_value),
-                'current_period' => Carbon::now()->day(1),
-                'expiration_date' => Carbon::now()->addMonth()->day(1),
-            ]);
+
+            $this->paymentService->createPayment($candidate->id, 'stripe', $session->id, $currency, $amount_value);
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
         } catch (PaymentException $pe) {
