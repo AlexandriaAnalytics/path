@@ -40,7 +40,10 @@ class Institute extends Model
         'can_view_registration_fee',
         'installment_plans',
         'can_add_candidates',
+        'internal_payment_administration',
         'mora',
+        'expiration_day_inferior',
+        'expiration_day_superior',
     ];
 
     protected $attributes = [
