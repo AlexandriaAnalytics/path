@@ -30,83 +30,13 @@ class PaymentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
 
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Tabs::make('Tabs')
-                    ->tabs([
-                        Tabs\Tab::make('Candidate Payment')
-                            ->schema([
-                                Forms\Components\TextInput::make('amount')
-                                    ->numeric()
-                                    ->required(),
-                                Select::make('currency')
-                                    ->options(Country::all()->map(fn (Country $country) => [$country->monetary_unit => $country->monetary_unit])->collapse()->toArray())
-                                    ->required(),
-                                Select::make('candidate_id')
-                                    ->label('Candidate')
-                                    ->options(Candidate::all()->map(fn (Candidate $candidate) => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])->collapse()->toArray())
-                                    ->searchable(),
-                                    
-                                TextInput::make('payment_id')
-                                    ->default('d' . Carbon::now()->timestamp . rand(1000, 9000))
-                                    ->disabled(true),
-                                Select::make('payment_method')
-                                    ->relationship('payment_method')
-                                    ->options([ //TODO: sacar fisic
-                                        'fisic' => 'fisic', 'deposit' => 'deposit'
-                                    ])
-                                    ->updateOptionUsing(fn (string $state, Set $set) => Set('payment_id', 'hola'))
-                                    ->live()
-                                    ->required(),
-
-                                Forms\Components\Select::make('status')
-                                    ->options([
-                                        'pending' => 'pending', 'approved' => 'approved', 'rejected' => 'rejected', 'processing payment' => 'processing payment'
-                                    ])
-                                    ->required(),
-                            ]),
-                        Tabs\Tab::make('Institute Payment')
-                            ->schema([
-                                Forms\Components\TextInput::make('amount')
-                                    ->numeric()
-                                    ->required(),
-                                Select::make('currency')
-                                    ->options(Country::all()->map(fn (Country $country) => [$country->monetary_unit => $country->monetary_unit])->collapse()->toArray())
-                                    ->required(),
-                                Select::make('institute_id')
-                                    ->label('Institute')
-                                    ->options(Institute::all()->map(fn (Institute $institute) => [$institute->id => $institute->name])->collapse()->toArray())
-                                    ->searchable(),
-                                    
-                                TextInput::make('payment_id')
-                                    ->default('d' . Carbon::now()->timestamp . rand(1000, 9000))
-                                    ->disabled(true),
-                                Select::make('payment_method')
-                                    ->relationship('payment_method')
-                                    ->options([ //TODO: sacar fisic
-                                        'fisic' => 'fisic', 'deposit' => 'deposit'
-                                    ])
-                                    ->required(),
-
-                                Forms\Components\Select::make('status')
-                                    ->options([
-                                        'pending' => 'pending', 'approved' => 'approved', 'rejected' => 'rejected', 'processing payment' => 'processing payment'
-                                    ])
-                                    ->required(),
-                                    Hidden::make('current_period')->default(fn() => Carbon::now()->day(1)),
-                                Forms\Components\DatePicker::make('paid_date'),
-                            ])
-
-
-                    ]),
-
-
-
-
+                // more code 
             ]);
-
     }
 
     public static function table(Table $table): Table
@@ -130,9 +60,8 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make(('paymeny_ticket'))
-                    ->default(fn (Payment $payment) => $payment->candidate->payment_ticket_link)
-                    ->action(fn (Payment $payment) => redirect()->to($payment->payment_ticket_link))
+                Tables\Columns\TextColumn::make(('payment_ticket_link'))
+                    ->action(fn (string $payment) => redirect()->to($payment))
                     ->color('primary')
 
             ])
@@ -151,20 +80,22 @@ class PaymentResource extends Resource
                     ->action(function (array $data, Payment $payment) {
                         $payment->update(['status' => $data['status']]);
 
-                        $candidate = Candidate::find($payment->candidate->id);
-                        switch ($data['status']) {
-                            case 'pending':
-                                $candidate->update(['status' => 'processing payment']);
-                                break;
-                            case 'approved':
-                                $candidate->update(['status' => 'paid']);
-                                break;
-                            case    'rejected':
-                                $candidate->update(['status' => 'unpaid']);
-                                break;
-                            case  'processing payment':
-                                $candidate->update(['status' => 'processing payment']);
-                                break;
+                        if ($payment->candidate_id != null) {
+                            $candidate = Candidate::find($payment->candidate_id);
+                            switch ($data['status']) {
+                                case 'pending':
+                                    $candidate->update(['status' => 'processing payment']);
+                                    break;
+                                case 'approved':
+                                    $candidate->update(['status' => 'paid']);
+                                    break;
+                                case    'rejected':
+                                    $candidate->update(['status' => 'unpaid']);
+                                    break;
+                                case  'processing payment':
+                                    $candidate->update(['status' => 'processing payment']);
+                                    break;
+                            }
                         }
                     })
             ])

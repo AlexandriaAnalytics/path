@@ -14,21 +14,22 @@ class Payment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'payment_method',
+        'candidate_id',
         'payment_id',
+        'payment_method',
         'currency',
         'amount',
         'status',
         'suscription_code',
         'instalment_number',
         'current_instalment',
-        'candidate_id',
         'payment_type', //TODO: eliminar campo
         'financing_id',
         'current_period',
         'paid_date',
         'institute_id',
         'link_to_ticket',
+        'description',
     ];
 
 
@@ -41,11 +42,6 @@ class Payment extends Model
         return Attribute::make(
             get: fn ($value, $attributes) => ($attributes['instalment_number'] == null ? 'complete' : 'partial')
         );
-    }
-
-    public function candidate(): BelongsTo
-    {
-        return $this->belongsTo(Candidate::class);
     }
 
     public function financing(): BelongsTo
@@ -65,4 +61,8 @@ class Payment extends Model
         return $this->belongsTo(Institute::class);
     }
 
+    public function candidate(): BelongsTo
+    {
+        return $this->belongsTo(Candidate::class);
+    }
 }
