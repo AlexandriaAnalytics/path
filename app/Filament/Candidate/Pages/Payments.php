@@ -135,13 +135,14 @@ class Payments extends Page implements HasForms
             ->hidden(!$hidde);
     }
 
-    private function renderStripeFinancing(bool $hidde){
+    private function renderStripeFinancing(bool $hidde)
+    {
         return
-        Action::make('stripe_financing')
-                ->label('Financing with stripe (' . $this->instalment_number . ' instalments)')
-                ->icon('heroicon-o-currency-dollar')
-                ->action(fn () => $this->strypeFinanciament())
-                ->hidden(!$hidde);
+            Action::make('stripe_financing')
+            ->label('Financing with stripe (' . $this->instalment_number . ' instalments)')
+            ->icon('heroicon-o-currency-dollar')
+            ->action(fn () => $this->strypeFinanciament())
+            ->hidden(!$hidde);
     }
 
     protected function getActions(): array
@@ -151,15 +152,15 @@ class Payments extends Page implements HasForms
         return [
             $this->renderTransference(false && $this->candidate->status == 'unpaid'),
             $this->renderPaypalFinancing(
-                Candidate::first()->student->institute->installment_plans 
-                && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                && $this->candidate->status == 'unpaid'
-                ),
+                Candidate::first()->student->institute->installment_plans
+                    && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid'
+            ),
             $this->renderStripeFinancing(
-                Candidate::first()->student->institute->installment_plans 
-                && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                && $this->candidate->status == 'unpaid'
-                ),
+                Candidate::first()->student->institute->installment_plans
+                    && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid'
+            ),
             $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid')
         ];
     }
@@ -172,7 +173,11 @@ class Payments extends Page implements HasForms
                 ->label('Payment method')
                 ->placeholder('Select a payment method')
                 ->native(false)
-                ->options($this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray())
+                ->options(function () {
+                    $options = $this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray();
+                    $options = ['transfer' => 'Transfer'] + $options;
+                    return $options;
+                }),
         ]);
 
         return $form;

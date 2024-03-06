@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 
 class LevelCountriesRelationManager extends RelationManager
@@ -70,7 +71,11 @@ class LevelCountriesRelationManager extends RelationManager
                     ->schema([
                         Select::make('module_id')
                             ->label('Module')
-                            ->relationship('module', 'name')
+                            ->relationship(
+                                name: 'module',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->whereHas('levels', fn (Builder $query) => $query->where('levels.id', $this->getOwnerRecord()->getKey())),
+                            )
                             ->required()
                             ->native(false)
                             ->placeholder('Select a module')
@@ -107,9 +112,12 @@ class LevelCountriesRelationManager extends RelationManager
                     ->label('New exam fees'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('View exam fees'),
+                Tables\Actions\EditAction::make()
+                    ->label('Edit'),
+                Tables\Actions\DeleteAction::make()
+                    ->label('Delete'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
