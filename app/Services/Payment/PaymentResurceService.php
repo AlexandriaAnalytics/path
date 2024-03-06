@@ -6,10 +6,10 @@ use App\Models\Payment;
 use Carbon\Carbon;
 
 class PaymentResourceService {
-    public function createPayment($id, $payment_id, $currency, $amount ){
+    public function createPayment($id, $payment_method, $payment_id, $currency, $amount ){
         Payment::create([
             'candidate_id' => $id,
-            'payment_method' => 'mercado_pago',
+            'payment_method' => $payment_method,
             'payment_id' => $payment_id,
             'currency' => $currency,
             'amount' => round($amount),
