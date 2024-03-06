@@ -131,15 +131,16 @@ class PaymentController extends Controller
             $candidateId = $response['purchase_units'][0]['payments']['captures'][0]['custom_id'];
             $payer_id = $request->input('PayerID');
 
-            $paymentService = new PaymentResourceService();
-            $paymentService->createPayment(
-                $candidateId, 
-                'paypal',
-                $request->input('token'), 
-                $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'],
-                $response['purchase_units'][0]['payments']['captures'][0]['amount']['value']
-            );
-            
+
+            Payment::create([
+                'candidate_id' => $candidateId,
+                'payment_method' => 'paypal',
+                'payment_id' => $request->input('token'),
+                'currency' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'],
+                'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'],
+                'current_period' => Carbon::now()->day(1),
+                ]);
+
             return 'Transaction complete.';
         } else {
             return  $response['message'] ?? 'Something went wrong.';

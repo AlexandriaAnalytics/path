@@ -34,7 +34,11 @@ class PaymentResource extends Resource
             ->schema([
                 Select::make('candidate_id')
                     ->label('Candidate')
-                    ->options(Candidate::all()->map(fn (Candidate $candidate) => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])->collapse()->toArray())
+                    ->options(Candidate::all()
+                        ->map(fn (Candidate $candidate)
+                        => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
+                        ->collapse()
+                        ->toArray())
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(function (Set $set, string $state) {
@@ -43,19 +47,22 @@ class PaymentResource extends Resource
                         $set('currency', $candidate->currency);
                     }),
 
-                TextInput::make('currency')->hidden(false),
-                TextInput::make('payment_method')
-                    ->default('deposit'),
-                    //->disabled(true),
+                TextInput::make('currency')->readOnly(),
+
+                Select::make('payment_method')
+                    ->options([
+                        'cash' => 'cash',
+                        'transfer' => 'transfer'
+                    ]),
+
                 TextInput::make('status')->default('processing payment')->hidden(true),
 
                 TextInput::make('payment_id')
+                    ->readOnly()
                     ->default('d' . Carbon::now()->timestamp . rand(1000, 9000)),
-                    //->disabled(true),
-
-                //TextInput::make('institute_id')->default(Filament::getTenant()->id)->disabled(true),
 
                 TextInput::make('amount')
+                    ->readOnly()
                     ->prefix(
                         function (Get $get) {
 
@@ -67,8 +74,7 @@ class PaymentResource extends Resource
                 TextInput::make('link_to_ticket')
                     ->required(),
                 DatePicker::make('current_period')
-                    ->default(Carbon::now()->day(1))
-                    ,
+                    ->default(Carbon::now()->day(1)),
                 DatePicker::make('paid_date'),
 
             ]);
@@ -82,10 +88,10 @@ class PaymentResource extends Resource
                 TextColumn::make('candidate.student.surname')->label('Student surname'),
 
                 TextColumn::make('candidate.id')->label('Candidate ID'),
-                TextColumn::make('candidate.total_amount')->prefix(fn(Payment $payment) => $payment->currency. '$'),
+                TextColumn::make('candidate.total_amount')->prefix(fn (Payment $payment) => $payment->currency . '$'),
                 TextColumn::make('status')->badge()
 
-                ])
+            ])
             ->filters([
                 //
             ])

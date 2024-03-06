@@ -43,8 +43,7 @@ class CountryResource extends Resource
                 Forms\Components\Select::make('monetary_unit')
                     ->placeholder('Monetary Unit')
                     ->required()
-                    ->searchable()
-                    
+                    ->searchable() 
                     ->options([
                         'USD' => 'USD',
                         'ARS' => 'ARS',
