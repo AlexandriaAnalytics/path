@@ -2,6 +2,7 @@
 
 namespace App\Filament\Candidate\Pages\Template;
 
+use App\Filament\Candidate\Resources\CandidateResource\Widgets\ExamSession;
 use App\Filament\Candidate\Widgets\WidgetCandidate;
 use App\Models\Candidate;
 use Filament\Actions\Action;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Filament\Panel;
 
 class CandidateDahboard extends Dashboard  //implements HasTable
 {
@@ -42,6 +44,7 @@ class CandidateDahboard extends Dashboard  //implements HasTable
     {
         return [
             WidgetCandidate::class,
+            ExamSession::class
         ];
     }
 

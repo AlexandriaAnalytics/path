@@ -163,6 +163,7 @@ class InstituteResource extends Resource
                             TextInput::make('mora')
                                     ->label('Late payment fee')
                                     ->numeric()
+                                    ->default(0)
                                     ->postfix('%'),
                                     DatePicker::make('expiration_date')->format('d-y')
                     ]),
