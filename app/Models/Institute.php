@@ -129,4 +129,9 @@ class Institute extends Model
     {
         return $this->instituteLevels->where('level.name', $levelName)->first();
     }
+
+    public function country():BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
 }

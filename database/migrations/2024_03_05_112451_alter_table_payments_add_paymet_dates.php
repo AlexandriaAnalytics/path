@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('link_to_ticket')->nullable();
             $table->foreignId('institute_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('candidate_id')->nullable()->change();
+            $table->text('description')->nullable();
         });
     }
 
