@@ -60,4 +60,9 @@ class Payment extends Model
       return Carbon::createFromDate($currentPeriod)->diff(Carbon::createFromDate($expiredDate), 'month',true);
     }
 
+    public function institute(): BelongsTo
+    {
+        return $this->belongsTo(Institute::class);
+    }
+
 }
