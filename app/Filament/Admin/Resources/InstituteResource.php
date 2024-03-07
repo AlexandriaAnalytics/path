@@ -146,13 +146,13 @@ class InstituteResource extends Resource
                             ->default(false)
                             ->label('Installment plans'),
 
-                            Toggle::make('internal_payment_administration')
+                        Toggle::make('internal_payment_administration')
                             ->helperText('If enabled, the institution is authorised to make payments on behalf of the students')
                             ->default(false)
                             ->label('Internal payment administration'),
 
-                           
-                            
+
+
                     ]),
                 Fieldset::make('Exams and payments')
                     ->columnSpanFull()
@@ -163,23 +163,23 @@ class InstituteResource extends Resource
                             ->type('number')
                             ->default(0)
                             ->minValue(0),
-                            TextInput::make('mora')
-                                    ->label('Late payment fee')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->postfix('%'),
-                            Grid::make('late_paymet_fee')
+                        TextInput::make('mora')
+                            ->label('Late payment fee')
+                            ->numeric()
+                            ->default(0)
+                            ->postfix('%'),
+                        Grid::make('late_paymet_fee')
                             ->schema([
                                 TextInput::make('expiration_day_inferior')
-                                ->label('late payment fee inferior (init day)')
-                                ->numeric()
-                                ->minValue(1)
-                                ->maxValue(31),
-                                TextInput::make('expiration_day_superior')
-                                ->label('late payment fee superior (last day)')
-                                ->numeric()
-                                ->minValue(1)
-                                ->maxValue(31)
+                                    ->label('late payment fee inferior (init day)')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(31),
+                                TextInput::make('expiration_dat_superior')
+                                    ->label('late payment fee superior (last day)')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(31)
                             ])->columns(2)
                     ]),
             ]);
