@@ -21,12 +21,16 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Symfony\Contracts\Service\Attribute\Required;
 
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+
+
 
     public static function form(Form $form): Form
     {
@@ -53,7 +57,8 @@ class PaymentResource extends Resource
                     ->options([
                         'cash' => 'cash',
                         'transfer' => 'transfer'
-                    ]),
+                    ])
+                    ->required(),
 
                 TextInput::make('status')->default('processing payment')->hidden(true),
 

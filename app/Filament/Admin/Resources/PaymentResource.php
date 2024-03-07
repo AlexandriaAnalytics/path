@@ -59,6 +59,11 @@ class PaymentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('status')
+                    ->color(fn(string $state) => match ($state) {
+                        'pending', 'rejected' => 'danger',
+                        'approved' => 'success',
+                        'processing payment' => 'warning'
+                    } )
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make(('payment_ticket_link'))

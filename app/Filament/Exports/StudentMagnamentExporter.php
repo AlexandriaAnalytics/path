@@ -22,7 +22,7 @@ class StudentMagnamentExporter extends Exporter
             ExportColumn::make('surname')
                 ->label('Surname'),
              ExportColumn::make('birth_date')
-                ->label('Date of Birth'),
+                ->label('Date of birth'),
             ExportColumn::make('country.name')
                 ->label('Country of residence'),
             ExportColumn::make('personal_educational_needs')
