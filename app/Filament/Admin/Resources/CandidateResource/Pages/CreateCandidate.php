@@ -2,10 +2,11 @@
 
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
+use App\Enums\ConceptType;
 use App\Enums\CustomPricing;
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\Concept;
 use App\Models\CustomLevelPrice;
-use App\Models\LevelCountry;
 use App\Models\LevelCountryModule;
 use App\Models\Module;
 use Filament\Resources\Pages\CreateRecord;
@@ -26,7 +27,6 @@ class CreateCandidate extends CreateRecord
     {
         /** @var \App\Models\Candidate $candidate */
         $candidate = $this->record;
-        $billed_concepts = $candidate->billed_concepts;
         $missingModules = Module::all()->diff($candidate->modules);
         $instituteCustomPrice = CustomLevelPrice::query()
             ->whereHas('institute', fn ($query) => $query->where('id', $candidate->student->institute_id))
@@ -53,8 +53,9 @@ class CreateCandidate extends CreateRecord
                 $examPrice = $instituteCustomPrice->full_exam_fee;
             }
 
-            $billed_concepts->push([
-                'concept' => 'Complete price',
+            $candidate->concepts()->create([
+                'description' => 'Complete price',
+                'type' => ConceptType::Exam,
                 'currency' => $candidate
                     ->level
                     ->countries
@@ -76,9 +77,10 @@ class CreateCandidate extends CreateRecord
 
             $instituteModulePrices = $instituteCustomPrice?->customModulePrices;
 
-            $billed_modules->each(function ($module) use ($billed_concepts, $candidate, $instituteModulePrices) {
-                $billed_concepts->push([
-                    'concept' => "Module - {$module->name}",
+            $billed_modules->each(function ($module) use ($candidate, $instituteModulePrices) {
+                $candidate->concepts()->create([
+                    'description' => "Module - {$module->name}",
+                    'type' => ConceptType::Module,
                     'currency' => $candidate
                         ->level
                         ->countries
@@ -126,8 +128,9 @@ class CreateCandidate extends CreateRecord
             }
         }
 
-        $billed_concepts->push([
-            'concept' => $concept,
+        $candidate->concepts()->create([
+            'description' => $concept,
+            'type' => ConceptType::RegistrationFee,
             'currency' => $candidate
                 ->level
                 ->countries
@@ -140,20 +143,17 @@ class CreateCandidate extends CreateRecord
         $discount = $candidate->granted_discount;
 
         if ($discount > 0) {
-            $billed_concepts->push([
-                'concept' => 'Discount',
+            $candidate->concepts()->create([
+                'description' => 'Discount',
+                'type' => ConceptType::Discount,
                 'currency' => $candidate
                     ->level
                     ->countries
                     ->firstWhere('id', $candidate->student->region->id)
                     ->monetary_unit,
-                'amount' => -$billed_concepts->sum('amount') * ($discount / 100),
+                'amount' => -$candidate->concepts()->sum('amount') * ($discount / 100),
             ]);
         }
-
-        $candidate->update([
-            'billed_concepts' => $billed_concepts,
-        ]);
     }
 
     protected function getRedirectUrl(): string

@@ -63,7 +63,7 @@ class WebHookPaymentsController extends Controller
 
         return response()->json(['status' => 'success']);
     }
-    
+
     public function stripeWebhook(Request $request)
     {
         $stripePaymentMethod = new StripePaymentMethod();
@@ -75,7 +75,6 @@ class WebHookPaymentsController extends Controller
     public function mercadopagoWebhook(Request $request)
     {
         $type = $request->string('type')->toString();
-        ray($type, $request);
         Log::info('webhook-mp', $request->all());
         return match ($type) {
             'payment' => $this->handleMercadoPagoPayment($request),
@@ -83,7 +82,7 @@ class WebHookPaymentsController extends Controller
             $this->handleMercadoPagoSubscription($request),
             default => response()->json(['status' => 'not_implemented'], 501),
         };
-    } 
+    }
 
     private function handleMercadoPagoPayment(Request $request)
     {
@@ -94,8 +93,6 @@ class WebHookPaymentsController extends Controller
 
         $response = Http::withToken($token)
             ->get($url);
-
-        ray($response->json());
 
         if ($response->failed()) {
             return response()->json(['status' => 'payment_not_found'], 500);

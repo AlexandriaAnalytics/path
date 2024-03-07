@@ -45,9 +45,9 @@ class StudentImporter extends Importer
                         return null;
                     }
 
-                    // Try to parse the date using the format `d-m-Y`.
+                    // Try to parse the date using the format `d/m/Y`.
                     try {
-                        return Carbon::createFromFormat('d-m-Y', $state);
+                        return Carbon::createFromFormat('d/m/Y', $state);
                     } catch (\Exception $e) {
                         // If the date is not in the expected format, return the original value.
                         return null;

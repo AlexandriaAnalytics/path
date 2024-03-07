@@ -72,6 +72,6 @@ class Payment extends Model
         else if( $this->instalment_number != null && $this->financing_id != null)
             return 'financing';
         else if($this->instalment_number == null && $this->financing_id == null)
-            return 'simple payment';
+            return 'Simple payment';
     }
 }

@@ -99,7 +99,6 @@ class Payments extends Page implements HasForms
                     ->required()
             ])
             ->action(function (array $data) {
-                ray($data['link_to_ticket']);
                 Payment::create([
                     'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
                     'currency' => $this->candidate->currency,
@@ -148,7 +147,6 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', 'ARS')->first()->pyMethods()->get()->pluck('slug')->toArray();
-        ray($paymentMethodsAvailable);
         return [
             $this->renderTransference(false && $this->candidate->status == 'unpaid'),
             $this->renderPaypalFinancing(

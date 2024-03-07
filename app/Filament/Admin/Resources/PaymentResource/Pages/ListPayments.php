@@ -10,39 +10,38 @@ use App\Models\Institute;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Actions;
-use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
-    protected static ?string $title = 'Payments methods';
     protected static string $resource = PaymentResource::class;
 
     public function getTabs(): array
     {
         return [
             'All' => Components\Tab::make(),
-            'suscriptions' => Components\Tab::make()
-                ->modifyQueryUsing(
-                    fn (Builder $query)
-                    => $query
-                        ->where('type', 'suscription')
-                ),
-
-            'Installments' => Components\Tab::make()
-                ->modifyQueryUsing(
-                    fn (Builder $query)
-                    => $query->where('type', 'financing')
-                ),
-            'Simple_Payment' => Components\Tab::make()
-                ->label('Simple Payment')
+            'Subscriptions' => Components\Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) 
-                    => $query->where('type', 'simple payment')
+                    => $query
+                        ->where('instalment_number', '!=', null)
+                        ->where('financing_id', null)
+                    ),
+                    
+            'Installments' => Components\Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query->where('financing_id', '!=', null) 
+                ),
+            'Simple payments' => Components\Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query
+                        ->where('instalment_number', null)
+                        ->where('financing_id', null) 
                 )
         ];
     }
@@ -115,7 +114,7 @@ class ListPayments extends ListRecords
 
     protected function createInstitutePaymentAction()
     {
-        return Actions\Action::make('create associated payment')
+        return Actions\Action::make('Create member or centre payment')
             ->form([
 
                 TextInput::make('amount')
