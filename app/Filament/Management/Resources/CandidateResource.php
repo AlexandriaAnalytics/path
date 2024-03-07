@@ -104,10 +104,14 @@ class CandidateResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {   ray(Filament::getTenant());
+    {
+        ray(Filament::getTenant());
         return $table
             ->query(function () {
-                return Candidate::orderByDesc('created_at');
+                $institutionId = Filament::getTenant()->id;
+                return Candidate::query()->whereHas('student.institute', function ($query) use ($institutionId) {
+                    $query->where('id', $institutionId);
+                });
             })
             ->columns([
                 //Candidate
