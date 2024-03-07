@@ -35,7 +35,7 @@ class CandidateExporter extends Exporter
             ExportColumn::make('created_at')
                 ->label('Created on'),
             ExportColumn::make('type_of_certificate')
-                ->label('Type of Certificate'),
+                ->label('Type of certificate'),
 
         ];
     }
