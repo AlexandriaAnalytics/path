@@ -19,6 +19,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Routing\Router;
 
 class Payments extends Page implements HasForms
 {
@@ -27,6 +28,8 @@ class Payments extends Page implements HasForms
     public $candidate_payment_methods = [];
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
+    public ?string $link_to_ticket = null;
+    public ?string $description = null;
     public int $total_amount = 0;
     public ?bool $canApplyToDiscount = false;
     public int $instalment_number = 0;
@@ -194,15 +197,9 @@ class Payments extends Page implements HasForms
     {
 
         $form->schema([
-
-            TextInput::make('amount')
-                ->label('amount')
-                ->default(fn () =>1000)// $this->candidate->total_amount)
-                ->prefix(fn () => $this->candidate->currency)
-                ->readOnly(),
-            TextInput::make('link_to_ticket')
-                ->required(),
-            MarkdownEditor::make('description'),
+          
+            TextInput::make('link_to_ticket')->required(),
+            MarkdownEditor::make('description')
 
         ]);
 
@@ -211,7 +208,7 @@ class Payments extends Page implements HasForms
 
     public function submitFormTransfer() {
 
-
+       
         Payment::create([
                     'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
                     'currency' => $this->candidate->currency,
@@ -225,10 +222,15 @@ class Payments extends Page implements HasForms
                     'description' => $this->formTransfer->getState()['description'],
                 ]);
                 Candidate::find($this->candidate->id)->update(['status' => UserStatus::Processing_payment]);
+              
                 Notification::make('successful')
                 ->title('payment processed')
                 ->color('success')
                 ->send();
+                
+                $this->showTransferForm = false;
+                redirect()->route('filament.candidate.pages.payments');
+                return ;
                 
     }
 

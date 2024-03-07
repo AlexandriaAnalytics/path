@@ -27,6 +27,7 @@
 
             </div>
         @else
+            @if(!$showTransferForm)
             <div style="display: grid">
                 <x-filament-panels::form wire:submit="selectPaymentMethod">
                     <h2 class="">Total amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
@@ -86,8 +87,9 @@
                     </button>
                 </x-filament-panels::form>
 
-                @if($showTransferForm)
-                <x-filament-panels::form wire:submit="selectPaymentMethod">
+                @else
+                <x-filament-panels::form wire:submit="submitFormTransfer">
+                    <h1>Amout: {{$candidate->total_amount}}</h1>
                     {{$this->formTransfer}}
                     <button type="submit">Submit</button>
                 </x-filament-panels::form>
