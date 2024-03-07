@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
@@ -26,10 +27,23 @@ class ListPayments extends ListRecords
     {
         return [
             'All' => Components\Tab::make(),
-            'Mercado Pago' => Components\Tab::make(),
-            'Paypal' => Components\Tab::make(),
-            'Stripe' => Components\Tab::make()
-
+            'suscriptions' => Components\Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query
+                        ->where('instalment_number', '!=', null)
+                        ->where('financing_id', null)
+                    ),
+                    
+            'Installments' => Components\Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query->where('financing_id', '!=', null) 
+                ),
+            'simple payment' => Components\Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query
+                        ->where('instalment_number', null)
+                        ->where('financing_id', null) 
+                )
         ];
     }
 

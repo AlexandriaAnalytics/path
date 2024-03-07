@@ -11,6 +11,7 @@ use App\Models\Financing;
 use App\Models\Institute;
 use App\Models\InstitutePayment;
 use Carbon\Carbon;
+use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Group;
@@ -50,70 +51,19 @@ class ListFinancings extends ListRecords
                         ->options($currenciesAvailables)
                         ->live(),
                     TextInput::make('monthly_amount')
-                        ->default(function (Get $get) {
-                            ray($get('currency'));
-                            return $get('currency');
-                        }),
-                    /*
                         ->default(function(Get $get) {
-                            $financiatesTotal = Financing::all()
-                                ->where('institution_id', Filament::getTenant()->id)
-                                ->where('currency', $get('currency'))
-                                ->where('status', 'stak' )
-                                ->sum('amount');
-                                return $financiatesTotal;
-                        })
-                        */
+                            $fiancings = Financing::all()
+                            ->where('institute_id', Filament::getTenant()->id)
+                            ->where('currency', $get('currency'));
 
+                            dd($fiancings);
+                        }),
+                    TextInput::make('link_to_ticket')
+                    ->required(),
 
+                    MarkdownEditor::make('description')
+                    ->required()
                 ])
-                /*
-                ->table([
-                    TextInput::make('monthly_amount')
-
-                        ->label('Total amount')
-                        ->default(function () {
-                            $financins = Financing::all()
-                                ->where('institute_id', Filament::getTenant()->id)
-                                ->where('currency', 'GBP');
-                            $totalAmountPerCurrency = 0;
-                            foreach ($financins as $finance) {
-                                $totalAmountPerCurrency += $finance->current_payment->amount;
-                            }
-                            return $totalAmountPerCurrency;
-                        })
-                        ->readOnly()
-                        ->numeric(),
-
-
-                    TextInput::make('tiket_link')
-                        ->label('Link to ticket')
-                        ->required(),
-
-                    TextArea::make('description')
-                        ->label('Description'),
-                ])
-
-                ->action(function (array $data) {
-                    InstitutePayment::create([
-                        'institute_id' => Filament::getTenant()->id,
-                        'ticket_link' => $data['tiket_link'],
-                        'monthly_amount' => $data['monthly_amount'],
-                        'description' => $data['description'],
-                    ]);
-
-                    $financins = Financing::all()
-                        ->where('institute_id', Filament::getTenant()->id)
-                        ->where('currency', 'GBP');
-                    foreach ($financins as $finance) {
-                        $finance->current_payment->update([
-                            'status' => UserStatus::Processing_payment->value,
-                            'payment_id' => 'pid-' . (Carbon::now()->timestamp + random_int())
-                        ]);
-                    }
-                })
-                
-                */
                 ->color(Color::hex('#0086b3')),
         ];
     }
