@@ -144,9 +144,9 @@ class Candidate extends Pivot
 
     public function getInstalmentAmountAndTotalAttribute()
     {
-        $totalAmount = $this->payments()->sum('amount');
+        $totalAmount = $this->total_amount;
         $incrementalAmount = $this->payments()->where('status', 'paid')->sum('amount');
-        return $this->currency . '$ ' . $incrementalAmount . '/' . $totalAmount;
+        return $this->currency . '$ ' . $incrementalAmount . ' / ' . $totalAmount;
     }
 
     public function getPaymentTypeAttribute()
