@@ -31,7 +31,7 @@ class StudentImporter extends Importer
                 ->example('Doe'),
             ImportColumn::make('email')
                 ->label('Email address')
-                ->rules(['email', 'max:255', 'unique:students,email'])
+                ->rules(['email', 'max:255', 'unique:students,email', 'nullable'])
                 ->exampleHeader('Email address')
                 ->example('john.doe@example.com'),
             ImportColumn::make('birth_date')
@@ -55,7 +55,7 @@ class StudentImporter extends Importer
                 }),
             ImportColumn::make('personal_educational_needs')
                 ->label('Educational needs')
-                ->rules(['max:255'])
+                ->rules(['max:255', 'nullable'])
                 ->exampleHeader('Educational needs')
                 ->example('Needs x, y, z')
                 ->castStateUsing(function (string $state): ?string {
