@@ -10,6 +10,7 @@ use App\Models\Institute;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Actions;
+use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -26,10 +27,23 @@ class ListPayments extends ListRecords
     {
         return [
             'All' => Components\Tab::make(),
-            'Mercado Pago' => Components\Tab::make(),
-            'Paypal' => Components\Tab::make(),
-            'Stripe' => Components\Tab::make()
+            'suscriptions' => Components\Tab::make()
+                ->modifyQueryUsing(
+                    fn (Builder $query)
+                    => $query
+                        ->where('type', 'suscription')
+                ),
 
+            'Installments' => Components\Tab::make()
+                ->modifyQueryUsing(
+                    fn (Builder $query)
+                    => $query->where('type', 'financing')
+                ),
+            'Simple_Payment' => Components\Tab::make()
+                ->label('Simple Payment')
+                ->modifyQueryUsing(fn(Builder $query) 
+                    => $query->where('type', 'simple payment')
+                )
         ];
     }
 
