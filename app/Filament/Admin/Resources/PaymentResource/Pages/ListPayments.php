@@ -20,14 +20,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
-    protected static ?string $title = 'Payments methods';
     protected static string $resource = PaymentResource::class;
 
     public function getTabs(): array
     {
         return [
             'All' => Components\Tab::make(),
-            'suscriptions' => Components\Tab::make()
+            'Subscriptions' => Components\Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) 
                     => $query
                         ->where('instalment_number', '!=', null)
@@ -38,7 +37,7 @@ class ListPayments extends ListRecords
                 ->modifyQueryUsing(fn(Builder $query) 
                     => $query->where('financing_id', '!=', null) 
                 ),
-            'simple payment' => Components\Tab::make()
+            'Simple payments' => Components\Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) 
                     => $query
                         ->where('instalment_number', null)
@@ -115,7 +114,7 @@ class ListPayments extends ListRecords
 
     protected function createInstitutePaymentAction()
     {
-        return Actions\Action::make('create associated payment')
+        return Actions\Action::make('Create member or centre payment')
             ->form([
 
                 TextInput::make('amount')

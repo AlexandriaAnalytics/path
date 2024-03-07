@@ -16,11 +16,15 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentMethodResource extends Resource
 {
-    protected static ?string $navigationLabel = 'Payment methods';
     protected static ?string $model = PaymentMethod::class;
     protected static ?string $navigationGroup = 'Settings';
-    protected static ?string $modelLabel = 'Payments';
+    protected static ?string $navigationLabel = 'Payment';
+
+    protected static ?string $modelLabel = 'Payment';
+    protected static ?string $pluralModelLabel = 'Payments';
+
     protected static bool $hasTitleCaseModelLabel = false;
+    
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
