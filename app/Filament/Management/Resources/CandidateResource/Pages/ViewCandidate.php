@@ -57,11 +57,11 @@ class ViewCandidate extends ViewRecord
                     ])
                     ->columnSpanFull()
                     ->grid(2),
-                RepeatableEntry::make('billed_concepts')
+                RepeatableEntry::make('concepts')
                     ->hidden(fn () => Filament::getTenant()->can_view_registration_fee && Filament::getTenant()->candidates()->whereYear('created_at', now()->year)->count() >= 30)
                     ->columns(3)
                     ->schema([
-                        TextEntry::make('concept')
+                        TextEntry::make('description')
                             ->label('Concept'),
                         TextEntry::make('currency')
                             ->label('Currency'),
@@ -80,6 +80,10 @@ class ViewCandidate extends ViewRecord
                     ->money(
                         currency: $this->record->billa
                     ),
+                TextEntry::make('paymentss')
+                    ->default(fn ($record) => $record->getInstalmentAmountAndTotalAttribute()),
+                TextEntry::make('installments')
+                    ->default(fn ($record) => $record->getInstalmentCounterAttribute())
             ]);
     }
 

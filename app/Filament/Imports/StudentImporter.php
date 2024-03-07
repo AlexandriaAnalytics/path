@@ -31,13 +31,13 @@ class StudentImporter extends Importer
                 ->example('Doe'),
             ImportColumn::make('email')
                 ->label('Email address')
-                ->rules(['email', 'max:255', 'unique:students,email'])
+                ->rules(['email', 'max:255', 'unique:students,email', 'nullable'])
                 ->exampleHeader('Email address')
                 ->example('john.doe@example.com'),
             ImportColumn::make('birth_date')
                 ->label('Date of birth')
                 ->requiredMapping()
-                ->rules(['required', 'date_format:d/m/Y'])
+                ->rules(['required'])
                 ->exampleHeader('Date of birth')
                 ->example('23/04/1999')
                 ->castStateUsing(function (string $state): ?Carbon {
@@ -45,9 +45,9 @@ class StudentImporter extends Importer
                         return null;
                     }
 
-                    // Try to parse the date using the format `d-m-Y`.
+                    // Try to parse the date using the format `d/m/Y`.
                     try {
-                        return Carbon::createFromFormat('d-m-Y', $state);
+                        return Carbon::createFromFormat('d/m/Y', $state);
                     } catch (\Exception $e) {
                         // If the date is not in the expected format, return the original value.
                         return null;
@@ -55,7 +55,7 @@ class StudentImporter extends Importer
                 }),
             ImportColumn::make('personal_educational_needs')
                 ->label('Educational needs')
-                ->rules(['max:255'])
+                ->rules(['max:255', 'nullable'])
                 ->exampleHeader('Educational needs')
                 ->example('Needs x, y, z')
                 ->castStateUsing(function (string $state): ?string {

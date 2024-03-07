@@ -9,6 +9,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UsersRelationManager extends RelationManager
 {
@@ -22,6 +23,7 @@ class UsersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return UserResource::table($table)
+            ->modifyQueryUsing(fn ($query) => $query->whereHas('institutes', fn ($query) => $query->where('institute_id', $this->getOwnerRecord()->id)))
             ->recordTitleAttribute('name')
             ->heading('Authorised users')
             ->recordUrl(
@@ -38,7 +40,7 @@ class UsersRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\DetachAction::make(),
-                Tables\Actions\Action::make('impersonate')
+                /* Tables\Actions\Action::make('impersonate')
                     ->label('Impersonate')
                     ->icon('heroicon-o-finger-print')
                     ->requiresConfirmation()
@@ -53,7 +55,10 @@ class UsersRelationManager extends RelationManager
 
                         return redirect()
                             ->to(route('filament.management.auth.login'));
-                    }),
+                    }), */
+                    Impersonate::make()
+                    ->label('Impersonate')
+                    ->redirectTo(route('filament.management.auth.login')),
             ])
             ->paginated([5, 10, 25])
             ->defaultPaginationPageOption(5);

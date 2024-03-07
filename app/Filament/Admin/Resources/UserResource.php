@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -113,7 +114,7 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('impersonate')
+               /*  Tables\Actions\Action::make('impersonate')
                     ->label('Impersonate')
                     ->icon('heroicon-o-finger-print')
                     ->requiresConfirmation()
@@ -128,7 +129,10 @@ class UserResource extends Resource
 
                         return redirect()
                             ->to(route('filament.management.auth.login'));
-                    }),
+                    }), */
+                    Impersonate::make()
+                    ->label('Impersonate')
+                    ->redirectTo(route('filament.management.auth.login')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

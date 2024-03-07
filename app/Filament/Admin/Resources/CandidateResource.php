@@ -64,26 +64,7 @@ class CandidateResource extends Resource
             ->schema([
                 ...static::getStudentFields(),
                 ...static::getExamFields(),
-                Fieldset::make('Certificate')
-                    ->schema([
-                        Select::make('type_of_certificate')
-                            ->options(TypeOfCertificate::class)
-                            ->required()
-                            ->native(false),
-                        ToggleButtons::make('status')
-                            ->options(UserStatus::class)
-                            ->enum(UserStatus::class)
-                            ->required()
-                            ->inline()
-                            ->colors([
-                                '1' => 'info',
-                                '2' => 'danger',
-                                '3' => 'success',
-                                '4' => 'warning',
-                                '5' => 'warning',
-                            ])
-                            ->hiddenOn('create'),
-                    ]),
+                ...static::getCertificateFields(),
             ]);
     }
 
@@ -442,6 +423,32 @@ class CandidateResource extends Resource
                         ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(Module::all()->pluck('name', 'id'))
                         ->preload(),
+                ]),
+        ];
+    }
+
+    public static function getCertificateFields(): array
+    {
+        return [
+            Fieldset::make('Certificate')
+                ->schema([
+                    Select::make('type_of_certificate')
+                        ->options(TypeOfCertificate::class)
+                        ->required()
+                        ->native(false),
+                    ToggleButtons::make('status')
+                        ->options(UserStatus::class)
+                        ->enum(UserStatus::class)
+                        ->required()
+                        ->inline()
+                        ->colors([
+                            '1' => 'info',
+                            '2' => 'danger',
+                            '3' => 'success',
+                            '4' => 'warning',
+                            '5' => 'warning',
+                        ])
+                        ->hiddenOn('create'),
                 ]),
         ];
     }
