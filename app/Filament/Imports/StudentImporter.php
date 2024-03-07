@@ -37,7 +37,7 @@ class StudentImporter extends Importer
             ImportColumn::make('birth_date')
                 ->label('Date of birth')
                 ->requiredMapping()
-                ->rules(['required', 'date_format:d/m/Y'])
+                ->rules(['required'])
                 ->exampleHeader('Date of birth')
                 ->example('23/04/1999')
                 ->castStateUsing(function (string $state): ?Carbon {
