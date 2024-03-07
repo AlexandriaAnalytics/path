@@ -10,7 +10,9 @@ use App\Filament\Exports\CandidateExporter;
 use App\Filament\Exports\CandidateExporterAsociated;
 use App\Filament\Management\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Change;
+use App\Models\Exam;
 use App\Models\Financing;
 use App\Models\Institute;
 use App\Models\Payment;
@@ -350,6 +352,60 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class),
                     DeleteBulkAction::make(),
+                    BulkAction::make('asign_exam_session')
+                        ->icon('heroicon-o-document')
+                        ->form(fn (BulkAction $action) => [
+                            Select::make('exam_id')
+                                ->label('Exam session')
+                                ->placeholder('Select an exam session')
+                                ->options(function () use ($action) {
+                                    $records = $action->getRecords();
+                                    $modulesArray = [];
+                                    $levels = [];
+                                    foreach ($records as $candidate) {
+                                        if (!in_array($candidate->level, $levels)) {
+                                            $levels[] .= $candidate->level;
+                                        }
+                                        $modules = $candidate->modules->pluck('id');
+                                        foreach ($modules as $module) {
+                                            if (!in_array($module, $modulesArray)) {
+                                                $modulesArray[] .= $module;
+                                            }
+                                        }
+                                    }
+                                    $examSessions = Exam::whereHas('modules', function ($query) use ($modulesArray) {
+                                        $query->whereIn('module_id', $modulesArray);
+                                    })->whereHas('levels', function ($query) use ($levels) {
+                                        $query->whereIn('level_id', $levels);
+                                    })->get()->pluck('session_name', 'id');
+
+                                    return $examSessions;
+                                })
+
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload(),
+
+                        ])->action(function (Collection $records, array $data): void {
+
+                            foreach ($records as $record) {
+                                $modules = $record->modules;
+                                foreach ($modules as $module) {
+                                    $newExamSession = CandidateExam::create([
+                                        'candidate_id' => $record->id,
+                                        'exam_id' => $data['exam'],
+                                        'module_id' => $module->id,
+                                    ]);
+
+                                    $newExamSession->save();
+                                }
+                            }
+                            Notification::make()
+                                ->title('Exam session asign successfully')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
             ])
             ->filters([
