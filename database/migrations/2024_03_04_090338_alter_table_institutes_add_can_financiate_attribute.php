@@ -16,7 +16,7 @@ return new class extends Migration
             $table->boolean('internal_payment_administration')->default(false);
             $table->decimal('mora', 10, 2)->default(0);
             $table->integer('expiration_day_inferior')->nullable();
-            $table->integer('expiration_dat_superior')->nullable();
+            $table->integer('expiration_day_superior')->nullable();
         });
     }
 

@@ -4,6 +4,8 @@ namespace App\Filament\Management\Resources\PaymentResource\Pages;
 
 use App\Filament\Management\Resources\PaymentResource;
 use Filament\Actions;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Hidden;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPayments extends ListRecords
@@ -13,7 +15,7 @@ class ListPayments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->hidden(fn()=> !Filament::getTenant()->internal_payment_administration),
         ];
     }
 }
