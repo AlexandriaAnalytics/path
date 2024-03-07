@@ -165,6 +165,69 @@ class StudentResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    BulkAction::make('create_bulk_candidates')
+                        ->icon('heroicon-o-document')
+                        ->form([
+                            Select::make('level_id')
+                                ->label('Exam')
+                                ->placeholder('Select an exam')
+                                ->options(Level::all()->pluck('name', 'id'))
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload()
+                                ->rules([
+                                    fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                        $level = Level::find($get('level_id'));
+                                        if (!$level) {
+                                            return;
+                                        }
+
+                                        $student = Student::find($value);
+
+                                        if (
+                                            $level->minimum_age && $student->age < $level->minimum_age
+                                            || $level->maximum_age && $student->age > $level->maximum_age
+                                        ) {
+                                            $fail("The student's age is not within the range of the selected level");
+                                        }
+                                    },
+                                ]),
+                            Select::make('modules')
+                                ->multiple()
+                                ->required()
+                                ->live()
+                                ->options(Module::all()->pluck('name', 'id'))
+                                ->preload(),
+
+                            Select::make('type_of_certificate')
+                                ->options(TypeOfCertificate::class)
+                                ->required()
+                                ->native(false),
+
+                        ])->action(function (Collection $records, array $data): void {
+                            $jsonObject = '[{"amount": "4374.00","concept": "Complete price","currency": "ARS"},{"amount": "1530.00","concept": "Exam Right (all modules)","currency": "ARS"}]';;
+
+
+                            foreach ($records as $record) {
+
+                                $newCandidate = Candidate::create([
+                                    'student_id' => $record->id,
+                                    'level_id' => $data['level_id'],
+                                    'status' => UserStatus::Unpaid,
+                                    'grant_discount' => 0,
+                                    'type_of_certificate' => $data['type_of_certificate'],
+                                    'billed_concepts' => json_decode($jsonObject),
+                                ]);
+
+                                $newCandidate->modules()->attach($data['modules']);
+                                $newCandidate->save();
+                            }
+                            Notification::make()
+                                ->title('Candidates create successfully')
+                                ->success()
+                                ->send();
+                        }),
                     BulkAction::make('export-excel')
                         ->label('Download as Excel')
                         ->icon('heroicon-o-document')
