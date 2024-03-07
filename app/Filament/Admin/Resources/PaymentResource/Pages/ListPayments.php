@@ -88,7 +88,7 @@ class ListPayments extends ListRecords
 
                 Select::make('payment_method')
                     ->options([
-                        'Transfer or deposit' => 'Transfer'
+                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
                     ])
                     ->required(),
 
@@ -148,7 +148,7 @@ class ListPayments extends ListRecords
 
                 Select::make('payment_method')
                     ->options([
-                        'Transfer or deposit' => 'Transfer'
+                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
                     ])
                     ->required(),
 
