@@ -4,6 +4,7 @@ namespace App\Filament\Management\Resources;
 
 use App\Filament\Management\Resources\FinancingResource\Pages;
 use App\Models\Financing;
+use Filament\Facades\Filament;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -17,6 +18,8 @@ class FinancingResource extends Resource
     protected static ?string $modelLabel = 'Deposits';
     protected static ?string $pluralModelLabel = 'Installments';
     protected static bool $hasTitleCaseModelLabel = false;
+
+    public static function canViewAny(): bool { return Filament::getTenant()->installment_plans;}
 
     public static function form(Form $form): Form
     {
