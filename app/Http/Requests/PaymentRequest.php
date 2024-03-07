@@ -23,7 +23,9 @@ class PaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_method' => ['required', 'string', 'exists:payment_methods,slug']
+            'payment_method' => ['required', 'string', 'exists:payment_methods,slug'],
+            'link_to_ticket' => ['string'],
+            
         ];
     }
 
