@@ -57,6 +57,7 @@ class PaymentResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable()
                     ->sortable(),
