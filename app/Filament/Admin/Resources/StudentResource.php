@@ -34,6 +34,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class StudentResource extends Resource
 {
@@ -56,10 +57,11 @@ class StudentResource extends Resource
                             ->label('Names')
                             ->required()
                             ->placeholder('John')
+                           
                             ->rules([
                                 function () {
                                     return function (string $attribute, $value, Closure $fail) {
-                                        if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                        if (!preg_match('/^[a-zA-Z]+(?:\s[a-zA-Z]+)?$/', $value)) {
                                             $fail('This field can only contain letters, accent marks and apostrophes');
                                         }
                                     };
@@ -71,7 +73,7 @@ class StudentResource extends Resource
                             ->placeholder('Doe')->rules([
                                 function () {
                                     return function (string $attribute, $value, Closure $fail) {
-                                        if (!preg_match('/^[a-zA-Z\'´]+$/', $value)) {
+                                        if (!preg_match('/^[a-zA-Z]+(?:\s[a-zA-Z]+)?$/', $value)) {
                                             $fail('This field can only contain letters, accent marks and apostrophes');
                                         }
                                     };
