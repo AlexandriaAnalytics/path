@@ -65,6 +65,7 @@ class ExamResource extends Resource
                             ->required()
                             ->enum(\App\Enums\ExamType::class),
                         Forms\Components\TextInput::make('location')
+                            ->default('-')
                             ->columnSpanFull(),
                         Forms\Components\RichEditor::make('comments')
                             ->columnSpanFull(),

@@ -65,4 +65,13 @@ class Payment extends Model
     {
         return $this->belongsTo(Candidate::class);
     }
+
+    public function getTypeAttribute(){
+        if($this->instalment_number != null && $this->financing_id == null)
+            return 'Suscription';
+        else if( $this->instalment_number != null && $this->financing_id != null)
+            return 'financing';
+        else if($this->instalment_number == null && $this->financing_id == null)
+            return 'simple payment';
+    }
 }

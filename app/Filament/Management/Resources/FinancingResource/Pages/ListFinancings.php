@@ -51,18 +51,14 @@ class ListFinancings extends ListRecords
                         ->options($currenciesAvailables)
                         ->live(),
                     TextInput::make('monthly_amount')
-                        ->default(function(Get $get) {
-                            $fiancings = Financing::all()
-                            ->where('institute_id', Filament::getTenant()->id)
-                            ->where('currency', $get('currency'));
-
-                            dd($fiancings);
-                        }),
+                        ->default(
+                            1000
+                        ),
                     TextInput::make('link_to_ticket')
-                    ->required(),
+                        ->required(),
 
                     MarkdownEditor::make('description')
-                    ->required()
+                        ->required()
                 ])
                 ->color(Color::hex('#0086b3')),
         ];
