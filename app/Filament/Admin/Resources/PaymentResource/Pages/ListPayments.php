@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PaymentResource\Pages;
 
+use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\PaymentResource;
 use App\Models\Candidate;
@@ -92,8 +93,7 @@ class ListPayments extends ListRecords
                 TextInput::make('link_to_ticket')->required(),
 
                 Select::make('status')
-                    ->options(UserStatus::class)
-                    ->enum(UserStatus::class)
+                    ->options(StatusEnum::values())
                     ->required(),
                 MarkdownEditor::make('description')->required()
 
@@ -151,8 +151,7 @@ class ListPayments extends ListRecords
                 TextInput::make('link_to_ticket')->required(),
 
                 Select::make('status')
-                    ->options(UserStatus::class)
-                    ->enum(UserStatus::class)
+                    ->options(StatusEnum::values())
                     ->required(),
                 MarkdownEditor::make('description')->required()
 
