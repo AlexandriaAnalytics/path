@@ -85,6 +85,13 @@
                         Process payment
                     </button>
                 </x-filament-panels::form>
+
+                @if($showTransferForm)
+                <x-filament-panels::form wire:submit="selectPaymentMethod">
+                    {{$this->formTransfer}}
+                    <button type="submit">Submit</button>
+                </x-filament-panels::form>
+                @endif
             </div>
 
         @endif
