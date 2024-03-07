@@ -359,42 +359,50 @@ class CandidateResource extends Resource
                                 ->label('Exam session')
                                 ->placeholder('Select an exam session')
                                 ->options(function () use ($action) {
-                                    $records = $action->getRecords();
-                                    $modulesArray = [];
-                                    $levels = [];
-                                    foreach ($records as $candidate) {
-                                        if (!in_array($candidate->level, $levels)) {
-                                            $levels[] .= $candidate->level;
-                                        }
-                                        $modules = $candidate->modules->pluck('id');
-                                        foreach ($modules as $module) {
-                                            if (!in_array($module, $modulesArray)) {
-                                                $modulesArray[] .= $module;
-                                            }
-                                        }
-                                    }
-                                    $examSessions = Exam::whereHas('modules', function ($query) use ($modulesArray) {
-                                        $query->whereIn('module_id', $modulesArray);
-                                    })->whereHas('levels', function ($query) use ($levels) {
-                                        $query->whereIn('level_id', $levels);
-                                    })->get()->pluck('session_name', 'id');
+                                    /** @var \Illuminate\Database\Eloquent\Collection<\App\Models\Candidate> $candidates */
+                                    $candidates = $action->getRecords();
 
-                                    return $examSessions;
+                                    $modules = $candidates
+                                        ->flatMap(fn (Candidate $candidate) => $candidate->modules)
+                                        ->pluck('id')
+                                        ->unique()
+                                        ->toArray();
+
+                                    $levels = $candidates
+                                        ->pluck('level_id')
+                                        ->unique()
+                                        ->toArray();
+
+                                    return Exam::query()
+                                        ->whereHas('modules', fn (Builder $query) => $query->whereIn('module_id', $modules))
+                                        ->whereHas('levels', fn (Builder $query) => $query->whereIn('level_id', $levels))
+                                        ->get()
+                                        ->pluck('session_name', 'id');
                                 })
-
                                 ->searchable()
                                 ->reactive()
                                 ->required()
                                 ->preload(),
 
-                        ])->action(function (Collection $records, array $data): void {
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $examSession = Exam::with('candidates')
+                                ->find($data['exam_id']);
+
+                            if ($records->count() > $examSession->available_candidates) {
+                                Notification::make()
+                                    ->title('The exam session does not have enough available places')
+                                    ->error()
+                                    ->send();
+                                return;
+                            }
 
                             foreach ($records as $record) {
                                 $modules = $record->modules;
                                 foreach ($modules as $module) {
                                     $newExamSession = CandidateExam::create([
                                         'candidate_id' => $record->id,
-                                        'exam_id' => $data['exam'],
+                                        'exam_id' => $data['exam_id'],
                                         'module_id' => $module->id,
                                     ]);
 
