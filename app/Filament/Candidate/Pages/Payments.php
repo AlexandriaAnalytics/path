@@ -2,26 +2,24 @@
 
 namespace App\Filament\Candidate\Pages;
 
-use App\Enums\Country;
 use App\Enums\PaymentMethod;
 use App\Enums\UserStatus;
 use App\Models\Candidate;
 use App\Models\Country as ModelsCountry;
 use App\Models\Payment;
-use App\Models\PaymentMethod as PaymentMethodModel;
 use Carbon\Carbon;
-use Carbon\Doctrine\CarbonType;
 use DateTime;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Routing\Router;
 
 class Payments extends Page implements HasForms
 {
@@ -30,11 +28,14 @@ class Payments extends Page implements HasForms
     public $candidate_payment_methods = [];
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
+    public ?string $link_to_ticket = null;
+    public ?string $description = null;
     public int $total_amount = 0;
     public ?bool $canApplyToDiscount = false;
     public int $instalment_number = 0;
     public ?DateTime $examDate;
     public $modules = [];
+    public bool $showTransferForm = false;
 
     public function __construct()
     {
@@ -146,18 +147,21 @@ class Payments extends Page implements HasForms
 
     protected function getActions(): array
     {
-        $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', 'ARS')->first()->pyMethods()->get()->pluck('slug')->toArray();
+        $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
+        
+        ray($paymentMethodsAvailable);
         return [
-            $this->renderTransference(false && $this->candidate->status == 'unpaid'),
             $this->renderPaypalFinancing(
-                Candidate::first()->student->institute->installment_plans
-                    && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                $this->candidate->student->institute->installment_plans
+                && !$this->candidate->student->institute->internal_payment_administration
+                && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
+                && $this->candidate->status == 'unpaid'
             ),
             $this->renderStripeFinancing(
-                Candidate::first()->student->institute->installment_plans
-                    && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                $this->candidate->student->institute->installment_plans
+                && !$this->candidate->student->institute->internal_payment_administration
+                && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
+                && $this->candidate->status == 'unpaid'
             ),
             $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid')
         ];
@@ -181,9 +185,63 @@ class Payments extends Page implements HasForms
         return $form;
     }
 
+    public function getForms(): array
+    {
+        return [
+            'form',
+            'formTransfer',
+        ];
+    }
+
+    public function formTransfer(Form $form): Form
+    {
+
+        $form->schema([
+          
+            TextInput::make('link_to_ticket')->required(),
+            MarkdownEditor::make('description')
+
+        ]);
+
+        return $form;
+    }
+
+    public function submitFormTransfer() {
+
+       
+        Payment::create([
+                    'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
+                    'currency' => $this->candidate->currency,
+                    'amount' => $this->candidate->total_amount,
+                    'candidate_id' => $this->candidate->id,
+                    'link_to_ticket' => $this->formTransfer->getState()['link_to_ticket'],
+                    'current_period' => Carbon::now()->day(1),
+                    'paid_date' => Carbon::now(),
+                    'payment_method' => 'transcerence',
+                    'status' => 'processing payment',
+                    'description' => $this->formTransfer->getState()['description'],
+                ]);
+                Candidate::find($this->candidate->id)->update(['status' => UserStatus::Processing_payment]);
+              
+                Notification::make('successful')
+                ->title('payment processed')
+                ->color('success')
+                ->send();
+                
+                $this->showTransferForm = false;
+                redirect()->route('filament.candidate.pages.payments');
+                return ;
+                
+    }
+
+
     public function selectPaymentMethod()
     {
         $payment_method_selected = $this->form->getState()['payment_method'];
+
+        if ($payment_method_selected == 'transfer') {
+            return $this->showTransferForm = true;
+        }
 
         return redirect()
             ->route(
