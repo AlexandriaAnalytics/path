@@ -49,6 +49,11 @@ class Payments extends Page implements HasForms
 
         $this->examDate = new Carbon('2024-11-03');
         $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
+        
+        /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
+            puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
+        */
+        // this->instalment_number = $this->installments_available; usar este metodo para obtener la cantidad de cuotas disponibles si la fecha 
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
