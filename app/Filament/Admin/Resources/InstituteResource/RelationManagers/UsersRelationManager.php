@@ -22,6 +22,7 @@ class UsersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return UserResource::table($table)
+            ->modifyQueryUsing(fn ($query) => $query->whereHas('institutes', fn ($query) => $query->where('institute_id', $this->getOwnerRecord()->id)))
             ->recordTitleAttribute('name')
             ->heading('Authorised users')
             ->recordUrl(
