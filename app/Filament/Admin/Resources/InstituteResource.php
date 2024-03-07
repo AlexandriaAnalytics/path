@@ -147,9 +147,9 @@ class InstituteResource extends Resource
                             ->label('Installment plans'),
 
                             Toggle::make('internal_payment_administration')
-                            ->helperText('If enabled, the candidates of this institution can pay our exams in installments')
+                            ->helperText('If enabled, the institution is authorised to make payments on behalf of the students')
                             ->default(false)
-                            ->label('Internal Payment Administration'),
+                            ->label('Internal payment administration'),
 
                            
                             
