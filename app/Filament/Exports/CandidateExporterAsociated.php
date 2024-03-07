@@ -24,7 +24,7 @@ class CandidateExporterAsociated extends Exporter
             ExportColumn::make('student.surname')
                 ->label('Surname'),
             ExportColumn::make('birth_date')
-                ->label('Date of Birth'),
+                ->label('Date of birth'),
             ExportColumn::make('level.name')
                 ->label('Exam'),
             ExportColumn::make('modules.name')->label('Modules'),
@@ -33,7 +33,7 @@ class CandidateExporterAsociated extends Exporter
             ExportColumn::make('created_at')
                 ->label('Created on'),
             ExportColumn::make('type_of_certificate')
-                ->label('Type of Certificate'),
+                ->label('Type of certificate'),
         ];
     }
 

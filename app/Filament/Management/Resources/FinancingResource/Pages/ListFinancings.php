@@ -53,14 +53,13 @@ class ListFinancings extends ListRecords
                 ->label('Send payment')
                 ->form([
                     Select::make('currency')->options([
-                                'ARS' => 'ARS',
-                                'GBP' => 'GBP',
-                                'UYU' => 'UYY',
-                            ])
+                        'ARS' => 'ARS',
+                        'GBP' => 'GBP',
+                        'UYU' => 'UYY',
+                    ])
                         ->live()
                         ->afterStateUpdated(function (Set $set, string $state) {
                             $total = 0;
-                            ray($state);
 
                             $financings = Financing::all()->where('institute_id', 1)->where('currency', $state);
 
@@ -71,30 +70,30 @@ class ListFinancings extends ListRecords
                         }),
                     TextInput::make('amount')->readOnly(),
                     TextInput::make('payment_id')->readOnly()
-                    ->label('Payment ID')
-                    ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
+                        ->label('Payment ID')
+                        ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
                     TextInput::make('link_to_ticket')
                         ->required(),
 
                     MarkdownEditor::make('description')
                         ->required()
                 ])
-                ->action(function(array $data) {
+                ->action(function (array $data) {
                     $payment = Payment::create([
-                    'institute_id' => Filament::getTenant()->id,
-                    'amount' => $data['amount'],
-                    'status' => UserStatus::Processing_payment->value,
-                    'payment_method' => PaymentMethod::TRANSFER->value,
-                    'payment_id' => $data['payment_id'],
-                    'currency' => $data['currency'],
-                    'current_period' => Carbon::now()->day(1),
-                    'link_to_ticket' => $data['link_to_ticket'],
-                    'description' => $data['description'],
-                ]);
-                Notification::make('payment_created')
-                ->title('Payment created successfuly')
-                ->color('success')
-                ->send();
+                        'institute_id' => Filament::getTenant()->id,
+                        'amount' => $data['amount'],
+                        'status' => UserStatus::Processing_payment->value,
+                        'payment_method' => PaymentMethod::TRANSFER->value,
+                        'payment_id' => $data['payment_id'],
+                        'currency' => $data['currency'],
+                        'current_period' => Carbon::now()->day(1),
+                        'link_to_ticket' => $data['link_to_ticket'],
+                        'description' => $data['description'],
+                    ]);
+                    Notification::make('payment_created')
+                        ->title('Payment created successfuly')
+                        ->color('success')
+                        ->send();
                 })
                 ->color(Color::hex('#0086b3')),
         ];

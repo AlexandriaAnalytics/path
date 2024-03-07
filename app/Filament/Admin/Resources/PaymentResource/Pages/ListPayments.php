@@ -21,29 +21,31 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
-    protected static ?string $title = 'Payments methods';
     protected static string $resource = PaymentResource::class;
 
     public function getTabs(): array
     {
         return [
             'All' => Components\Tab::make(),
-            'suscriptions' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
+            'Subscriptions' => Components\Tab::make()
+                ->modifyQueryUsing(
+                    fn (Builder $query)
                     => $query
                         ->where('instalment_number', '!=', null)
                         ->where('financing_id', null)
-                    ),
-                    
-            'Installments' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
-                    => $query->where('financing_id', '!=', null) 
                 ),
-            'simple payment' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
+
+            'Installments' => Components\Tab::make()
+                ->modifyQueryUsing(
+                    fn (Builder $query)
+                    => $query->where('financing_id', '!=', null)
+                ),
+            'Simple payments' => Components\Tab::make()
+                ->modifyQueryUsing(
+                    fn (Builder $query)
                     => $query
                         ->where('instalment_number', null)
-                        ->where('financing_id', null) 
+                        ->where('financing_id', null)
                 )
         ];
     }
@@ -67,7 +69,7 @@ class ListPayments extends ListRecords
                     ->required(),
 
                 Select::make('candidate_id')
-                    ->label('Payment ID')
+                    ->label('Candidate')
                     ->options(Candidate::all()->pluck('student.name', 'id')->map(function ($fullName, $id) {
                         $student = Candidate::find($id)->student;
                         return "{$id} - {$student->name} {$student->surname}";
@@ -82,11 +84,12 @@ class ListPayments extends ListRecords
 
 
                 TextInput::make('payment_id')
+                    ->label('Payment ID')
                     ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
 
                 Select::make('payment_method')
                     ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer'
+                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
                     ])
                     ->required(),
 
@@ -115,7 +118,7 @@ class ListPayments extends ListRecords
 
     protected function createInstitutePaymentAction()
     {
-        return Actions\Action::make('create associated payment')
+        return Actions\Action::make('Create member or centre payment')
             ->form([
 
                 TextInput::make('amount')
@@ -123,6 +126,7 @@ class ListPayments extends ListRecords
                     ->required(),
 
                 Select::make('institute_id')
+                    ->label('Institution')
                     ->options(Institute::all()->pluck('name', 'id')->map(function ($fullName, $id) {
                         $institute = Institute::find($id);
                         return "{$id} - {$institute->name}";
@@ -144,7 +148,7 @@ class ListPayments extends ListRecords
 
                 Select::make('payment_method')
                     ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer'
+                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
                     ])
                     ->required(),
 

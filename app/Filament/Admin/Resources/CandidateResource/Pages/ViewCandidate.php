@@ -56,7 +56,7 @@ class ViewCandidate extends ViewRecord
                     ])
                     ->columnSpanFull()
                     ->grid(2),
-                RepeatableEntry::make('billed_concepts')
+                RepeatableEntry::make('concepts')
                     ->hidden(function () {
                         /** @var \App\Models\User $user */
                         $user = auth()->user();
@@ -65,12 +65,9 @@ class ViewCandidate extends ViewRecord
                     })
                     ->columns(3)
                     ->schema([
-                        TextEntry::make('concept')
-                            ->label('Concept'),
-                        TextEntry::make('currency')
-                            ->label('Currency'),
+                        TextEntry::make('description'),
+                        TextEntry::make('currency'),
                         TextEntry::make('amount')
-                            ->label('Amount')
                             ->numeric(decimalPlaces: 2),
                     ])
                     ->columnSpanFull(),
