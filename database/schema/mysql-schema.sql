@@ -87,7 +87,6 @@ CREATE TABLE `candidates` (
   `granted_discount` decimal(12,2) NOT NULL COMMENT 'Discount granted to the student by the institute.',
   `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type_of_certificate` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `billed_concepts` json NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

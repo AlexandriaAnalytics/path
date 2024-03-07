@@ -8,6 +8,7 @@ use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,16 +28,13 @@ use Illuminate\Support\Facades\DB;
  * @property string $status
  * @property string $type_of_certificate
  */
-class Candidate extends Pivot
+class Candidate extends Model
 {
-    public $incrementing = true;
-
     protected $table = 'candidates';
 
     protected $fillable = [
         'level_id',
         'student_id',
-        'billed_concepts',
         'candidate_number',
         'status',
         'type_of_certificate',
@@ -44,15 +42,15 @@ class Candidate extends Pivot
         'payment_ticket_link',
     ];
 
-    protected $casts = [
-        'billed_concepts' => AsCollection::class,
-    ];
-
     protected $attributes = [
-        'billed_concepts' => '[]',
         'granted_discount' => 0,
         'status' => UserStatus::Unpaid,
     ];
+
+    public function concepts(): HasMany
+    {
+        return $this->hasMany(Concept::class);
+    }
 
     public function candidateExam(): HasMany
     {
@@ -112,7 +110,7 @@ class Candidate extends Pivot
     {
         return Attribute::make(
             get: function () {
-                return $this->billed_concepts->sum('amount');
+                return $this->concepts()->sum('amount');
             },
         );
     }
