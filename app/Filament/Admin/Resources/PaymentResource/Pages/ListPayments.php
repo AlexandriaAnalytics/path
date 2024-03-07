@@ -27,21 +27,24 @@ class ListPayments extends ListRecords
         return [
             'All' => Components\Tab::make(),
             'Subscriptions' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
+                ->modifyQueryUsing(
+                    fn (Builder $query)
                     => $query
                         ->where('instalment_number', '!=', null)
                         ->where('financing_id', null)
-                    ),
-                    
+                ),
+
             'Installments' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
-                    => $query->where('financing_id', '!=', null) 
+                ->modifyQueryUsing(
+                    fn (Builder $query)
+                    => $query->where('financing_id', '!=', null)
                 ),
             'Simple payments' => Components\Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) 
+                ->modifyQueryUsing(
+                    fn (Builder $query)
                     => $query
                         ->where('instalment_number', null)
-                        ->where('financing_id', null) 
+                        ->where('financing_id', null)
                 )
         ];
     }
@@ -122,6 +125,7 @@ class ListPayments extends ListRecords
                     ->required(),
 
                 Select::make('institute_id')
+                    ->label('Institution')
                     ->options(Institute::all()->pluck('name', 'id')->map(function ($fullName, $id) {
                         $institute = Institute::find($id);
                         return "{$id} - {$institute->name}";
@@ -143,7 +147,7 @@ class ListPayments extends ListRecords
 
                 Select::make('payment_method')
                     ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer'
+                        'Transfer or deposit' => 'Transfer'
                     ])
                     ->required(),
 
