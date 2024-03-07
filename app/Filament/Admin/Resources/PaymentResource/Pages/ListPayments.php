@@ -68,7 +68,7 @@ class ListPayments extends ListRecords
                     ->required(),
 
                 Select::make('candidate_id')
-                    ->label('Payment ID')
+                    ->label('Candidate')
                     ->options(Candidate::all()->pluck('student.name', 'id')->map(function ($fullName, $id) {
                         $student = Candidate::find($id)->student;
                         return "{$id} - {$student->name} {$student->surname}";
@@ -83,11 +83,12 @@ class ListPayments extends ListRecords
 
 
                 TextInput::make('payment_id')
+                    ->label('Payment ID')
                     ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
 
                 Select::make('payment_method')
                     ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer'
+                        'Transfer or deposit' => 'Transfer'
                     ])
                     ->required(),
 
