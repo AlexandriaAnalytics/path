@@ -28,6 +28,7 @@ class ListPayments extends ListRecords
         return [
             'All' => Components\Tab::make(),
             'Subscriptions' => Components\Tab::make()
+
                 ->modifyQueryUsing(
                     fn (Builder $query)
                     => $query
@@ -46,6 +47,7 @@ class ListPayments extends ListRecords
                     => $query
                         ->where('instalment_number', null)
                         ->where('financing_id', null)
+
                 )
         ];
     }
