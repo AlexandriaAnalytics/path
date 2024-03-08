@@ -2,12 +2,14 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\PaymentMethod;
 use App\Filament\Admin\Resources\PaymentResource\Pages;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\Payment;
 use Carbon\Carbon;
+use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Forms;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -35,7 +37,18 @@ class PaymentResource extends Resource
     {
         return $form
             ->schema([
-                // more code 
+                TextInput::make('amount')
+                ->required()
+                ->numeric(),
+
+                Select::make('patment_method')
+                ->options(PaymentMethod::values()),
+
+
+                Select::make('candidate_id')
+                ->required()
+                ->relationship(titleAttribute:'id', name:'candidate')
+
             ]);
     }
 
@@ -103,7 +116,11 @@ class PaymentResource extends Resource
                                     break;
                             }
                         }
-                    })
+                    }),
+                Tables\Actions\Action::make('edit')
+                ->form([
+
+                    ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

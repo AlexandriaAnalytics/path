@@ -9,6 +9,7 @@ use Filament\Actions\Imports\Models\Import;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class StudentImporter extends Importer
 {
@@ -49,7 +50,7 @@ class StudentImporter extends Importer
                     try {
                         return Carbon::createFromFormat('d/m/Y', $state);
                     } catch (\Exception $e) {
-                        // If the date is not in the expected format, return the original value.
+                        Log::error('inport student exeption', [ $e]);
                         return null;
                     }
                 }),
