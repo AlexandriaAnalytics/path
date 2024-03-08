@@ -51,10 +51,7 @@
                         <div class="display">
                             <h3>If you want to pay by transfer, our bank details are:</h3>
                             <div class="transfer">
-                                <h3>Dato 1</h3>
-                                <h3>Dato 2</h3>
-                                <h3>Dato 3</h3>
-                                <h3>Dato 4</h3>
+                                {!! $this->bankData !!}
                             </div>
                             To make your registration effective, send the receipt to admin@pathexaminations.com
                         </div>
