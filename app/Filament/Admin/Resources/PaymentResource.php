@@ -24,6 +24,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;;
 
 use Filament\Forms\Set;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentResource extends Resource
 {
@@ -85,7 +87,10 @@ class PaymentResource extends Resource
 
             ])
             ->filters([
-                //
+                Filter::make('payment_method')
+                ->label('show installments')
+                 ->query(fn(Builder $query) 
+                    => $query->where('payment_method', 'financing by associated'))
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
