@@ -2,7 +2,6 @@
 
 namespace App\Filament\Management\Resources\FinancingResource\Pages;
 
-use App\Enums\CurrencyEnum;
 use App\Enums\PaymentMethod;
 use App\Enums\UserStatus;
 use App\Filament\Management\Resources\FinancingResource;
@@ -46,8 +45,7 @@ class ListFinancings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        //   $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
-
+        
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
@@ -56,8 +54,7 @@ class ListFinancings extends ListRecords
                         ->prefix(fn () => Filament::getTenant()->currency)
                         ->default(function () {
 
-                            $financings = Financing::all()->where('institute_id', Filament::getTenant()->id);
-                            ray('fi', $financings);
+                            $financings = Filament::getTenant()->financings;
                             $totalGroupAmount = 0;
                             foreach ($financings as $financing) {
                                 ray('f', $financing);
@@ -91,17 +88,15 @@ class ListFinancings extends ListRecords
                         'current_period' => Carbon::now()->day(1),
                         'link_to_ticket' => $data['link_to_ticket'],
                         'description' => $data['description'],
-
-
                     ]);
 
-                    $financings = Financing::all()->where('institute_id', Filament::getTenant()->id);
-                    foreach($financings as $financing){
-                        ray('f2', $financing);
-                        $financing->update(['state' => 'stack']);
+                    $financings = Filament::getTenant()->financings
+                        ->where('institute_id', 1)
+                        ->each(fn($item) => $item->update(['state' => 'stack']));
+
+                        $financings = Filament::getTenant()->financings->each(fn($item) => $item->payments->sortBy('current_instalment',1)->first()->update(['pay_id'=> $payment->id ]));  
                         
-                    }
-                    
+
                     Notification::make('payment_created')
                         ->title('Payment created successfuly')
                         ->color('success')

@@ -20,6 +20,7 @@ class Financing extends Model
         'currency',
         'exam_amount',
         'exam_rigth',
+        'state'
     ];
 
     public function paymentMethod(): BelongsTo
@@ -52,13 +53,10 @@ class Financing extends Model
         );
     }
 
-    public function currentInstalment(): Attribute
+    public function getCurrentInstalmentAttribute()
     {
-        return new Attribute(
-            get: fn () => $this->payments()->where('status', '!=', UserStatus::Paid->value)
-                ->orderBy('current_instalment', 'ASC')
-                ->first()->current_instalment ?? ''
-        );
+        return
+            $this->payments()->where('status', '!=', 'approved')->orderBy('current_instalment','ASC')->first()->current_instalment;
     }
 
     public function getTotalInstallmentsAttribute() {
@@ -95,4 +93,6 @@ class Financing extends Model
     public function getCountPaidInstallmentsAttribute(){
         return $this->payments->where('status', '==', 'approved')->count();
     }
+
+    
 }

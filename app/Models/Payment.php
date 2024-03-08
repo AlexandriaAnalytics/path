@@ -30,6 +30,7 @@ class Payment extends Model
         'institute_id',
         'link_to_ticket',
         'description',
+        'pay_id',
     ];
 
 
@@ -47,6 +48,14 @@ class Payment extends Model
     public function financing(): BelongsTo
     {
         return $this->belongsTo(Financing::class);
+    }
+
+    public function childrenPayments(){
+        return $this->hasMany(Payment::class, 'pay_id');
+    }
+
+    public function parentPayment() {
+        return $this->belongsTo(Payment::class, 'pay_id');
     }
 
     public function getIsExpiredAttribute()
