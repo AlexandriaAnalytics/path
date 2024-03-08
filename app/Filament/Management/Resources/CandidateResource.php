@@ -290,7 +290,7 @@ class CandidateResource extends Resource
                         ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
                         TextInput::make('instalments')
                         ->label('Number of installments')
-                        ->default(fn(Candidate $candidate) => $candidate->financing->)
+                        ->default(fn(Candidate $candidate) => $candidate->financing->payments->count())
                         ->helperText(fn(Candidate $candidate) => 'installments between '. 1 . ' to ' . $candidate->installments_available .'months')
                         ->numeric()
                         ->minValue(1)
