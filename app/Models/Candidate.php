@@ -136,8 +136,8 @@ class Candidate extends Model
 
         if ($this->payments->last()->instalment_number == null) return '1/1';
         else {
-            $lastInstalment =  $this->payments()->where('instalment_number', '!=', 'null')->where('status', '!=', 'paid')->orderBy('current_instalment', 'asc')->first()->current_instalment;
-            return $lastInstalment . '/' . $this->payments()->where('instalment_number', '!=', 'null')->first()->instalment_number;
+            return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
+
         }
     }
 
@@ -188,7 +188,7 @@ class Candidate extends Model
     }
 
     public function financing(){
-        return $this->hasOne(Financing::class);
+        return $this->belongsTo(Financing::class);
     }
 
 

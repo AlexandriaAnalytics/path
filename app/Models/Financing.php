@@ -79,7 +79,7 @@ class Financing extends Model
     }
 
     public function getTotalAmountAttribute() {
-        return $this->exam_amount + $this->exam_rigth;
+        return $this->institute->candidates->count() >= 0? $this->exam_amount : $this->exam_amount + $this->exam_rigth;
     }
 
     public function getCurrentPaidAttribute()
