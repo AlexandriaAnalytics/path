@@ -19,7 +19,8 @@ class FinancingResource extends Resource
     protected static ?string $pluralModelLabel = 'Installments';
     protected static bool $hasTitleCaseModelLabel = false;
 
-    public static function canViewAny(): bool { 
+    public static function canViewAny(): bool
+    {
         return Filament::getTenant()->internal_payment_administration;
     }
 
@@ -50,18 +51,20 @@ class FinancingResource extends Resource
                     ->label('amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
                 Tables\Columns\TextColumn::make('current_instalment.is_expired'),
-                Tables\Columns\SelectColumn::make('state')
-                    ->options([
-                        'complete' => 'complete',
-                        'stak' => 'stak',
-                        'pending' => 'pending',
-                    ])->disabled(fn ($state) => $state == 'complete'),
-
+                Tables\Columns\TextColumn::make('state')
+                    ->badge(
+                        fn ($state) =>
+                        match ($state) {
+                            "complete" => 'success',
+                            "stack" => 'info',
+                            'pending' => 'danger'
+                        }
+                    )
 
             ])
             ->filters([])
             ->actions([
-               
+
                 // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
