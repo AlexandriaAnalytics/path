@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat&amp;display=swap');
+        @import url("https://use.typekit.net/rjv6btq.css");
 
         body {
             display: flex;
@@ -16,7 +16,9 @@
             padding-right: 10%;
             height: 100vh;
             width: 100vw;
-            font-family: 'Montserrat', sans-serif;
+            font-family: "skolar-sans-latin", sans-serif;
+            font-weight: 400;
+            font-style: normal;
             background: url('../images/fondo-login.jpg') center/cover no-repeat;
         }
 
