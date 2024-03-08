@@ -110,7 +110,6 @@ class ViewCandidate extends ViewRecord
                                 ->join('modules', 'modules.id', '=', 'candidate_module.module_id')
                                 ->pluck('modules.name', 'modules.id');
                         })
-                        ->multiple()
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
                     Select::make('exam_id')
@@ -118,7 +117,7 @@ class ViewCandidate extends ViewRecord
                         ->options(function (callable $get, Candidate $record) {
                             $moduleId = $get('module');
                             $levelId = $record->level_id;
-                            
+
                             if (!$moduleId) {
                                 return [];
                             }
