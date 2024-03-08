@@ -94,6 +94,7 @@ class ViewCandidate extends ViewRecord
                         ->required()
                         ->native(false)
                         ->live()
+                        ->multiple()
                         ->options(fn (Candidate $record) => $record->pendingModules->pluck('name', 'id'))
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
@@ -104,19 +105,22 @@ class ViewCandidate extends ViewRecord
                             fn (callable $get, Candidate $record) =>
                             $get('module_id')
                                 ? Exam::whereHas('modules', fn ($query) => $query->where('modules.id', $get('module_id')))
+                                ->whereHas('levels', fn ($query) => $query->where('levels.id', $record->level_id))
                                 ->whereDoesntHave('candidates', fn ($query) => $query->where('candidates.id', $record->id))
                                 ->pluck('session_name', 'id')
                                 : []
                         )
                         ->required(),
                 ])
-                ->action(fn (Candidate $record, array $data) => $record
-                    ->exams()
-                    ->attach([
-                        $data['exam_id'] => [
-                            'module_id' => $data['module_id'],
-                        ],
-                    ])),
+                ->action(function (Candidate $record, array $data) {
+                    foreach ($data['module_id'] as $moduleId) {
+                        $record->exams()->attach([
+                            $data['exam_id'] => [
+                                'module_id' => $moduleId,
+                            ],
+                        ]);
+                    }
+                }),
         ];
     }
 }
