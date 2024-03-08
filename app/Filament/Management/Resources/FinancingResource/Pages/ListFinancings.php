@@ -2,6 +2,7 @@
 
 namespace App\Filament\Management\Resources\FinancingResource\Pages;
 
+use App\Enums\CurrencyEnum;
 use App\Enums\PaymentMethod;
 use App\Enums\UserStatus;
 use App\Filament\Management\Resources\FinancingResource;
@@ -45,30 +46,26 @@ class ListFinancings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
-        $currenciesAvailables = array_unique($currenciesAvailables);
-
+     //   $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
+        
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
                 ->form([
-                    Select::make('currency')->options([
-                        'ARS' => 'ARS',
-                        'GBP' => 'GBP',
-                        'UYU' => 'UYY',
-                    ])
-                        ->live()
-                        ->afterStateUpdated(function (Set $set, string $state) {
-                            $total = 0;
-
-                            $financings = Financing::all()->where('institute_id', 1)->where('currency', $state);
-
-                            foreach ($financings as $f) {
-                                $total += $f->current_paid;
-                            }
-                            $set('amount', $total);
-                        }),
-                    TextInput::make('amount')->readOnly(),
+                    TextInput::make('amount')
+                    ->prefix(fn() => Filament::getTenant()->currency)
+                    ->default(function(){
+/*
+                       $financings = Financing::where('institute_id', Filament::getTenant()->id);
+                       $totalGroupAmount = 0;
+                       foreach($financings as $financing){
+                        $totalGroupAmount += floatval($financing->current_paiment->amount);
+                       }
+                      return $totalGroupAmount;
+  */
+  return 9864;
+                    })
+                    ->readOnly(),
                     TextInput::make('payment_id')->readOnly()
                         ->label('Payment ID')
                         ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),

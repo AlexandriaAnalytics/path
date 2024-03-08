@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ModuleType: string
+enum CurrencyEnum: string
 {
     case ARS = 'ARS';
     case UYU = 'UYU';

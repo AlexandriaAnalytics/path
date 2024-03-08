@@ -20,6 +20,7 @@ use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Closure;
+use Exception;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -232,6 +233,7 @@ class CandidateResource extends Resource
                         TextInput::make('instalments')
                             ->label('Number of installments')
                             ->helperText(fn (Candidate $candidate) => 'Installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
+                            ->default(fn(Candidate $candidate) => $candidate->installments_available)
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
@@ -246,42 +248,52 @@ class CandidateResource extends Resource
                             return;
                         }
 
-                        $fincancing = Financing::create([
-                            'country_id' => $candidate->student->country_id,
-                            'candidate_id' => $candidate->id,
-                            'institute_id' => Filament::getTenant()->id,
-                            'currency' => $candidate->currency
-                        ]);
-
-                        $amount = $candidate->total_amount / $data['instalments'];
-                        $suscriptionCode = 'f-' . Carbon::now()->timestamp;
-                        $currentDate = Carbon::now()->day(1);
-                        $expirationDate = Carbon::now()->addMonth()->day(1);
-                        for ($index = 1; $index <= $data['instalments']; $index++) {
-                            $payment = Payment::create([
+                        try{
+                            $fincancing = Financing::create([
+                                'country_id' => $candidate->student->country_id,
                                 'candidate_id' => $candidate->id,
-                                'payment_method' => 'financing by associated',
+                                'institute_id' => Filament::getTenant()->id,
                                 'currency' => $candidate->currency,
-                                'amount' => $amount,
-                                'suscription_code' => $suscriptionCode,
-                                'instalment_number' => $data['instalments'],
-                                'current_instalment' => $index,
-                                'expiration_date' => $currentDate,
-                                'current_period' => $expirationDate,
+                                'exam_amount' => $candidate->concepts->reject(fn($item) => $item->description === 'Exam right')->sum('amount'),
+                                'exam_rigth' => $candidate->concepts->where('description','Exam right')->sum('amount')
                             ]);
-
-                            $currentDate->addMonth();
-                            $expirationDate->addMonth();
-                            $fincancing->payments()->save($payment);
-                        }
-
-                        Candidate::find($candidate->id)
-                            ->update(['status' => UserStatus::Paying]);
-
-                        Notification::make()
-                            ->title('Financiament was created successfully')
-                            ->success()
+    
+                            $amountPerInstallment = $candidate->total_amount / $data['instalments'];
+                            $suscriptionCode = 'f-' . Carbon::now()->timestamp. rand(1000,10000);
+                            $currentDate = Carbon::now()->day(1);
+    
+                            for ($index = 1; $index <= $data['instalments']; $index++) {
+                                $payment = Payment::create([
+                                    'candidate_id' => $candidate->id,
+                                    'payment_method' => 'financing by associated',
+                                    'currency' => $candidate->currency,
+                                    'amount' => $amountPerInstallment,
+                                    'suscription_code' => $suscriptionCode,
+                                    'instalment_number' => $data['instalments'],
+                                    'current_instalment' => $index,
+                                    'current_period' => $currentDate,
+                                ]);
+    
+                                $currentDate->addMonth();
+                                $fincancing->payments()->save($payment);
+                            }
+    
+                            Candidate::find($candidate->id)
+                                ->update(['status' => UserStatus::Paying]);
+    
+                            Notification::make()
+                                ->title('Financiament was created successfully')
+                                ->success()
+                                ->send();
+                        
+                        }catch(Exception $e){
+                            Notification::make('error_create_financing')
+                            ->title('Error creating installments try later please')
+                            ->color('danger')
                             ->send();
+                            
+                            Log::error('crash on create financiament', [$e]);
+                        }
                     })
                     ->visible(
                         fn (Candidate $candidate)
@@ -290,55 +302,53 @@ class CandidateResource extends Resource
                             && $candidate->currency == Filament::getTenant()->currency
                     ),
                 Action::make('refinaciation')
-                    ->label('Refinancing')
+                    ->label('Refinancing')->color('info')
                     ->form([
                         TextInput::make('no exams')->readOnly()
                             ->placeholder('should add exams to make a installment plan')
                             ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
-                        TextInput::make('exam date to close')->readOnly()
+                        
+                            TextInput::make('exam date to close')->readOnly()
                             ->placeholder('you have no time to create installments')
                             ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
-                        TextInput::make('instalments')
+                        
+                            TextInput::make('instalments')
                             ->label('Number of installments')
                             ->default(fn (Candidate $candidate) => $candidate->financing->payments()->count())
-                            ->helperText(fn (Candidate $candidate) => 'installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
+                            ->helperText(fn (Candidate $candidate) => 'installments between ' . 1 . ' to ' . $candidate->financing->payments()->count() . ' months')
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->maxValue(fn (Candidate $candidate) 
+                            => $candidate->installments_available -  $candidate->financing->count_paid_installments)
                             ->hidden(fn (Candidate $candidate) => !$candidate->hasExamSessions && $candidate->installments_available >= 1),
                     ])
                     ->action(function (Candidate $candidate, array $data) {
-                        $fincancing = Financing::create([
-                            'country_id' => $candidate->student->country_id,
-                            'candidate_id' => $candidate->id,
-                            'institute_id' => Filament::getTenant()->id,
-                            'currency' => $candidate->currency
-                        ]);
+                        
+                        $paymentsApprovedAmount = $candidate->financing->total_payments_pay;
+                        $totalAmount = $candidate->financing->total_amount;
 
-                        $amount = $candidate->total_amount / $data['instalments'];
+                        $amountPerInstallment = ($totalAmount - $paymentsApprovedAmount) / ($data['instalments'] - $candidate->financing->count_paid_installments);
+                        
+                        $candidate->financing->payments->where('status', '!=', 'approved')->each(fn($itemUnpaid) => $itemUnpaid->delete());
+
+                        ray($candidate->financing->payments);
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
-                        $currentDate = Carbon::now()->day(1);
-                        $expirationDate = Carbon::now()->addMonth()->day(1);
-                        for ($index = 1; $index <= $data['instalments']; $index++) {
-                            $payment = Payment::create([
+                        $currentDate = Carbon::now()->day(1)->addMonth();
+                        
+                        for ($index = 1; $index <= ($data['instalments']) -$candidate->financing->count_paid_installments; $index++) {
+                            $newPayment = Payment::create([
                                 'candidate_id' => $candidate->id,
                                 'payment_method' => 'financing by associated',
                                 'currency' => $candidate->currency,
-                                'amount' => $amount,
+                                'amount' => $amountPerInstallment,
                                 'suscription_code' => $suscriptionCode,
                                 'instalment_number' => $data['instalments'],
-                                'current_instalment' => $index,
-                                'expiration_date' => $currentDate,
-                                'current_period' => $expirationDate,
+                                'current_instalment' => intval($candidate->financing->current_instalment) + $index,
+                                'current_period' => $currentDate,
                             ]);
 
-                            $currentDate->addMonth();
-                            $expirationDate->addMonth();
-                            $fincancing->payments()->save($payment);
+                            $candidate->financing->payments()->save($newPayment);
                         }
-
-                        Candidate::find($candidate->id)
-                            ->update(['status' => UserStatus::Paying]);
 
                         Notification::make()
                             ->title('Financiament was created successfully')

@@ -18,7 +18,7 @@ class Financing extends Model
         'candidate_id',
         'institute_id',
         'currency',
-        'total_amount',
+        'exam_amount',
         'exam_rigth',
     ];
 
@@ -46,7 +46,7 @@ class Financing extends Model
     public function currentPayment(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->payments()
+            get: fn () => $this->payments()
                 ->orderBy('current_instalment', 'ASC')
                 ->first()
         );
@@ -55,54 +55,44 @@ class Financing extends Model
     public function currentInstalment(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)
+            get: fn () => $this->payments()->where('status', '!=', UserStatus::Paid->value)
                 ->orderBy('current_instalment', 'ASC')
                 ->first()->current_instalment ?? ''
         );
     }
 
-    public function getFinalAmountAttribute() {
-        $final_amount = 0;
-        if($this->institute->count() < 30 ){
-            
-        }      
+    public function getTotalInstallmentsAttribute() {
+        return $this->payments->count();
     }
 
-/*
-    public function totalAmount(): Attribute
+
+    public function getTotalPaymentsPayAttribute()
     {
-        return new Attribute(
-            get: fn() => $this->payments()->sum('amount')
-        );
-    }
-*/
-
-    public function totalPaid(): Attribute
-    {
-
-
-        return new Attribute(
-            get: function(){
-                
-               $totalAmount =  $this->payments()->where('status', UserStatus::Paid->value)->sum('amount') ?? 0;
-                return $totalAmount;
-               
-            }
-        );
+        return $this->payments()->where('status', 'approved')->sum('amount') ?? 0;
     }
 
     public function totalUnPaid(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount') ?? 0
+            get: fn () => $this->payments()->where('status', '!=', UserStatus::Paid->value)->sum('amount') ?? 0
         );
     }
 
-    public function getCurrentPaidAttribute() {
+    public function getTotalAmountAttribute() {
+        return $this->institute->candidates->count() >= 0? $this->exam_amount : $this->exam_amount + $this->exam_rigth;
+    }
+
+    public function getCurrentPaidAttribute()
+    {
         return $this->candidate->payments()->first()->amount ?? 0;
     }
 
-    public function getIsExpiredAttribute() {
+    public function getIsExpiredAttribute()
+    {
         return $this->student->payment_current_istallment->current_period;
+    }
+
+    public function getCountPaidInstallmentsAttribute(){
+        return $this->payments->where('status', '==', 'approved')->count();
     }
 }
