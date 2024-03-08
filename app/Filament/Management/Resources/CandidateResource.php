@@ -217,26 +217,35 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
-
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
                     ->form([
-                        TextInput::make('no exams')->readOnly()
-                        ->placeholder('should add exams to make a installment plan')
-                        ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
-                        TextInput::make('exam date to close')->readOnly()
-                        ->placeholder('you have no time to create installments')
-                        ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
+                        TextInput::make('No exams')
+                            ->readOnly()
+                            ->placeholder('The candidate has no exams to make a installment plan')
+                            ->visible(fn (Candidate $candidate) => $candidate->exams()->doesntExist()),
+                        TextInput::make('Exam date too close')
+                            ->readOnly()
+                            ->placeholder('You have no time to create installments')
+                            ->visible(fn (Candidate $candidate) => $candidate->installments_available <= 1),
                         TextInput::make('instalments')
-                        ->label('Number of installments')
-                        ->helperText(fn(Candidate $candidate) => 'installments between '. 1 . ' to ' . $candidate->installments_available .'months')
-                        ->numeric()
-                        ->minValue(1)
-                        ->maxValue(fn(Candidate $candidate) => $candidate->installments_available)
-                        ->hidden(fn(Candidate $candidate) =>!$candidate->hasExamSessions && $candidate->installments_available >= 1),
-                        ])
+                            ->label('Number of installments')
+                            ->helperText(fn (Candidate $candidate) => 'Installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->visible(fn (Candidate $candidate) => $candidate->exams()->exists() && $candidate->installments_available >= 1),
+                    ])
                     ->action(function (Candidate $candidate, array $data) {
+                        if (!isset($data['instalments'])) {
+                            Notification::make()
+                                ->title('The number of installments is required')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
                         $fincancing = Financing::create([
                             'country_id' => $candidate->student->country_id,
                             'candidate_id' => $candidate->id,
@@ -274,29 +283,30 @@ class CandidateResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (Candidate $candidate) 
-                        => $candidate->status == UserStatus::Unpaid->value 
-                        && Filament::getTenant()->internal_payment_administration
-                        && $candidate->currency == Filament::getTenant()->currency
-                        ),
+                    ->visible(
+                        fn (Candidate $candidate)
+                        => $candidate->status == UserStatus::Unpaid->value
+                            && Filament::getTenant()->internal_payment_administration
+                            && $candidate->currency == Filament::getTenant()->currency
+                    ),
                 Action::make('refinaciation')
-                ->label('Refinancing')
-                ->form([
+                    ->label('Refinancing')
+                    ->form([
                         TextInput::make('no exams')->readOnly()
-                        ->placeholder('should add exams to make a installment plan')
-                        ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
+                            ->placeholder('should add exams to make a installment plan')
+                            ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
                         TextInput::make('exam date to close')->readOnly()
-                        ->placeholder('you have no time to create installments')
-                        ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
+                            ->placeholder('you have no time to create installments')
+                            ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
                         TextInput::make('instalments')
-                        ->label('Number of installments')
-                        ->default(fn(Candidate $candidate) => $candidate->financing->payments()->count())
-                        ->helperText(fn(Candidate $candidate) => 'installments between '. 1 . ' to ' . $candidate->installments_available .'months')
-                        ->numeric()
-                        ->minValue(1)
-                        ->maxValue(fn(Candidate $candidate) => $candidate->installments_available)
-                        ->hidden(fn(Candidate $candidate) =>!$candidate->hasExamSessions && $candidate->installments_available >= 1),
-                        ])
+                            ->label('Number of installments')
+                            ->default(fn (Candidate $candidate) => $candidate->financing->payments()->count())
+                            ->helperText(fn (Candidate $candidate) => 'installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->hidden(fn (Candidate $candidate) => !$candidate->hasExamSessions && $candidate->installments_available >= 1),
+                    ])
                     ->action(function (Candidate $candidate, array $data) {
                         $fincancing = Financing::create([
                             'country_id' => $candidate->student->country_id,
@@ -335,8 +345,8 @@ class CandidateResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (Candidate $candidate) 
-                        => $candidate->financing != null),
+                    ->visible(fn (Candidate $candidate)
+                    => $candidate->financing != null),
                 Action::make('pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-document')
