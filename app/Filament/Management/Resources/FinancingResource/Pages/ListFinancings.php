@@ -46,26 +46,31 @@ class ListFinancings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-     //   $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
-        
+        //   $currenciesAvailables = Financing::all()->where('institute_id', Filament::getTenant()->id)->pluck('currency')->toArray();
+
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
                 ->form([
                     TextInput::make('amount')
-                    ->prefix(fn() => Filament::getTenant()->currency)
-                    ->default(function(){
-/*
-                       $financings = Financing::where('institute_id', Filament::getTenant()->id);
-                       $totalGroupAmount = 0;
-                       foreach($financings as $financing){
-                        $totalGroupAmount += floatval($financing->current_paiment->amount);
-                       }
-                      return $totalGroupAmount;
-  */
-  return 9864;
-                    })
-                    ->readOnly(),
+                        ->prefix(fn () => Filament::getTenant()->currency)
+                        ->default(function () {
+
+                            $financings = Financing::all()->where('institute_id', Filament::getTenant()->id);
+                            ray('fi', $financings);
+                            $totalGroupAmount = 0;
+                            foreach ($financings as $financing) {
+                                ray('f', $financing);
+                                $totalGroupAmount += floatval($financing
+                                    ->payments()
+                                    ->orderBy('current_instalment', 'ASC')
+                                    ->first()->amount);
+                            }
+                            return $totalGroupAmount;
+
+                            //return 9864;
+                        })
+                        ->readOnly(),
                     TextInput::make('payment_id')->readOnly()
                         ->label('Payment ID')
                         ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
@@ -82,11 +87,17 @@ class ListFinancings extends ListRecords
                         'status' => UserStatus::Processing_payment->value,
                         'payment_method' => PaymentMethod::TRANSFER->value,
                         'payment_id' => $data['payment_id'],
-                        'currency' => $data['currency'],
+                        'currency' => Filament::getTenant()->currency,
                         'current_period' => Carbon::now()->day(1),
                         'link_to_ticket' => $data['link_to_ticket'],
                         'description' => $data['description'],
+
+                        
                     ]);
+
+                    $financings = Financing::all()->where('institute_id', Filament::getTenant()->id);
+                    $financings->each(fn($item) => $item->update(['state' => 'stack']));
+
                     Notification::make('payment_created')
                         ->title('Payment created successfuly')
                         ->color('success')
