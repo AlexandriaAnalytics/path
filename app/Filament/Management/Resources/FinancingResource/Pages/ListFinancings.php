@@ -92,12 +92,16 @@ class ListFinancings extends ListRecords
                         'link_to_ticket' => $data['link_to_ticket'],
                         'description' => $data['description'],
 
-                        
+
                     ]);
 
                     $financings = Financing::all()->where('institute_id', Filament::getTenant()->id);
-                    $financings->each(fn($item) => $item->update(['state' => 'stack']));
-
+                    foreach($financings as $financing){
+                        ray('f2', $financing);
+                        $financing->update(['state' => 'stack']);
+                        
+                    }
+                    
                     Notification::make('payment_created')
                         ->title('Payment created successfuly')
                         ->color('success')
