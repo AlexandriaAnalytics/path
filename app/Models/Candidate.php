@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
+use App\Services\CandidateService;
 use Carbon\Carbon;
 use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
@@ -111,7 +112,9 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                return $this->concepts()->sum('amount');
+                return $this->concepts()->count() == 0
+                    ? CandidateService::createConcepts($this)->concepts()->sum('amount')
+                    : $this->concepts()->sum('amount');
             },
         );
     }
@@ -160,8 +163,9 @@ class Candidate extends Model
         return $this->payments->where('instalment_number', '!=', null)->where('state', '!=', 'paid')->orderBy('current_instalment', 'asc')->first();
     }
 
-    public function getHasExamSessionsAttribute() {
-        return count($this->examSessions) != 0; 
+    public function getHasExamSessionsAttribute()
+    {
+        return count($this->examSessions) != 0;
     }
 
     public function tag(): Attribute
@@ -180,16 +184,15 @@ class Candidate extends Model
     {
         $maxDate = $this->exam_sessions->sortBy('scheduled_date', 0)->first()->scheduled_date ?? null;
         if ($maxDate == null) return -1;
-        
-        $monthDiff = Carbon::now()->diffInMonths($maxDate,false);
+
+        $monthDiff = Carbon::now()->diffInMonths($maxDate, false);
         if ($monthDiff < 0) return -2;
 
         return $monthDiff + 1;
     }
 
-    public function financing(){
+    public function financing()
+    {
         return $this->hasOne(Financing::class);
     }
-
-
 }
