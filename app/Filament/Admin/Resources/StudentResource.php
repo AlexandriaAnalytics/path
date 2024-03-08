@@ -17,6 +17,7 @@ use App\Models\Country;
 use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
+use App\Services\CandidateService;
 use Closure;
 use Doctrine\DBAL\Query\SelectQuery;
 use Filament\Facades\Filament;
@@ -245,7 +246,7 @@ class StudentResource extends Resource
                                         'billed_concepts' => json_decode($jsonObject),
                                     ]);
                                     $newCandidate->modules()->attach($data['modules']);
-                                    $newCandidate->save();
+                                    CandidateService::createConcepts($newCandidate);
                                 }
                                 Notification::make()
                                     ->title('Candidates create successfully')
