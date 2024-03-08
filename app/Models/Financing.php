@@ -18,6 +18,8 @@ class Financing extends Model
         'candidate_id',
         'institute_id',
         'currency',
+        'total_amount',
+        'exam_rigth',
     ];
 
     public function paymentMethod(): BelongsTo
@@ -59,18 +61,33 @@ class Financing extends Model
         );
     }
 
+    public function getFinalAmountAttribute() {
+        $final_amount = 0;
+        if($this->institute->count() < 30 ){
+            
+        }      
+    }
 
+/*
     public function totalAmount(): Attribute
     {
         return new Attribute(
             get: fn() => $this->payments()->sum('amount')
         );
     }
+*/
 
     public function totalPaid(): Attribute
     {
+
+
         return new Attribute(
-            get: fn() => $this->payments()->where('status', UserStatus::Paid->value)->sum('amount') ?? 0
+            get: function(){
+                
+               $totalAmount =  $this->payments()->where('status', UserStatus::Paid->value)->sum('amount') ?? 0;
+                return $totalAmount;
+               
+            }
         );
     }
 
