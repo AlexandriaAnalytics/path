@@ -103,8 +103,8 @@
 @push('scripts')
     <script>
         document.getElementById('form').addEventListener('change', function() {
-            if (document.getElementsByClassName('choices__item--selectable')[0].innerText.split(' ')[0] ==
-                'Transfer') {
+            if (document.getElementsByClassName('choices__item--selectable')[0].innerText.startsWith(
+                    "Transfer")) {
                 document.getElementsByClassName('display')[0].style.display = 'block';
             } else {
                 document.getElementsByClassName('display')[0].style.display = 'none';
