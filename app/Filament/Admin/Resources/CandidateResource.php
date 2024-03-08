@@ -7,6 +7,8 @@ use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource\Pages;
 use App\Filament\Exports\CandidateExporter;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
+use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
@@ -251,7 +253,74 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class),
                     DeleteBulkAction::make(),
+                    BulkAction::make('asign_exam_session')
+                        ->icon('heroicon-o-document')
+                        ->form(fn (BulkAction $action) => [
+                            Select::make('exam_id')
+                                ->label('Exam session')
+                                ->placeholder('Select an exam session')
+                                ->native(true)
+                                ->options(function () use ($action) {
+                                    /** @var \Illuminate\Support\Collection<\App\Models\Candidate> $candidates */
+                                    $candidates = $action->getRecords();
+                                    $modulesArray = [];
+                                    $levels = [];
+                                    foreach ($candidates as $candidate) {
+                                        if (!in_array($candidate->level_id, $levels)) {
+                                            $levels[] .= $candidate->level_id;
+                                        }
+                                        $modules = $candidate->modules->pluck('id');
+                                        foreach ($modules as $module) {
+                                            if (!in_array($module, $modulesArray)) {
+                                                $modulesArray[] .= $module;
+                                            }
+                                        }
+                                    }
+                                    $examSession = Exam::whereHas('modules', function ($query) use ($modulesArray) {
+                                        $query->whereIn('module_id', $modulesArray);
+                                    })->whereHas('levels', function ($query) use ($levels) {
+                                        $query->whereIn('level_id', $levels);
+                                    })->get()->pluck('session_name', 'id');
+
+                                    return $examSession;
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload(),
+
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $examSession = Exam::with('candidates')
+                                ->find($data['exam_id']);
+
+                            if ($records->count() > $examSession->available_candidates) {
+                                Notification::make()
+                                    ->title('The exam session does not have enough available places')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            foreach ($records as $record) {
+                                $modules = $record->modules;
+                                foreach ($modules as $module) {
+                                    $newExamSession = CandidateExam::create([
+                                        'candidate_id' => $record->id,
+                                        'exam_id' => $data['exam_id'],
+                                        'module_id' => $module->id,
+                                    ]);
+
+                                    $newExamSession->save();
+                                }
+                            }
+                            Notification::make()
+                                ->title('Exam session asign successfully')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
+
             ])
             ->defaultSort('created_at', 'desc');
     }

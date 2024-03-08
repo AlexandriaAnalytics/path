@@ -58,11 +58,11 @@ class ViewCandidate extends ViewRecord
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('concepts')
-                    ->hidden(fn () => Filament::getTenant()
-                        ->can_view_registration_fee 
+                    ->visible(fn () => 
+                    Filament::getTenant()->can_view_registration_fee 
+                    
                     && Filament::getTenant()
                         ->candidates()
-                        ->whereYear('institute.created_at', now()->year)
                         ->count() >= 30
                     )
 
@@ -100,50 +100,40 @@ class ViewCandidate extends ViewRecord
 
             Actions\DeleteAction::make(),
             Action::make('Assign exam session')
+                ->disabled(fn (Candidate $record) => $record->pendingModules->isEmpty())
                 ->form([
-                    Select::make('module')
+                    Select::make('module_id')
+                        ->label('Module')
+                        ->placeholder('Select a module')
                         ->required()
+                        ->native(false)
                         ->live()
-                        ->options(function (Candidate $record) {
-                            $candidateId = $record->getKey();
-
-                            if (!$candidateId) {
-                                return [];
-                            }
-                            return CandidateModule::query()
-                                ->whereCandidateId($candidateId)
-                                ->join('modules', 'modules.id', '=', 'candidate_module.module_id')
-                                ->pluck('modules.name', 'modules.id');
-                        })
+                        ->multiple()
+                        ->options(fn (Candidate $record) => $record->pendingModules->pluck('name', 'id'))
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
                     Select::make('exam_id')
                         ->label('Exam session')
-                        ->options(function (callable $get, Candidate $record) {
-                            $moduleId = $get('module');
-                            $levelId = $record->level_id;
-
-                            if (!$moduleId) {
-                                return [];
-                            }
-
-                            $exams = Exam::whereHas('modules', function ($query) use ($moduleId) {
-                                $query->where('module_id', $moduleId);
-                            })->whereHas('levels', function ($query) use ($levelId) {
-                                $query->where('level_id', $levelId);
-                            })->get();
-                            return $exams->pluck('session_name', 'id');
-                        })
+                        ->native(false)
+                        ->options(
+                            fn (callable $get, Candidate $record) =>
+                            $get('module_id')
+                                ? Exam::whereHas('modules', fn ($query) => $query->where('modules.id', $get('module_id')))
+                                ->whereHas('levels', fn ($query) => $query->where('levels.id', $record->level_id))
+                                ->whereDoesntHave('candidates', fn ($query) => $query->where('candidates.id', $record->id))
+                                ->pluck('session_name', 'id')
+                                : []
+                        )
                         ->required(),
                 ])
-                ->action(function (array $data, Candidate $record): void {
-                    $candidateId = $record->getKey();
-                    $examId = $data['exam_id'];
-                    $moduleId = $data['module'];
-                    $exam = Exam::findOrFail($examId);
-                    $record->exams()->attach($exam, ['candidate_id' => $candidateId, 'exam_id' => $examId, 'module_id' => $moduleId]);
-
-                    $record->save();
+                ->action(function (Candidate $record, array $data) {
+                    foreach ($data['module_id'] as $moduleId) {
+                        $record->exams()->attach([
+                            $data['exam_id'] => [
+                                'module_id' => $moduleId,
+                            ],
+                        ]);
+                    }
                 }),
         ];
     }

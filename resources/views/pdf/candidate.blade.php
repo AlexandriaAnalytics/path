@@ -37,6 +37,13 @@
         @font-face {
             font-family: 'Skolar Sans';
             font-style: normal;
+            font-weight: 900;
+            src: url('{{ public_path('assets/fonts/skolar-sans-pe-bd.ttf') }}') format('truetype')
+        }
+
+        @font-face {
+            font-family: 'Skolar Sans';
+            font-style: normal;
             font-weight: 400;
             src: url('{{ public_path('assets/fonts/skolar-sans-pe-rg.ttf') }}') format('truetype')
         }
@@ -44,6 +51,11 @@
         body {
             font-family: 'Skolar Sans';
             margin: 0;
+        }
+
+        #label {
+            font-family: 'Skolar Sans';
+            font-weight: 900;
         }
     </style>
 </head>
@@ -79,11 +91,10 @@
         @endphp
 
         @foreach ($fields as $label => $value)
-            <tr>
-                <td style="background-color: #d9d9d9; color: #1e1e1e; padding: 0.75rem 1rem;">
-                    <strong>{{ $label }}</strong> {{ $value }}
-                </td>
-            </tr>
+            <div style="background-color: #d9d9d9; color: #1e1e1e; padding: 0.75rem 1rem; margin-bottom: 2%">
+                <div id="label" style="display: inline-block">{{ $label }}</div>
+                <div style="display: inline-block">{{ $value }}</div>
+            </div>
         @endforeach
     </table>
 </body>

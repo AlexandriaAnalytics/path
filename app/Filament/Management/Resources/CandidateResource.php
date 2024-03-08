@@ -233,7 +233,7 @@ class CandidateResource extends Resource
                         TextInput::make('instalments')
                             ->label('Number of installments')
                             ->helperText(fn (Candidate $candidate) => 'Installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
-                            ->default(fn(Candidate $candidate) => $candidate->installments_available)
+                            ->default(fn (Candidate $candidate) => $candidate->installments_available)
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
@@ -248,20 +248,20 @@ class CandidateResource extends Resource
                             return;
                         }
 
-                        try{
+                        try {
                             $fincancing = Financing::create([
                                 'country_id' => $candidate->student->country_id,
                                 'candidate_id' => $candidate->id,
                                 'institute_id' => Filament::getTenant()->id,
                                 'currency' => $candidate->currency,
-                                'exam_amount' => $candidate->concepts->reject(fn($item) => $item->description === 'Exam right')->sum('amount'),
-                                'exam_rigth' => $candidate->concepts->where('description','Exam right')->sum('amount')
+                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->description === 'Exam right')->sum('amount'),
+                                'exam_rigth' => $candidate->concepts->where('description', 'Exam right')->sum('amount')
                             ]);
-    
+
                             $amountPerInstallment = $candidate->total_amount / $data['instalments'];
-                            $suscriptionCode = 'f-' . Carbon::now()->timestamp. rand(1000,10000);
+                            $suscriptionCode = 'f-' . Carbon::now()->timestamp . rand(1000, 10000);
                             $currentDate = Carbon::now()->day(1);
-    
+
                             for ($index = 1; $index <= $data['instalments']; $index++) {
                                 $payment = Payment::create([
                                     'candidate_id' => $candidate->id,
@@ -273,25 +273,24 @@ class CandidateResource extends Resource
                                     'current_instalment' => $index,
                                     'current_period' => $currentDate,
                                 ]);
-    
+
                                 $currentDate->addMonth();
                                 $fincancing->payments()->save($payment);
                             }
-    
+
                             Candidate::find($candidate->id)
                                 ->update(['status' => UserStatus::Paying]);
-    
+
                             Notification::make()
                                 ->title('Financiament was created successfully')
                                 ->success()
                                 ->send();
-                        
-                        }catch(Exception $e){
+                        } catch (Exception $e) {
                             Notification::make('error_create_financing')
-                            ->title('Error creating installments try later please')
-                            ->color('danger')
-                            ->send();
-                            
+                                ->title('Error creating installments try later please')
+                                ->color('danger')
+                                ->send();
+
                             Log::error('crash on create financiament', [$e]);
                         }
                     })
@@ -307,35 +306,35 @@ class CandidateResource extends Resource
                         TextInput::make('no exams')->readOnly()
                             ->placeholder('should add exams to make a installment plan')
                             ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
-                        
-                            TextInput::make('exam date to close')->readOnly()
+
+                        TextInput::make('exam date to close')->readOnly()
                             ->placeholder('you have no time to create installments')
                             ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
-                        
-                            TextInput::make('instalments')
+
+                        TextInput::make('instalments')
                             ->label('Number of installments')
                             ->default(fn (Candidate $candidate) => $candidate->financing->payments()->count())
                             ->helperText(fn (Candidate $candidate) => 'installments between ' . 1 . ' to ' . $candidate->financing->payments()->count() . ' months')
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(fn (Candidate $candidate) 
+                            ->maxValue(fn (Candidate $candidate)
                             => $candidate->installments_available -  $candidate->financing->count_paid_installments)
                             ->hidden(fn (Candidate $candidate) => !$candidate->hasExamSessions && $candidate->installments_available >= 1),
                     ])
                     ->action(function (Candidate $candidate, array $data) {
-                        
+
                         $paymentsApprovedAmount = $candidate->financing->total_payments_pay;
                         $totalAmount = $candidate->financing->total_amount;
 
                         $amountPerInstallment = ($totalAmount - $paymentsApprovedAmount) / ($data['instalments'] - $candidate->financing->count_paid_installments);
-                        
-                        $candidate->financing->payments->where('status', '!=', 'approved')->each(fn($itemUnpaid) => $itemUnpaid->delete());
+
+                        $candidate->financing->payments->where('status', '!=', 'approved')->each(fn ($itemUnpaid) => $itemUnpaid->delete());
 
                         ray($candidate->financing->payments);
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
                         $currentDate = Carbon::now()->day(1)->addMonth();
-                        
-                        for ($index = 1; $index <= ($data['instalments']) -$candidate->financing->count_paid_installments; $index++) {
+
+                        for ($index = 1; $index <= ($data['instalments']) - $candidate->financing->count_paid_installments; $index++) {
                             $newPayment = Payment::create([
                                 'candidate_id' => $candidate->id,
                                 'payment_method' => 'financing by associated',
@@ -451,35 +450,26 @@ class CandidateResource extends Resource
                                 ->options(function () use ($action) {
                                     /** @var \Illuminate\Support\Collection<\App\Models\Candidate> $candidates */
                                     $candidates = $action->getRecords();
-
-                                    $levels = $candidates
-                                        ->pluck('level')
-                                        ->unique();
-
-                                    if ($levels->count() > 1) {
-                                        Notification::make()
-                                            ->title('The candidates must belong to the same level')
-                                            ->warning()
-                                            ->send();
-
-                                        return [];
+                                    $modulesArray = [];
+                                    $levels = [];
+                                    foreach ($candidates as $candidate) {
+                                        if (!in_array($candidate->level_id, $levels)) {
+                                            $levels[] .= $candidate->level_id;
+                                        }
+                                        $modules = $candidate->modules->pluck('id');
+                                        foreach ($modules as $module) {
+                                            if (!in_array($module, $modulesArray)) {
+                                                $modulesArray[] .= $module;
+                                            }
+                                        }
                                     }
+                                    $examSession = Exam::whereHas('modules', function ($query) use ($modulesArray) {
+                                        $query->whereIn('module_id', $modulesArray);
+                                    })->whereHas('levels', function ($query) use ($levels) {
+                                        $query->whereIn('level_id', $levels);
+                                    })->get()->pluck('session_name', 'id');
 
-                                    $level = $levels->first();
-
-                                    $modules = $candidates
-                                        ->pluck('pendingModules') // Get pending modules for each candidate
-                                        ->reduce(
-                                            fn (Collection $carry, Collection $item) => $carry->intersect($item->pluck('id')),
-                                            $level->modules->pluck('id')
-                                        ); // Get the intersection of all pending modules (the ones in common)
-
-                                    return Exam::query()
-                                        ->whereDate('scheduled_date', '>=', now())
-                                        ->whereHas('modules', fn (Builder $query) => $query->whereIn('module_id', $modules))
-                                        ->whereHas('levels', fn (Builder $query) => $query->where('level_id', $level->id))
-                                        ->get()
-                                        ->pluck('session_name', 'id');
+                                    return $examSession;
                                 })
                                 ->searchable()
                                 ->reactive()
