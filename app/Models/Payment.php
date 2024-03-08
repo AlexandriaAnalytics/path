@@ -50,11 +50,11 @@ class Payment extends Model
         return $this->belongsTo(Financing::class);
     }
 
-    public function childrenPayments(){
+    public function payments(){
         return $this->hasMany(Payment::class, 'pay_id');
     }
 
-    public function parentPayment() {
+    public function parent() {
         return $this->belongsTo(Payment::class, 'pay_id');
     }
 
