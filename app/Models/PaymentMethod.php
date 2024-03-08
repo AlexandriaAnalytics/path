@@ -15,6 +15,7 @@ class PaymentMethod extends Model
 
     protected $fillable = [
         'name',
+        'description'
     ];
 
     public static function boot(): void

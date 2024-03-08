@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\PaymentMethodResource\Pages;
 use App\Filament\Admin\Resources\PaymentMethodResource\RelationManagers;
 use App\Models\PaymentMethod;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,14 +25,16 @@ class PaymentMethodResource extends Resource
     protected static ?string $pluralModelLabel = 'Payments';
 
     protected static bool $hasTitleCaseModelLabel = false;
-    
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->required(),
+                TextInput::make('description'),
             ]);
     }
 
@@ -42,6 +45,10 @@ class PaymentMethodResource extends Resource
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('description')
+                    ->searchable()
+                    ->sortable()
+                    ->default('-'),
             ])
             ->filters([
                 //
