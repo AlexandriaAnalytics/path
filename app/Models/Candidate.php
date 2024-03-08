@@ -160,8 +160,13 @@ class Candidate extends Model
 
     public function getPaymentCurrentInstallmentAttribute()
     {
-        return $this->payments->where('instalment_number', '!=', null)->where('state', '!=', 'paid')->orderBy('current_instalment', 'asc')->first();
+        return $this
+            ->payments->where('instalment_number', '!=', null)
+            ->where('state', '!=', 'paid')
+            ->orderBy('current_instalment', 'asc')->first();
     }
+
+    
 
     public function getHasExamSessionsAttribute()
     {
@@ -191,8 +196,7 @@ class Candidate extends Model
         return $monthDiff + 1;
     }
 
-    public function financing()
-    {
-        return $this->hasOne(Financing::class);
+    public function financings(){
+        return $this->hasMany(Financing::class);
     }
 }

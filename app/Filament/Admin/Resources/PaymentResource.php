@@ -24,6 +24,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;;
 
 use Filament\Forms\Set;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentResource extends Resource
 {
@@ -38,16 +40,16 @@ class PaymentResource extends Resource
         return $form
             ->schema([
                 TextInput::make('amount')
-                ->required()
-                ->numeric(),
+                    ->required()
+                    ->numeric(),
 
                 Select::make('patment_method')
-                ->options(PaymentMethod::values()),
+                    ->options(PaymentMethod::values()),
 
 
                 Select::make('candidate_id')
-                ->required()
-                ->relationship(titleAttribute:'id', name:'candidate')
+                    ->required()
+                    ->relationship(titleAttribute: 'id', name: 'candidate')
 
             ]);
     }
@@ -72,11 +74,11 @@ class PaymentResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('status')
-                    ->color(fn(string $state) => match ($state) {
+                    ->color(fn (string $state) => match ($state) {
                         'pending', 'rejected' => 'danger',
                         'approved' => 'success',
                         'processing payment' => 'warning'
-                    } )
+                    })
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make(('payment_ticket_link'))
@@ -85,7 +87,11 @@ class PaymentResource extends Resource
 
             ])
             ->filters([
-                //
+                Filter::make('payment_method')
+                    ->label('hidde installments')
+                    ->query(fn (Builder $query)
+                    => $query->where('payment_method', '!=', 'financing by associated'))
+                    ->default(true)
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
@@ -98,7 +104,13 @@ class PaymentResource extends Resource
                     ])
                     ->action(function (array $data, Payment $payment) {
                         $payment->update(['status' => $data['status']]);
-
+                        ray('p1', $payment);
+                        
+                        $payment->payments->each(function (Payment $p) {
+                            ray('paay', $p);
+                            $p->financing->update(['state' => 'complete']);
+                            $p->update(['status' => 'approved']);
+                        });
                         if ($payment->candidate_id != null) {
                             $candidate = Candidate::find($payment->candidate_id);
                             switch ($data['status']) {
@@ -118,9 +130,7 @@ class PaymentResource extends Resource
                         }
                     }),
                 Tables\Actions\Action::make('edit')
-                ->form([
-
-                    ])
+                    ->form([])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
