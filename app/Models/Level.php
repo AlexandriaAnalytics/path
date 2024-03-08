@@ -14,13 +14,13 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Exam> $exams
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Institute> $institutes
  * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Country> $countries
+ * @property \Illuminate\Database\Eloquent\Collection<\App\Models\Module> $modules
  * @property int $id
  * @property string $name
  * @property float $price
  * @property string $slug
  * @property int $minimum_age
  * @property int $maximum_age
- * @property string $modules
  * @property float $complete_price
  */
 class Level extends Model
@@ -36,8 +36,6 @@ class Level extends Model
         'maximum_age',
     ];
 
-
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -46,7 +44,7 @@ class Level extends Model
 
     public function exams(): BelongsToMany
     {
-        return $this->belongsToMany(Exam::class, 'available_levels')
+        return $this->belongsToMany(Exam::class)
             ->withTimestamps();
     }
 

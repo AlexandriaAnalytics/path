@@ -137,4 +137,14 @@ class Institute extends Model
     {
         return $this->belongsTo(Country::class);
     }
+
+    public function getCurrencyAttribute(){
+        return Country::find($this->country)->monetary_unit;
+    }
+
+    public function financing() {
+        return $this->hasOne(Financing::class);
+    }
+
+       
 }

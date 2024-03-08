@@ -51,6 +51,11 @@ class Exam extends Model
             ->logAll();
     }
 
+    public function getAvailableCandidatesAttribute(): int
+    {
+        return $this->maximum_number_of_students - $this->candidates()->count();
+    }
+
     public function levels(): BelongsToMany
     {
         return $this->belongsToMany(Level::class)
@@ -59,7 +64,7 @@ class Exam extends Model
 
     public function modules(): BelongsToMany
     {
-        return $this->belongsToMany(Module::class, 'exam_module')
+        return $this->belongsToMany(Module::class)
             ->withTimestamps();
     }
 

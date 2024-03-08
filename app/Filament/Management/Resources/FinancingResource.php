@@ -19,7 +19,9 @@ class FinancingResource extends Resource
     protected static ?string $pluralModelLabel = 'Installments';
     protected static bool $hasTitleCaseModelLabel = false;
 
-    public static function canViewAny(): bool { return Filament::getTenant()->installment_plans;}
+    public static function canViewAny(): bool { 
+        return Filament::getTenant()->internal_payment_administration;
+    }
 
     public static function form(Form $form): Form
     {

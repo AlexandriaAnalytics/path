@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\StudentModules;
 use App\Enums\UserStatus;
+use App\Services\CandidateService;
+use Carbon\Carbon;
 use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\AsCollection;
@@ -110,7 +112,9 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                return $this->concepts()->sum('amount');
+                return $this->concepts()->count() == 0
+                    ? CandidateService::createConcepts($this)->concepts()->sum('amount')
+                    : $this->concepts()->sum('amount');
             },
         );
     }
@@ -135,8 +139,8 @@ class Candidate extends Model
 
         if ($this->payments->last()->instalment_number == null) return '1/1';
         else {
-            $lastInstalment =  $this->payments()->where('instalment_number', '!=', 'null')->where('status', '!=', 'paid')->orderBy('current_instalment', 'asc')->first()->current_instalment;
-            return $lastInstalment . '/' . $this->payments()->where('instalment_number', '!=', 'null')->first()->instalment_number;
+            return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
+
         }
     }
 
@@ -157,5 +161,38 @@ class Candidate extends Model
     public function getPaymentCurrentInstallmentAttribute()
     {
         return $this->payments->where('instalment_number', '!=', null)->where('state', '!=', 'paid')->orderBy('current_instalment', 'asc')->first();
+    }
+
+    public function getHasExamSessionsAttribute()
+    {
+        return count($this->examSessions) != 0;
+    }
+
+    public function tag(): Attribute
+    {
+        return new Attribute(
+            get: fn () =>  $this->id . '-' . $this->student->name . ' ' . $this->student->surname
+        );
+    }
+
+    public function getExamSessionsAttribute()
+    {
+        return $this->candidateExam()->get()->map(fn ($ce) => $ce->exam);
+    }
+
+    public function getInstallmentsAvailableAttribute()
+    {
+        $maxDate = $this->exam_sessions->sortBy('scheduled_date', 0)->first()->scheduled_date ?? null;
+        if ($maxDate == null) return -1;
+
+        $monthDiff = Carbon::now()->diffInMonths($maxDate, false);
+        if ($monthDiff < 0) return -2;
+
+        return $monthDiff + 1;
+    }
+
+    public function financing()
+    {
+        return $this->hasOne(Financing::class);
     }
 }

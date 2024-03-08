@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <title>{{ $candidate->student->name }} {{ $candidate->student->surname }} - {{ $candidate->level->name }}</title>
     <style>
         @page {
@@ -34,15 +34,22 @@
             src: url('{{ public_path('assets/fonts/Montserrat-Light.otf') }}') format('opentype')
         }
 
+        @font-face {
+            font-family: 'Skolar Sans';
+            font-style: normal;
+            font-weight: 400;
+            src: url('{{ public_path('assets/fonts/skolar-sans-pe-rg.ttf') }}') format('truetype')
+        }
+
         body {
-            font-family: 'Montserrat';
+            font-family: 'Skolar Sans';
             margin: 0;
         }
     </style>
 </head>
 
 <body>
-
+    </style>
     <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/header-pdf.png'))); ?>" alt="">
     <table style="margin: 3rem 2.5%; width: 95%; border-collapse: separate; border-spacing: 0 1rem;">
         @php

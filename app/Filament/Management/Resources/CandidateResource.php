@@ -10,7 +10,9 @@ use App\Filament\Exports\CandidateExporter;
 use App\Filament\Exports\CandidateExporterAsociated;
 use App\Filament\Management\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Change;
+use App\Models\Exam;
 use App\Models\Financing;
 use App\Models\Institute;
 use App\Models\Payment;
@@ -18,6 +20,7 @@ use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Closure;
+use Exception;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -41,11 +44,11 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ZipArchive;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class CandidateResource extends Resource
@@ -215,57 +218,145 @@ class CandidateResource extends Resource
                 //
             ])
             ->actions([
-
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
                     ->form([
+                        TextInput::make('No exams')
+                            ->readOnly()
+                            ->placeholder('The candidate has no exams to make a installment plan')
+                            ->visible(fn (Candidate $candidate) => $candidate->exams()->doesntExist()),
+                        TextInput::make('Exam date too close')
+                            ->readOnly()
+                            ->placeholder('You have no time to create installments')
+                            ->visible(fn (Candidate $candidate) => $candidate->installments_available <= 1),
                         TextInput::make('instalments')
                             ->label('Number of installments')
+                            ->helperText(fn (Candidate $candidate) => 'Installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
+                            ->default(fn(Candidate $candidate) => $candidate->installments_available)
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(12)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->visible(fn (Candidate $candidate) => $candidate->exams()->exists() && $candidate->installments_available >= 1),
                     ])
                     ->action(function (Candidate $candidate, array $data) {
-                        $fincancing = Financing::create([
-                            'country_id' => $candidate->student->country_id,
-                            'candidate_id' => $candidate->id,
-                            'institute_id' => Filament::getTenant()->id,
-                            'currency' => $candidate->currency
-                        ]);
+                        if (!isset($data['instalments'])) {
+                            Notification::make()
+                                ->title('The number of installments is required')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
 
-                        $amount = $candidate->total_amount / $data['instalments'];
+                        try{
+                            $fincancing = Financing::create([
+                                'country_id' => $candidate->student->country_id,
+                                'candidate_id' => $candidate->id,
+                                'institute_id' => Filament::getTenant()->id,
+                                'currency' => $candidate->currency,
+                                'exam_amount' => $candidate->concepts->reject(fn($item) => $item->description === 'Exam right')->sum('amount'),
+                                'exam_rigth' => $candidate->concepts->where('description','Exam right')->sum('amount')
+                            ]);
+    
+                            $amountPerInstallment = $candidate->total_amount / $data['instalments'];
+                            $suscriptionCode = 'f-' . Carbon::now()->timestamp. rand(1000,10000);
+                            $currentDate = Carbon::now()->day(1);
+    
+                            for ($index = 1; $index <= $data['instalments']; $index++) {
+                                $payment = Payment::create([
+                                    'candidate_id' => $candidate->id,
+                                    'payment_method' => 'financing by associated',
+                                    'currency' => $candidate->currency,
+                                    'amount' => $amountPerInstallment,
+                                    'suscription_code' => $suscriptionCode,
+                                    'instalment_number' => $data['instalments'],
+                                    'current_instalment' => $index,
+                                    'current_period' => $currentDate,
+                                ]);
+    
+                                $currentDate->addMonth();
+                                $fincancing->payments()->save($payment);
+                            }
+    
+                            Candidate::find($candidate->id)
+                                ->update(['status' => UserStatus::Paying]);
+    
+                            Notification::make()
+                                ->title('Financiament was created successfully')
+                                ->success()
+                                ->send();
+                        
+                        }catch(Exception $e){
+                            Notification::make('error_create_financing')
+                            ->title('Error creating installments try later please')
+                            ->color('danger')
+                            ->send();
+                            
+                            Log::error('crash on create financiament', [$e]);
+                        }
+                    })
+                    ->visible(
+                        fn (Candidate $candidate)
+                        => $candidate->status == UserStatus::Unpaid->value
+                            && Filament::getTenant()->internal_payment_administration
+                            && $candidate->currency == Filament::getTenant()->currency
+                    ),
+                Action::make('refinaciation')
+                    ->label('Refinancing')->color('info')
+                    ->form([
+                        TextInput::make('no exams')->readOnly()
+                            ->placeholder('should add exams to make a installment plan')
+                            ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
+                        
+                            TextInput::make('exam date to close')->readOnly()
+                            ->placeholder('you have no time to create installments')
+                            ->hidden(fn (Candidate $candidate) => $candidate->hasExamSessions),
+                        
+                            TextInput::make('instalments')
+                            ->label('Number of installments')
+                            ->default(fn (Candidate $candidate) => $candidate->financing->payments()->count())
+                            ->helperText(fn (Candidate $candidate) => 'installments between ' . 1 . ' to ' . $candidate->financing->payments()->count() . ' months')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(fn (Candidate $candidate) 
+                            => $candidate->installments_available -  $candidate->financing->count_paid_installments)
+                            ->hidden(fn (Candidate $candidate) => !$candidate->hasExamSessions && $candidate->installments_available >= 1),
+                    ])
+                    ->action(function (Candidate $candidate, array $data) {
+                        
+                        $paymentsApprovedAmount = $candidate->financing->total_payments_pay;
+                        $totalAmount = $candidate->financing->total_amount;
+
+                        $amountPerInstallment = ($totalAmount - $paymentsApprovedAmount) / ($data['instalments'] - $candidate->financing->count_paid_installments);
+                        
+                        $candidate->financing->payments->where('status', '!=', 'approved')->each(fn($itemUnpaid) => $itemUnpaid->delete());
+
+                        ray($candidate->financing->payments);
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
-                        $currentDate = Carbon::now()->day(1);
-                        $expirationDate = Carbon::now()->addMonth()->day(1);
-                        for ($index = 1; $index <= $data['instalments']; $index++) {
-                            $payment = Payment::create([
+                        $currentDate = Carbon::now()->day(1)->addMonth();
+                        
+                        for ($index = 1; $index <= ($data['instalments']) -$candidate->financing->count_paid_installments; $index++) {
+                            $newPayment = Payment::create([
                                 'candidate_id' => $candidate->id,
                                 'payment_method' => 'financing by associated',
                                 'currency' => $candidate->currency,
-                                'amount' => $amount,
+                                'amount' => $amountPerInstallment,
                                 'suscription_code' => $suscriptionCode,
                                 'instalment_number' => $data['instalments'],
-                                'current_instalment' => $index,
-                                'expiration_date' => $currentDate,
-                                'current_period' => $expirationDate,
+                                'current_instalment' => intval($candidate->financing->current_instalment) + $index,
+                                'current_period' => $currentDate,
                             ]);
 
-                            $currentDate->addMonth();
-                            $expirationDate->addMonth();
-                            $fincancing->payments()->save($payment);
+                            $candidate->financing->payments()->save($newPayment);
                         }
-
-                        Candidate::find($candidate->id)
-                            ->update(['status' => UserStatus::Paying]);
 
                         Notification::make()
                             ->title('Financiament was created successfully')
                             ->success()
                             ->send();
                     })
-                    ->visible(fn (Candidate $candidate) => $candidate->status == UserStatus::Unpaid->value && Filament::getTenant()->internal_payment_administration),
-
+                    ->visible(fn (Candidate $candidate)
+                    => $candidate->financing != null),
                 Action::make('pdf')
                     ->label('PDF')
                     ->icon('heroicon-o-document')
@@ -350,6 +441,81 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class),
                     DeleteBulkAction::make(),
+                    BulkAction::make('asign_exam_session')
+                        ->icon('heroicon-o-document')
+                        ->form(fn (BulkAction $action) => [
+                            Select::make('exam_id')
+                                ->label('Exam session')
+                                ->placeholder('Select an exam session')
+                                ->native(true)
+                                ->options(function () use ($action) {
+                                    /** @var \Illuminate\Support\Collection<\App\Models\Candidate> $candidates */
+                                    $candidates = $action->getRecords();
+
+                                    $levels = $candidates
+                                        ->pluck('level')
+                                        ->unique();
+
+                                    if ($levels->count() > 1) {
+                                        Notification::make()
+                                            ->title('The candidates must belong to the same level')
+                                            ->warning()
+                                            ->send();
+
+                                        return [];
+                                    }
+
+                                    $level = $levels->first();
+
+                                    $modules = $candidates
+                                        ->pluck('pendingModules') // Get pending modules for each candidate
+                                        ->reduce(
+                                            fn (Collection $carry, Collection $item) => $carry->intersect($item->pluck('id')),
+                                            $level->modules->pluck('id')
+                                        ); // Get the intersection of all pending modules (the ones in common)
+
+                                    return Exam::query()
+                                        ->whereDate('scheduled_date', '>=', now())
+                                        ->whereHas('modules', fn (Builder $query) => $query->whereIn('module_id', $modules))
+                                        ->whereHas('levels', fn (Builder $query) => $query->where('level_id', $level->id))
+                                        ->get()
+                                        ->pluck('session_name', 'id');
+                                })
+                                ->searchable()
+                                ->reactive()
+                                ->required()
+                                ->preload(),
+
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $examSession = Exam::with('candidates')
+                                ->find($data['exam_id']);
+
+                            if ($records->count() > $examSession->available_candidates) {
+                                Notification::make()
+                                    ->title('The exam session does not have enough available places')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+
+                            foreach ($records as $record) {
+                                $modules = $record->modules;
+                                foreach ($modules as $module) {
+                                    $newExamSession = CandidateExam::create([
+                                        'candidate_id' => $record->id,
+                                        'exam_id' => $data['exam_id'],
+                                        'module_id' => $module->id,
+                                    ]);
+
+                                    $newExamSession->save();
+                                }
+                            }
+                            Notification::make()
+                                ->title('Exam session asign successfully')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
             ])
             ->filters([
