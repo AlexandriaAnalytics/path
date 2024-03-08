@@ -22,7 +22,7 @@ class CandidateExporter extends Exporter
             ExportColumn::make('student.surname')
                 ->label('Surname'),
             ExportColumn::make('birth_date')
-                ->label('Date of Birth'),
+                ->label('Date of birth'),
             // ExportColumn::make('granted_discount')
             //     ->label('Discount'),
             ExportColumn::make('level.name')
