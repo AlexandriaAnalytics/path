@@ -23,7 +23,8 @@ class ListStudents extends ListRecords
                 ->options([
                     'institute_id' => Filament::getTenant()->id,
                 ])
-                ->color(Color::hex('#d4ac71')),
+                ->color(Color::hex('#d4ac71'))
+                ->csvDelimiter(';'),
             Actions\ExportAction::make()
                 ->label('Export all students')
                 ->icon('heroicon-o-document-arrow-down')

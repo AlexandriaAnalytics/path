@@ -46,7 +46,7 @@ class Level extends Model
 
     public function exams(): BelongsToMany
     {
-        return $this->belongsToMany(Exam::class, 'available_levels')
+        return $this->belongsToMany(Exam::class)
             ->withTimestamps();
     }
 

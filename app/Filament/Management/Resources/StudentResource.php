@@ -101,12 +101,12 @@ class StudentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->query(function () {
-            $institutionId = Filament::getTenant()->id;
-            return Student::query()->whereHas('institute', function ($query) use ($institutionId) {
-                $query->where('id', $institutionId);
-            });
-        })
+            ->query(function () {
+                $institutionId = Filament::getTenant()->id;
+                return Student::query()->whereHas('institute', function ($query) use ($institutionId) {
+                    $query->where('id', $institutionId);
+                });
+            })
             ->columns([
                 ...AdminStudentResource::getStudentColumns(),
                 ...AdminStudentResource::getMetadataColumns(),
@@ -168,6 +168,13 @@ class StudentResource extends Resource
             ])
             ->bulkActions([
                 BulkActionGroup::make([
+
+                    BulkAction::make('export-excel')
+                        ->label('Download as Excel')
+                        ->icon('heroicon-o-document')
+                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
+                    DeleteBulkAction::make(),
+
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
                         ->form([
@@ -216,6 +223,7 @@ class StudentResource extends Resource
 
                                 $newCandidate = Candidate::create([
                                     'student_id' => $record->id,
+                                    'institute_id' => Filament::getTenant()->id,
                                     'level_id' => $data['level_id'],
                                     'status' => UserStatus::Unpaid,
                                     'grant_discount' => 0,
@@ -231,12 +239,7 @@ class StudentResource extends Resource
                                 ->success()
                                 ->send();
                         }),
-                    BulkAction::make('export-excel')
-                        ->label('Download as Excel')
-                        ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
-                    DeleteBulkAction::make(),
-                    
+
                 ]),
             ]);
     }
