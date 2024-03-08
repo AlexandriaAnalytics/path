@@ -64,7 +64,7 @@ class Exam extends Model
 
     public function modules(): BelongsToMany
     {
-        return $this->belongsToMany(Module::class, 'exam_module')
+        return $this->belongsToMany(Module::class)
             ->withTimestamps();
     }
 

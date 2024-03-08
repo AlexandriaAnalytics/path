@@ -43,11 +43,11 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ZipArchive;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class CandidateResource extends Resource
@@ -290,7 +290,7 @@ class CandidateResource extends Resource
                         ->hidden(fn(Candidate $candidate) =>$candidate->hasExamSessions),
                         TextInput::make('instalments')
                         ->label('Number of installments')
-                        ->default(fn(Candidate $candidate) => $candidate->financing->)
+                        ->default(fn(Candidate $candidate) => $candidate->financing->payments()->count())
                         ->helperText(fn(Candidate $candidate) => 'installments between '. 1 . ' to ' . $candidate->installments_available .'months')
                         ->numeric()
                         ->minValue(1)
@@ -427,24 +427,37 @@ class CandidateResource extends Resource
                             Select::make('exam_id')
                                 ->label('Exam session')
                                 ->placeholder('Select an exam session')
+                                ->native(true)
                                 ->options(function () use ($action) {
-                                    /** @var \Illuminate\Database\Eloquent\Collection<\App\Models\Candidate> $candidates */
+                                    /** @var \Illuminate\Support\Collection<\App\Models\Candidate> $candidates */
                                     $candidates = $action->getRecords();
 
-                                    $modules = $candidates
-                                        ->flatMap(fn (Candidate $candidate) => $candidate->modules)
-                                        ->pluck('id')
-                                        ->unique()
-                                        ->toArray();
-
                                     $levels = $candidates
-                                        ->pluck('level_id')
-                                        ->unique()
-                                        ->toArray();
+                                        ->pluck('level')
+                                        ->unique();
+
+                                    if ($levels->count() > 1) {
+                                        Notification::make()
+                                            ->title('The candidates must belong to the same level')
+                                            ->warning()
+                                            ->send();
+
+                                        return [];
+                                    }
+
+                                    $level = $levels->first();
+
+                                    $modules = $candidates
+                                        ->pluck('pendingModules') // Get pending modules for each candidate
+                                        ->reduce(
+                                            fn (Collection $carry, Collection $item) => $carry->intersect($item->pluck('id')),
+                                            $level->modules->pluck('id')
+                                        ); // Get the intersection of all pending modules (the ones in common)
 
                                     return Exam::query()
+                                        ->whereDate('scheduled_date', '>=', now())
                                         ->whereHas('modules', fn (Builder $query) => $query->whereIn('module_id', $modules))
-                                        ->whereHas('levels', fn (Builder $query) => $query->whereIn('level_id', $levels))
+                                        ->whereHas('levels', fn (Builder $query) => $query->where('level_id', $level->id))
                                         ->get()
                                         ->pluck('session_name', 'id');
                                 })
@@ -461,7 +474,7 @@ class CandidateResource extends Resource
                             if ($records->count() > $examSession->available_candidates) {
                                 Notification::make()
                                     ->title('The exam session does not have enough available places')
-                                    ->error()
+                                    ->danger()
                                     ->send();
                                 return;
                             }
