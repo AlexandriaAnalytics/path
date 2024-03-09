@@ -159,7 +159,6 @@ class Payments extends Page implements HasForms
     {
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
 
-        ray($paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
                 $this->candidate->student->institute->installment_plans

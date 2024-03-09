@@ -92,10 +92,8 @@ class PaymentResource extends Resource
                     ])
                     ->action(function (array $data, Payment $payment) {
                         $payment->update(['status' => $data['status']]);
-                        ray('p1', $payment);
-                        
+
                         $payment->payments->each(function (Payment $p) {
-                            ray('paay', $p);
                             $p->financing->update(['state' => 'complete']);
                             $p->update(['status' => 'approved']);
                         });
