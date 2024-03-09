@@ -50,7 +50,7 @@ class StudentImporter extends Importer
                     try {
                         return Carbon::createFromFormat('d/m/Y', $state);
                     } catch (\Exception $e) {
-                        Log::error('inport student exeption', [ $e]);
+                        Log::error('inport student exeption', [$e]);
                         return null;
                     }
                 }),
@@ -59,13 +59,6 @@ class StudentImporter extends Importer
                 ->rules(['max:255', 'nullable'])
                 ->exampleHeader('Educational needs')
                 ->example('Needs x, y, z')
-                ->castStateUsing(function (string $state): ?string {
-                    if (blank($state)) {
-                        return null;
-                    }
-
-                    return $state;
-                })
         ];
     }
 

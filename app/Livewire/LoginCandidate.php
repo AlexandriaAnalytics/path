@@ -7,19 +7,19 @@ use Livewire\Component;
 
 class LoginCandidate extends Component
 {
-  
+
 
     public $id;
 
     public function handleLoginCandidate()
     {
-        if($this->id == null){
+        if ($this->id == null) {
             session()->flash('error', 'Please enter your candidate number');
             return;
         }
 
         $data = Candidate::find($this->id);
-        if($data == null || !$data){
+        if ($data == null || !$data) {
             session()->flash('error', 'Candidate not found');
             return;
         }
@@ -31,7 +31,7 @@ class LoginCandidate extends Component
 
     public function render()
     {
-       
+
         return view('livewire.login-candidate');
     }
 }

@@ -43,7 +43,7 @@ class CountryResource extends Resource
                 Forms\Components\Select::make('monetary_unit')
                     ->placeholder('Monetary Unit')
                     ->required()
-                    ->searchable() 
+                    ->searchable()
                     ->options([
                         'USD' => 'USD',
                         'ARS' => 'ARS',
@@ -81,11 +81,6 @@ class CountryResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
-                        'Mercado Pago' => 'primary',
-                        'Paypal' => 'success',
-                        'Stripe' => 'warning',
-                    })
                     ->label('Payment methods'),
             ])
 
