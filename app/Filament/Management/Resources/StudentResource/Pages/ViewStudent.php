@@ -18,7 +18,10 @@ class ViewStudent extends ViewRecord
             Actions\EditAction::make()->visible(function (Student $record) {
                 return Candidate::query()
                     ->where('student_id', $record->id)
-                    ->where('status', 'paid')
+                    ->where(function ($query) {
+                        $query->where('status', 'paid')
+                            ->orWhere('status', 'paying');
+                    })
                     ->doesntExist();
             }),
         ];
