@@ -3,12 +3,10 @@
 namespace App\Filament\Management\Resources;
 
 use App\Filament\Management\Resources\PaymentResource\Pages;
-use App\Filament\Management\Resources\PaymentResource\RelationManagers;
 use App\Models\Candidate;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -18,18 +16,19 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
 class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-
-
+    
+    
+    public static function canViewAny(): bool
+    {
+        return Filament::getTenant()->internal_payment_administration;
+    }
 
     public static function form(Form $form): Form
     {
@@ -37,7 +36,8 @@ class PaymentResource extends Resource
             ->schema([
                 Select::make('candidate_id')
                     ->label('Candidate')
-                    ->options(Candidate::all()
+                    ->options(
+                        Candidate::all()->filter(fn($d)=> $d->currency == Filament::getTenant()->currency)->where('status', 'unpaid')
                         ->map(fn (Candidate $candidate)
                         => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
                         ->collapse()
