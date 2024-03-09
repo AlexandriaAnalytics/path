@@ -51,10 +51,7 @@
                         <div class="display">
                             <h3>If you want to pay by transfer, our bank details are:</h3>
                             <div class="transfer">
-                                <h3>Dato 1</h3>
-                                <h3>Dato 2</h3>
-                                <h3>Dato 3</h3>
-                                <h3>Dato 4</h3>
+                                {!! $this->bankData !!}
                             </div>
                             To make your registration effective, send the receipt to admin@pathexaminations.com
                         </div>
@@ -106,8 +103,8 @@
 @push('scripts')
     <script>
         document.getElementById('form').addEventListener('change', function() {
-            if (document.getElementsByClassName('choices__item--selectable')[0].innerText.split(' ')[0] ==
-                'Transfer') {
+            if (document.getElementsByClassName('choices__item--selectable')[0].innerText.startsWith(
+                    "Transfer")) {
                 document.getElementsByClassName('display')[0].style.display = 'block';
             } else {
                 document.getElementsByClassName('display')[0].style.display = 'none';

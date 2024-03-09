@@ -256,28 +256,45 @@ class CandidateResource extends Resource
                     BulkAction::make('asign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
+                            Select::make('module_id')
+                                ->label('Module')
+                                ->placeholder('Select a module')
+                                ->required()
+                                ->native(false)
+                                ->live()
+                                ->multiple()
+                                ->options(function () use ($action) {
+                                    $candidates = $action->getRecords();
+                                    $pendingModules = [];
+                                    foreach ($candidates as $candidate) {
+                                        $modules = $candidate->pendingModules->pluck('name', 'id');
+                                        foreach ($modules as $module) {
+                                            if (!in_array($module, $pendingModules)) {
+                                                $pendingModules[] .= $module;
+                                            }
+                                        }
+                                    }
+                                    return $pendingModules;
+                                })
+                                ->preload()
+                                ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
+
                             Select::make('exam_id')
                                 ->label('Exam session')
                                 ->placeholder('Select an exam session')
                                 ->native(true)
-                                ->options(function () use ($action) {
+                                ->options(function (callable $get) use ($action) {
                                     /** @var \Illuminate\Support\Collection<\App\Models\Candidate> $candidates */
                                     $candidates = $action->getRecords();
-                                    $modulesArray = [];
+                                    $modules = $get('module_id');
                                     $levels = [];
                                     foreach ($candidates as $candidate) {
                                         if (!in_array($candidate->level_id, $levels)) {
                                             $levels[] .= $candidate->level_id;
                                         }
-                                        $modules = $candidate->modules->pluck('id');
-                                        foreach ($modules as $module) {
-                                            if (!in_array($module, $modulesArray)) {
-                                                $modulesArray[] .= $module;
-                                            }
-                                        }
                                     }
-                                    $examSession = Exam::whereHas('modules', function ($query) use ($modulesArray) {
-                                        $query->whereIn('module_id', $modulesArray);
+                                    $examSession = Exam::whereHas('modules', function ($query) use ($modules) {
+                                        $query->whereIn('module_id', $modules);
                                     })->whereHas('levels', function ($query) use ($levels) {
                                         $query->whereIn('level_id', $levels);
                                     })->get()->pluck('session_name', 'id');
