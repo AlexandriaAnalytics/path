@@ -105,7 +105,6 @@ class CandidateResource extends Resource
 
     public static function table(Table $table): Table
     {
-        ray(Filament::getTenant());
         return $table
             ->query(function () {
                 $institutionId = Filament::getTenant()->id;
@@ -327,7 +326,6 @@ class CandidateResource extends Resource
 
                         $candidate->financing->payments->where('status', '!=', 'approved')->each(fn ($itemUnpaid) => $itemUnpaid->delete());
 
-                        ray($candidate->financing->payments);
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
                         $currentDate = Carbon::now()->day(1)->addMonth();
 
@@ -433,10 +431,12 @@ class CandidateResource extends Resource
                                 'Content-Type' => 'application/zip',
                             ])->deleteFileAfterSend(true);
                             FileSystem::deleteDirectory($tempDir); // TODO: revisar esto posible bug
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
-                        ->exporter(CandidateExporterAsociated::class),
-                    DeleteBulkAction::make(),
+                        ->exporter(CandidateExporterAsociated::class)
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('asign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
@@ -519,7 +519,8 @@ class CandidateResource extends Resource
                                 ->title('Exam session asign successfully')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->filters([

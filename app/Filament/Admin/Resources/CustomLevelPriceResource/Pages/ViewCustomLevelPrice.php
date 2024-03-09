@@ -32,8 +32,7 @@ class ViewCustomLevelPrice extends ViewRecord
                 Fieldset::make('Registration fees')
                     ->schema([
                         TextEntry::make('type')
-                            ->label('Discount type')
-                            ->formatStateUsing(fn (CustomLevelPrice $record) => CustomPricing::from($record->type)->getLabel()),
+                            ->label('Discount type'),
                         TextEntry::make('full_exam_fee')
                             ->label('Full exam fee')
                             ->suffix(fn (CustomLevelPrice $record) => $record->type === CustomPricing::Percentage ? '%' : null),

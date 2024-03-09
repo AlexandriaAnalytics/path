@@ -45,7 +45,7 @@ class ListFinancings extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        
+
         return [
             Actions\Action::make('send_payment')
                 ->label('Send payment')
@@ -57,7 +57,6 @@ class ListFinancings extends ListRecords
                             $financings = Filament::getTenant()->financings;
                             $totalGroupAmount = 0;
                             foreach ($financings as $financing) {
-                                ray('f', $financing);
                                 $totalGroupAmount += floatval($financing
                                     ->payments()
                                     ->orderBy('current_instalment', 'ASC')
@@ -92,10 +91,10 @@ class ListFinancings extends ListRecords
 
                     $financings = Filament::getTenant()->financings
                         ->where('institute_id', 1)
-                        ->each(fn($item) => $item->update(['state' => 'stack']));
+                        ->each(fn ($item) => $item->update(['state' => 'stack']));
 
-                        $financings = Filament::getTenant()->financings->each(fn($item) => $item->payments->sortBy('current_instalment',1)->first()->update(['pay_id'=> $payment->id ]));  
-                        
+                    $financings = Filament::getTenant()->financings->each(fn ($item) => $item->payments->sortBy('current_instalment', 1)->first()->update(['pay_id' => $payment->id]));
+
 
                     Notification::make('payment_created')
                         ->title('Payment created successfuly')

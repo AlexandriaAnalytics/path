@@ -10,6 +10,7 @@ use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListCandidates extends ListRecords
 {
@@ -36,5 +37,16 @@ class ListCandidates extends ListRecords
         return [
             CandidatesPaymentState::class,
         ];
+    }
+
+    public static function modifyQuery(Builder $query): Builder
+    {
+        return $query->when(
+            Filament::getTenant(),
+            fn (Builder $query) => $query->whereHas(
+                'student',
+                fn (Builder $query) => $query->where('institute_id', Filament::getTenant()->id),
+            ),
+        );
     }
 }

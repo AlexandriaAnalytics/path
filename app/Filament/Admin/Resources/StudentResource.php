@@ -196,8 +196,9 @@ class StudentResource extends Resource
             ->bulkActions([
                 BulkActionGroup::make([
                     ExportBulkAction::make()
-                        ->exporter(StudentExporter::class),
-                    DeleteBulkAction::make(),
+                        ->exporter(StudentExporter::class)
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
                         ->form([
@@ -252,9 +253,10 @@ class StudentResource extends Resource
                                 ->title('Candidates create successfully')
                                 ->success()
                                 ->send();
-                        }),
+                        })->deselectRecordsAfterCompletion(),
                 ])
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

@@ -83,7 +83,6 @@ class ManagementPanelProvider extends PanelProvider
             ])
             ->tenant(Institute::class)
             ->tenantProfile(EditInstituteProfile::class)
-            ->spa()
             ->databaseNotifications();
     }
 }
