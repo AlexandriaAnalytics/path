@@ -83,30 +83,13 @@ class ExamResource extends Resource
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->suffixAction(
-                                Action::make('select-all')
-                                    ->icon('heroicon-o-clipboard-document-list')
-                                    ->label('Select All')
-                                    ->tooltip('Select all levels')
-                                    ->action(function (Set $set) {
-                                        $set('levels', Level::all()->pluck('id'));
-                                    }),
-                            )->label('Exam'),
+                            ->label('Exam'),
                         Forms\Components\Select::make('modules')
                             ->relationship(name: 'modules', titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->suffixAction(
-                                Action::make('select-all')
-                                    ->icon('heroicon-o-clipboard-document-list')
-                                    ->label('Select All')
-                                    ->tooltip('Select all modules')
-                                    ->action(function (Set $set) {
-                                        $set('modules', Module::all()->pluck('id'));
-                                    }),
-                            )
                     ])
             ]);
     }
