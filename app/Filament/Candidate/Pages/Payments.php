@@ -50,8 +50,12 @@ class Payments extends Page implements HasForms
 
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
 
-        $this->examDate = CandidateExam::where('candidate_id', $this->candidate->id)->first()->exam->scheduled_date;
-        $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
+        $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
+        if ($exam) {
+            $this->examDate = $exam->exam->scheduled_date;
+            $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
+        }
+
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
 
