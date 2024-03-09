@@ -24,7 +24,7 @@ class CustomLevelPrice extends Model
         'module_registration_fee',
     ];
 
-    protected $type = [
+    protected $casts = [
         'type' => \App\Enums\CustomPricing::class,
     ];
 
