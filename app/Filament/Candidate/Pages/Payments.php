@@ -5,6 +5,7 @@ namespace App\Filament\Candidate\Pages;
 use App\Enums\PaymentMethod;
 use App\Enums\UserStatus;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Country as ModelsCountry;
 use App\Models\Payment;
 use App\Models\PaymentMethod as ModelsPaymentMethod;
@@ -49,7 +50,7 @@ class Payments extends Page implements HasForms
 
         $this->monetariUnitSymbol = $this->candidate->getMonetaryString();
 
-        $this->examDate = new Carbon('2024-11-03');
+        $this->examDate = CandidateExam::where('candidate_id', $this->candidate->id)->first()->exam->scheduled_date;
         $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
