@@ -149,9 +149,7 @@ class ListPayments extends ListRecords
                     ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
 
                 Select::make('payment_method')
-                    ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
-                    ])
+                    ->options(['Transfer' => 'Transfer or deposit'])
                     ->required(),
 
                 TextInput::make('link_to_ticket')->required(),
