@@ -37,7 +37,11 @@ class PaymentResource extends Resource
                 Select::make('candidate_id')
                     ->label('Candidate')
                     ->options(
-                        Candidate::all()->filter(fn($d)=> $d->currency == Filament::getTenant()->currency)->where('status', 'unpaid')
+                        Candidate::all()->filter(fn(Candidate $c) => 
+                            $c->currency == Filament::getTenant()->currency 
+                            && $c->status == 'unpaid'
+                            && $c->student->institute->id == Filament::getTenant()->id 
+                        )  
                         ->map(fn (Candidate $candidate)
                         => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
                         ->collapse()
