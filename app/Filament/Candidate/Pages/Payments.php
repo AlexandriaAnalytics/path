@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use App\Models\Candidate;
 use App\Models\Country as ModelsCountry;
 use App\Models\Payment;
+use App\Models\PaymentMethod as ModelsPaymentMethod;
 use Carbon\Carbon;
 use DateTime;
 use Filament\Actions\Action;
@@ -36,6 +37,7 @@ class Payments extends Page implements HasForms
     public ?DateTime $examDate;
     public $modules = [];
     public bool $showTransferForm = false;
+    public $bankData = null;
 
     public function __construct()
     {
@@ -49,7 +51,9 @@ class Payments extends Page implements HasForms
 
         $this->examDate = new Carbon('2024-11-03');
         $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
-        
+
+        $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
+
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
         */

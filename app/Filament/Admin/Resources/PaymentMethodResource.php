@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\PaymentMethodResource\Pages;
 use App\Filament\Admin\Resources\PaymentMethodResource\RelationManagers;
 use App\Models\PaymentMethod;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -34,7 +35,8 @@ class PaymentMethodResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required(),
-                TextInput::make('description'),
+                RichEditor::make('description')
+                    ->columnSpanFull(),
             ]);
     }
 

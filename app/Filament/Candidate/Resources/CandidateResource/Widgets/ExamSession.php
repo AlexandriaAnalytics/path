@@ -9,13 +9,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Auth;
 
 class ExamSession extends BaseWidget
 {
     public function table(Table $table): Table
     {
+        $candidateId = Candidate::find(session('candidate')->id)->id;
         return $table
-            ->query(CandidateExam::query())
+            ->query(CandidateExam::query()->where('candidate_id', $candidateId))
             ->heading('Exam session')
             ->columns([
                 TextColumn::make('exam.session_name')
