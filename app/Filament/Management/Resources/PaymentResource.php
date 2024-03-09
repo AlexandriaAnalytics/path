@@ -23,8 +23,8 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
-    
+
+
     public static function canViewAny(): bool
     {
         return Filament::getTenant()->internal_payment_administration;
@@ -37,30 +37,39 @@ class PaymentResource extends Resource
                 Select::make('candidate_id')
                     ->label('Candidate')
                     ->options(
-                        Candidate::all()->filter(fn(Candidate $c) => 
-                            $c->currency == Filament::getTenant()->currency 
-                            && $c->status == 'unpaid'
-                            && $c->student->institute->id == Filament::getTenant()->id 
-                        )  
-                        ->map(fn (Candidate $candidate)
-                        => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
-                        ->collapse()
-                        ->toArray())
+                        Candidate::all()->filter(
+                            fn (Candidate $c) =>
+                            $c->currency == Filament::getTenant()->currency
+                                && $c->status == 'unpaid'
+                                && $c->student->institute->id == Filament::getTenant()->id
+                        )
+                            ->map(fn (Candidate $candidate)
+                            => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
+                            ->collapse()
+                            ->toArray()
+                    )
                     ->searchable()
                     ->multiple()
                     ->live()
                     ->afterStateUpdated(function (Set $set, array $state) {
-                        
+
                         $candidates = [];
-                        foreach($state as  $idCandidate) {
-                            $candidates[] = Candidate::find($idCandidate +1 );
+                        foreach ($state as  $idCandidate) {
+                            $candidates[] = Candidate::find($idCandidate + 1);
                         }
-                        
-                        $amount = array_reduce($candidates, fn($carry, $candidate) => $carry + $candidate->total_amount);
-                        
+
+                        if (Filament::getTenant()->candidates->count() >= 30)
+                            $amount = array_reduce($candidates, fn ($carry, $candidate) => $carry + $candidate->total_amount);
+
+                        else $amount = array_reduce(
+                            $candidates,
+                            fn ($carry, $c) => $carry + $c->concepts->filter(fn ($c) => $c->type->name == 'Exam')->sum('amount')
+                        );
+
+
+
                         $set('amount', $amount);
                         $set('currency', Filament::getTenant()->currency);
-                        
                     }),
 
                 TextInput::make('currency')->readOnly(),
@@ -80,7 +89,7 @@ class PaymentResource extends Resource
 
                 TextInput::make('amount')
                     ->readOnly()
-                    ->prefix(fn() => Filament::getTenant()->currency),
+                    ->prefix(fn () => Filament::getTenant()->currency),
                 TextInput::make('link_to_ticket')
                     ->required(),
                 DatePicker::make('current_period')
@@ -102,18 +111,16 @@ class PaymentResource extends Resource
                 TextColumn::make('status')->badge()
 
             ])
-            ->filters([
-                  
-            ])   
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-            ]),
+                ]),
 
-              ]);
+            ]);
     }
 
     public static function getRelations(): array

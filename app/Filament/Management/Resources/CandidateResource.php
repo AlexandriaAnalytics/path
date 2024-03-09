@@ -4,9 +4,7 @@ namespace App\Filament\Management\Resources;
 
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
-use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
-use App\Filament\Exports\CandidateExporter;
 use App\Filament\Exports\CandidateExporterAsociated;
 use App\Filament\Management\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
@@ -14,7 +12,6 @@ use App\Models\CandidateExam;
 use App\Models\Change;
 use App\Models\Exam;
 use App\Models\Financing;
-use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
