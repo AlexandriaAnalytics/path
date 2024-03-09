@@ -58,12 +58,13 @@ class ViewCandidate extends ViewRecord
                     ->columnSpanFull()
                     ->grid(2),
                 RepeatableEntry::make('concepts')
-                    ->visible(fn () => 
-                    Filament::getTenant()->can_view_registration_fee 
-                    
-                    && Filament::getTenant()
-                        ->candidates()
-                        ->count() >= 30
+                    ->visible(
+                        fn () =>
+                        Filament::getTenant()->can_view_registration_fee
+
+                            && Filament::getTenant()
+                            ->candidates()
+                            ->count() >= 30
                     )
 
                     ->columns(3)
@@ -98,7 +99,9 @@ class ViewCandidate extends ViewRecord
     {
         return [
 
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+
             Action::make('Assign exam session')
                 ->disabled(fn (Candidate $record) => $record->pendingModules->isEmpty())
                 ->form([

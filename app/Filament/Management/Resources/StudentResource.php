@@ -164,7 +164,13 @@ class StudentResource extends Resource
                             ->where('status', 'paid')
                             ->doesntExist();
                     }),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(function (Student $record) {
+                        return Candidate::query()
+                            ->where('student_id', $record->id)
+                            ->where('status', 'paid')
+                            ->doesntExist();
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
