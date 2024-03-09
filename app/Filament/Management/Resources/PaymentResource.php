@@ -23,8 +23,8 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
-    
+
+
     public static function canViewAny(): bool
     {
         return Filament::getTenant()->internal_payment_administration;
@@ -37,11 +37,12 @@ class PaymentResource extends Resource
                 Select::make('candidate_id')
                     ->label('Candidate')
                     ->options(
-                        Candidate::all()->filter(fn($d)=> $d->currency == Filament::getTenant()->currency)->where('status', 'unpaid')
-                        ->map(fn (Candidate $candidate)
-                        => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
-                        ->collapse()
-                        ->toArray())
+                        Candidate::all()->filter(fn ($d) => $d->currency == Filament::getTenant()->currency)->where('status', 'unpaid')
+                            ->map(fn (Candidate $candidate)
+                            => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
+                            ->collapse()
+                            ->toArray()
+                    )
                     ->searchable()
                     ->live()
                     ->afterStateUpdated(function (Set $set, string $state) {
@@ -96,18 +97,16 @@ class PaymentResource extends Resource
                 TextColumn::make('status')->badge()
 
             ])
-            ->filters([
-                  
-            ])   
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-            ]),
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                ]),
 
-              ]);
+            ]);
     }
 
     public static function getRelations(): array
