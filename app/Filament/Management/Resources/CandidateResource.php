@@ -293,7 +293,7 @@ class CandidateResource extends Resource
                     ->visible(
                         fn (Candidate $candidate)
                         => $candidate->status == UserStatus::Unpaid->value
-                            && Filament::getTenant()->internal_payment_administration
+                            && Filament::getTenant()->installment_plans
                             && $candidate->currency == Filament::getTenant()->currency
                     ),
                 Action::make('refinaciation')
