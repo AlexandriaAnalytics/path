@@ -47,11 +47,20 @@ class PaymentResource extends Resource
                         ->collapse()
                         ->toArray())
                     ->searchable()
+                    ->multiple()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, string $state) {
-                        $candidate = Candidate::find($state + 1);
-                        $set('amount', $candidate->total_amount);
-                        $set('currency', $candidate->currency);
+                    ->afterStateUpdated(function (Set $set, array $state) {
+                        
+                        $candidates = [];
+                        foreach($state as  $idCandidate) {
+                            $candidates[] = Candidate::find($idCandidate +1 );
+                        }
+                        
+                        $amount = array_reduce($candidates, fn($carry, $candidate) => $carry + $candidate->total_amount);
+                        
+                        $set('amount', $amount);
+                        $set('currency', Filament::getTenant()->currency);
+                        
                     }),
 
                 TextInput::make('currency')->readOnly(),
@@ -71,14 +80,7 @@ class PaymentResource extends Resource
 
                 TextInput::make('amount')
                     ->readOnly()
-                    ->prefix(
-                        function (Get $get) {
-
-                            $candidateId = $get('candidate_id');
-                            $currency = Candidate::find($candidateId + 1)->currency;
-                            return $currency;
-                        }
-                    ),
+                    ->prefix(fn() => Filament::getTenant()->currency),
                 TextInput::make('link_to_ticket')
                     ->required(),
                 DatePicker::make('current_period')
