@@ -38,15 +38,15 @@ class FinancingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('candidate.id'),
-             //   Tables\Columns\TextColumn::make('candidate.instalment_counter')
-              //      ->label('installments'),
+                //   Tables\Columns\TextColumn::make('candidate.instalment_counter')
+                //      ->label('installments'),
                 Tables\Columns\TextColumn::make('currency')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('current_payment.current_period')->date()
                     ->prefix('$'),
-               // Tables\Columns\TextColumn::make('current_instalment')
-                 //   ->label('Current installment'),
+                // Tables\Columns\TextColumn::make('current_instalment')
+                //   ->label('Current installment'),
                 Tables\Columns\TextColumn::make('current_payment.amount')
                     ->label('amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
@@ -69,7 +69,7 @@ class FinancingResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

@@ -277,13 +277,14 @@ class InstituteResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('export-excel')
                         ->label('Download as Excel')
                         ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx')),
+                        ->action(fn (Collection $records) => (new InstituteByIdExport($records->pluck('id')))->download('members.xlsx'))
+                        ->deselectRecordsAfterCompletion(),
                     BulkAction::make('can_register_candidates')
                         ->icon('heroicon-o-user-group')
                         ->form([
@@ -297,6 +298,7 @@ class InstituteResource extends Resource
                                 $institute->save();
                             }
                         })
+                        ->deselectRecordsAfterCompletion()
                 ]),
             ])
             ->defaultSort('institutes.created_at', 'desc');

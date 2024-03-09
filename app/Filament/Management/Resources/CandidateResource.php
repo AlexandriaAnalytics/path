@@ -434,10 +434,12 @@ class CandidateResource extends Resource
                                 'Content-Type' => 'application/zip',
                             ])->deleteFileAfterSend(true);
                             FileSystem::deleteDirectory($tempDir); // TODO: revisar esto posible bug
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
-                        ->exporter(CandidateExporterAsociated::class),
-                    DeleteBulkAction::make(),
+                        ->exporter(CandidateExporterAsociated::class)
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('asign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
@@ -520,7 +522,8 @@ class CandidateResource extends Resource
                                 ->title('Exam session asign successfully')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->filters([

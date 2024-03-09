@@ -23,8 +23,8 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    
-    
+
+
     public static function canViewAny(): bool
     {
         return Filament::getTenant()->internal_payment_administration;
@@ -46,6 +46,7 @@ class PaymentResource extends Resource
                         => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
                         ->collapse()
                         ->toArray())
+
                     ->searchable()
                     ->multiple()
                     ->live()
@@ -102,18 +103,16 @@ class PaymentResource extends Resource
                 TextColumn::make('status')->badge()
 
             ])
-            ->filters([
-                  
-            ])   
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-            ]),
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                ]),
 
-              ]);
+            ]);
     }
 
     public static function getRelations(): array
