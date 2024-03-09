@@ -400,7 +400,9 @@ class CandidateResource extends Resource
                             $change->user_id = Auth::user()->id;
                             $change->save();
                         }),
-                    DeleteAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+
                 ]),
             ])
             ->bulkActions([
