@@ -47,7 +47,7 @@ Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
 Route::get('/candidate/logout', function () {
     //clean all session
     session()->flush();
-    return redirect()->route('candidate.login');
+    return redirect()->route('/candidate/login');
 })->name('candidate.logout');
 
 
@@ -87,5 +87,5 @@ Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotific
 
 // Payment webhooks
 Route::post('/payment/webhook/mp', [WebHookPaymentsController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
-Route::post('/payment/webhook/paypal', [WebHookPaymentsController::class, 'paypalWebhook'])->name('payment.paypal.webhook');  
+Route::post('/payment/webhook/paypal', [WebHookPaymentsController::class, 'paypalWebhook'])->name('payment.paypal.webhook');
 Route::post('/payment/webhook/stripe', [WebHookPaymentsController::class, 'stripeWebhook'])->name('payment.stripe.webhook');
