@@ -108,7 +108,6 @@ class CandidateResource extends Resource
 
     public static function table(Table $table): Table
     {
-        ray(Filament::getTenant());
         return $table
             ->query(function () {
                 $institutionId = Filament::getTenant()->id;
@@ -330,7 +329,6 @@ class CandidateResource extends Resource
 
                         $candidate->financing->payments->where('status', '!=', 'approved')->each(fn ($itemUnpaid) => $itemUnpaid->delete());
 
-                        ray($candidate->financing->payments);
                         $suscriptionCode = 'f-' . Carbon::now()->timestamp;
                         $currentDate = Carbon::now()->day(1)->addMonth();
 

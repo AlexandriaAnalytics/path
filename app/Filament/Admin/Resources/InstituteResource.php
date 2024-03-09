@@ -187,9 +187,6 @@ class InstituteResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(function () {
-                return Institute::orderByDesc('created_at');
-            })
             ->columns([
                 Tables\Columns\TextColumn::make('unique_number')
                     ->searchable()
@@ -303,7 +300,8 @@ class InstituteResource extends Resource
                         })
                         ->deselectRecordsAfterCompletion()
                 ]),
-            ]);
+            ])
+            ->defaultSort('institutes.created_at', 'desc');
     }
 
     public static function getRelations(): array

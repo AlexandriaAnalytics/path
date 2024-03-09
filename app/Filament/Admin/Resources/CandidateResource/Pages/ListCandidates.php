@@ -20,8 +20,7 @@ class ListCandidates extends ListRecords
                 ->label('Export candidates')
                 ->icon('heroicon-o-document-arrow-down')
                 ->color(Color::hex('#83a982'))
-                ->exporter(CandidateExporter::class)
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('is_active', true)),
+                ->exporter(CandidateExporter::class),
             Actions\CreateAction::make()->color(Color::hex('#0086b3')),
         ];
     }

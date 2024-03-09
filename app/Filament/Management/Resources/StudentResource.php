@@ -243,7 +243,8 @@ class StudentResource extends Resource
                         ->deselectRecordsAfterCompletion(),
 
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     /* public static function getRelations(): array

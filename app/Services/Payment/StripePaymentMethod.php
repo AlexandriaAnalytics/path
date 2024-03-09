@@ -115,7 +115,6 @@ class StripePaymentMethod extends AbstractPayment
     {
         $data = $request->input('data');
         $stripe = new StripeClient($this->getAccessToken());
-        ray('stripe', $request);
         if ($request->input('type') == 'checkout.session.completed' && $data['object']['status'] == 'complete') {
             return match ($data['object']['mode']) {
                 'payment' => $this->processPayment($data),

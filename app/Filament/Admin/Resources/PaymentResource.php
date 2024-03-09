@@ -5,25 +5,13 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\PaymentMethod;
 use App\Filament\Admin\Resources\PaymentResource\Pages;
 use App\Models\Candidate;
-use App\Models\Country;
-use App\Models\Institute;
 use App\Models\Payment;
-use Carbon\Carbon;
-use Cmgmyr\PHPLOC\Log\Text;
-use Filament\Forms;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;;
-
-use Filament\Forms\Set;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -104,10 +92,8 @@ class PaymentResource extends Resource
                     ])
                     ->action(function (array $data, Payment $payment) {
                         $payment->update(['status' => $data['status']]);
-                        ray('p1', $payment);
 
                         $payment->payments->each(function (Payment $p) {
-                            ray('paay', $p);
                             $p->financing->update(['state' => 'complete']);
                             $p->update(['status' => 'approved']);
                         });

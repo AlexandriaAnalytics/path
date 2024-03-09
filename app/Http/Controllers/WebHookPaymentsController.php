@@ -18,7 +18,6 @@ class WebHookPaymentsController extends Controller
         $eventType = $request->input('event_type');
         $resource = $request->input('resource');
         $payment_id = $resource['id'];
-        ray('hook paypal', $request);
         switch ($eventType) {
             case 'CHECKOUT.ORDER.APPROVED':
                 $payment = Payment::where('payment_id', $resource['id'])->first();
