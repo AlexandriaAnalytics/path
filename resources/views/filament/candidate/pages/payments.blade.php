@@ -31,19 +31,8 @@
                 <div style="display: grid">
                     <x-filament-panels::form wire:submit="selectPaymentMethod">
                         <h2 class="">Total amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
-                        <section>
-                            <h3>Exam session: <span>{{ $examDate }}</span></h3>
-                        </section>
-                        <blockquote>
-                            <h3>Details</h3>
 
-                            @foreach ($this->modules as $module)
-                                <ul>
-                                    <li>{{ $module['name'] }} - {{ $this->candidate->getMonetaryString() }}
-                                        {{ $module['price'] }}</li>
-                                </ul>
-                            @endforeach
-                        </blockquote>
+
 
 
                         <div id="form">{{ $this->form }}</div>

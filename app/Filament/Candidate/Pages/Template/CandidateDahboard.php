@@ -48,7 +48,7 @@ class CandidateDahboard extends Dashboard  //implements HasTable
         ];
     }
 
-    
+
 
     /*
     public function table(Table $table): Table
@@ -67,17 +67,15 @@ class CandidateDahboard extends Dashboard  //implements HasTable
             ]);
     }
     */
-    
-  protected function getActions(): array
-{
-    return [
-        //Action::make('Print ticket')
-        //    ->icon('heroicon-o-printer'),
-        Action::make('Logout')
-        ->color('danger')    
-        ->url(route('candidate.logout')),
-    ];
-}
 
-
+    protected function getActions(): array
+    {
+        return [
+            //Action::make('Print ticket')
+            //    ->icon('heroicon-o-printer'),
+            Action::make('Logout')
+                ->color('danger')
+                ->url('/candidate/logout'),
+        ];
+    }
 }
