@@ -15,7 +15,6 @@ class CandidateService
     {
         $candidate->level->load(['countries', 'modules']);
 
-        debug($candidate->level->modules);
         $missingModules = $candidate->level->modules->diff($candidate->modules);
 
         $instituteCustomPrice = CustomLevelPrice::query()
