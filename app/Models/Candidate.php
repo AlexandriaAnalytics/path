@@ -137,11 +137,10 @@ class Candidate extends Model
     {
         if (count($this->payments) == 0) return "Payment not registered";
 
-        if ($this->payments->last()->instalment_number == null) return '1/1';
-        else {
-            return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
+        if ($this->payments->last()->instalment_number == null || !isset($this->payments->last()->instalment_numbe)) return '1/1';
+        else return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
 
-        }
+        
     }
 
     public function getInstalmentAmountAndTotalAttribute()
