@@ -359,6 +359,7 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
+                        'paying' => 'info'
                     }),
                 TextColumn::make('modules.name')
                     ->badge(),
