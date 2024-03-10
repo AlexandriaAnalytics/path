@@ -211,7 +211,7 @@ class CandidateResource extends Resource
                     ->toggleable(),
             ])
             ->filters([
-                //
+                // 
             ])
             ->actions([
                 Action::make('financing')
@@ -377,17 +377,14 @@ class CandidateResource extends Resource
                             return response()->json(['error' => 'PDF generation or download failed'], 500);
                         }
                     }),
-                // ->url(fn (Candidate $candidate) => route('candidate.download-pdf', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                 ActionGroup::make([
-                    // Action::make('qr-code')
-                    //     ->label('QR Code')
-                    //     ->icon('heroicon-o-qr-code')
-                    //     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     ViewAction::make(),
                     EditAction::make()
-                        ->visible(function (Candidate $candidate) {
-                            return ($candidate->status !== 'paid' && $candidate->status !== 'paying');
-                        }),
+                        ->hidden(fn (Candidate $candidate) => 
+                            $candidate->status === 'paid' 
+                            || $candidate->status === 'paying'
+                            || $candidate->status === 'processing payment'
+                        ),
                     Action::make('request changes')
                         ->visible(fn (Candidate $candidate) => $candidate->status === 'paid' && $candidate->status !== 'paying')
                         ->icon('heroicon-o-arrows-right-left')
@@ -403,7 +400,12 @@ class CandidateResource extends Resource
                             $change->save();
                         }),
                     DeleteAction::make()
-                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid' && $candidate->status !== 'paying'),
+                        ->hidden(
+                            fn (Candidate $candidate) => 
+                                $candidate->status === 'paid' 
+                                || $candidate->status === 'paying'
+                                || $candidate->status === 'processing payment'
+                                ),
 
                 ]),
             ])

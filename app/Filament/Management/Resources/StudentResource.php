@@ -158,19 +158,21 @@ class StudentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->visible(function (Student $record) {
-                        return Candidate::query()
-                            ->where('student_id', $record->id)
-                            ->where('status', 'paid')
-                            ->doesntExist();
-                    }),
+                    ->hidden(
+                        fn (Student $student) =>
+                        $student
+                            ->candidates
+                            ->whereIn('status', ['paid', 'paying', 'processing payment'])
+                            ->count()
+                    ),
                 Tables\Actions\DeleteAction::make()
-                    ->visible(function (Student $record) {
-                        return Candidate::query()
-                            ->where('student_id', $record->id)
-                            ->where('status', 'paid')
-                            ->doesntExist();
-                    }),
+                ->hidden(
+                        fn (Student $student) =>
+                        $student
+                            ->candidates
+                            ->whereIn('status', ['paid', 'paying', 'processing payment'])
+                            ->count()
+                    )
             ])
             ->bulkActions([
                 BulkActionGroup::make([
