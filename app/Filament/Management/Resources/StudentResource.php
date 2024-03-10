@@ -164,7 +164,13 @@ class StudentResource extends Resource
                             ->where('status', 'paid')
                             ->doesntExist();
                     }),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(function (Student $record) {
+                        return Candidate::query()
+                            ->where('student_id', $record->id)
+                            ->where('status', 'paid')
+                            ->doesntExist();
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -172,8 +178,9 @@ class StudentResource extends Resource
                     BulkAction::make('export-excel')
                         ->label('Download as Excel')
                         ->icon('heroicon-o-document')
-                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx')),
-                    DeleteBulkAction::make(),
+                        ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx'))
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
 
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
@@ -238,7 +245,8 @@ class StudentResource extends Resource
                                 ->title('Candidates create successfully')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
 
                 ]),
             ])

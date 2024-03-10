@@ -114,7 +114,7 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-               /*  Tables\Actions\Action::make('impersonate')
+                /*  Tables\Actions\Action::make('impersonate')
                     ->label('Impersonate')
                     ->icon('heroicon-o-finger-print')
                     ->requiresConfirmation()
@@ -130,18 +130,18 @@ class UserResource extends Resource
                         return redirect()
                             ->to(route('filament.management.auth.login'));
                     }), */
-                    Impersonate::make()
+                Impersonate::make()
                     ->label('Impersonate')
                     ->redirectTo(route('filament.management.auth.login')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                    Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
                     Tables\Actions\ExportBulkAction::make()
                         ->label('Export users')
-                        ->exporter(UserExporter::class),
+                        ->exporter(UserExporter::class)->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

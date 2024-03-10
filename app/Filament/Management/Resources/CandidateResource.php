@@ -4,9 +4,7 @@ namespace App\Filament\Management\Resources;
 
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
-use App\Exports\CandidateByIdExport;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
-use App\Filament\Exports\CandidateExporter;
 use App\Filament\Exports\CandidateExporterAsociated;
 use App\Filament\Management\Resources\CandidateResource\Pages;
 use App\Models\Candidate;
@@ -14,7 +12,6 @@ use App\Models\CandidateExam;
 use App\Models\Change;
 use App\Models\Exam;
 use App\Models\Financing;
-use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -296,7 +293,7 @@ class CandidateResource extends Resource
                     ->visible(
                         fn (Candidate $candidate)
                         => $candidate->status == UserStatus::Unpaid->value
-                            && Filament::getTenant()->internal_payment_administration
+                            && Filament::getTenant()->installment_plans
                             && $candidate->currency == Filament::getTenant()->currency
                     ),
                 Action::make('refinaciation')
@@ -403,7 +400,9 @@ class CandidateResource extends Resource
                             $change->user_id = Auth::user()->id;
                             $change->save();
                         }),
-                    DeleteAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+
                 ]),
             ])
             ->bulkActions([
@@ -434,10 +433,12 @@ class CandidateResource extends Resource
                                 'Content-Type' => 'application/zip',
                             ])->deleteFileAfterSend(true);
                             FileSystem::deleteDirectory($tempDir); // TODO: revisar esto posible bug
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     ExportBulkAction::make()
-                        ->exporter(CandidateExporterAsociated::class),
-                    DeleteBulkAction::make(),
+                        ->exporter(CandidateExporterAsociated::class)
+                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('asign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
@@ -520,7 +521,8 @@ class CandidateResource extends Resource
                                 ->title('Exam session asign successfully')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->filters([

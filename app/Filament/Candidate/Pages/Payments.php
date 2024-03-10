@@ -166,13 +166,13 @@ class Payments extends Page implements HasForms
         return [
             $this->renderPaypalFinancing(
                 $this->candidate->student->institute->installment_plans
-                    && !$this->candidate->student->institute->internal_payment_administration
+                    // && $this->candidate->student->institute->internal_payment_administration
                     && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
             $this->renderStripeFinancing(
                 $this->candidate->student->institute->installment_plans
-                    && !$this->candidate->student->institute->internal_payment_administration
+                    // && !$this->candidate->student->institute->internal_payment_administration
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
