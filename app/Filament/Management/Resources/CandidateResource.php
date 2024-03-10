@@ -385,9 +385,11 @@ class CandidateResource extends Resource
                     //     ->url(fn (Candidate $candidate) => route('candidate.view', ['id' => $candidate->id]), shouldOpenInNewTab: true),
                     ViewAction::make(),
                     EditAction::make()
-                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                        ->visible(function (Candidate $candidate) {
+                            return ($candidate->status !== 'paid' && $candidate->status !== 'paying');
+                        }),
                     Action::make('request changes')
-                        ->visible(fn (Candidate $candidate) => $candidate->status === 'paid')
+                        ->visible(fn (Candidate $candidate) => $candidate->status === 'paid' && $candidate->status !== 'paying')
                         ->icon('heroicon-o-arrows-right-left')
                         ->form([
                             Textarea::make('changes')
@@ -401,7 +403,7 @@ class CandidateResource extends Resource
                             $change->save();
                         }),
                     DeleteAction::make()
-                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid' && $candidate->status !== 'paying'),
 
                 ]),
             ])
