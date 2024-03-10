@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Exam;
 use App\Models\Module;
 use Filament\Actions;
@@ -86,7 +87,6 @@ class ViewCandidate extends ViewRecord
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
             Action::make('Assign exam session')
-                ->disabled(fn (Candidate $record) => $record->pendingModules->isEmpty())
                 ->form([
                     Select::make('module_id')
                         ->label('Module')
@@ -95,7 +95,7 @@ class ViewCandidate extends ViewRecord
                         ->native(false)
                         ->live()
                         ->multiple()
-                        ->options(fn (Candidate $record) => $record->pendingModules->pluck('name', 'id'))
+                        ->options(fn (Candidate $record) => $record->modules->pluck('name', 'id'))
                         ->preload()
                         ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
                     Select::make('exam_id')
@@ -114,6 +114,16 @@ class ViewCandidate extends ViewRecord
                 ])
                 ->action(function (Candidate $record, array $data) {
                     foreach ($data['module_id'] as $moduleId) {
+                        if (CandidateExam::where(function ($query) use ($record, $data, $moduleId) {
+                            $query->where('candidate_id', $record->id)
+                                ->where('module_id', $moduleId)
+                                ->exists();
+                        })) {
+                            CandidateExam::where(function ($query) use ($record, $data, $moduleId) {
+                                $query->where('candidate_id', $record->id)
+                                    ->where('module_id', $moduleId);
+                            })->delete();
+                        }
                         $record->exams()->attach([
                             $data['exam_id'] => [
                                 'module_id' => $moduleId,
