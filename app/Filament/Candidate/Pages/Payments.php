@@ -40,6 +40,7 @@ class Payments extends Page implements HasForms
     public bool $showTransferForm = false;
     public $bankData = null;
 
+
     public function __construct()
     {
         $this->candidate = Candidate::find(session('candidate')->id);
@@ -99,36 +100,6 @@ class Payments extends Page implements HasForms
         ]);
     }
 
-    private function renderTransference(bool $hidde)
-    {
-        return  Action::make('deposit')
-            ->hidden(!$hidde)
-            ->label('Transferency')
-            ->form([
-                TextInput::make('amount')
-                    ->default(fn () => $this->candidate->total_amount)
-                    ->prefix(fn () => $this->candidate->currency)
-                    ->disabled(true),
-
-                TextInput::make('link_to_ticket')
-                    ->required()
-            ])
-            ->action(function (array $data) {
-                Payment::create([
-                    'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
-                    'currency' => $this->candidate->currency,
-                    'amount' => $this->candidate->total_amount,
-                    'candidate_id' => $this->candidate->id,
-                    'link_to_ticket' => $data['link_to_ticket'],
-                    'current_period' => Carbon::now()->day(1),
-                    'paid_date' => Carbon::now(),
-                    'payment_method' => 'transcerence',
-                    'status' => 'processing payment',
-                ]);
-                Candidate::find($this->candidate->id)->update(['status' => UserStatus::Processing_payment]);
-            });
-    }
-
     private function renderPaypalFinancing(bool $hidde)
     {
         return
@@ -162,21 +133,21 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
-
+        ray('payments', $paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
-                $this->candidate->student->institute->installment_plans
-                    // && $this->candidate->student->institute->internal_payment_administration
+                ($this->candidate->student->institute->installment_plans
+                    || $this->candidate->student->institute->internal_payment_administration )
                     && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
             $this->renderStripeFinancing(
-                $this->candidate->student->institute->installment_plans
-                    // && !$this->candidate->student->institute->internal_payment_administration
+                ($this->candidate->student->institute->installment_plans
+                    || $this->candidate->student->institute->internal_payment_administration )
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
-            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid')
+            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid') // not implemented yet
         ];
     }
 
