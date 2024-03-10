@@ -48,6 +48,9 @@ class ListFinancings extends ListRecords
 
         return [
             Actions\Action::make('send_payment')
+            ->visible(fn() => 
+                Filament::getTenant()->installment_plans 
+                &&Filament::getTenant()->internal_payment_administration )
                 ->label('Send payment')
                 ->form([
                     TextInput::make('amount')

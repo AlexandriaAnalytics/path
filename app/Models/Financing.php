@@ -55,8 +55,12 @@ class Financing extends Model
 
     public function getCurrentInstalmentAttribute()
     {
-        return
-            $this->payments()->where('status', '!=', 'approved')->orderBy('current_instalment','ASC')->first()->current_instalment;
+        $currentPayment =
+            $this->payments()
+                ->where('status', '!=', 'approved')
+                ->orderBy('current_instalment','ASC')
+                ->first();
+        return $currentPayment == null? '1' : $currentPayment->current_instalment;
     }
 
     public function getTotalInstallmentsAttribute() {
