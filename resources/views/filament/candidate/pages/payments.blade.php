@@ -92,7 +92,7 @@
 @push('scripts')
     <script>
         document.getElementById('form').addEventListener('change', function() {
-            if (document.getElementsByClassName('choices__item--selectable')[0].innerText.startsWith(
+            if (document.getElementsByClassName('choices')[0].innerText.startsWith(
                     "Transfer")) {
                 document.getElementsByClassName('display')[0].style.display = 'block';
             } else {
