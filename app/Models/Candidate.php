@@ -41,6 +41,7 @@ class Candidate extends Model
 
     protected $attributes = [
         'granted_discount' => 0,
+        'installments' => 1,
         'status' => UserStatus::Unpaid,
     ];
 
@@ -195,7 +196,7 @@ class Candidate extends Model
     public function getCurrentInstallmentAttribute()
     {
         $financing = $this->financings->first();
-        if ($financing == null || $financing->current_installment == null) return 'no have installmets';
+        if ($financing == null || $financing->current_installment == null) return 'No installments';
         return "{$financing->current_installment}/{$financing->totalInstallments}";
     }
 }

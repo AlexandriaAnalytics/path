@@ -184,7 +184,8 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
-                TextColumn::make('current_installment')
+                TextColumn::make('installments')
+                    ->default('No installment')
                     ->label('Installment counter')
                     ->visible(fn () => Filament::getTenant()->installment_plans),
                 TextColumn::make('total_amount')
@@ -222,21 +223,12 @@ class CandidateResource extends Resource
                     ->label('Installments')
                     ->icon('heroicon-o-document')
                     ->form([
-                        TextInput::make('No exams')
-                            ->readOnly()
-                            ->placeholder('The candidate has no exams to make a installment plan')
-                            ->visible(fn (Candidate $candidate) => $candidate->exams()->doesntExist()),
-                        TextInput::make('Exam date too close')
-                            ->readOnly()
-                            ->placeholder('You have no time to create installments')
-                            ->visible(fn (Candidate $candidate) => $candidate->installments_available <= 1),
                         TextInput::make('installments')
                             ->label('Number of installments')
-                            ->helperText(fn (Candidate $candidate) => 'Installments between ' . 1 . ' to ' . $candidate->installments_available . 'months')
-                            ->default(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->default(fn (Candidate $candidate) => $candidate->installments)
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(fn (Candidate $candidate) => $candidate->installments_available)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installments)
                             ->visible(fn (Candidate $candidate) => $candidate->exams()->exists() && $candidate->installments_available >= 1),
                     ])
                     ->action(function (Candidate $candidate, array $data) {
@@ -278,6 +270,8 @@ class CandidateResource extends Resource
                                 $fincancing->payments()->save($payment);
                             }
 
+                            $candidate->installments = $data['installments'];
+                            $candidate->save();
                             Candidate::find($candidate->id)
                                 ->update(['status' => UserStatus::Paying]);
 
@@ -294,12 +288,12 @@ class CandidateResource extends Resource
                             Log::error('crash on create financiament', [$e]);
                         }
                     })
-                    ->visible(
+                /* ->visible(
                         fn (Candidate $candidate)
                         => $candidate->status == UserStatus::Unpaid->value
                             && Filament::getTenant()->installment_plans
                             && $candidate->currency == Filament::getTenant()->currency
-                    ),
+                    ) */,
                 Action::make('refinaciation')
                     ->label('Refinancing')->color('info')
                     ->form([
