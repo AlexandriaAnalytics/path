@@ -4,6 +4,7 @@ namespace App\Filament\Management\Resources\CandidateResource\Pages;
 
 use App\Filament\Management\Resources\CandidateResource;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\Module;
@@ -131,12 +132,32 @@ class ViewCandidate extends ViewRecord
                 ])
                 ->action(function (Candidate $record, array $data) {
                     foreach ($data['module_id'] as $moduleId) {
+                        if (CandidateExam::where(function ($query) use ($record, $data, $moduleId) {
+                            $query->where('candidate_id', $record->id)
+                                ->where('module_id', $moduleId)
+                                ->exists();
+                        })) {
+                            CandidateExam::where(function ($query) use ($record, $data, $moduleId) {
+                                $query->where('candidate_id', $record->id)
+                                    ->where('module_id', $moduleId);
+                            })->delete();
+                        }
                         $record->exams()->attach([
                             $data['exam_id'] => [
                                 'module_id' => $moduleId,
                             ],
                         ]);
                     }
+                    $candidate = Candidate::find($record->id);
+                    $payment_deadline = \Carbon\Carbon::now();
+                    foreach ($candidate->exams as $exam) {
+                        $payment_deadline = max($payment_deadline, $exam->payment_deadline);
+                    }
+                    $today = \Carbon\Carbon::now();
+                    $intervalo = $today->diff($payment_deadline);
+                    $meses_faltantes = $intervalo->m;
+                    $candidate->installments = $meses_faltantes;
+                    $candidate->save();
                 }),
         ];
     }
