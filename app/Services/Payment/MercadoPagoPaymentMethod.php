@@ -81,9 +81,9 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         );
     }
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $installment_number): PaymentResult
     {
-        $amount = round(floatval($total_amount_value) / $instalment_number, 2);
+        $amount = round(floatval($total_amount_value) / $installment_number, 2);
         $candidate = Candidate::with('student')->findOrFail($id);
 
         MercadoPagoConfig::setAccessToken($this->getAccessToken($currency));
@@ -95,7 +95,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                         "frequency" => 1,
                         "frequency_type" => "months",
                         "start_date" => now()->toISOString(),
-                        "end_date" => now()->addMonths($instalment_number)->toISOString(),
+                        "end_date" => now()->addMonths($installment_number)->toISOString(),
                         "transaction_amount" => $amount,
                         "currency_id" => 'ARS', //$currency,
                     ],
@@ -104,7 +104,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                     "reason" => "Exam Payment",
                 ]);
 
-            $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $instalment_number);
+            $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $installment_number);
 
             return new PaymentResult(
                 PaymentMethodResult::REDIRECT,

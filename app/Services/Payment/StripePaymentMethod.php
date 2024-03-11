@@ -64,16 +64,16 @@ class StripePaymentMethod extends AbstractPayment
         }
     }
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $installment_number): PaymentResult
     {
-        $amountPerInstalment = round($total_amount_value  / $instalment_number);
+        $amountPerInstallment = round($total_amount_value  / $installment_number);
 
         Stripe::setApiKey($this->getAccessToken());
 
         $stripe = new \Stripe\StripeClient($this->getAccessToken());
         $price = $stripe->prices->create([
             'currency' => $currency,
-            'unit_amount' => $amountPerInstalment,
+            'unit_amount' => $amountPerInstallment,
             'recurring' => [
                 'interval' => 'month',
             ],
@@ -99,7 +99,7 @@ class StripePaymentMethod extends AbstractPayment
             $candidate = Candidate::find($id);
             $candidate->update(['status', UserStatus::Processing_payment->value]);
 
-            $this->createGroupOfInstallments($id, 'stripe', $currency, $amountPerInstalment, $session->id, $instalment_number);
+            $this->createGroupOfInstallments($id, 'stripe', $currency, $amountPerInstallment, $session->id, $installment_number);
 
 
             return new PaymentResult(PaymentMethodResult::REDIRECT, null, $session->url);
@@ -149,7 +149,7 @@ class StripePaymentMethod extends AbstractPayment
 
         $currentInstallment = $installments
             ->where('status', 'pending')
-            ->orderBy('current_instalment', 'ASC')
+            ->orderBy('current_installment', 'ASC')
             ->first();
 
         if ($currentInstallment != null && $currentInstallment->payment_id != null)

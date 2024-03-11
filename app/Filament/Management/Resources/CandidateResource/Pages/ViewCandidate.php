@@ -89,9 +89,9 @@ class ViewCandidate extends ViewRecord
                         currency: $this->record->billa
                     ),
                 TextEntry::make('paymentss')
-                    ->default(fn ($record) => $record->getInstalmentAmountAndTotalAttribute()),
+                    ->default(fn ($record) => $record->getInstallmentAmountAndTotalAttribute()),
                 TextEntry::make('installments')
-                    ->default(fn ($record) => $record->getInstalmentCounterAttribute())
+                    ->default(fn ($record) => $record->getInstallmentCounterAttribute())
             ]);
     }
 

@@ -30,27 +30,11 @@ class ListPayments extends ListRecords
         return [
             'All' => Components\Tab::make(),
             'Subscriptions' => Components\Tab::make()
-
-                ->modifyQueryUsing(
-                    fn (Builder $query)
-                    => $query
-                        ->where('instalment_number', '!=', null)
-                        ->where('financing_id', null)
-                ),
-
+                ->modifyQueryUsing(fn (Builder $query) => $query->subscriptions()),
             'Installments' => Components\Tab::make()
-                ->modifyQueryUsing(
-                    fn (Builder $query)
-                    => $query->where('financing_id', '!=', null)
-                ),
+                ->modifyQueryUsing(fn (Builder $query) => $query->financings()),
             'Simple payments' => Components\Tab::make()
-                ->modifyQueryUsing(
-                    fn (Builder $query)
-                    => $query
-                        ->where('instalment_number', null)
-                        ->where('financing_id', null)
-
-                )
+                ->modifyQueryUsing(fn (Builder $query) => $query->simplePayments())
         ];
     }
 
@@ -58,52 +42,43 @@ class ListPayments extends ListRecords
     {
         return [
             $this->createInstitutePaymentAction(),
-            $this->createPaymentCandidateAction()
+            $this->createPaymentCandidateAction(),
         ];
     }
 
     private function createPaymentCandidateAction()
     {
         return
-            Actions\Action::make('create candidate payment')
+            Actions\Action::make('Create candidate payment')
             ->form([
-
                 TextInput::make('amount')
                     ->numeric()
                     ->required(),
-
                 Select::make('candidate_id')
                     ->label('Candidate')
-                    ->options(Candidate::all()->pluck('student.name', 'id')->map(function ($fullName, $id) {
-                        $student = Candidate::find($id)->student;
-                        return "{$id} - {$student->name} {$student->surname}";
-                    }))
+                    ->options(Candidate::all()->pluck('student.name', 'id'))
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, string $state) {
                         $set('currency', Candidate::find($state)->currency);
                     }),
-
                 TextInput::make('currency')->readOnly(),
-
-
                 TextInput::make('payment_id')
                     ->label('Payment ID')
-                    ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
-
+                    ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))
+                    ->readOnly(),
                 Select::make('payment_method')
                     ->options([
-                        'Cash' => 'Cash', 'Transfer' => 'Transfer or deposit'
+                        'Cash' => 'Cash',
+                        'Transfer' => 'Transfer or deposit',
                     ])
                     ->required(),
-
-                TextInput::make('link_to_ticket')->required(),
-
+                TextInput::make('link_to_ticket')
+                    ->required(),
                 Select::make('status')
                     ->options(StatusEnum::values())
                     ->required(),
                 MarkdownEditor::make('description')->required()
-
             ])
             ->action(function (array $data) {
                 $payment = Payment::create([
@@ -124,11 +99,9 @@ class ListPayments extends ListRecords
     {
         return Actions\Action::make('Create member or centre payment')
             ->form([
-
                 TextInput::make('amount')
                     ->numeric()
                     ->required(),
-
                 Select::make('institute_id')
                     ->label('Institution')
                     ->options(Institute::all()->pluck('name', 'id')->map(function ($fullName, $id) {
@@ -138,8 +111,6 @@ class ListPayments extends ListRecords
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, string $state) {
-
-
                         $set('currency', Country::find(Institute::find($state)->country)->monetary_unit);
                     }),
 
@@ -175,22 +146,19 @@ class ListPayments extends ListRecords
 
                 TextInput::make('currency')->readOnly(),
 
-
                 TextInput::make('payment_id')
                     ->label('Payment ID')
-                    ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))->readOnly(),
-
+                    ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))
+                    ->readOnly(),
                 Select::make('payment_method')
                     ->options(['Transfer' => 'Transfer or deposit'])
                     ->required(),
-
-                TextInput::make('link_to_ticket')->required(),
-
+                TextInput::make('link_to_ticket')
+                    ->required(),
                 Select::make('status')
                     ->options(StatusEnum::values())
                     ->required(),
                 MarkdownEditor::make('description')
-
             ])
             ->action(function (array $data) {
                 foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {

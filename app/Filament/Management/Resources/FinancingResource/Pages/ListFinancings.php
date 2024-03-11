@@ -48,9 +48,9 @@ class ListFinancings extends ListRecords
 
         return [
             Actions\Action::make('send_payment')
-            ->visible(fn() => 
-                Filament::getTenant()->installment_plans 
-                &&Filament::getTenant()->internal_payment_administration )
+                ->visible(fn () =>
+                Filament::getTenant()->installment_plans
+                    && Filament::getTenant()->internal_payment_administration)
                 ->label('Send payment')
                 ->form([
                     TextInput::make('amount')
@@ -62,7 +62,7 @@ class ListFinancings extends ListRecords
                             foreach ($financings as $financing) {
                                 $totalGroupAmount += floatval($financing
                                     ->payments()
-                                    ->orderBy('current_instalment', 'ASC')
+                                    ->orderBy('current_installment', 'ASC')
                                     ->first()->amount);
                             }
                             return $totalGroupAmount;
@@ -96,7 +96,7 @@ class ListFinancings extends ListRecords
                         ->where('institute_id', 1)
                         ->each(fn ($item) => $item->update(['state' => 'stack']));
 
-                    $financings = Filament::getTenant()->financings->each(fn ($item) => $item->payments->sortBy('current_instalment', 1)->first()->update(['pay_id' => $payment->id]));
+                    $financings = Filament::getTenant()->financings->each(fn ($item) => $item->payments->sortBy('current_installment', 1)->first()->update(['pay_id' => $payment->id]));
 
 
                     Notification::make('payment_created')
