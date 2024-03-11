@@ -120,9 +120,9 @@ class InstituteResource extends Resource
                                     ->maxLength(255),
                                 Select::make('country')
                                     ->required()
-                                    ->relationship('country', 'name')
+                                    ->options(Country::all()->pluck('name', 'id'))
                                     ->preload()
-                                    ->searchable(),
+                                    ->searchable()
                             ])
                     ]),
                 Fieldset::make('Administration')

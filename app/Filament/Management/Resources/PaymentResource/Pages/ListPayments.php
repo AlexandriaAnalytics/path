@@ -15,11 +15,12 @@ class ListPayments extends ListRecords
     protected function getHeaderActions(): array
     {
 
-        return !Filament::getTenant()->can_view_registration_fee || Filament::getTenant()->candidates->count() > 30 || true ?
+        return !Filament::getTenant()->can_view_registration_fee 
+            ||
+            Filament::getTenant()->can_view_registration_fee && Filament::getTenant()->candidates->count() > 30 ? //TODO: sacar este numero magico
             [
-                Actions\CreateAction::make()
-                    ->hidden(fn () => !Filament::getTenant()->internal_payment_administration),
-            ] :
+                Actions\CreateAction::make()->hidden(fn()=> !Filament::getTenant()->internal_payment_administration),
+            ]:
             [];
     }
 }

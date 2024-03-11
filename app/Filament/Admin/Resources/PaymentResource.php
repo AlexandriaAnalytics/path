@@ -80,13 +80,9 @@ class PaymentResource extends Resource
                 Tables\Actions\Action::make('Update state')
                     ->form([
                         Select::make('status')
-                            ->native(false)
                             ->options([
-                                'pending' => 'pending',
-                                'approved' => 'approved',
-                                'rejected' => 'rejected',
-                                'processing payment' => 'processing payment',
-                            ]),
+                                'pending' => 'pending', 'approved' => 'approved', 'rejected' => 'rejected', 'processing payment' => 'processing payment'
+                            ])
                     ])
                     ->action(function (array $data, Payment $payment) {
                         $payment->update(['status' => $data['status']]);

@@ -18,11 +18,13 @@ class CreatePayment extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        Candidate::find($data['candidate_id'])
-            ->update([
-                'status' => 'processing payment',
-            ]);
+        $data['status'] = 'processing payment';
 
+        foreach ($data['candidate_id'] as $candidateId) { 
+            Candidate::find($candidateId + 1)->update(['status' => 'processing payment']);
+        }
+
+        $data['candidate_id'] = null;
         return $data;
     }
 }

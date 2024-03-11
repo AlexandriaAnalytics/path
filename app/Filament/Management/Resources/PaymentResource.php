@@ -2,10 +2,8 @@
 
 namespace App\Filament\Management\Resources;
 
-use App\Enums\ConceptType;
 use App\Filament\Management\Resources\PaymentResource\Pages;
 use App\Models\Candidate;
-use App\Models\Concept;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
@@ -20,7 +18,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 
 class PaymentResource extends Resource
 {
@@ -39,53 +36,57 @@ class PaymentResource extends Resource
             ->schema([
                 Select::make('candidate_id')
                     ->label('Candidate')
-                    ->relationship('candidate', 'full_name')
-                    ->preload()
-                    ->searchable()
                     ->options(
-                        Filament::getTenant()
-                            ->candidates
-                            ->filter(
-                                fn (Candidate $candidate) =>
-                                $candidate->currency == Filament::getTenant()->currency
-                                    && $candidate->status == 'unpaid'
-                            )
-                            ->pluck('full_name', 'id'),
+                        Candidate::all()->filter(
+                            fn (Candidate $c) =>
+                            $c->currency == Filament::getTenant()->currency
+                                && $c->status == 'unpaid'
+                                && $c->student->institute->id == Filament::getTenant()->id
+                        )
+                            ->map(fn (Candidate $candidate)
+                            => [$candidate->id => $candidate->id . '-' . $candidate->student->name . ' ' . $candidate->student->surname])
+                            ->collapse()
+                            ->toArray()
                     )
+                    ->searchable()
+                    ->multiple()
                     ->live()
-                    ->afterStateUpdated(function (Set $set, string $state) {
-                        /** @var \App\Models\Candidate $candidate */
-                        $candidate = Candidate::query()
-                            ->with('concepts')
-                            ->find($state);
+                    ->afterStateUpdated(function (Set $set, array $state) {
 
-                        $amount = $candidate
-                            ->concepts
-                            ->when(
-                                Filament::getTenant()->candidates()->count() >= 30,
-                                fn (Collection $concepts) => $concepts
-                                    ->filter(fn (Concept $concept) => $concept->type == ConceptType::RegistrationFee),
-                            )
-                            ->sum('amount');
+                        $candidates = [];
+                        foreach ($state as  $idCandidate) {
+                            $candidates[] = Candidate::find($idCandidate + 1);
+                        }
+
+                        if (Filament::getTenant()->candidates->count() >= 30)
+                            $amount = array_reduce($candidates, fn ($carry, $candidate) => $carry + $candidate->total_amount);
+
+                        else $amount = array_reduce(
+                            $candidates,
+                            fn ($carry, $c) => $carry + $c->concepts->filter(fn ($c) => $c->type->name == 'Exam')->sum('amount')
+                        );
+
+
 
                         $set('amount', $amount);
                         $set('currency', Filament::getTenant()->currency);
                     }),
-                TextInput::make('currency')
-                    ->readOnly(),
+
+                TextInput::make('currency')->readOnly(),
+
                 Select::make('payment_method')
                     ->options([
                         'transfer' => 'Transfer'
                     ])
-                    ->native(false)
                     ->required(),
-                TextInput::make('status')
-                    ->default('processing payment')
-                    ->hidden(true),
+
+                TextInput::make('status')->default('processing payment')->hidden(true),
+
                 TextInput::make('payment_id')
                     ->label('Payment ID')
                     ->readOnly()
                     ->default('d' . Carbon::now()->timestamp . rand(1000, 9000)),
+
                 TextInput::make('amount')
                     ->readOnly()
                     ->prefix(fn () => Filament::getTenant()->currency),
@@ -104,26 +105,23 @@ class PaymentResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('candidate.student.name')
-                    ->label('Student name'),
-                TextColumn::make('candidate.student.surname')
-                    ->label('Student surname'),
-                TextColumn::make('candidate.id')
-                    ->label('Candidate ID'),
-                TextColumn::make('candidate.total_amount')
-                    ->prefix(fn (Payment $payment) => $payment->currency . '$'),
-                TextColumn::make('status')
-                    ->badge(),
+                TextColumn::make('candidate.student.name')->label('Student name'),
+                TextColumn::make('candidate.student.surname')->label('Student surname'),
+
+                TextColumn::make('candidate.id')->label('Candidate ID'),
+                TextColumn::make('candidate.total_amount')->prefix(fn (Payment $payment) => $payment->currency . '$'),
+                TextColumn::make('status')->badge()
+
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->visible(fn (Payment $payment) => $payment->status == 'pending'),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                ]),
+
             ]);
     }
 

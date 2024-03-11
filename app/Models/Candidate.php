@@ -103,15 +103,6 @@ class Candidate extends Model
             ->withTimestamps();
     }
 
-    public function fullName(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                return $this->student->name . ' ' . $this->student->surname;
-            },
-        );
-    }
-
     public function totalAmount(): Attribute
     {
         return Attribute::make(
