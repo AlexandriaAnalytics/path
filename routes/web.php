@@ -39,15 +39,15 @@ Route::get('/users-excel', [ExcelController::class, 'export']);
 Route::get('/students-excel', [ExcelController::class, 'exportAllStudents']);
 Route::get('/members-excel', [ExcelController::class, 'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
-// Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
 
 Route::get('/candidate/logout', function () {
     //clean all session
+    session()->forget(['candidate']);
     session()->flush();
-    return redirect()->route('/candidate/login');
+    return redirect()->route('candidate.login');
 })->name('candidate.logout');
 
 

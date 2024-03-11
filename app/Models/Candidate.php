@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use App\Casts\StudentModules;
 use App\Enums\UserStatus;
 use App\Services\CandidateService;
 use Carbon\Carbon;
-use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @property \App\Models\Student $student
@@ -138,9 +133,8 @@ class Candidate extends Model
         if (count($this->payments) == 0) return "Payment not registered";
 
         if ($this->payments->last()->instalment_number == null || !isset($this->payments->last()->instalment_numbe)) return '1/1';
-        else return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
-
         
+        else return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();        
     }
 
     public function getInstalmentAmountAndTotalAttribute()
@@ -164,8 +158,6 @@ class Candidate extends Model
             ->where('state', '!=', 'paid')
             ->orderBy('current_instalment', 'asc')->first();
     }
-
-    
 
     public function getHasExamSessionsAttribute()
     {
@@ -197,5 +189,11 @@ class Candidate extends Model
 
     public function financings(){
         return $this->hasMany(Financing::class);
+    }
+
+    public function getCurrentInstallmentAttribute() {
+        $financing = $this->financings->first();
+        if($financing == null || $financing->current_instalment == null) return 'no have installmets';
+        return "{$financing->current_instalment}/{$financing->totalInstallments}";
     }
 }

@@ -48,26 +48,6 @@ class CandidateDahboard extends Dashboard  //implements HasTable
         ];
     }
 
-
-
-    /*
-    public function table(Table $table): Table
-    {
-        return $table
-            ->query(Candidate::query())
-            ->columns([
-                TextColumn::make('id')
-            ])
-            ->filters([
-                //
-            ])
-            
-            ->viewData([
-                'title' => 'Candidates',
-            ]);
-    }
-    */
-
     protected function getActions(): array
     {
         return [
