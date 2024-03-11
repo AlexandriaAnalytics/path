@@ -26,7 +26,6 @@ use Illuminate\Routing\Router;
 class Payments extends Page implements HasForms
 {
     public $candidate;
-    private $country;
     public $candidate_payment_methods = [];
     public ?string $monetariUnitSymbol;
     public ?string $payment_method = null;
@@ -45,7 +44,6 @@ class Payments extends Page implements HasForms
     {
         $this->candidate = Candidate::find(session('candidate')->id);
         $this->candidate_payment_methods = $this->candidate->student->region->paymentMethods()->pluck('name')->toArray();
-        $this->country = $this->candidate->student->region->name;
 
         $this->total_amount += $this->candidate->total_amount;
 
@@ -153,20 +151,18 @@ class Payments extends Page implements HasForms
 
     public function form(Form $form): Form
     {
-
-        $form->schema([
-            Select::make('payment_method')
-                ->label('Payment method')
-                ->placeholder('Select a payment method')
-                ->native(false)
-                ->options(function () {
-                    $options = $this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray();
-                    $options = ['transfer' => 'Transfer'] + $options;
-                    return $options;
-                }),
-        ]);
-
-        return $form;
+        return $form
+            ->schema([
+                Select::make('payment_method')
+                    ->label('Payment method')
+                    ->placeholder('Select a payment method')
+                    ->native(false)
+                    ->options(function () {
+                        $options = $this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray();
+                        $options = ['transfer' => 'Transfer'] + $options;
+                        return $options;
+                    }),
+            ]);
     }
 
     public function getForms(): array

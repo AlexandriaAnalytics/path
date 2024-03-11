@@ -37,9 +37,6 @@ class DatabaseSeeder extends Seeder
             CertificateTypeSeeder::class,
         ]);
 
-
-
-
         $countries = Country::all();
         $modules = Module::all();
 
