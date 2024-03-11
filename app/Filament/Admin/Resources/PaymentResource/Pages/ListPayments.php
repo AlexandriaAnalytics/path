@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PaymentResource\Pages;
 
+use App\Enums\ConceptType;
 use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\PaymentResource;
@@ -101,7 +102,7 @@ class ListPayments extends ListRecords
             ->form([
                 TextInput::make('amount')
                     ->numeric()
-                    ->required(),
+                    ->readOnly(),
                 Select::make('institute_id')
                     ->label('Institution')
                     ->options(Institute::all()->pluck('name', 'id')->map(function ($fullName, $id) {
@@ -121,6 +122,7 @@ class ListPayments extends ListRecords
                     ->searchable()
                     ->preload()
                     ->live()
+                    ->reactive()
                     ->relationship('candidate')
                     ->multiple()
                     ->options(function (callable $get) {
@@ -142,7 +144,22 @@ class ListPayments extends ListRecords
 
                         return $students;
                     })
-                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
+                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
+                    ->afterStateUpdated(function (Set $set) {
+                        foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
+                            $concepts = Candidate::find($candidate + 1)->concepts;
+                            $totalAmount = 0;
+                            foreach ($concepts as $concept) {
+                                if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
+                                    $totalAmount = $totalAmount + $concept->amount;
+                                }
+                                if ($concept->type->value == 'registration_fee') {
+                                    $totalAmount = $totalAmount - $concept->amount;
+                                }
+                            }
+                        }
+                        $set('amount', $totalAmount);
+                    }),
 
                 TextInput::make('currency')->readOnly(),
 
@@ -164,11 +181,21 @@ class ListPayments extends ListRecords
                 foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                     $newPayment = new Payment();
                     $newPayment->institute_id = $data['institute_id'];
-                    $newPayment->candidate_id = $candidate;
-                    $newPayment->amount = $data['amount'];
+                    $newPayment->candidate_id = $candidate + 1;
+                    $concepts = Candidate::find($candidate + 1)->concepts;
+                    $totalAmount = 0;
+                    foreach ($concepts as $concept) {
+                        if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
+                            $totalAmount = $totalAmount + $concept->amount;
+                        }
+                        if ($concept->type->value == 'registration_fee') {
+                            $totalAmount = $totalAmount - $concept->amount;
+                        }
+                    }
+                    $newPayment->amount = $totalAmount;
                     $newPayment->status = $data['status'];
                     $newPayment->payment_method = $data['payment_method'];
-                    //$newPayment->payment_id = $data['payment_id'];
+                    $newPayment->payment_id = $data['payment_id'];
                     $newPayment->currency = $data['currency'];
                     $newPayment->current_period = Carbon::now()->day(1);
                     $newPayment->link_to_ticket = $data['link_to_ticket'];

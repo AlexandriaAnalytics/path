@@ -675,7 +675,6 @@ CREATE TABLE `payments` (
   `institute_id` bigint unsigned DEFAULT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `payments_payment_id_unique` (`payment_id`),
   KEY `payments_candidate_id_foreign` (`candidate_id`),
   KEY `payments_financing_id_foreign` (`financing_id`),
   KEY `payments_institute_id_foreign` (`institute_id`),
