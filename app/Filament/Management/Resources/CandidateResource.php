@@ -96,7 +96,7 @@ class CandidateResource extends Resource
                     ->rules([
                         fn (): Closure => function (string $attribute, $value, Closure $fail) {
                             if ($value > Filament::getTenant()->remaining_discount) {
-                                $fail('The institute does not have enough discount to grant.');
+                                $fail('The institution does not have enough discount to grant.');
                             }
                         },
                     ]),
