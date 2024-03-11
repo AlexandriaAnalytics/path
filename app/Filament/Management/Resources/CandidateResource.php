@@ -91,6 +91,7 @@ class CandidateResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->visible(fn () => Filament::getTenant()->maximum_cumulative_discount != 0)
+                    ->hiddenOn('edit')
                     ->hint(fn () => 'Available discount: ' . Filament::getTenant()->remaining_discount . '%')
                     ->rules([
                         fn (): Closure => function (string $attribute, $value, Closure $fail) {
