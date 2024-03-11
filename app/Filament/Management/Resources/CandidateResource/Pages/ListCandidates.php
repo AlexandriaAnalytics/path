@@ -8,15 +8,16 @@ use App\Filament\Management\Resources\CandidateResource;
 use App\Filament\Management\Resources\CandidateResource\Widgets\CandidatesPaymentState;
 use Filament\Actions;
 use Filament\Facades\Filament;
+use Filament\Pages\Concerns\ExposesTableToWidgets;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Colors\Color;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListCandidates extends ListRecords
 {
+    use ExposesTableToWidgets;
+
     protected static string $resource = CandidateResource::class;
-
-
 
     protected function getHeaderActions(): array
     {
