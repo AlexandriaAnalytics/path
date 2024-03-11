@@ -145,7 +145,7 @@ class ListPayments extends ListRecords
                         return $students;
                     })
                     ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
-                    ->afterStateUpdated(function (Set $set) {
+                    ->afterStateUpdated(function (Set $set, callable $get) {
                         foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                             $concepts = Candidate::find($candidate + 1)->concepts;
                             $totalAmount = 0;
@@ -153,7 +153,7 @@ class ListPayments extends ListRecords
                                 if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                                     $totalAmount = $totalAmount + $concept->amount;
                                 }
-                                if ($concept->type->value == 'registration_fee') {
+                                if ($concept->type->value == 'registration_fee' && Institute::find($get('institute_id'))->can_view_registration_fee == 1) {
                                     $totalAmount = $totalAmount - $concept->amount;
                                 }
                             }
@@ -177,7 +177,7 @@ class ListPayments extends ListRecords
                     ->required(),
                 MarkdownEditor::make('description')
             ])
-            ->action(function (array $data) {
+            ->action(function (array $data, callable $get) {
                 foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                     $newPayment = new Payment();
                     $newPayment->institute_id = $data['institute_id'];
@@ -188,7 +188,7 @@ class ListPayments extends ListRecords
                         if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                             $totalAmount = $totalAmount + $concept->amount;
                         }
-                        if ($concept->type->value == 'registration_fee') {
+                        if ($concept->type->value == 'registration_fee' && Institute::find($get('institute_id'))->can_view_registration_fee == 1) {
                             $totalAmount = $totalAmount - $concept->amount;
                         }
                     }
