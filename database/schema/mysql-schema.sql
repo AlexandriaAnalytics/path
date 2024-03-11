@@ -407,6 +407,7 @@ CREATE TABLE `institutes` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `institute_type_id` bigint unsigned NOT NULL,
   `owner_id` bigint unsigned DEFAULT NULL,
+  `country_id` bigint unsigned NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `maximum_cumulative_discount` decimal(12,2) NOT NULL COMMENT 'Maximum cumulative discount that the institute can apply as discounts to the students.',
   `files_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -418,7 +419,6 @@ CREATE TABLE `institutes` (
   `city` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `province` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `postcode` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `country` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `discounted_price_diferencial` decimal(12,2) NOT NULL,
   `discounted_price_percentage` decimal(12,2) NOT NULL,
   `rigth_exam_diferencial` decimal(12,2) NOT NULL,
@@ -436,7 +436,8 @@ CREATE TABLE `institutes` (
   KEY `institutes_institute_type_id_foreign` (`institute_type_id`),
   KEY `institutes_owner_id_foreign` (`owner_id`),
   CONSTRAINT `institutes_institute_type_id_foreign` FOREIGN KEY (`institute_type_id`) REFERENCES `institute_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `institutes_owner_id_foreign` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `institutes_owner_id_foreign` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `institutes_country_id_foreign` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `job_batches`;

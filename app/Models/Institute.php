@@ -34,7 +34,7 @@ class Institute extends Model
         'city',
         'province',
         'postcode',
-        'country',
+        'country_id',
         'maximum_cumulative_discount',
         'unique_number',
         'can_view_registration_fee',
@@ -133,16 +133,18 @@ class Institute extends Model
         return $this->instituteLevels->where('level.name', $levelName)->first();
     }
 
-    public function country():BelongsTo
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
 
-    public function getCurrencyAttribute(){
-        return Country::find($this->country)->monetary_unit;
+    public function getCurrencyAttribute()
+    {
+        return $this->country->monetary_unit;
     }
 
-    public function financings() {
+    public function financings()
+    {
         return $this->hasMany(Financing::class);
     }
 }
