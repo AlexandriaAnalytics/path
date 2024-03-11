@@ -41,6 +41,7 @@ class Candidate extends Model
 
     protected $attributes = [
         'granted_discount' => 0,
+        'installments' => 1,
         'status' => UserStatus::Unpaid,
     ];
 

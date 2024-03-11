@@ -7,9 +7,11 @@ use App\Models\Candidate;
 use App\Models\CandidateExam;
 use App\Models\Exam;
 use App\Models\Module;
+use DateTime;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -130,6 +132,16 @@ class ViewCandidate extends ViewRecord
                             ],
                         ]);
                     }
+                    $candidate = Candidate::find($record->id);
+                    $payment_deadline = \Carbon\Carbon::now();
+                    foreach ($candidate->exams as $exam) {
+                        $payment_deadline = max($payment_deadline, $exam->payment_deadline);
+                    }
+                    $today = \Carbon\Carbon::now();
+                    $intervalo = $today->diff($payment_deadline);
+                    $meses_faltantes = $intervalo->m;
+                    $candidate->installments = $meses_faltantes;
+                    $candidate->save();
                 }),
         ];
     }
