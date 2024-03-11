@@ -195,7 +195,7 @@ class Candidate extends Model
     public function getCurrentInstallmentAttribute()
     {
         $financing = $this->financings->first();
-        if ($financing == null || $financing->current_installment == null) return 'Does not have installments';
+        if ($financing == null || $financing->current_installment == null) return 'No installments';
         return "{$financing->current_installment}/{$financing->totalInstallments}";
     }
 }
