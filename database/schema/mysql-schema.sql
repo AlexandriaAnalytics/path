@@ -255,7 +255,7 @@ CREATE TABLE `exams` (
   `scheduled_date` timestamp NOT NULL,
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `maximum_number_of_students` int NOT NULL,
-  `comments` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comments` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `payment_deadline` timestamp NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,

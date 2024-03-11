@@ -50,25 +50,10 @@ Route::get('/candidate/logout', function () {
     return redirect()->route('candidate.login');
 })->name('candidate.logout');
 
-
-Route::post('management/auth/logout', function () {
-    if (session('impersonator_id')) {
-        auth()->loginUsingId(session('impersonator_id'));
-
-        session()->forget('impersonator_id');
-
-        return redirect()->route('filament.admin.pages.dashboard');
-    }
-
-    auth()->logout();
-
-    return redirect()->route('filament.management.auth.login');
-})->name('auth.logout');
-
 Route::get('/pdf/candidate/{id}', function ($id) {
     $candidate = Candidate::find($id);
 
-    return view('candidate-pdf', ['candidate' => $candidate]);
+    return view('pdf.candidate', ['candidate' => $candidate]);
 })->name('candidate.pdf');
 
 

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentType;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -35,7 +37,7 @@ class Payment extends Model
 
 
     protected $attributes = [
-        'status' => 'pending'
+        'status' => 'pending',
     ];
 
     protected function counter(): Attribute
@@ -50,11 +52,13 @@ class Payment extends Model
         return $this->belongsTo(Financing::class);
     }
 
-    public function payments(){
+    public function payments()
+    {
         return $this->hasMany(Payment::class, 'pay_id');
     }
 
-    public function parent() {
+    public function parent()
+    {
         return $this->belongsTo(Payment::class, 'pay_id');
     }
 
@@ -62,7 +66,7 @@ class Payment extends Model
     {
         $currentPeriod = $this->current_period;
         $expiredDate = $this->expiration_date;
-      return Carbon::createFromDate($currentPeriod)->diff(Carbon::createFromDate($expiredDate), 'month',true);
+        return Carbon::createFromDate($currentPeriod)->diff(Carbon::createFromDate($expiredDate), 'month', true);
     }
 
     public function institute(): BelongsTo
@@ -75,12 +79,33 @@ class Payment extends Model
         return $this->belongsTo(Candidate::class);
     }
 
-    public function getTypeAttribute(){
-        if($this->instalment_number != null && $this->financing_id == null)
-            return 'Suscription';
-        else if( $this->instalment_number != null && $this->financing_id != null)
-            return 'financing';
-        else if($this->instalment_number == null && $this->financing_id == null)
-            return 'Simple payment';
+    public function scopeSubscriptions(Builder $query)
+    {
+        return $query->whereNotNull('instalment_number')
+            ->whereNull('financing_id');
+    }
+
+    public function scopeFinancings(Builder $query)
+    {
+        return $query->whereNotNull('instalment_number')
+            ->whereNotNull('financing_id');
+    }
+
+    public function scopeSimplePayments(Builder $query)
+    {
+        return $query->whereNull('instalment_number')
+            ->whereNull('financing_id');
+    }
+
+    public function getTypeAttribute()
+    {
+        if ($this->instalment_number != null && $this->financing_id == null)
+            return PaymentType::Subscription;
+        else if ($this->instalment_number != null && $this->financing_id != null)
+            return PaymentType::Financing;
+        else if ($this->instalment_number == null && $this->financing_id == null)
+            return PaymentType::SimplePayment;
+
+        throw new Exception('Payment type not found');
     }
 }
