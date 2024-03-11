@@ -9,11 +9,13 @@ use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\Payment;
+use App\Models\Student;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components;
@@ -140,6 +142,36 @@ class ListPayments extends ListRecords
 
                         $set('currency', Country::find(Institute::find($state)->country)->monetary_unit);
                     }),
+
+                Select::make('candidate_id')
+                    ->label('Candidate')
+                    ->placeholder('Select a candidate')
+                    ->required()
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->relationship('candidate')
+                    ->multiple()
+                    ->options(function (callable $get) {
+                        $instituteId = $get('institute_id');
+
+                        if (!$instituteId) {
+                            return [];
+                        }
+
+                        $candidates = Candidate::query()->whereHas('student.institute', function ($query) use ($instituteId) {
+                            $query->where('id', $instituteId);
+                        })->get();
+
+                        $students = [];
+
+                        foreach ($candidates as $candidate) {
+                            $students[] .= "{$candidate->student->name} {$candidate->student->surname}";
+                        }
+
+                        return $students;
+                    })
+                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}"),
 
                 TextInput::make('currency')->readOnly(),
 
