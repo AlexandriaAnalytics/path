@@ -189,21 +189,24 @@ class ListPayments extends ListRecords
                 Select::make('status')
                     ->options(StatusEnum::values())
                     ->required(),
-                MarkdownEditor::make('description')->required()
+                MarkdownEditor::make('description')
 
             ])
             ->action(function (array $data) {
-                $payment = Payment::create([
-                    'institute_id' => $data['institute_id'],
-                    'amount' => $data['amount'],
-                    'status' => $data['status'],
-                    'payment_method' => $data['payment_method'],
-                    'payment_id' => $data['payment_id'],
-                    'currency' => $data['currency'],
-                    'current_period' => Carbon::now()->day(1),
-                    'link_to_ticket' => $data['link_to_ticket'],
-                    'description' => $data['description'],
-                ]);
+                foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
+                    $newPayment = new Payment();
+                    $newPayment->institute_id = $data['institute_id'];
+                    $newPayment->candidate_id = $candidate;
+                    $newPayment->amount = $data['amount'];
+                    $newPayment->status = $data['status'];
+                    $newPayment->payment_method = $data['payment_method'];
+                    //$newPayment->payment_id = $data['payment_id'];
+                    $newPayment->currency = $data['currency'];
+                    $newPayment->current_period = Carbon::now()->day(1);
+                    $newPayment->link_to_ticket = $data['link_to_ticket'];
+                    $newPayment->description = $data['description'];
+                    $newPayment->save();
+                }
             });
     }
 }
