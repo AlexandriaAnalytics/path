@@ -30,11 +30,8 @@ class PaymentResource extends Resource
                 TextInput::make('amount')
                     ->required()
                     ->numeric(),
-
-                Select::make('patment_method')
+                Select::make('payment_method')
                     ->options(PaymentMethod::values()),
-
-
                 Select::make('candidate_id')
                     ->required()
                     ->relationship(titleAttribute: 'id', name: 'candidate')
@@ -77,9 +74,7 @@ class PaymentResource extends Resource
             ->filters([
                 Filter::make('payment_method')
                     ->label('Hide installments')
-                    ->query(fn (Builder $query)
-                    => $query->where('payment_method', '!=', 'financing by associated'))
-                    ->default(true)
+                    ->query(fn (Builder $query) => $query->where('payment_method', '!=', 'financing by associated')),
             ])
             ->actions([
                 Tables\Actions\Action::make('Update state')

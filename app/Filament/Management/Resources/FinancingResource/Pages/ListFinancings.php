@@ -56,7 +56,6 @@ class ListFinancings extends ListRecords
                     TextInput::make('amount')
                         ->prefix(fn () => Filament::getTenant()->currency)
                         ->default(function () {
-
                             $financings = Filament::getTenant()->financings;
                             $totalGroupAmount = 0;
                             foreach ($financings as $financing) {
@@ -66,8 +65,6 @@ class ListFinancings extends ListRecords
                                     ->first()->amount);
                             }
                             return $totalGroupAmount;
-
-                            //return 9864;
                         })
                         ->readOnly(),
                     TextInput::make('payment_id')->readOnly()
@@ -93,11 +90,9 @@ class ListFinancings extends ListRecords
                     ]);
 
                     $financings = Filament::getTenant()->financings
-                        ->where('institute_id', 1)
                         ->each(fn ($item) => $item->update(['state' => 'stack']));
 
                     $financings = Filament::getTenant()->financings->each(fn ($item) => $item->payments->sortBy('current_installment', 1)->first()->update(['pay_id' => $payment->id]));
-
 
                     Notification::make('payment_created')
                         ->title('Payment created successfuly')
