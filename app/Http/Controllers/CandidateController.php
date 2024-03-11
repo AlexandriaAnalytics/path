@@ -21,7 +21,7 @@ class CandidateController extends Controller
         $this->model::whereIn('id_student', $candidatesToDelete)->where('id_exam', $examId)->delete();
 
         foreach ($selectedCandidates as $candidateId) {
-            $candidate = $this->model::updateOrCreate(
+            $this->model::updateOrCreate(
                 ['id_student' => $candidateId, 'id_exam' => $examId]
             );
         }
@@ -33,18 +33,8 @@ class CandidateController extends Controller
     {
         $candidate = Candidate::with(['student', 'exams'])->find($id);
 
-        // if (!$candidate) {
-        //     abort(404, 'Candidate not found');
-        // }
-
-        // $data = [
-        //     'candidate' => $candidate,
-        // ];
-
         return Pdf::loadView('pdf.candidate', [
             'candidate' => $candidate,
-        ])
-            // ->setOption('debugCss', true)
-            ->stream();
+        ])->stream();
     }
 }
