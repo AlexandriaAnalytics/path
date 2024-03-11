@@ -183,7 +183,10 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
-                TextColumn::make('total_amount')
+                    TextColumn::make('current_installment')
+                    ->label('Installment counter')
+                    ->visible(fn() => Filament::getTenant()->installment_plans),
+                    TextColumn::make('total_amount')
                     ->label('Total amount')
                     ->money(
                         currency: fn (Candidate $record) => $record->currency,
