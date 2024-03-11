@@ -145,7 +145,7 @@ class ListPayments extends ListRecords
                         return $students;
                     })
                     ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
-                    ->afterStateUpdated(function (Set $set, callable $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                             $concepts = Candidate::find($candidate + 1)->concepts;
                             $totalAmount = 0;
@@ -177,7 +177,7 @@ class ListPayments extends ListRecords
                     ->required(),
                 MarkdownEditor::make('description')
             ])
-            ->action(function (array $data, callable $get) {
+            ->action(function (array $data, Get $get) {
                 foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                     $newPayment = new Payment();
                     $newPayment->institute_id = $data['institute_id'];
