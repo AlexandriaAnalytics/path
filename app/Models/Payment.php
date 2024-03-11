@@ -23,8 +23,8 @@ class Payment extends Model
         'amount',
         'status',
         'suscription_code',
-        'instalment_number',
-        'current_instalment',
+        'installment_number',
+        'current_installment',
         'payment_type', //TODO: eliminar campo
         'financing_id',
         'current_period',
@@ -43,7 +43,7 @@ class Payment extends Model
     protected function counter(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => ($attributes['instalment_number'] == null ? 'complete' : 'partial')
+            get: fn ($value, $attributes) => ($attributes['installment_number'] == null ? 'complete' : 'partial')
         );
     }
 
@@ -81,29 +81,29 @@ class Payment extends Model
 
     public function scopeSubscriptions(Builder $query)
     {
-        return $query->whereNotNull('instalment_number')
+        return $query->whereNotNull('installment_number')
             ->whereNull('financing_id');
     }
 
     public function scopeFinancings(Builder $query)
     {
-        return $query->whereNotNull('instalment_number')
+        return $query->whereNotNull('installment_number')
             ->whereNotNull('financing_id');
     }
 
     public function scopeSimplePayments(Builder $query)
     {
-        return $query->whereNull('instalment_number')
+        return $query->whereNull('installment_number')
             ->whereNull('financing_id');
     }
 
     public function getTypeAttribute()
     {
-        if ($this->instalment_number != null && $this->financing_id == null)
+        if ($this->installment_number != null && $this->financing_id == null)
             return PaymentType::Subscription;
-        else if ($this->instalment_number != null && $this->financing_id != null)
+        else if ($this->installment_number != null && $this->financing_id != null)
             return PaymentType::Financing;
-        else if ($this->instalment_number == null && $this->financing_id == null)
+        else if ($this->installment_number == null && $this->financing_id == null)
             return PaymentType::SimplePayment;
 
         throw new Exception('Payment type not found');

@@ -33,21 +33,22 @@ abstract class AbstractPayment implements IPayment
           return $this->redirectCancel;
      }
 
-     protected function createGroupOfInstallments($id, $paymentMethod, $currency, $amountPerMonth, $suscriptionCode, $installmentNumber) {
+     protected function createGroupOfInstallments($id, $paymentMethod, $currency, $amountPerMonth, $suscriptionCode, $installmentNumber)
+     {
           $currentDate = Carbon::now()->day(1);
 
-          for ($instalment = 1; $instalment <= $installmentNumber; $instalment++)
+          for ($installment = 1; $installment <= $installmentNumber; $installment++)
                Payment::create([
-                         'candidate_id' => $id,
-                         'payment_method' => $paymentMethod,
-                         'currency' => $currency,
-                         'amount' => $amountPerMonth,
-                         'suscription_code' => $suscriptionCode,
-                         'instalment_number' => $installmentNumber,
-                         'current_instalment' => $instalment,
-                         'status' => 'pending',
-                         'expiration_date'=> $currentDate,
-                         'current_period' => $currentDate->addMonth(),
-                    ]);
+                    'candidate_id' => $id,
+                    'payment_method' => $paymentMethod,
+                    'currency' => $currency,
+                    'amount' => $amountPerMonth,
+                    'suscription_code' => $suscriptionCode,
+                    'installment_number' => $installmentNumber,
+                    'current_installment' => $installment,
+                    'status' => 'pending',
+                    'expiration_date' => $currentDate,
+                    'current_period' => $currentDate->addMonth(),
+               ]);
      }
 }

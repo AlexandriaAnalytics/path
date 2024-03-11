@@ -50,12 +50,12 @@ class FinancingResource extends Resource
                     ->label('Amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
 
-                Tables\Columns\TextColumn::make('current_instalment')
-                ->label('Installment counter'),
+                Tables\Columns\TextColumn::make('current_installment')
+                    ->label('Installment counter'),
 
                 Tables\Columns\TextColumn::make('state')
-                ->label('Status')    
-                ->badge(
+                    ->label('Status')
+                    ->badge(
                         fn ($state) =>
                         match ($state) {
                             "complete" => 'success',

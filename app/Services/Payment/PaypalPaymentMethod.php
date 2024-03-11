@@ -92,14 +92,14 @@ class PaypalPaymentMethod extends AbstractPayment
         return new PaymentResult(PaymentMethodResult::SUCCESS, 'Payment was successful');
     }
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $installment_number): PaymentResult
     {
         $currency = 'USD';
         if (!in_array($currency, PaypalPaymentMethod::AVAILABLE_CURRENCIES))
             throw new PaymentException('Currency not supported');
 
         try {
-            $amount = round(floatval($total_amount_value) / $instalment_number, 2);
+            $amount = round(floatval($total_amount_value) / $installment_number, 2);
 
             $candidate = Candidate::find($id);
             if ($candidate == null)
@@ -122,8 +122,8 @@ class PaypalPaymentMethod extends AbstractPayment
 
             $plan_request = [
                 'product_id' => $product['id'], // Id del producto creado
-                'name' => 'Plan de ' . $instalment_number . ' cuotas sin interes',
-                'description' => 'Plan de ' . $instalment_number . ' cuotas sin interes',
+                'name' => 'Plan de ' . $installment_number . ' cuotas sin interes',
+                'description' => 'Plan de ' . $installment_number . ' cuotas sin interes',
                 'plan_request' => ['id' => $id],
                 'payment_preferences' => [
                     'auto_bill_outstanding' => true,
@@ -139,7 +139,7 @@ class PaypalPaymentMethod extends AbstractPayment
                         ],
                         'tenure_type' => 'REGULAR',
                         'sequence' => 1,
-                        'total_cycles' => $instalment_number,
+                        'total_cycles' => $installment_number,
                         'pricing_scheme' => [
                             'fixed_price' => [
                                 'value' => $amount,
@@ -162,8 +162,8 @@ class PaypalPaymentMethod extends AbstractPayment
 
                 foreach ($response['links'] as $links) {
                     if ($links['rel'] == 'approve') {
-                        $this->createGroupOfInstallments($id, 'paypal', $currency, $amount, $response['id'], $instalment_number);
-                        
+                        $this->createGroupOfInstallments($id, 'paypal', $currency, $amount, $response['id'], $installment_number);
+
                         Candidate::where('id', $id)->update(['status' => UserStatus::Processing_payment]);
                         return new PaymentResult(PaymentMethodResult::REDIRECT, null, $links['href']);
                         // return redirect()->away($links['href']);
