@@ -27,7 +27,7 @@ class PaymentResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Filament::getTenant()->internal_payment_administration;
+        return Filament::getTenant()->internal_payment_administration && !Filament::getTenant()->installment_plans;
     }
 
     public static function form(Form $form): Form
@@ -76,14 +76,14 @@ class PaymentResource extends Resource
 
                 Select::make('payment_method')
                     ->options([
-                        'cash' => 'cash',
-                        'transfer' => 'transfer'
+                        'transfer' => 'Transfer'
                     ])
                     ->required(),
 
                 TextInput::make('status')->default('processing payment')->hidden(true),
 
                 TextInput::make('payment_id')
+                    ->label('Payment ID')
                     ->readOnly()
                     ->default('d' . Carbon::now()->timestamp . rand(1000, 9000)),
 
@@ -93,8 +93,10 @@ class PaymentResource extends Resource
                 TextInput::make('link_to_ticket')
                     ->required(),
                 DatePicker::make('current_period')
+                    ->label('Period')
                     ->default(Carbon::now()->day(1)),
-                DatePicker::make('paid_date'),
+                DatePicker::make('paid_date')
+                    ->label('Payment date'),
 
             ]);
     }

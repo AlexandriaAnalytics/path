@@ -17,7 +17,7 @@
                     <p>now you ar financing the exam </p>
                 </header>
                 <section>
-                    <p>Instalments: <span>{{ $candidate->instalment_counter }}</span></p>
+                    <p>Installments: <span>{{ $candidate->installment_counter }}</span></p>
                     <p>amount per coute:
                         <span>{{ $candidate->currency . '$ ' . $candidate->payments->first()->amount }}</span>
                     </p>

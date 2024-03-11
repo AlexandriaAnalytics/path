@@ -91,7 +91,7 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning'
                     }),
 
-                TextColumn::make('instalment_counter')
+                TextColumn::make('installment_counter')
                     ->label('Installment counter')
                     ->sortable(),
                 TextColumn::make('student.name')

@@ -48,18 +48,23 @@ class Financing extends Model
     {
         return new Attribute(
             get: fn () => $this->payments()
-                ->orderBy('current_instalment', 'ASC')
+                ->orderBy('current_installment', 'ASC')
                 ->first()
         );
     }
 
-    public function getCurrentInstalmentAttribute()
+    public function getCurrentInstallmentAttribute()
     {
-        return
-            $this->payments()->where('status', '!=', 'approved')->orderBy('current_instalment','ASC')->first()->current_instalment;
+        $currentPayment =
+            $this->payments()
+            ->where('status', '!=', 'approved')
+            ->orderBy('current_installment', 'ASC')
+            ->first();
+        return $currentPayment == null ? '1' : $currentPayment->current_installment;
     }
 
-    public function getTotalInstallmentsAttribute() {
+    public function getTotalInstallmentsAttribute()
+    {
         return $this->payments->count();
     }
 
@@ -76,8 +81,9 @@ class Financing extends Model
         );
     }
 
-    public function getTotalAmountAttribute() {
-        return $this->institute->candidates->count() >= 0? $this->exam_amount : $this->exam_amount + $this->exam_rigth;
+    public function getTotalAmountAttribute()
+    {
+        return $this->institute->candidates->count() >= 0 ? $this->exam_amount : $this->exam_amount + $this->exam_rigth;
     }
 
     public function getCurrentPaidAttribute()
@@ -90,9 +96,8 @@ class Financing extends Model
         return $this->student->payment_current_istallment->current_period;
     }
 
-    public function getCountPaidInstallmentsAttribute(){
+    public function getCountPaidInstallmentsAttribute()
+    {
         return $this->payments->where('status', '==', 'approved')->count();
     }
-
-    
 }

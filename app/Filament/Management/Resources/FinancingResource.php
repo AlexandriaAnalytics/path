@@ -38,20 +38,23 @@ class FinancingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('candidate.id'),
-                //   Tables\Columns\TextColumn::make('candidate.instalment_counter')
-                //      ->label('installments'),
+
                 Tables\Columns\TextColumn::make('currency')
                     ->sortable()
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('current_payment.current_period')->date()
                     ->prefix('$'),
-                // Tables\Columns\TextColumn::make('current_instalment')
-                //   ->label('Current installment'),
+
                 Tables\Columns\TextColumn::make('current_payment.amount')
-                    ->label('amount')
+                    ->label('Amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
-                Tables\Columns\TextColumn::make('current_instalment.is_expired'),
+
+                Tables\Columns\TextColumn::make('current_installment')
+                    ->label('Installment counter'),
+
                 Tables\Columns\TextColumn::make('state')
+                    ->label('Status')
                     ->badge(
                         fn ($state) =>
                         match ($state) {
@@ -60,17 +63,16 @@ class FinancingResource extends Resource
                             'pending' => 'danger'
                         }
                     )
-
             ])
-            ->filters([])
+            ->filters([
+                //    
+            ])
             ->actions([
-
-                // Tables\Actions\EditAction::make(),
+                //
             ])
+            ->actionsPosition(null)
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                ]),
+                // 
             ]);
     }
 
@@ -86,7 +88,6 @@ class FinancingResource extends Resource
         return [
             'index' => Pages\ListFinancings::route('/'),
             'create' => Pages\CreateFinancing::route('/create'),
-            'edit' => Pages\EditFinancing::route('/{record}/edit'),
         ];
     }
 }

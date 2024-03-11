@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use App\Casts\StudentModules;
 use App\Enums\UserStatus;
 use App\Services\CandidateService;
 use Carbon\Carbon;
-use Filament\Forms\Get;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @property \App\Models\Student $student
@@ -133,17 +128,16 @@ class Candidate extends Model
         return $this->student->region->monetary_unit . $this->student->region->monetary_unit_symbol;
     }
 
-    public function getInstalmentCounterAttribute(): string
+    public function getInstallmentCounterAttribute(): string
     {
         if (count($this->payments) == 0) return "Payment not registered";
 
-        if ($this->payments->last()->instalment_number == null || !isset($this->payments->last()->instalment_numbe)) return '1/1';
-        else return (string)$this->financing->current_instalment . '/'. (string)$this->financing->payments->count();
+        if ($this->payments->last()->installment_number == null || !isset($this->payments->last()->installment_numbe)) return '1/1';
 
-        
+        else return (string)$this->financing->current_installment . '/' . (string)$this->financing->payments->count();
     }
 
-    public function getInstalmentAmountAndTotalAttribute()
+    public function getInstallmentAmountAndTotalAttribute()
     {
         $totalAmount = $this->total_amount;
         $incrementalAmount = $this->payments()->where('status', 'paid')->sum('amount');
@@ -153,19 +147,17 @@ class Candidate extends Model
     public function getPaymentTypeAttribute()
     {
         if (count($this->payments) == 0) return 'no payments register';
-        if (count($this->payments->where('instalment_number', null)->get()->toArray()) != 0) return 'payment totaly';
-        if (count($this->payments->where('instalment_number', '!=',  null)->get()->toArray()) != 0) return 'payment financiated';
+        if (count($this->payments->where('installment_number', null)->get()->toArray()) != 0) return 'payment totaly';
+        if (count($this->payments->where('installment_number', '!=',  null)->get()->toArray()) != 0) return 'payment financiated';
     }
 
     public function getPaymentCurrentInstallmentAttribute()
     {
         return $this
-            ->payments->where('instalment_number', '!=', null)
+            ->payments->where('installment_number', '!=', null)
             ->where('state', '!=', 'paid')
-            ->orderBy('current_instalment', 'asc')->first();
+            ->orderBy('current_installment', 'asc')->first();
     }
-
-    
 
     public function getHasExamSessionsAttribute()
     {
@@ -195,7 +187,15 @@ class Candidate extends Model
         return $monthDiff + 1;
     }
 
-    public function financings(){
+    public function financings()
+    {
         return $this->hasMany(Financing::class);
+    }
+
+    public function getCurrentInstallmentAttribute()
+    {
+        $financing = $this->financings->first();
+        if ($financing == null || $financing->current_installment == null) return 'no have installmets';
+        return "{$financing->current_installment}/{$financing->totalInstallments}";
     }
 }

@@ -36,7 +36,7 @@ class WebHookPaymentsController extends Controller
                 $billing_agreement_id = $request->input('resource.billing_agreement_id');;
                 $currentPayment = Payment::where('suscription_code', $billing_agreement_id)
                     ->where('status', 'pending')
-                    ->orderBy('current_instalment', 'ASC')
+                    ->orderBy('current_installment', 'ASC')
                     ->first();
 
                 if ($currentPayment != null && $currentPayment->payment_id != null) // payment was processed
@@ -45,11 +45,11 @@ class WebHookPaymentsController extends Controller
                 else if ($currentPayment  != null) {
                     $currentPayment->update(['status' => 'approved', 'payment_id' => $payment_id]);
                     Candidate::find($currentPayment->candidate_id)->update(['status' => UserStatus::Paying->value]);
-                    if ($currentPayment->current_instalment == $currentPayment->instalment_number)
+                    if ($currentPayment->current_installment == $currentPayment->installment_number)
                         Candidate::find($currentPayment->candidate_id)->update(['status' => UserStatus::Paid->value]);
                     break;
                 } else {
-                    Log::error('currentInstalment not found');
+                    Log::error('currentInstallment not found');
                     break;
                 }
 
@@ -164,7 +164,7 @@ class WebHookPaymentsController extends Controller
 
         Candidate::findOrFail($response->json('external_reference'))
             ->payments()
-            ->where('current_instalment', $response->json('summarized.charged_quantity'))
+            ->where('current_installment', $response->json('summarized.charged_quantity'))
             ->update([
                 'status' => 'approved',
                 'payment_id' => $paymentId,

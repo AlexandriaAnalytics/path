@@ -34,11 +34,12 @@ class Payments extends Page implements HasForms
     public ?string $description = null;
     public int $total_amount = 0;
     public ?bool $canApplyToDiscount = false;
-    public int $instalment_number = 0;
+    public int $installment_number = 0;
     public ?DateTime $examDate;
     public $modules = [];
     public bool $showTransferForm = false;
     public $bankData = null;
+
 
     public function __construct()
     {
@@ -53,7 +54,7 @@ class Payments extends Page implements HasForms
         $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
         if ($exam) {
             $this->examDate = $exam->exam->scheduled_date;
-            $this->instalment_number = Carbon::now()->diffInMonths($this->examDate);
+            $this->installment_number = Carbon::now()->diffInMonths($this->examDate);
         }
 
 
@@ -62,7 +63,7 @@ class Payments extends Page implements HasForms
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
         */
-        // this->instalment_number = $this->installments_available; usar este metodo para obtener la cantidad de cuotas disponibles si la fecha 
+        // this->installment_number = $this->installments_available; usar este metodo para obtener la cantidad de cuotas disponibles si la fecha 
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -82,12 +83,12 @@ class Payments extends Page implements HasForms
 
     public function paypalFinaciament()
     {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'paypal', 'amount_value' => $this->total_amount, 'cuotas' => $this->installment_number]);
     }
 
     public function mercadoPagoFinanciament()
     {
-        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_value' => $this->total_amount, 'cuotas' => $this->instalment_number]);
+        return redirect()->route('payment.process.cuotas', ['payment_method' => 'mercado_pago', 'amount_value' => $this->total_amount, 'cuotas' => $this->installment_number]);
     }
 
     public function strypeFinanciament()
@@ -95,45 +96,15 @@ class Payments extends Page implements HasForms
         return redirect()->route('payment.process.cuotas', [
             'payment_method' => 'stripe',
             'amount_value' => $this->total_amount,
-            'cuotas' => $this->instalment_number
+            'cuotas' => $this->installment_number
         ]);
-    }
-
-    private function renderTransference(bool $hidde)
-    {
-        return  Action::make('deposit')
-            ->hidden(!$hidde)
-            ->label('Transferency')
-            ->form([
-                TextInput::make('amount')
-                    ->default(fn () => $this->candidate->total_amount)
-                    ->prefix(fn () => $this->candidate->currency)
-                    ->disabled(true),
-
-                TextInput::make('link_to_ticket')
-                    ->required()
-            ])
-            ->action(function (array $data) {
-                Payment::create([
-                    'payment_id' => 't-' . Carbon::now()->timestamp . rand(1000, 10000),
-                    'currency' => $this->candidate->currency,
-                    'amount' => $this->candidate->total_amount,
-                    'candidate_id' => $this->candidate->id,
-                    'link_to_ticket' => $data['link_to_ticket'],
-                    'current_period' => Carbon::now()->day(1),
-                    'paid_date' => Carbon::now(),
-                    'payment_method' => 'transcerence',
-                    'status' => 'processing payment',
-                ]);
-                Candidate::find($this->candidate->id)->update(['status' => UserStatus::Processing_payment]);
-            });
     }
 
     private function renderPaypalFinancing(bool $hidde)
     {
         return
             Action::make('paypal_financing')
-            ->label('Financing with PayPal (' . $this->instalment_number . ' instalments)')
+            ->label('Financing with PayPal (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->paypalFinaciament())
             ->hidden(!$hidde);
@@ -143,7 +114,7 @@ class Payments extends Page implements HasForms
     {
         return
             Action::make('MP_financing')
-            ->label('Financing with Mercado Pago (' . $this->instalment_number . ' instalments)')
+            ->label('Financing with Mercado Pago (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->mercadoPagoFinanciament())
             ->hidden(!$hidde);
@@ -153,7 +124,7 @@ class Payments extends Page implements HasForms
     {
         return
             Action::make('stripe_financing')
-            ->label('Financing with stripe (' . $this->instalment_number . ' instalments)')
+            ->label('Financing with stripe (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->strypeFinanciament())
             ->hidden(!$hidde);
@@ -162,21 +133,21 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
-
+        ray('payments', $paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
-                $this->candidate->student->institute->installment_plans
-                    // && $this->candidate->student->institute->internal_payment_administration
+                ($this->candidate->student->institute->installment_plans
+                    || $this->candidate->student->institute->internal_payment_administration)
                     && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
             $this->renderStripeFinancing(
-                $this->candidate->student->institute->installment_plans
-                    // && !$this->candidate->student->institute->internal_payment_administration
+                ($this->candidate->student->institute->installment_plans
+                    || $this->candidate->student->institute->internal_payment_administration)
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
-            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid')
+            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid') // not implemented yet
         ];
     }
 

@@ -39,36 +39,21 @@ Route::get('/users-excel', [ExcelController::class, 'export']);
 Route::get('/students-excel', [ExcelController::class, 'exportAllStudents']);
 Route::get('/members-excel', [ExcelController::class, 'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
-// Route::get('/auth/login/candidate', LoginCand)
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
 Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
 
 Route::get('/candidate/logout', function () {
     //clean all session
+    session()->forget(['candidate']);
     session()->flush();
-    return redirect()->route('/candidate/login');
+    return redirect()->route('candidate.login');
 })->name('candidate.logout');
-
-
-Route::post('management/auth/logout', function () {
-    if (session('impersonator_id')) {
-        auth()->loginUsingId(session('impersonator_id'));
-
-        session()->forget('impersonator_id');
-
-        return redirect()->route('filament.admin.pages.dashboard');
-    }
-
-    auth()->logout();
-
-    return redirect()->route('filament.management.auth.login');
-})->name('auth.logout');
 
 Route::get('/pdf/candidate/{id}', function ($id) {
     $candidate = Candidate::find($id);
 
-    return view('candidate-pdf', ['candidate' => $candidate]);
+    return view('pdf.candidate', ['candidate' => $candidate]);
 })->name('candidate.pdf');
 
 

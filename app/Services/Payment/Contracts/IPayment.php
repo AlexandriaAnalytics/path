@@ -18,7 +18,7 @@ interface IPayment
      */
     public function pay(string $id, string $description, string $currency, string $amount_value): PaymentResult;
 
-    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $instalment_number): PaymentResult;
+    public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $installment_number): PaymentResult;
 
 
     /**
