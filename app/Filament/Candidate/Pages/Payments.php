@@ -145,7 +145,7 @@ class Payments extends Page implements HasForms
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
-            $this->renderMercadoPagoFinancing(false && $this->candidate->status == 'unpaid') // not implemented yet
+            $this->renderMercadoPagoFinancing($this->candidate->status == 'unpaid') // not implemented yet
         ];
     }
 
