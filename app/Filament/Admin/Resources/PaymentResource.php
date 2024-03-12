@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -115,6 +116,21 @@ class PaymentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    BulkAction::make('update_state')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->form([
+                            Select::make('status')
+                                ->options([
+                                    'pending' => 'pending', 'approved' => 'approved', 'rejected' => 'rejected', 'processing payment' => 'processing payment'
+                                ])
+                        ])
+                        ->action(function ($records, array $data) {
+                            foreach ($records as $payment) {
+                                $payment->status = $data['status'];
+                                $payment->save();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion()
                 ]),
             ]);
     }
