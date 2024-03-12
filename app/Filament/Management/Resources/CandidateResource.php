@@ -2,6 +2,7 @@
 
 namespace App\Filament\Management\Resources;
 
+use App\Enums\StatusEnum;
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\CandidateResource as AdminCandidateResource;
@@ -185,6 +186,13 @@ class CandidateResource extends Resource
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
                 TextColumn::make('installments')
+                    ->formatStateUsing(function ($state) {
+                        if ($state > 0 && $state != 'No installment') {
+                            return '0 / ' . $state;
+                        } else {
+                            return 'No installment';
+                        }
+                    })
                     ->default('No installment')
                     ->label('Installment counter')
                     ->visible(fn () => Filament::getTenant()->installment_plans),
@@ -222,6 +230,7 @@ class CandidateResource extends Resource
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
+                    ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid')
                     ->form([
                         TextInput::make('installments')
                             ->label('Number of installments')
@@ -229,9 +238,9 @@ class CandidateResource extends Resource
                             ->numeric()
                             ->minValue(1)
                             ->maxValue(fn (Candidate $candidate) => $candidate->installments)
-                            ->visible(fn (Candidate $candidate) => $candidate->exams()->exists() && $candidate->installments_available >= 1),
                     ])
                     ->action(function (Candidate $candidate, array $data) {
+                        dd($candidate->status);
                         if (!isset($data['installments'])) {
                             Notification::make()
                                 ->title('The number of installments is required')
