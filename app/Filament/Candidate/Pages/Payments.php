@@ -52,7 +52,7 @@ class Payments extends Page implements HasForms
         $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
         if ($exam) {
             $this->examDate = $exam->exam->scheduled_date;
-            $this->installment_number = Carbon::now()->diffInMonths($this->examDate);
+            $this->installment_number = $this->candidate->installments;
         }
 
 
@@ -134,14 +134,14 @@ class Payments extends Page implements HasForms
         ray('payments', $paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
-                ($this->candidate->student->institute->installment_plans
-                    || $this->candidate->student->institute->internal_payment_administration)
+                ($this->candidate->installments
+                    || $this->candidate->installments)
                     && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
             $this->renderStripeFinancing(
-                ($this->candidate->student->institute->installment_plans
-                    || $this->candidate->student->institute->internal_payment_administration)
+                ($this->candidate->installments
+                    || $this->candidate->installments)
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
                     && $this->candidate->status == 'unpaid'
             ),
