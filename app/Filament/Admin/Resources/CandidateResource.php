@@ -508,7 +508,7 @@ class CandidateResource extends Resource
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
-                        ->options(Module::all()->pluck('name', 'id'))
+                        ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
                         ->preload(),
                 ]),
         ];

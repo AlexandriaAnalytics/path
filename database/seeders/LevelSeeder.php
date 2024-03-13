@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Level;
+use App\Models\Module;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -88,9 +89,11 @@ class LevelSeeder extends Seeder
             ],
         ];
 
-        Level::factory()
+        $levels = Level::factory()
             ->count(count($data))
             ->sequence(...$data)
             ->create();
+
+        $levels->each(fn (Level $level) => $level->modules()->attach(Module::all()));
     }
 }

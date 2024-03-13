@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Actions;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
@@ -60,7 +61,6 @@ class ListFinancings extends ListRecords
                     TextInput::make('amount')
                         ->numeric()
                         ->readOnly(),
-
                     Select::make('candidate_id')
                         ->label('Candidate')
                         ->placeholder('Select a candidate')
@@ -71,6 +71,38 @@ class ListFinancings extends ListRecords
                         ->reactive()
                         ->relationship('candidate')
                         ->multiple()
+                        ->suffixAction(
+                            Action::make('select-all')
+                                ->icon('heroicon-o-user-group')
+                                ->label('Select All')
+                                ->tooltip('Select all candidates')
+                                ->action(function (Get $get, Set $set) {
+                                    $set('candidate_id', Candidate::query()
+                                        ->with('student')
+                                        ->whereHas(
+                                            'student.institute',
+                                            fn ($query) => $query->where('id', Filament::getTenant()->id)
+                                        )
+                                        ->get()
+                                        ->pluck('id')
+                                        ->toArray());
+
+
+                                    $totalAmount = 0;
+                                    foreach ($get('candidate_id') as $candidate) {
+                                        $concepts = Candidate::find($candidate)->concepts;
+                                        foreach ($concepts as $concept) {
+                                            if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
+                                                $totalAmount = $totalAmount + $concept->amount;
+                                            }
+                                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee == 1) {
+                                                $totalAmount = $totalAmount - $concept->amount;
+                                            }
+                                        }
+                                    }
+                                    $set('amount', $totalAmount);
+                                }),
+                        )
                         ->options(function () {
                             $instituteId = Filament::getTenant()->id;
 
@@ -78,23 +110,18 @@ class ListFinancings extends ListRecords
                                 return [];
                             }
 
-                            $candidates = Candidate::query()->whereHas('student.institute', function ($query) use ($instituteId) {
-                                $query->where('id', $instituteId);
-                            })->get();
-
-                            $students = [];
-
-                            foreach ($candidates as $candidate) {
-                                $students[] .= "{$candidate->student->name} {$candidate->student->surname}";
-                            }
-
-                            return $students;
+                            return Candidate::query()
+                                ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                ->get()
+                                ->mapWithKeys(fn (Candidate $candidate) => [
+                                    $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
+                                ]);
                         })
-                        ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
-                        ->afterStateUpdated(function (Set $set) {
-                            foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
-                                $concepts = Candidate::find($candidate + 1)->concepts;
-                                $totalAmount = 0;
+                        ->afterStateUpdated(function (Get $get, Set $set) {
+                            $totalAmount = 0;
+                            foreach ($get('candidate_id') as $candidate) {
+                                debug($candidate);
+                                $concepts = Candidate::find($candidate)->concepts;
                                 foreach ($concepts as $concept) {
                                     if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                                         $totalAmount = $totalAmount + $concept->amount;
@@ -106,7 +133,6 @@ class ListFinancings extends ListRecords
                             }
                             $set('amount', $totalAmount);
                         }),
-
                     TextInput::make('payment_id')
                         ->label('Payment ID')
                         ->default(fn () => 'd' . Carbon::now()->timestamp . rand(1000, 9000))
