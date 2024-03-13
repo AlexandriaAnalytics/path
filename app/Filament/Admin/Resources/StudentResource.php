@@ -250,7 +250,7 @@ class StudentResource extends Resource
                                 CandidateService::createConcepts($newCandidate);
                             }
                             Notification::make()
-                                ->title('Candidates create successfully')
+                                ->title('Candidates created successfully')
                                 ->success()
                                 ->send();
                         })->deselectRecordsAfterCompletion(),

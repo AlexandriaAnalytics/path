@@ -166,7 +166,7 @@ class StudentResource extends Resource
                             ->count()
                     ),
                 Tables\Actions\DeleteAction::make()
-                ->hidden(
+                    ->hidden(
                         fn (Student $student) =>
                         $student
                             ->candidates
@@ -244,7 +244,7 @@ class StudentResource extends Resource
                                 $newCandidate->save();
                             }
                             Notification::make()
-                                ->title('Candidates create successfully')
+                                ->title('Candidates created successfully')
                                 ->success()
                                 ->send();
                         })
