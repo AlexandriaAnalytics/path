@@ -119,7 +119,7 @@ class Payments extends Page implements HasForms
     {
         return
             Action::make('MP_financing')
-            ->label('Financing with Mercado Pago (' . $this->installment_number . ' installments)')
+            ->label('Subscription payment (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->mercadoPagoFinanciament())
             ->hidden(!$hidde);
