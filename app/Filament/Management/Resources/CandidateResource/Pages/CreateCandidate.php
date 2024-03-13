@@ -2,6 +2,7 @@
 
 namespace App\Filament\Management\Resources\CandidateResource\Pages;
 
+use App\Enums\UserStatus;
 use App\Filament\Management\Resources\CandidateResource;
 use App\Models\Period;
 use App\Services\CandidateService;
@@ -36,6 +37,12 @@ class CreateCandidate extends CreateRecord
     protected function afterCreate(): void
     {
         CandidateService::createConcepts($this->record);
+
+        if ($this->getRecord()->granted_discount == 100) {
+            $this->getRecord()->update([
+                'status' => UserStatus::Paid,
+            ]);
+        }
     }
 
     protected function getRedirectUrl(): string
