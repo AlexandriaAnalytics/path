@@ -18,6 +18,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Notifications\Events\NotificationFailed;
@@ -52,11 +54,16 @@ class Payments extends Page implements HasForms
         $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
         if ($exam) {
             $this->examDate = $exam->exam->scheduled_date;
-            $this->installment_number = $this->candidate->installments;
+            if ($this->candidate->installments) {
+                $this->installment_number = $this->candidate->installments;
+            }
         }
 
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
+
+
+
 
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
@@ -137,15 +144,15 @@ class Payments extends Page implements HasForms
                 ($this->candidate->installments
                     || $this->candidate->installments)
                     && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0
             ),
             $this->renderStripeFinancing(
                 ($this->candidate->installments
                     || $this->candidate->installments)
                     && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0
             ),
-            $this->renderMercadoPagoFinancing($this->candidate->status == 'unpaid') // not implemented yet
+            $this->renderMercadoPagoFinancing($this->candidate->status == 'unpaid' && $this->candidate->installments > 0) // not implemented yet
         ];
     }
 
@@ -157,11 +164,19 @@ class Payments extends Page implements HasForms
                     ->label('Payment method')
                     ->placeholder('Select a payment method')
                     ->native(false)
+                    ->reactive()
                     ->options(function () {
                         $options = $this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray();
-                        $options = ['transfer' => 'Transfer'] + $options;
                         return $options;
+                    })
+                    ->afterStateUpdated(function (callable $set, callable $get) {
+                        return $set('description', ModelsPaymentMethod::where('slug', $get('payment_method'))->first()->description);
                     }),
+                TextInput::make('description')
+                    ->readOnly()
+                    ->visible(function (callable $get) {
+                        return $get('payment_method');
+                    })
             ]);
     }
 
