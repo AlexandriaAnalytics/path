@@ -41,7 +41,7 @@ class ViewCandidate extends ViewRecord
                         TextEntry::make('surname')
                             ->label('Surname'),
                         TextEntry::make('institute.name')
-                            ->label('Institute'),
+                            ->label('Institution'),
                     ]),
                 TextEntry::make('level.name')
                     ->label('Exam'),
@@ -71,7 +71,7 @@ class ViewCandidate extends ViewRecord
                     ->columns(3)
                     ->schema([
                         TextEntry::make('description')
-                            ->label('Concept_'),
+                            ->label('Concept'),
                         TextEntry::make('currency')
                             ->label('Currency'),
                         TextEntry::make('amount')
@@ -89,7 +89,7 @@ class ViewCandidate extends ViewRecord
                     ->money(
                         currency: $this->record->billa
                     ),
-                TextEntry::make('paymentss')
+                TextEntry::make('payments')
                     ->default(fn ($record) => $record->getInstallmentAmountAndTotalAttribute()),
                 TextEntry::make('installments')
                     ->default(fn ($record) => $record->getInstallmentCounterAttribute())

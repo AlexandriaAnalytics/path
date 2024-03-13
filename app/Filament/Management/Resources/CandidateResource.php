@@ -2,6 +2,7 @@
 
 namespace App\Filament\Management\Resources;
 
+use App\Enums\ConceptType;
 use App\Enums\StatusEnum;
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
@@ -255,8 +256,8 @@ class CandidateResource extends Resource
                                 'candidate_id' => $candidate->id,
                                 'institute_id' => Filament::getTenant()->id,
                                 'currency' => $candidate->currency,
-                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->description === 'Exam right')->sum('amount'),
-                                'exam_rigth' => $candidate->concepts->where('description', 'Exam right')->sum('amount')
+                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->type === ConceptType::RegistrationFee)->sum('amount'),
+                                'exam_rigth' => $candidate->concepts->where('type', ConceptType::RegistrationFee)->sum('amount')
                             ]);
 
                             $amountPerInstallment = $candidate->total_amount / $data['installments'];
