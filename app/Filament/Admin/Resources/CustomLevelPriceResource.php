@@ -62,7 +62,11 @@ class CustomLevelPriceResource extends Resource
                             ->options(Level::all()->pluck('name', 'id'))
                             ->required()
                             ->native(false)
-                            ->afterStateUpdated(fn (Set $set) => $set('country_id', null))
+                            ->live()
+                            ->afterStateUpdated(function (Set $set) {
+                                $set('country_id', null);
+                                $set('customModulePrices', []);
+                            })
                             ->hiddenOn('edit'),
                         Forms\Components\Select::make('country_id')
                             ->label('Country')
@@ -138,7 +142,14 @@ class CustomLevelPriceResource extends Resource
                     ->schema([
                         Select::make('module_id')
                             ->label('Module')
-                            ->options(Module::all()->pluck('name', 'id'))
+                            ->options(function (Get $get) {
+                                return Module::query()
+                                    ->whereHas(
+                                        'levels',
+                                        fn (Builder $query) => $query->where('levels.id', $get('level_id')),
+                                    )
+                                    ->pluck('name', 'id');
+                            })
                             ->required()
                             ->native(false)
                             ->fixIndistinctState()

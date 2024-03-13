@@ -2,6 +2,7 @@
 
 namespace App\Filament\Management\Resources;
 
+use App\Enums\ConceptType;
 use App\Enums\StatusEnum;
 use App\Enums\TypeOfCertificate;
 use App\Enums\UserStatus;
@@ -255,8 +256,8 @@ class CandidateResource extends Resource
                                 'candidate_id' => $candidate->id,
                                 'institute_id' => Filament::getTenant()->id,
                                 'currency' => $candidate->currency,
-                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->description === 'Exam right')->sum('amount'),
-                                'exam_rigth' => $candidate->concepts->where('description', 'Exam right')->sum('amount')
+                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->type === ConceptType::RegistrationFee)->sum('amount'),
+                                'exam_rigth' => $candidate->concepts->where('type', ConceptType::RegistrationFee)->sum('amount')
                             ]);
 
                             $amountPerInstallment = $candidate->total_amount / $data['installments'];
@@ -451,7 +452,7 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporterAsociated::class)
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                    BulkAction::make('asign_exam_session')
+                    BulkAction::make('assign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
                             Select::make('module_id')
@@ -530,7 +531,7 @@ class CandidateResource extends Resource
                                 }
                             }
                             Notification::make()
-                                ->title('Exam session asign successfully')
+                                ->title('Exam session assigned successfully')
                                 ->success()
                                 ->send();
                         })
@@ -552,12 +553,12 @@ class CandidateResource extends Resource
                     )
                     ->native(false),
                 TernaryFilter::make('pending_modules')
-                    ->label('Modules')
-                    ->trueLabel('Pending assignment')
-                    ->falseLabel('All assigned')
+                    ->label('Exam sessions')
+                    ->trueLabel('Assigned modules')
+                    ->falseLabel('Not assigned modules')
                     ->queries(
-                        true: fn (Builder $query) => $query->whereHas('pendingModules'),
-                        false: fn (Builder $query) => $query->whereDoesntHave('pendingModules'),
+                        true: fn (Builder $query) => $query->whereDoesntHaveHas('pendingModules'),
+                        false: fn (Builder $query) => $query->whereHas('pendingModules'),
                     )
                     ->native(false),
             ])

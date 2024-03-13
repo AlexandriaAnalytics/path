@@ -176,12 +176,12 @@ class CandidateResource extends Resource
                     )
                     ->native(false),
                 TernaryFilter::make('pending_modules')
-                    ->label('Modules')
-                    ->trueLabel('Pending assignment')
-                    ->falseLabel('All assigned')
+                    ->label('Exam sessions')
+                    ->trueLabel('Assigned modules')
+                    ->falseLabel('Not assigned modules')
                     ->queries(
-                        true: fn (Builder $query) => $query->whereHas('pendingModules'),
-                        false: fn (Builder $query) => $query->whereDoesntHave('pendingModules'),
+                        true: fn (Builder $query) => $query->whereDoesntHaveHas('pendingModules'),
+                        false: fn (Builder $query) => $query->whereHas('pendingModules'),
                     )
                     ->native(false),
             ])
@@ -253,7 +253,7 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class)->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                    BulkAction::make('asign_exam_session')
+                    BulkAction::make('assign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
                             Select::make('module_id')
@@ -332,7 +332,7 @@ class CandidateResource extends Resource
                                 }
                             }
                             Notification::make()
-                                ->title('Exam session asign successfully')
+                                ->title('Exam session assigned successfully')
                                 ->success()
                                 ->send();
                         })->deselectRecordsAfterCompletion(),
@@ -508,7 +508,7 @@ class CandidateResource extends Resource
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
-                        ->options(Module::all()->pluck('name', 'id'))
+                        ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
                         ->preload(),
                 ]),
         ];

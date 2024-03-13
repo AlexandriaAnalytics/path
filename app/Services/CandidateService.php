@@ -95,11 +95,11 @@ class CandidateService
             ->firstWhere('id', $candidate->student->region->id)
             ->pivot;
 
-        $concept = 'Exam right';
+        $concept = 'Exam registration fee';
         $examRightPrice = $countryPrice->price_exam_right;
 
         if ($missingModules->isEmpty()) {
-            $concept = 'Exam right (all modules)';
+            $concept = 'Exam registration fee (all modules)';
             $examRightPrice = $countryPrice->price_exam_right_all_modules;
         }
 
