@@ -33,17 +33,8 @@
                         <h2 class="">Total amount: {{ $this->monetariUnitSymbol . ' ' . $this->total_amount }}</h2>
 
 
-
-
                         <div id="form">{{ $this->form }}</div>
 
-                        <div class="display">
-                            <h3>If you want to pay by transfer, our bank details are:</h3>
-                            <div class="transfer">
-                                {!! $this->bankData !!}
-                            </div>
-                            To make your registration effective, send the receipt to admin@pathexaminations.com
-                        </div>
 
                         <style>
                             button.submit {
@@ -88,16 +79,3 @@
     @endif
     </div>
 </x-filament-panels::page>
-
-@push('scripts')
-    <script>
-        document.getElementById('form').addEventListener('change', function() {
-            if (document.getElementsByClassName('choices')[0].innerText.startsWith(
-                    "Transfer")) {
-                document.getElementsByClassName('display')[0].style.display = 'block';
-            } else {
-                document.getElementsByClassName('display')[0].style.display = 'none';
-            }
-        })
-    </script>
-@endpush
