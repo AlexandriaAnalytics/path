@@ -141,18 +141,17 @@ class Payments extends Page implements HasForms
         ray('payments', $paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
-                ($this->candidate->installments
-                    || $this->candidate->installments)
-                    && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0
+                $this->candidate->installments && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
             ),
             $this->renderStripeFinancing(
-                ($this->candidate->installments
-                    || $this->candidate->installments)
-                    && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0
+                $this->candidate->installments && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
             ),
-            $this->renderMercadoPagoFinancing($this->candidate->status == 'unpaid' && $this->candidate->installments > 0) // not implemented yet
+            $this->renderMercadoPagoFinancing(
+                $this->candidate->installments && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
+            ) // not implemented yet
         ];
     }
 
