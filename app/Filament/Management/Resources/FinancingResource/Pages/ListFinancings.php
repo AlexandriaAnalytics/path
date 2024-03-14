@@ -132,9 +132,7 @@ class ListFinancings extends ListRecords
                                 debug($candidate);
                                 $concepts = Candidate::find($candidate)->concepts;
                                 foreach ($concepts as $concept) {
-                                    if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                                        $totalAmount = $totalAmount + $concept->amount;
-                                    }
+                                    $totalAmount = $totalAmount + $concept->amount;
                                     if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                         $totalAmount = $totalAmount - $concept->amount;
                                     }
@@ -158,9 +156,7 @@ class ListFinancings extends ListRecords
                         $concepts = Candidate::find($candidate)->concepts;
                         $totalAmount = 0;
                         foreach ($concepts as $concept) {
-                            if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                                $totalAmount = $totalAmount + $concept->amount;
-                            }
+                            $totalAmount = $totalAmount + $concept->amount;
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $totalAmount = $totalAmount - $concept->amount;
                             }
