@@ -6,9 +6,6 @@ use App\Enums\PaymentMethod;
 use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Management\Resources\FinancingResource;
-use App\Filament\Management\Widgets\FinancingPaidWidget;
-use App\Filament\Management\Widgets\FinancingUnpaidWidget;
-use App\Filament\Management\Widgets\FinancingWidget;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Financing;
@@ -37,15 +34,11 @@ class ListFinancings extends ListRecords
     protected static string $resource = FinancingResource::class;
 
 
-    protected static ?string $title = 'Installments';
+    protected static ?string $title = 'Payments';
 
-    protected function getHeaderWidgets(): array
+    public static function canViewAny(): bool
     {
-        return [
-            FinancingWidget::class,
-            FinancingPaidWidget::class,
-            FinancingUnpaidWidget::class
-        ];
+        return Filament::getTenant()->internal_payment_administration;
     }
 
     protected function getHeaderActions(): array
@@ -61,7 +54,10 @@ class ListFinancings extends ListRecords
                 ->form([
                     TextInput::make('amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->prefix(function () {
+                            return Filament::getTenant()->currency;
+                        }),
                     Select::make('candidate_id')
                         ->label('Candidate')
                         ->placeholder('Select a candidate')
@@ -74,17 +70,27 @@ class ListFinancings extends ListRecords
                         ->multiple()
                         ->suffixAction(
                             Action::make('select-all')
+                                ->disabled(function () {
+                                    $instituteId = Filament::getTenant()->id;
+                                    return Candidate::query()
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
+                                        ->get()
+                                        ->where('currency', Filament::getTenant()->currency)
+                                        ->mapWithKeys(fn (Candidate $candidate) => [
+                                            $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
+                                        ])->count() == 0;
+                                })
                                 ->icon('heroicon-o-user-group')
                                 ->label('Select All')
                                 ->tooltip('Select all candidates')
                                 ->action(function (Get $get, Set $set) {
+                                    $instituteId = Filament::getTenant()->id;
                                     $set('candidate_id', Candidate::query()
-                                        ->with('student')
-                                        ->whereHas(
-                                            'student.institute',
-                                            fn ($query) => $query->where('id', Filament::getTenant()->id)
-                                        )
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
                                         ->get()
+                                        ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
                                         ->toArray());
 
@@ -113,7 +119,9 @@ class ListFinancings extends ListRecords
 
                             return Candidate::query()
                                 ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                ->has('exams')
                                 ->get()
+                                ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
                                     $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
                                 ]);
@@ -126,7 +134,7 @@ class ListFinancings extends ListRecords
                                     if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                                         $totalAmount = $totalAmount + $concept->amount;
                                     }
-                                    if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee == 1) {
+                                    if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                         $totalAmount = $totalAmount - $concept->amount;
                                     }
                                 }
@@ -152,7 +160,7 @@ class ListFinancings extends ListRecords
                             if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                                 $totalAmount = $totalAmount + $concept->amount;
                             }
-                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee == 1) {
+                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $totalAmount = $totalAmount - $concept->amount;
                             }
                         }
@@ -165,6 +173,18 @@ class ListFinancings extends ListRecords
                         $newPayment->link_to_ticket = $data['link_to_ticket'];
                         $newPayment->description = $data['description'];
                         $newPayment->save();
+
+                        $candidateUpdate = Candidate::find($candidate);
+                        if ($candidateUpdate->installments == $candidateUpdate->payments->count()) {
+                            $candidateUpdate->status = 'paid';
+                        }
+                        if ($candidateUpdate->payments->count() == 0) {
+                            $candidateUpdate->status = 'unpaid';
+                        }
+                        if ($candidateUpdate->installments > $candidateUpdate->payments->count() && $candidateUpdate->payments->count() != 0) {
+                            $candidateUpdate->status = 'paying';
+                        }
+                        $candidateUpdate->save();
                     }
                 })
                 ->color(Color::hex('#0086b3')),

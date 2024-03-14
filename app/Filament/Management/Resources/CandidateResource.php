@@ -187,9 +187,9 @@ class CandidateResource extends Resource
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
                 TextColumn::make('installments')
-                    ->formatStateUsing(function ($state) {
+                    ->formatStateUsing(function ($state, Candidate $candidate) {
                         if ($state > 0 && $state != 'No installment') {
-                            return '0 / ' . $state;
+                            return $candidate->payments->count() . ' / ' . $state;
                         } else {
                             return 'No installment';
                         }
@@ -231,7 +231,7 @@ class CandidateResource extends Resource
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
-                    ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid')
+                    ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid' && $candidate->student->institute->installment_plans)
                     ->form([
                         TextInput::make('installments')
                             ->label('Number of installments')
@@ -250,34 +250,6 @@ class CandidateResource extends Resource
                         }
 
                         try {
-                            $fincancing = Financing::create([
-                                'country_id' => $candidate->student->country_id,
-                                'candidate_id' => $candidate->id,
-                                'institute_id' => Filament::getTenant()->id,
-                                'currency' => $candidate->currency,
-                                'exam_amount' => $candidate->concepts->reject(fn ($item) => $item->type === ConceptType::RegistrationFee)->sum('amount'),
-                                'exam_rigth' => $candidate->concepts->where('type', ConceptType::RegistrationFee)->sum('amount')
-                            ]);
-
-                            $amountPerInstallment = $candidate->total_amount / $data['installments'];
-                            $suscriptionCode = 'f-' . Carbon::now()->timestamp . rand(1000, 10000);
-                            $currentDate = Carbon::now()->day(1);
-
-                            for ($index = 1; $index <= $data['installments']; $index++) {
-                                $payment = Payment::create([
-                                    'candidate_id' => $candidate->id,
-                                    'payment_method' => 'financing by associated',
-                                    'currency' => $candidate->currency,
-                                    'amount' => $amountPerInstallment,
-                                    'suscription_code' => $suscriptionCode,
-                                    'installment_number' => $data['installments'],
-                                    'current_installment' => $index,
-                                    'current_period' => $currentDate,
-                                ]);
-
-                                $currentDate->addMonth();
-                                $fincancing->payments()->save($payment);
-                            }
 
                             $candidate->installments = $data['installments'];
                             $candidate->save();
@@ -285,7 +257,7 @@ class CandidateResource extends Resource
                                 ->update(['status' => UserStatus::Paying]);
 
                             Notification::make()
-                                ->title('Financiament was created successfully')
+                                ->title('The value of the installments was changed successfully')
                                 ->success()
                                 ->send();
                         } catch (Exception $e) {
