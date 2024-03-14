@@ -121,7 +121,6 @@ class ListFinancings extends ListRecords
                         ->afterStateUpdated(function (Get $get, Set $set) {
                             $totalAmount = 0;
                             foreach ($get('candidate_id') as $candidate) {
-                                debug($candidate);
                                 $concepts = Candidate::find($candidate)->concepts;
                                 foreach ($concepts as $concept) {
                                     if ($concept->type->value == 'exam' || $concept->type->value == 'module') {

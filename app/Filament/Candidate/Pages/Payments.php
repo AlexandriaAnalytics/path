@@ -70,7 +70,7 @@ class Payments extends Page implements HasForms
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
         */
-        // this->installment_number = $this->installments_available; usar este metodo para obtener la cantidad de cuotas disponibles si la fecha 
+        // this->installment_number = $this->installments_available; usar este metodo para obtener la cantidad de cuotas disponibles si la fecha
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
@@ -140,7 +140,6 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
-        ray('payments', $paymentMethodsAvailable);
         return [
             $this->renderPaypalFinancing(
                 $this->candidate->installments && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
