@@ -3,6 +3,7 @@
 namespace App\Filament\Management\Resources;
 
 use App\Filament\Management\Resources\FinancingResource\Pages;
+use App\Models\Candidate;
 use App\Models\Financing;
 use App\Models\Payment;
 use Filament\Facades\Filament;
@@ -36,8 +37,16 @@ class FinancingResource extends Resource
     {
 
         return $table
+            ->query(function () {
+                return Payment::orderByDesc('created_at');
+            })
             ->columns([
-                Tables\Columns\TextColumn::make('candidate_id'),
+                Tables\Columns\TextColumn::make('candidate_id')
+                    ->label('Candidate')
+                    ->formatStateUsing(function ($state) {
+                        $candidate = Candidate::find($state);
+                        return $state . ' - ' . $candidate->student->name . ' ' . $candidate->student->surname;
+                    }),
 
                 Tables\Columns\TextColumn::make('currency')
                     ->sortable()
