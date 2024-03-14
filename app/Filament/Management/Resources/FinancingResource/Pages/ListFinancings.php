@@ -37,7 +37,12 @@ class ListFinancings extends ListRecords
     protected static string $resource = FinancingResource::class;
 
 
-    protected static ?string $title = 'Installments';
+    protected static ?string $title = 'Payments';
+
+    public static function canViewAny(): bool
+    {
+        return Filament::getTenant()->internal_payment_administration;
+    }
 
     protected function getHeaderWidgets(): array
     {
