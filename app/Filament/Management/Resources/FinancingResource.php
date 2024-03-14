@@ -3,6 +3,7 @@
 namespace App\Filament\Management\Resources;
 
 use App\Filament\Management\Resources\FinancingResource\Pages;
+use App\Models\Candidate;
 use App\Models\Financing;
 use App\Models\Payment;
 use Filament\Facades\Filament;
@@ -21,7 +22,7 @@ class FinancingResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Filament::getTenant()->internal_payment_administration;
+        return Filament::getTenant()->internal_payment_administration || Filament::getTenant()->installment_plans;
     }
 
     public static function form(Form $form): Form
@@ -36,8 +37,16 @@ class FinancingResource extends Resource
     {
 
         return $table
+            ->query(function () {
+                return Payment::orderByDesc('created_at');
+            })
             ->columns([
-                Tables\Columns\TextColumn::make('candidate_id'),
+                Tables\Columns\TextColumn::make('candidate_id')
+                    ->label('Candidate')
+                    ->formatStateUsing(function ($state) {
+                        $candidate = Candidate::find($state);
+                        return $state . ' - ' . $candidate->student->name . ' ' . $candidate->student->surname;
+                    }),
 
                 Tables\Columns\TextColumn::make('currency')
                     ->sortable()
@@ -52,14 +61,16 @@ class FinancingResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->badge(
-                        fn ($state) =>
-                        match ($state) {
-                            "complete" => 'success',
-                            "stack" => 'info',
-                            'pending' => 'danger'
-                        }
-                    )
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'processing payment' => 'info'
+                    }),
+                Tables\Columns\TextColumn::make('link_to_ticket')
+                    ->action(fn (string $payment) => redirect()->to($payment))
+                    ->color('primary')
             ])
             ->filters([
                 //    
