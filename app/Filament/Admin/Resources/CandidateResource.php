@@ -502,14 +502,16 @@ class CandidateResource extends Resource
                                     $fail("The student's age is not within the range of the selected level");
                                 }
                             },
-                        ]),
+                        ])
+                        ->disabledOn('edit'),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
-                        ->preload(),
+                        ->preload()
+                        ->disabledOn('edit'),
                 ]),
         ];
     }
