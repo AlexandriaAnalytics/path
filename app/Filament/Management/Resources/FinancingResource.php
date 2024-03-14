@@ -52,14 +52,13 @@ class FinancingResource extends Resource
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
-                    ->badge(
-                        fn ($state) =>
-                        match ($state) {
-                            "complete" => 'success',
-                            "stack" => 'info',
-                            'pending' => 'danger'
-                        }
-                    )
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        'processing payment' => 'info'
+                    })
             ])
             ->filters([
                 //    
