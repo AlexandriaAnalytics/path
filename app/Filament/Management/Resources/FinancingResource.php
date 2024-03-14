@@ -21,7 +21,7 @@ class FinancingResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Filament::getTenant()->installment_plans;
+        return Filament::getTenant()->internal_payment_administration;
     }
 
     public static function form(Form $form): Form
@@ -44,7 +44,7 @@ class FinancingResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('current_period')
-                ->date(),
+                    ->date(),
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')

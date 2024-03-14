@@ -6,9 +6,6 @@ use App\Enums\PaymentMethod;
 use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Management\Resources\FinancingResource;
-use App\Filament\Management\Widgets\FinancingPaidWidget;
-use App\Filament\Management\Widgets\FinancingUnpaidWidget;
-use App\Filament\Management\Widgets\FinancingWidget;
 use App\Models\Candidate;
 use App\Models\Country;
 use App\Models\Financing;
@@ -44,15 +41,6 @@ class ListFinancings extends ListRecords
         return Filament::getTenant()->internal_payment_administration;
     }
 
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            FinancingWidget::class,
-            FinancingPaidWidget::class,
-            FinancingUnpaidWidget::class
-        ];
-    }
-
     protected function getHeaderActions(): array
     {
 
@@ -82,6 +70,17 @@ class ListFinancings extends ListRecords
                         ->multiple()
                         ->suffixAction(
                             Action::make('select-all')
+                                ->disabled(function () {
+                                    $instituteId = Filament::getTenant()->id;
+                                    return Candidate::query()
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
+                                        ->get()
+                                        ->where('currency', Filament::getTenant()->currency)
+                                        ->mapWithKeys(fn (Candidate $candidate) => [
+                                            $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
+                                        ])->count() == 0;
+                                })
                                 ->icon('heroicon-o-user-group')
                                 ->label('Select All')
                                 ->tooltip('Select all candidates')
@@ -92,6 +91,7 @@ class ListFinancings extends ListRecords
                                             'student.institute',
                                             fn ($query) => $query->where('id', Filament::getTenant()->id)
                                         )
+                                        ->has('exam')
                                         ->get()
                                         ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
@@ -122,6 +122,7 @@ class ListFinancings extends ListRecords
 
                             return Candidate::query()
                                 ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                ->has('exams')
                                 ->get()
                                 ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
