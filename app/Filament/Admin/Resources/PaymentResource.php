@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Filament\Admin\Resources\PaymentResource\Pages;
 use App\Models\Candidate;
 use App\Models\Payment;
+use App\Models\Student;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -43,6 +44,9 @@ class PaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Payment::orderByDesc('created_at');
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('payment_method')
                     ->searchable()
@@ -51,7 +55,10 @@ class PaymentResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('candidate.id'),
+                Tables\Columns\TextColumn::make('candidate.student')
+                    ->formatStateUsing(function (Student $state) {
+                        return $state->name . ' ' . $state->surname;
+                    }),
                 Tables\Columns\TextColumn::make('currency')
                     ->searchable()
                     ->sortable(),
@@ -67,7 +74,7 @@ class PaymentResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make(('payment_ticket_link'))
+                Tables\Columns\TextColumn::make('link_to_ticket')
                     ->action(fn (string $payment) => redirect()->to($payment))
                     ->color('primary')
 

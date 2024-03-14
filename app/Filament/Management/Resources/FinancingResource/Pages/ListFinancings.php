@@ -47,8 +47,7 @@ class ListFinancings extends ListRecords
         return [
             Actions\Action::make('send_payment')
                 ->visible(fn () =>
-                Filament::getTenant()->installment_plans
-                    || Filament::getTenant()->internal_payment_administration
+                Filament::getTenant()->internal_payment_administration
                     || Filament::getTenant()->can_view_registrarion_fee)
                 ->label('Send payment')
                 ->form([
@@ -131,9 +130,7 @@ class ListFinancings extends ListRecords
                             foreach ($get('candidate_id') as $candidate) {
                                 $concepts = Candidate::find($candidate)->concepts;
                                 foreach ($concepts as $concept) {
-                                    if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                                        $totalAmount = $totalAmount + $concept->amount;
-                                    }
+                                    $totalAmount = $totalAmount + $concept->amount;
                                     if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                         $totalAmount = $totalAmount - $concept->amount;
                                     }
@@ -157,9 +154,7 @@ class ListFinancings extends ListRecords
                         $concepts = Candidate::find($candidate)->concepts;
                         $totalAmount = 0;
                         foreach ($concepts as $concept) {
-                            if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                                $totalAmount = $totalAmount + $concept->amount;
-                            }
+                            $totalAmount = $totalAmount + $concept->amount;
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $totalAmount = $totalAmount - $concept->amount;
                             }
