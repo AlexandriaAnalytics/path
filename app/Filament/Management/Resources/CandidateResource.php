@@ -390,12 +390,10 @@ class CandidateResource extends Resource
                     EditAction::make()
                         ->hidden(
                             fn (Candidate $candidate) =>
-                            $candidate->status === 'paid'
-                                || $candidate->status === 'paying'
-                                || $candidate->status === 'processing payment'
+                            $candidate->status !== 'unpaid'
                         ),
                     Action::make('request changes')
-                        ->visible(fn (Candidate $candidate) => $candidate->status === 'paid' && $candidate->status !== 'paying')
+                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'unpaid')
                         ->icon('heroicon-o-arrows-right-left')
                         ->form([
                             Textarea::make('changes')
