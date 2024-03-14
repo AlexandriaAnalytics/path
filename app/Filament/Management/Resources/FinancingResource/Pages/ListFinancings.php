@@ -85,13 +85,10 @@ class ListFinancings extends ListRecords
                                 ->label('Select All')
                                 ->tooltip('Select all candidates')
                                 ->action(function (Get $get, Set $set) {
+                                    $instituteId = Filament::getTenant()->id;
                                     $set('candidate_id', Candidate::query()
-                                        ->with('student')
-                                        ->whereHas(
-                                            'student.institute',
-                                            fn ($query) => $query->where('id', Filament::getTenant()->id)
-                                        )
-                                        ->has('exam')
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
                                         ->get()
                                         ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
@@ -164,7 +161,7 @@ class ListFinancings extends ListRecords
                             if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
                                 $totalAmount = $totalAmount + $concept->amount;
                             }
-                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee == 1) {
+                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee) {
                                 $totalAmount = $totalAmount - $concept->amount;
                             }
                         }

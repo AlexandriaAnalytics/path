@@ -50,12 +50,6 @@ class FinancingResource extends Resource
                     ->label('Amount')
                     ->prefix(fn (Financing $financing) => $financing->currency . '$ '),
 
-                Tables\Columns\TextColumn::make('candidate.installments')
-                    ->label('Installment counter')
-                    ->formatStateUsing(function (string $state, Payment $record): string {
-                        return $record->candidate->payments->count() . ' / ' . $state;
-                    }),
-
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge(
