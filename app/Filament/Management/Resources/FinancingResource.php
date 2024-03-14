@@ -67,7 +67,10 @@ class FinancingResource extends Resource
                         'approved' => 'success',
                         'rejected' => 'danger',
                         'processing payment' => 'info'
-                    })
+                    }),
+                Tables\Columns\TextColumn::make('link_to_ticket')
+                    ->action(fn (string $payment) => redirect()->to($payment))
+                    ->color('primary')
             ])
             ->filters([
                 //    
