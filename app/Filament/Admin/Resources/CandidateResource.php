@@ -253,6 +253,27 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporter::class)->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    BulkAction::make('update_payment_status')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->form([
+                            Select::make('status')
+                                ->label('Payment status')
+                                ->options(UserStatus::class)
+                                ->enum(UserStatus::class)
+                                ->required()
+                                ->native(false),
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each->update([
+                                'status' => $data['status'],
+                            ]);
+
+                            Notification::make()
+                                ->title('Payment status updated successfully')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     BulkAction::make('assign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
@@ -502,14 +523,16 @@ class CandidateResource extends Resource
                                     $fail("The student's age is not within the range of the selected level");
                                 }
                             },
-                        ]),
+                        ])
+                        ->disabledOn('edit'),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
-                        ->preload(),
+                        ->preload()
+                        ->disabledOn('edit'),
                 ]),
         ];
     }

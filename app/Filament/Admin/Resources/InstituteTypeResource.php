@@ -16,10 +16,13 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class InstituteTypeResource extends Resource
 {
     protected static ?string $model = InstituteType::class;
+
     protected static ?string $navigationGroup = 'Settings';
-    //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $modelLabel = 'Membership';
+
     protected static bool $hasTitleCaseModelLabel = false;
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form

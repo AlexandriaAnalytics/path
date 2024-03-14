@@ -14,6 +14,7 @@ class InstituteType extends Model
 
     protected $fillable = [
         'name',
+        'files_url',
     ];
 
     public function institutes()
@@ -31,5 +32,4 @@ class InstituteType extends Model
             ]
         ];
     }
-
 }
