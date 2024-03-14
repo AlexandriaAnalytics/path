@@ -225,7 +225,7 @@ class CandidateResource extends Resource
                     ->toggleable(),
             ])
             ->filters([
-                // 
+                //
             ])
             ->actions([
                 Action::make('financing')
@@ -241,7 +241,6 @@ class CandidateResource extends Resource
                             ->maxValue(fn (Candidate $candidate) => $candidate->installments)
                     ])
                     ->action(function (Candidate $candidate, array $data) {
-                        dd($candidate->status);
                         if (!isset($data['installments'])) {
                             Notification::make()
                                 ->title('The number of installments is required')
