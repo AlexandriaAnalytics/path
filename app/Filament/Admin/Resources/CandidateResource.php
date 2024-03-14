@@ -524,6 +524,7 @@ class CandidateResource extends Resource
                                 }
                             },
                         ])
+                        ->afterStateUpdated(fn (Set $set) => $set('modules', null))
                         ->disabledOn('edit'),
                     Select::make('modules')
                         ->multiple()
