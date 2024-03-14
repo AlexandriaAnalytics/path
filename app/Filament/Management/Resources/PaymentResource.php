@@ -27,7 +27,8 @@ class PaymentResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Filament::getTenant()->internal_payment_administration && !Filament::getTenant()->installment_plans;
+        //return Filament::getTenant()->internal_payment_administration && !Filament::getTenant()->installment_plans;
+        return false;
     }
 
     public static function form(Form $form): Form
