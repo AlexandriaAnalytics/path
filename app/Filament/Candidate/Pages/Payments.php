@@ -14,7 +14,9 @@ use DateTime;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -142,15 +144,15 @@ class Payments extends Page implements HasForms
         return [
             $this->renderPaypalFinancing(
                 $this->candidate->installments && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderStripeFinancing(
                 $this->candidate->installments && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderMercadoPagoFinancing(
                 $this->candidate->installments && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans
+                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
             ) // not implemented yet
         ];
     }
@@ -171,12 +173,12 @@ class Payments extends Page implements HasForms
                     ->afterStateUpdated(function (callable $set, callable $get) {
                         return $set('description', ModelsPaymentMethod::where('slug', $get('payment_method'))->first()->description);
                     }),
-                TextInput::make('description')
-                    ->readOnly()
+                RichEditor::make('description')
+                    ->disableAllToolbarButtons()
                     ->visible(function (callable $get) {
                         return $get('payment_method');
                     })
-            ]);
+            ])->columns(2);
     }
 
     public function getForms(): array
