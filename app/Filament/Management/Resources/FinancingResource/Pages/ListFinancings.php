@@ -61,7 +61,10 @@ class ListFinancings extends ListRecords
                 ->form([
                     TextInput::make('amount')
                         ->numeric()
-                        ->readOnly(),
+                        ->readOnly()
+                        ->prefix(function () {
+                            return Filament::getTenant()->currency;
+                        }),
                     Select::make('candidate_id')
                         ->label('Candidate')
                         ->placeholder('Select a candidate')
@@ -85,6 +88,7 @@ class ListFinancings extends ListRecords
                                             fn ($query) => $query->where('id', Filament::getTenant()->id)
                                         )
                                         ->get()
+                                        ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
                                         ->toArray());
 
@@ -114,6 +118,7 @@ class ListFinancings extends ListRecords
                             return Candidate::query()
                                 ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                 ->get()
+                                ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
                                     $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
                                 ]);
