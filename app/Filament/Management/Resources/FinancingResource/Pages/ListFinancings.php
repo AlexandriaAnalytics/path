@@ -55,7 +55,8 @@ class ListFinancings extends ListRecords
             Actions\Action::make('send_payment')
                 ->visible(fn () =>
                 Filament::getTenant()->installment_plans
-                    && Filament::getTenant()->internal_payment_administration)
+                    || Filament::getTenant()->internal_payment_administration
+                    || Filament::getTenant()->can_view_registrarion_fee)
                 ->label('Send payment')
                 ->form([
                     TextInput::make('amount')
@@ -145,8 +146,8 @@ class ListFinancings extends ListRecords
                     foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                         $newPayment = new Payment();
                         $newPayment->institute_id = Filament::getTenant()->id;
-                        $newPayment->candidate_id = $candidate + 1;
-                        $concepts = Candidate::find($candidate + 1)->concepts;
+                        $newPayment->candidate_id = $candidate;
+                        $concepts = Candidate::find($candidate)->concepts;
                         $totalAmount = 0;
                         foreach ($concepts as $concept) {
                             if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
