@@ -187,9 +187,9 @@ class CandidateResource extends Resource
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
                 TextColumn::make('installments')
-                    ->formatStateUsing(function ($state) {
+                    ->formatStateUsing(function ($state, Candidate $candidate) {
                         if ($state > 0 && $state != 'No installment') {
-                            return '0 / ' . $state;
+                            return $candidate->payments->count() . ' / ' . $state;
                         } else {
                             return 'No installment';
                         }

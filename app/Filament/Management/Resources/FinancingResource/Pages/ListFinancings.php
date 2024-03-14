@@ -176,6 +176,18 @@ class ListFinancings extends ListRecords
                         $newPayment->link_to_ticket = $data['link_to_ticket'];
                         $newPayment->description = $data['description'];
                         $newPayment->save();
+
+                        $candidateUpdate = Candidate::find($candidate);
+                        if ($candidateUpdate->installments == $candidateUpdate->payments->count()) {
+                            $candidateUpdate->status = 'paid';
+                        }
+                        if ($candidateUpdate->payments->count() == 0) {
+                            $candidateUpdate->status = 'unpaid';
+                        }
+                        if ($candidateUpdate->installments > $candidateUpdate->payments->count() && $candidateUpdate->payments->count() != 0) {
+                            $candidateUpdate->status = 'paying';
+                        }
+                        $candidateUpdate->save();
                     }
                 })
                 ->color(Color::hex('#0086b3')),
