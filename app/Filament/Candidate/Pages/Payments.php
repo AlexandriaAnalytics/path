@@ -14,7 +14,9 @@ use DateTime;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
@@ -171,12 +173,12 @@ class Payments extends Page implements HasForms
                     ->afterStateUpdated(function (callable $set, callable $get) {
                         return $set('description', ModelsPaymentMethod::where('slug', $get('payment_method'))->first()->description);
                     }),
-                TextInput::make('description')
-                    ->readOnly()
+                RichEditor::make('description')
+                    ->disableAllToolbarButtons()
                     ->visible(function (callable $get) {
                         return $get('payment_method');
                     })
-            ]);
+            ])->columns(2);
     }
 
     public function getForms(): array
