@@ -65,7 +65,7 @@ class CustomLevelPriceResource extends Resource
                             ->live()
                             ->afterStateUpdated(function (Set $set) {
                                 $set('country_id', null);
-                                $set('customModulePrices', []);
+                                $set('custom_module_prices', []);
                             })
                             ->hiddenOn('edit'),
                         Forms\Components\Select::make('country_id')
@@ -139,17 +139,16 @@ class CustomLevelPriceResource extends Resource
                     ->label('Module exam fee')
                     ->columnSpanFull()
                     ->columns(2)
-                    ->schema([
+                    ->defaultItems(0)
+                    ->schema(fn (Get $get) => [
                         Select::make('module_id')
                             ->label('Module')
-                            ->options(function (Get $get) {
-                                return Module::query()
-                                    ->whereHas(
-                                        'levels',
-                                        fn (Builder $query) => $query->where('levels.id', $get('level_id')),
-                                    )
-                                    ->pluck('name', 'id');
-                            })
+                            ->options(Module::query()
+                                ->whereHas(
+                                    'levels',
+                                    fn (Builder $query) => $query->where('levels.id', $get('level_id')),
+                                )
+                                ->pluck('name', 'id'))
                             ->required()
                             ->native(false)
                             ->fixIndistinctState()
