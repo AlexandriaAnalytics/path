@@ -501,7 +501,7 @@ class CandidateResource extends Resource
                         ->label('Exam')
                         ->placeholder('Select an exam')
                         ->options(fn (Get $get) => Level::query()
-                            ->whereHas('countries', fn ($query) => $query->whereHas('students', fn ($query) => $query->where('id', $get('student_id'))))
+                            ->whereHas('countries.students', fn ($query) => $query->where('students.id', $get('student_id')))
                             ->pluck('name', 'id'))
                         ->searchable()
                         ->reactive()

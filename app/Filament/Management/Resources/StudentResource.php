@@ -32,7 +32,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class StudentResource extends Resource
 {
@@ -186,11 +186,20 @@ class StudentResource extends Resource
 
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
-                        ->form([
+                        ->form(fn (Collection $records) => [
                             Select::make('level_id')
                                 ->label('Exam')
                                 ->placeholder('Select an exam')
-                                ->options(Level::all()->pluck('name', 'id'))
+                                ->options(Level::query()
+                                    ->withCount([ // Count the number of countries that have students in the selected level
+                                        'countries' => fn (Builder $query) => $query->whereHas(
+                                            'students',
+                                            fn (Builder $query) => $query->whereIn('students.id', $records->pluck('id'))
+                                        ),
+                                    ])
+                                    ->get()
+                                    ->filter(fn (Level $level) => $level->countries_count === $records->unique('country_id')->count()) // Only show the levels that have students in all the selected countries
+                                    ->pluck('name', 'id'))
                                 ->searchable()
                                 ->reactive()
                                 ->required()
@@ -216,7 +225,7 @@ class StudentResource extends Resource
                                 ->multiple()
                                 ->required()
                                 ->live()
-                                ->options(Module::all()->pluck('name', 'id'))
+                                ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
                                 ->preload(),
 
                             Select::make('type_of_certificate')
