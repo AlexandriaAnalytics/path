@@ -142,16 +142,25 @@ class Payments extends Page implements HasForms
         $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
         return [
             $this->renderPaypalFinancing(
-                $this->candidate->installments && in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
+                in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->installments > 0
+                    && $this->candidate->student->institute->installment_plans
+                    && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderStripeFinancing(
-                $this->candidate->installments && in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
+                in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->installments > 0
+                    && $this->candidate->student->institute->installment_plans
+                    && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderMercadoPagoFinancing(
-                $this->candidate->installments && in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid' && $this->candidate->installments > 0 && $this->candidate->student->institute->installment_plans && !$this->candidate->student->institute->internal_payment_administration
+                in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
+                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->installments > 0
+                    && $this->candidate->student->institute->installment_plans
+                    && !$this->candidate->student->institute->internal_payment_administration
             ) // not implemented yet
         ];
     }

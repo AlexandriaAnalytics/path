@@ -8,6 +8,7 @@ use App\Models\CandidateExam;
 use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\Module;
+use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
@@ -148,15 +149,17 @@ class ViewCandidate extends ViewRecord
                             ],
                         ]);
                     }
-                    $candidate = Candidate::find($record->id);
-                    $payment_deadline = \Carbon\Carbon::now();
-                    foreach ($candidate->exams as $exam) {
-                        $payment_deadline = max($payment_deadline, $exam->payment_deadline);
-                    }
-                    $today = \Carbon\Carbon::now();
-                    $intervalo = $today->diff($payment_deadline);
-                    $meses_faltantes = $intervalo->m;
-                    $candidate->installments = $meses_faltantes;
+                    $candidate = Candidate::with('exams')->find($record->id);
+
+                    $payment_deadline = $candidate
+                        ->exams
+                        ->min('payment_deadline');
+
+                    $candidate->installments = max(
+                        now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                        0,
+                    );
+
                     $candidate->save();
                 }),
         ];
