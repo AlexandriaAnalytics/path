@@ -253,8 +253,6 @@ class CandidateResource extends Resource
 
                             $candidate->installments = $data['installments'];
                             $candidate->save();
-                            Candidate::find($candidate->id)
-                                ->update(['status' => UserStatus::Paying]);
 
                             Notification::make()
                                 ->title('The value of the installments was changed successfully')
