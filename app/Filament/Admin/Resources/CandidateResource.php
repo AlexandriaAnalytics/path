@@ -14,6 +14,7 @@ use App\Models\Level;
 use App\Models\Module;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
@@ -351,6 +352,18 @@ class CandidateResource extends Resource
 
                                     $newExamSession->save();
                                 }
+                                $candidate = Candidate::with('exams')->find($record->id);
+
+                                $payment_deadline = $candidate
+                                    ->exams
+                                    ->min('payment_deadline');
+
+                                $candidate->installments = max(
+                                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                    0,
+                                ) + 1;
+
+                                $candidate->save();
                             }
                             Notification::make()
                                 ->title('Exam session assigned successfully')

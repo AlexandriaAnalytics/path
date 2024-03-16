@@ -498,6 +498,18 @@ class CandidateResource extends Resource
 
                                     $newExamSession->save();
                                 }
+                                $candidate = Candidate::with('exams')->find($record->id);
+
+                                $payment_deadline = $candidate
+                                    ->exams
+                                    ->min('payment_deadline');
+
+                                $candidate->installments = max(
+                                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                    0,
+                                ) + 1;
+
+                                $candidate->save();
                             }
                             Notification::make()
                                 ->title('Exam session assigned successfully')
