@@ -18,7 +18,7 @@ class CandidateExporterAsociated extends Exporter
         return [
             ExportColumn::make('id')
                 ->label('Candidate No.'),
-            ExportColumn::make('status'),
+            ExportColumn::make('paymentStatus'),
             ExportColumn::make('student.name')
                 ->label('Name'),
             ExportColumn::make('student.surname')

@@ -123,7 +123,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric()
                     ->toggleable(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -518,7 +518,7 @@ class CandidateResource extends Resource
                 ]),
             ])
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make('paymentStatus')
                     ->label('Payment status')
                     ->options(UserStatus::class)
                     ->searchable(),

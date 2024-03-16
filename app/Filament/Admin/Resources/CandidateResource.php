@@ -12,6 +12,7 @@ use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
+use App\Models\Payment;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -80,7 +81,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->sortable()
@@ -92,8 +93,12 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning'
                     }),
 
-                TextColumn::make('installment_counter')
+                TextColumn::make('installments')
                     ->label('Installment counter')
+                    ->formatStateUsing(function (string $state, Candidate $record) {
+                        $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        return $installmentsPaid . ' / ' . $state;
+                    })
                     ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Names')
@@ -385,7 +390,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->sortable()

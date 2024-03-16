@@ -199,4 +199,26 @@ class Candidate extends Model
         if ($financing == null || $financing->current_installment == null) return 'No installments';
         return "{$financing->current_installment}/{$financing->totalInstallments}";
     }
+
+    public function paymentStatus(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $installments = $this->installments;
+                $installmentsPaid = Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->count();
+                $status = null;
+                if ($installments - $installmentsPaid == 0) {
+                    $status = 'paid';
+                }
+                if ($installments - $installmentsPaid > 0 && $installmentsPaid > 0) {
+                    $status = 'paying';
+                }
+                if ($installmentsPaid == 0) {
+                    $status = 'unpaid';
+                }
+
+                return $status;
+            },
+        );
+    }
 }
