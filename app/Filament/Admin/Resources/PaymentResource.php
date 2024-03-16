@@ -47,7 +47,8 @@ class PaymentResource extends Resource
         return $table
             ->groups([
                 Group::make('payment_id')
-                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('payment_id')),
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('payment_id'))
+                    ->collapsible(),
             ])
             ->columns([
                 Tables\Columns\TextColumn::make('payment_method')
