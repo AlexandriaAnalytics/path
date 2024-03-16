@@ -77,7 +77,7 @@ class ListFinancings extends ListRecords
                                         ->get()
                                         ->where('currency', Filament::getTenant()->currency)
                                         ->mapWithKeys(fn (Candidate $candidate) => [
-                                            $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
+                                            $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
                                         ])->count() == 0;
                                 })
                                 ->icon('heroicon-o-user-group')
@@ -120,7 +120,7 @@ class ListFinancings extends ListRecords
                                 ->get()
                                 ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
-                                    $candidate->id => "{$candidate->student->name} {$candidate->student->surname}"
+                                    $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
                                 ]);
                         })
                         ->afterStateUpdated(function (Get $get, Set $set) {
