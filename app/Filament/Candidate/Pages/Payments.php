@@ -64,7 +64,7 @@ class Payments extends Page implements HasForms
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
 
-
+        $this->installment_number = $this->candidate->installments;
 
 
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen

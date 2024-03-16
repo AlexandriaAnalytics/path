@@ -12,8 +12,10 @@ use App\Models\Exam;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\Module;
+use App\Models\Payment;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Closure;
 use Exception;
 use Filament\Forms\Components\Fieldset;
@@ -79,7 +81,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->sortable()
@@ -91,8 +93,12 @@ class CandidateResource extends Resource
                         'processing payment' => 'warning'
                     }),
 
-                TextColumn::make('installment_counter')
+                TextColumn::make('installments')
                     ->label('Installment counter')
+                    ->formatStateUsing(function (string $state, Candidate $record) {
+                        $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        return $installmentsPaid . ' / ' . $state;
+                    })
                     ->sortable(),
                 TextColumn::make('student.name')
                     ->label('Names')
@@ -351,6 +357,18 @@ class CandidateResource extends Resource
 
                                     $newExamSession->save();
                                 }
+                                $candidate = Candidate::with('exams')->find($record->id);
+
+                                $payment_deadline = $candidate
+                                    ->exams
+                                    ->min('payment_deadline');
+
+                                $candidate->installments = max(
+                                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                    0,
+                                ) + 1;
+
+                                $candidate->save();
                             }
                             Notification::make()
                                 ->title('Exam session assigned successfully')
@@ -372,7 +390,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->sortable()

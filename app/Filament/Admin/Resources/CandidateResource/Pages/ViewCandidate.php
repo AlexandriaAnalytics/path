@@ -142,7 +142,7 @@ class ViewCandidate extends ViewRecord
                     $candidate->installments = max(
                         now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                         0,
-                    );
+                    ) + 1;
 
                     $candidate->save();
                 }),

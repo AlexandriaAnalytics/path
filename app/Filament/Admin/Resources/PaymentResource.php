@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
 use Illuminate\Database\Eloquent\Builder;
 
 class PaymentResource extends Resource
@@ -44,9 +45,11 @@ class PaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(function () {
-                return Payment::orderByDesc('created_at');
-            })
+            ->groups([
+                Group::make('payment_id')
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('payment_id'))
+                    ->collapsible(),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('payment_method')
                     ->searchable()

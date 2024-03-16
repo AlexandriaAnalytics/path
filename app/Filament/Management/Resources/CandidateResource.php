@@ -123,7 +123,7 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric()
                     ->toggleable(),
-                TextColumn::make('status')
+                TextColumn::make('paymentStatus')
                     ->label('Payment status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -253,8 +253,6 @@ class CandidateResource extends Resource
 
                             $candidate->installments = $data['installments'];
                             $candidate->save();
-                            Candidate::find($candidate->id)
-                                ->update(['status' => UserStatus::Paying]);
 
                             Notification::make()
                                 ->title('The value of the installments was changed successfully')
@@ -498,6 +496,18 @@ class CandidateResource extends Resource
 
                                     $newExamSession->save();
                                 }
+                                $candidate = Candidate::with('exams')->find($record->id);
+
+                                $payment_deadline = $candidate
+                                    ->exams
+                                    ->min('payment_deadline');
+
+                                $candidate->installments = max(
+                                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                    0,
+                                ) + 1;
+
+                                $candidate->save();
                             }
                             Notification::make()
                                 ->title('Exam session assigned successfully')
@@ -508,7 +518,7 @@ class CandidateResource extends Resource
                 ]),
             ])
             ->filters([
-                SelectFilter::make('status')
+                SelectFilter::make('paymentStatus')
                     ->label('Payment status')
                     ->options(UserStatus::class)
                     ->searchable(),
