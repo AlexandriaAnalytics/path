@@ -7,6 +7,7 @@ use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Management\Resources\FinancingResource;
 use App\Models\Candidate;
+use App\Models\Concept;
 use App\Models\Country;
 use App\Models\Financing;
 use App\Models\Institute;
@@ -105,6 +106,9 @@ class ListFinancings extends ListRecords
                                                 $candidateAmount = $candidateAmount - $concept->amount;
                                             }
                                         }
+                                        if (Candidate::find($candidate)->granted_discount > 0) {
+                                            $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
+                                        }
                                         if (Institute::find(Filament::getTenant()->id)->installment_plans) {
                                             $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
                                         }
@@ -142,6 +146,9 @@ class ListFinancings extends ListRecords
                                             $candidateAmount = $candidateAmount - $concept->amount;
                                         }
                                     }
+                                    if (Candidate::find($candidate)->granted_discount > 0) {
+                                        $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
+                                    }
                                     if (Institute::find(Filament::getTenant()->id)->installment_plans) {
                                         $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
                                     }
@@ -172,6 +179,9 @@ class ListFinancings extends ListRecords
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $candidateAmount = $candidateAmount - $concept->amount;
                             }
+                        }
+                        if (Candidate::find($candidate)->granted_discount > 0) {
+                            $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
                         }
                         if (Institute::find(Filament::getTenant()->id)->installment_plans) {
                             $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;

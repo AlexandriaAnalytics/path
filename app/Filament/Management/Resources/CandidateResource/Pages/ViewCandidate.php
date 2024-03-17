@@ -8,6 +8,7 @@ use App\Models\CandidateExam;
 use App\Models\CandidateModule;
 use App\Models\Exam;
 use App\Models\Module;
+use App\Models\Payment;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -91,7 +92,14 @@ class ViewCandidate extends ViewRecord
                         currency: $this->record->billa
                     ),
                 TextEntry::make('payments')
-                    ->default(fn ($record) => $record->getInstallmentAmountAndTotalAttribute()),
+                    ->formatStateUsing(function (Candidate $record) {
+                        $payments = Payment::where('candidate_id', $record->id)->where('status', 'approved')->get();
+                        $amount = 0;
+                        foreach ($payments as $payment) {
+                            $amount = $amount + $payment->amount;
+                        }
+                        return $amount;
+                    }),
                 TextEntry::make('installments')
                     ->default(fn ($record) => $record->getInstallmentCounterAttribute())
             ]);
