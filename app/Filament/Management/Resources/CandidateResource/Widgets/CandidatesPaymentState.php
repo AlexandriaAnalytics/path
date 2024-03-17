@@ -4,6 +4,7 @@ namespace App\Filament\Management\Resources\CandidateResource\Widgets;
 
 use App\Filament\Management\Resources\CandidateResource\Pages\ListCandidates;
 use App\Models\Candidate;
+use App\Models\Payment;
 use Filament\Facades\Filament;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
@@ -16,18 +17,22 @@ class CandidatesPaymentState extends BaseWidget
 
     protected function getStats(): array
     {
-        $query = Candidate::query()
-            ->whereHas('student', fn ($query) => $query->where('institute_id', Filament::getTenant()->id))
-            ->get()
-            ->flatMap(fn (Candidate $candidate) => $candidate->concepts);
+        $query = Payment::where('institute_id', Filament::getTenant()->id)->get();
 
-        $total = $query->sum('amount');
-        $totalDue = $query->where('status', '!=', 'paid')->sum('amount');
-        $totalPaid = $query->where('status', 'paid')->sum('amount');
+        $total = 0;
+        //$totalDue = $query->where('status', '!=', 'paid')->sum('amount');
+        $totalPaid = 0;
+
+        foreach ($query as $payment) {
+            $total = $total + $payment->amount;
+            if ($payment->status == 'approved') {
+                $totalPaid = $totalPaid + $payment->amount;
+            }
+        }
 
         return [
             Stat::make('Total paid', $totalPaid),
-            Stat::make('Total due', $totalDue),
+            //Stat::make('Total due', $totalDue),
             Stat::make('Total', $total)
         ];
     }

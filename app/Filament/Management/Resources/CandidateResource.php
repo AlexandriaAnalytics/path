@@ -187,12 +187,9 @@ class CandidateResource extends Resource
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
                 TextColumn::make('installments')
-                    ->formatStateUsing(function ($state, Candidate $candidate) {
-                        if ($state > 0 && $state != 'No installment') {
-                            return $candidate->payments->count() . ' / ' . $state;
-                        } else {
-                            return 'No installment';
-                        }
+                    ->formatStateUsing(function (string $state, Candidate $record) {
+                        $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        return $installmentsPaid . ' / ' . $state;
                     })
                     ->default('No installment')
                     ->label('Installment counter')
