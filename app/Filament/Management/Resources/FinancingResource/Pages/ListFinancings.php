@@ -104,6 +104,9 @@ class ListFinancings extends ListRecords
                                             }
                                         }
                                     }
+                                    if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                        $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                                    }
                                     $set('amount', $totalAmount);
                                 }),
                         )
@@ -133,6 +136,9 @@ class ListFinancings extends ListRecords
                                         $totalAmount = $totalAmount - $concept->amount;
                                     }
                                 }
+                            }
+                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
                             }
                             $set('amount', $totalAmount);
                         }),
