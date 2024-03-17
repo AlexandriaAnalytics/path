@@ -89,6 +89,7 @@ class ListFinancings extends ListRecords
                                         ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                         ->has('exams')
                                         ->get()
+                                        ->where('paymentStatus', '!=', 'paid')
                                         ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
                                         ->toArray());
@@ -121,6 +122,7 @@ class ListFinancings extends ListRecords
                                 ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                 ->has('exams')
                                 ->get()
+                                ->where('paymentStatus', '!=', 'paid')
                                 ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
                                     $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
