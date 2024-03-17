@@ -98,15 +98,17 @@ class ListFinancings extends ListRecords
                                     $totalAmount = 0;
                                     foreach ($get('candidate_id') as $candidate) {
                                         $concepts = Candidate::find($candidate)->concepts;
+                                        $candidateAmount = 0;
                                         foreach ($concepts as $concept) {
-                                            $totalAmount = $totalAmount + $concept->amount;
+                                            $candidateAmount = $candidateAmount + $concept->amount;
                                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
-                                                $totalAmount = $totalAmount - $concept->amount;
+                                                $candidateAmount = $candidateAmount - $concept->amount;
                                             }
                                         }
-                                    }
-                                    if (Institute::find(Filament::getTenant()->id)->installment_plans) {
-                                        $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                                        if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                            $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
+                                        }
+                                        $totalAmount = $totalAmount + $candidateAmount;
                                     }
                                     $set('amount', $totalAmount);
                                 }),
@@ -132,15 +134,17 @@ class ListFinancings extends ListRecords
                             $totalAmount = 0;
                             foreach ($get('candidate_id') as $candidate) {
                                 $concepts = Candidate::find($candidate)->concepts;
+                                $candidateAmount = 0;
                                 foreach ($concepts as $concept) {
-                                    $totalAmount = $totalAmount + $concept->amount;
+                                    $candidateAmount = $candidateAmount + $concept->amount;
                                     if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
-                                        $totalAmount = $totalAmount - $concept->amount;
+                                        $candidateAmount = $candidateAmount - $concept->amount;
                                     }
                                 }
-                            }
-                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
-                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                                if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                    $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
+                                }
+                                $totalAmount = $totalAmount + $candidateAmount;
                             }
                             $set('amount', $totalAmount);
                         }),
@@ -153,21 +157,23 @@ class ListFinancings extends ListRecords
                     MarkdownEditor::make('description')
                 ])
                 ->action(function (array $data) {
+                    $totalAmount = 0;
                     foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                         $newPayment = new Payment();
                         $newPayment->institute_id = Filament::getTenant()->id;
                         $newPayment->candidate_id = $candidate;
                         $concepts = Candidate::find($candidate)->concepts;
-                        $totalAmount = 0;
+                        $candidateAmount = 0;
                         foreach ($concepts as $concept) {
-                            $totalAmount = $totalAmount + $concept->amount;
+                            $candidateAmount = $candidateAmount + $concept->amount;
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
-                                $totalAmount = $totalAmount - $concept->amount;
-                            }
-                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
-                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                                $candidateAmount = $candidateAmount - $concept->amount;
                             }
                         }
+                        if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                            $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
+                        }
+                        $totalAmount = $candidateAmount;
                         $newPayment->amount = $totalAmount;
                         $newPayment->status = 'pending';
                         $newPayment->payment_method = 'financing by associated';
