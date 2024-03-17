@@ -89,6 +89,7 @@ class ListFinancings extends ListRecords
                                         ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                         ->has('exams')
                                         ->get()
+                                        ->where('paymentStatus', '!=', 'paid')
                                         ->where('currency', Filament::getTenant()->currency)
                                         ->pluck('id')
                                         ->toArray());
@@ -104,6 +105,9 @@ class ListFinancings extends ListRecords
                                             }
                                         }
                                     }
+                                    if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                        $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                                    }
                                     $set('amount', $totalAmount);
                                 }),
                         )
@@ -118,6 +122,7 @@ class ListFinancings extends ListRecords
                                 ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                 ->has('exams')
                                 ->get()
+                                ->where('paymentStatus', '!=', 'paid')
                                 ->where('currency', Filament::getTenant()->currency)
                                 ->mapWithKeys(fn (Candidate $candidate) => [
                                     $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
@@ -133,6 +138,9 @@ class ListFinancings extends ListRecords
                                         $totalAmount = $totalAmount - $concept->amount;
                                     }
                                 }
+                            }
+                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
                             }
                             $set('amount', $totalAmount);
                         }),
@@ -155,6 +163,9 @@ class ListFinancings extends ListRecords
                             $totalAmount = $totalAmount + $concept->amount;
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $totalAmount = $totalAmount - $concept->amount;
+                            }
+                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
                             }
                         }
                         $newPayment->amount = $totalAmount;
