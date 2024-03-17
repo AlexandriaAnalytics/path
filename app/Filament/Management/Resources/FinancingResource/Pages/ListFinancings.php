@@ -162,6 +162,9 @@ class ListFinancings extends ListRecords
                             if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $totalAmount = $totalAmount - $concept->amount;
                             }
+                            if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                $totalAmount = $totalAmount / Candidate::find($candidate)->installments;
+                            }
                         }
                         $newPayment->amount = $totalAmount;
                         $newPayment->status = 'pending';
