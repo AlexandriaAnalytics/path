@@ -69,7 +69,7 @@ class FinancingResource extends Resource
                         'processing payment' => 'info'
                     }),
                 Tables\Columns\TextColumn::make('link_to_ticket')
-                    ->action(fn (string $payment) => redirect()->to($payment))
+                    ->url(fn (Payment $record) => $record->link_to_ticket, shouldOpenInNewTab: true)
                     ->color('primary')
             ])
             ->filters([
