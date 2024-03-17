@@ -45,6 +45,9 @@ class PaymentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Payment::orderByDesc('created_at');
+            })
             ->groups([
                 Group::make('payment_id')
                     ->groupQueryUsing(fn (Builder $query) => $query->groupBy('payment_id'))
@@ -58,9 +61,9 @@ class PaymentResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('candidate.student')
-                    ->formatStateUsing(function (Student $state) {
-                        return $state->name . ' ' . $state->surname;
+                Tables\Columns\TextColumn::make('candidate')
+                    ->formatStateUsing(function (Candidate $state) {
+                        return $state->id . ' - ' . $state->student->name . ' ' . $state->student->surname;
                     }),
                 Tables\Columns\TextColumn::make('currency')
                     ->searchable()
