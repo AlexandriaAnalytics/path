@@ -29,9 +29,8 @@ class StatusSeeder extends Seeder
 
         ];
 
-        Status::factory()
-            ->count(count($data))
-            ->sequence(...$data)
-            ->create();
+        foreach ($data as $status) {
+            Status::create($status);
+        }
     }
 }

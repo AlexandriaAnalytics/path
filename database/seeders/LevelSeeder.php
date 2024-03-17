@@ -89,11 +89,10 @@ class LevelSeeder extends Seeder
             ],
         ];
 
-        $levels = Level::factory()
-            ->count(count($data))
-            ->sequence(...$data)
-            ->create();
+        foreach ($data as $level) {
+            Level::create($level);
+        }
 
-        $levels->each(fn (Level $level) => $level->modules()->attach(Module::all()));
+        // $levels->each(fn (Level $level) => $level->modules()->attach(Module::all()));
     }
 }

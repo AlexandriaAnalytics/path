@@ -25,9 +25,8 @@ class ModuleSeeder extends Seeder
             ],
         ];
 
-        Module::factory()
-            ->count(count($data))
-            ->sequence(...$data)
-            ->create();
+        foreach ($data as $module) {
+            Module::create($module);
+        }
     }
 }

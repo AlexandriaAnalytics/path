@@ -87,36 +87,39 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         $candidate = Candidate::with('student')->findOrFail($id);
 
         MercadoPagoConfig::setAccessToken($this->getAccessToken($currency));
+
         try {
+            $data = [
+                "external_reference" => "PATH-" . $id,
+                "auto_recurring" => [
+                    "frequency" => 1,
+                    "frequency_type" => "months",
+                    "start_date" => now()->toISOString(),
+                    "end_date" => now()->addMonths($installment_number)->toISOString(),
+                    "transaction_amount" => $amount,
+                    "currency_id" => $currency,
+                ],
+                "back_url" => $this->getRedirectSuccess(),
+                "payer_email" => $candidate->student?->email,
+                "reason" => "Exam Payment",
+            ];
+
+            debug($data);
+
             $preapproval = (new PreApprovalClient)
-                ->create([
-                    "external_reference" => $id,
-                    "auto_recurring" => [
-                        "frequency" => 1,
-                        "frequency_type" => "months",
-                        "start_date" => now()->toISOString(),
-                        "end_date" => now()->addMonths($installment_number)->toISOString(),
-                        "transaction_amount" => $amount,
-                        "currency_id" => 'ARS', //$currency,
-                    ],
-                    "back_url" => $this->getRedirectSuccess(),
-                    "payer_email" => env('APP_ENV') == 'local' ? 'test_user_1279746686@testuser.com' : $candidate->student?->email,
-                    "reason" => "Exam Payment",
-                ]);
-
-            $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $installment_number);
-
-            return new PaymentResult(
-                PaymentMethodResult::REDIRECT,
-                null,
-                $preapproval->init_point
-            );
+                ->create($data);
         } catch (MPApiException $e) {
-            return new PaymentResult(
-                PaymentMethodResult::ERROR,
-                join(' / ', $e->getApiResponse()->getContent())
-            );
+            debug($e->getApiResponse()->getContent());
+            throw $e;
         }
+
+        // $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $installment_number);
+
+        return new PaymentResult(
+            PaymentMethodResult::REDIRECT,
+            null,
+            $preapproval->init_point
+        );
     }
 
     public function processWebhook(Request $request)

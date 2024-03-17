@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             CountrySeeder::class,
             InstituteTypeSeeder::class,
-            PeriodSeeder::class,
+            // PeriodSeeder::class,
             ModuleSeeder::class,
             LevelSeeder::class,
             RoleSeeder::class,
@@ -36,6 +36,10 @@ class DatabaseSeeder extends Seeder
             ModalitySeeder::class,
             CertificateTypeSeeder::class,
         ]);
+
+        if (app()->environment('production')) {
+            return;
+        }
 
         $countries = Country::all();
         $modules = Module::all();

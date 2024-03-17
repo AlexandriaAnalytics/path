@@ -20,7 +20,7 @@ class InstituteTypeSeeder extends Seeder
         ];
 
         foreach ($instituteTypes as $instituteType) {
-            \App\Models\InstituteType::factory()->create([
+            \App\Models\InstituteType::create([
                 'name' => $instituteType,
             ]);
         }
