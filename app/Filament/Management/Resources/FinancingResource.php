@@ -40,7 +40,7 @@ class FinancingResource extends Resource
 
         return $table
             ->query(function () {
-                return Payment::orderByDesc('created_at');
+                return Payment::orderByDesc('created_at')->where('institute_id', Filament::getTenant()->id);
             })
             ->groups([
                 Group::make('payment_id')
