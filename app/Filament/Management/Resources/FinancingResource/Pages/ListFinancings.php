@@ -132,20 +132,23 @@ class ListFinancings extends ListRecords
                         })
                         ->afterStateUpdated(function (Get $get, Set $set) {
                             $totalAmount = 0;
-                            foreach ($get('candidate_id') as $candidate) {
-                                $concepts = Candidate::find($candidate)->concepts;
-                                $candidateAmount = 0;
-                                foreach ($concepts as $concept) {
-                                    $candidateAmount = $candidateAmount + $concept->amount;
-                                    if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
-                                        $candidateAmount = $candidateAmount - $concept->amount;
+                            if ($get('candidate_id')) {
+                                foreach ($get('candidate_id') as $candidate) {
+                                    $concepts = Candidate::find($candidate)->concepts;
+                                    $candidateAmount = 0;
+                                    foreach ($concepts as $concept) {
+                                        $candidateAmount = $candidateAmount + $concept->amount;
+                                        if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
+                                            $candidateAmount = $candidateAmount - $concept->amount;
+                                        }
                                     }
+                                    if (Institute::find(Filament::getTenant()->id)->installment_plans) {
+                                        $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
+                                    }
+                                    $totalAmount = $totalAmount + $candidateAmount;
                                 }
-                                if (Institute::find(Filament::getTenant()->id)->installment_plans) {
-                                    $candidateAmount = $candidateAmount / Candidate::find($candidate)->installments;
-                                }
-                                $totalAmount = $totalAmount + $candidateAmount;
                             }
+
                             $set('amount', $totalAmount);
                         }),
                     TextInput::make('payment_id')
