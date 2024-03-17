@@ -10,7 +10,9 @@ use Filament\Facades\Filament;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use PhpParser\Node\Stmt\Static_;
 
 class FinancingResource extends Resource
@@ -40,6 +42,11 @@ class FinancingResource extends Resource
             ->query(function () {
                 return Payment::orderByDesc('created_at');
             })
+            ->groups([
+                Group::make('payment_id')
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('payment_id'))
+                    ->collapsible(),
+            ])
             ->columns([
                 Tables\Columns\TextColumn::make('candidate_id')
                     ->label('Candidate')
