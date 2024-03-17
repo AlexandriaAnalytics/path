@@ -105,23 +105,6 @@ class PaymentResource extends Resource
                             $p->financing->update(['state' => 'complete']);
                             $p->update(['status' => 'approved']);
                         });
-                        if ($payment->candidate_id != null) {
-                            $candidate = Candidate::find($payment->candidate_id);
-                            switch ($data['status']) {
-                                case 'pending':
-                                    $candidate->update(['status' => 'processing payment']);
-                                    break;
-                                case 'approved':
-                                    $candidate->update(['status' => 'paid']);
-                                    break;
-                                case    'rejected':
-                                    $candidate->update(['status' => 'unpaid']);
-                                    break;
-                                case  'processing payment':
-                                    $candidate->update(['status' => 'processing payment']);
-                                    break;
-                            }
-                        }
                     }),
                 Tables\Actions\Action::make('edit')
                     ->form([])
