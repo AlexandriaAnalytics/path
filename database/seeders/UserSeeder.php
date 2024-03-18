@@ -21,8 +21,6 @@ class UserSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        Role::firstOrCreate(['name' => 'admin']);
-
-        $user->assignRole('admin');
+        $user->assignRole(Role::firstOrCreate(['name' => 'Superadministrator'])->first());
     }
 }
