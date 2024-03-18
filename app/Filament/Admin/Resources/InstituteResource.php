@@ -93,7 +93,8 @@ class InstituteResource extends Resource
                             ->hiddenOn('create'),
                         Fieldset::make('Contact Information')
                             ->schema([
-                                PhoneInput::make('phone'),
+                                PhoneInput::make('phone')
+                                    ->required(),
                                 TextInput::make('email')
                                     ->email()
                                     ->required()
