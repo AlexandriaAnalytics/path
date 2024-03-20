@@ -22,6 +22,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\View\View;
 
 class ManagementPanelProvider extends PanelProvider
 {
@@ -36,6 +37,10 @@ class ManagementPanelProvider extends PanelProvider
             ->login(
                 \App\Filament\Management\Pages\Auth\Login::class
             )
+            ->renderHook(
+                'panels::auth.login.form.after',
+                fn (): View => view('filament.management.login_management')
+                )
             ->colors([
                 'primary' => '#22526d',
             ])
