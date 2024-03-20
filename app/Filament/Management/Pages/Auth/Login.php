@@ -13,7 +13,7 @@ class Login extends BaseLogin
     protected function getFormActions(): array
     {
         return [
-            $this->getAuthenticateFormAction(),
+            $this->getAuthenticateFormAction(),/* 
             Action::make('admin.auth.login')
                 ->label('Go to Admin Login')
                 ->url(route('filament.admin.auth.login'))
@@ -22,7 +22,7 @@ class Login extends BaseLogin
             Action::make('candidate')
                 ->label('Go to Candidate Login')
                 ->url('/candidate/login')
-                ->link()->color('primary'),
+                ->link()->color('primary'), */
         ];
     }
 }
