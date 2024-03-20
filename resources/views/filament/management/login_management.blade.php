@@ -24,18 +24,14 @@
         overflow: hidden;
     }
 
-    main {
-        z-index: 110;
-    }
-
-    .container {
+    /* .container {
         width: 50vw;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         overflow: hidden;
         position: relative;
         z-index: 10;
-    }
+    } */
 
     .title-container {
         display: grid;
