@@ -13,6 +13,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
 
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Country;
 use App\Models\Level;
 use App\Models\Module;
@@ -198,7 +199,24 @@ class StudentResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(StudentExporter::class)
                         ->deselectRecordsAfterCompletion(),
-                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            foreach ($records as $student) {
+                                $candidates = Candidate::where('student_id', $student->id)->get();
+                                if ($candidates) {
+                                    foreach ($candidates as $candidate) {
+                                        $candidateExam = CandidateExam::where('candidate_id', $candidate->id)->get();
+                                        if ($candidateExam) {
+                                            $candidateExam->delete();
+                                        }
+                                        $candidate->delete();
+                                    }
+                                }
+
+                                $student->delete();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
                         ->form(fn (Collection $records) => [
