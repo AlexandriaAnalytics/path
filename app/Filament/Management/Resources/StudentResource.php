@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\StudentResource as AdminStudentResource;
 use App\Filament\Admin\Resources\StudentResource\Pages\ViewStudent;
 use App\Filament\Management\Resources\StudentResource\Pages;
 use App\Models\Candidate;
+use App\Models\CandidateExam;
 use App\Models\Country as ModelsCountry;
 use App\Models\Level;
 use App\Models\Module;
@@ -166,6 +167,22 @@ class StudentResource extends Resource
                             ->count()
                     ),
                 Tables\Actions\DeleteAction::make()
+                    ->action(function (Collection $records) {
+                        foreach ($records as $student) {
+                            $candidates = Candidate::where('student_id', $student->id)->get();
+                            if ($candidates) {
+                                foreach ($candidates as $candidate) {
+                                    $candidateExam = CandidateExam::where('candidate_id', $candidate->id)->get();
+                                    if ($candidateExam) {
+                                        $candidateExam->delete();
+                                    }
+                                    $candidate->delete();
+                                }
+                            }
+
+                            $student->delete();
+                        }
+                    })
                     ->hidden(
                         fn (Student $student) =>
                         $student
@@ -182,7 +199,24 @@ class StudentResource extends Resource
                         ->icon('heroicon-o-document')
                         ->action(fn (Collection $records) => (new StudentExport($records->pluck('id')))->download('students.xlsx'))
                         ->deselectRecordsAfterCompletion(),
-                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            foreach ($records as $student) {
+                                $candidates = Candidate::where('student_id', $student->id)->get();
+                                if ($candidates) {
+                                    foreach ($candidates as $candidate) {
+                                        $candidateExam = CandidateExam::where('candidate_id', $candidate->id)->get();
+                                        if ($candidateExam) {
+                                            $candidateExam->delete();
+                                        }
+                                        $candidate->delete();
+                                    }
+                                }
+
+                                $student->delete();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
 
                     BulkAction::make('create_bulk_candidates')
                         ->icon('heroicon-o-document')
