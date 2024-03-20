@@ -21,6 +21,7 @@
         font-weight: 400;
         font-style: normal;
         background: url('../images/fondo-login-filtro.jpg') center/cover no-repeat;
+        overflow: hidden;
     }
 
     main {
@@ -76,6 +77,13 @@
         font-size: 1.1rem;
         animation-duration: 2s;
         animation-name: slidein;
+    }
+
+    @media only screen and (max-width: 1400px) {
+        .title-container {
+            position: fixed;
+            left: 15%;
+        }
     }
 
     @media only screen and (max-width: 1100px) {
