@@ -85,13 +85,18 @@ class LevelResource extends Resource
                 Tables\Columns\TextColumn::make('description'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make()
+                    ->native(false),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
             ])
             ->bulkActions([
-                //
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                ]),
             ]);
     }
 
