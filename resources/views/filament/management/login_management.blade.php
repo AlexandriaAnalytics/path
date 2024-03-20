@@ -1,13 +1,8 @@
 <body>
-    <div>
-        <div class="filtro"></div>
-        <div class="container">
-            <div class="title-container">
-                <h1 class="title">Welcome</h1>
-                <h2 class="subtitle">Sinapsis ™</h2>
-            </div>
-
-            <main></main>
+    <div class="container">
+        <div class="title-container">
+            <h1 class="title">Welcome</h1>
+            <h2 class="subtitle">Sinapsis ™</h2>
         </div>
     </div>
 </body>
@@ -25,22 +20,11 @@
         font-family: "skolar-sans-latin", sans-serif;
         font-weight: 400;
         font-style: normal;
-        background: url('../images/fondo-login.jpg') center/cover no-repeat;
-    }
-
-    .filtro {
-        background-color: #22526d;
-        width: 100vw;
-        height: 100vh;
-        position: absolute;
-        top: 0;
-        left: 0;
-        filter: opacity(.3);
-        z-index: -1;
+        background: url('../images/fondo-login-filtro.jpg') center/cover no-repeat;
     }
 
     main {
-        z-index: 10;
+        z-index: 110;
     }
 
     .container {
@@ -92,5 +76,25 @@
         font-size: 1.1rem;
         animation-duration: 2s;
         animation-name: slidein;
+    }
+
+    @media only screen and (max-width: 1100px) {
+        body {
+            justify-content: center;
+            padding-right: 0%;
+            background: url('../images/fondo-login.jpg') 15% no-repeat;
+            background-size: cover;
+        }
+
+        main {
+            position: fixed;
+            top: 20%;
+        }
+
+        .title-container {
+            position: fixed;
+            top: 1%;
+            left: 40%;
+        }
     }
 </style>
