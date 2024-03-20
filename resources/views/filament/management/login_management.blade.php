@@ -1,9 +1,7 @@
 <body>
-    <div class="container">
-        <div class="title-container">
-            <h1 class="title">Welcome</h1>
-            <h2 class="subtitle">Sinapsis ™</h2>
-        </div>
+    <div class="title-container">
+        <h1 class="title">Welcome</h1>
+        <h2 class="subtitle">Sinapsis ™</h2>
     </div>
 </body>
 
@@ -13,8 +11,6 @@
     body {
         display: flex;
         align-items: center;
-        justify-content: end;
-        padding-right: 10%;
         height: 100vh;
         width: 100vw;
         font-family: "skolar-sans-latin", sans-serif;
@@ -32,6 +28,11 @@
         position: relative;
         z-index: 10;
     } */
+
+    main {
+        position: absolute;
+        right: 5%;
+    }
 
     .title-container {
         display: grid;
