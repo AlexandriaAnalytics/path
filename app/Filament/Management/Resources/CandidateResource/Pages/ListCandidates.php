@@ -6,6 +6,8 @@ use App\Filament\Admin\Widgets\InstituteTypeOverview;
 use App\Filament\Exports\CandidateExporter;
 use App\Filament\Management\Resources\CandidateResource;
 use App\Filament\Management\Resources\CandidateResource\Widgets\CandidatesPaymentState;
+use App\Models\Period;
+use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Pages\Concerns\ExposesTableToWidgets;
@@ -29,7 +31,22 @@ class ListCandidates extends ListRecords
                 ->options([
                     'institute_id' => Filament::getTenant()->id,
                 ]),
-            Actions\CreateAction::make()->color(Color::hex('#0086b3')),
+            Actions\CreateAction::make()->color(Color::hex('#0086b3'))
+                ->visible(function () {
+                    $today = Carbon::now();
+                    $periods = Period::all();
+                    $canAdd = false;
+                    if ($periods) {
+                        foreach ($periods as $period) {
+                            $start = $period->starts_at;
+                            $end = $period->ends_at;
+                            if ($today->between($start, $end)) {
+                                $canAdd = true;
+                            }
+                        }
+                    }
+                    return $canAdd && Filament::getTenant()->can_add_candidates;
+                }),
         ];
     }
 
