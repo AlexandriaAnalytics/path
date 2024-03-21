@@ -14,7 +14,9 @@ use App\Models\CandidateExam;
 use App\Models\Country as ModelsCountry;
 use App\Models\Level;
 use App\Models\Module;
+use App\Models\Period;
 use App\Models\Student;
+use Carbon\Carbon;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -219,6 +221,21 @@ class StudentResource extends Resource
                         ->deselectRecordsAfterCompletion(),
 
                     BulkAction::make('create_bulk_candidates')
+                        ->visible(function () {
+                            $today = Carbon::now();
+                            $periods = Period::all();
+                            $canAdd = false;
+                            if ($periods) {
+                                foreach ($periods as $period) {
+                                    $start = $period->starts_at;
+                                    $end = $period->ends_at;
+                                    if ($today->between($start, $end)) {
+                                        $canAdd = true;
+                                    }
+                                }
+                            }
+                            return $canAdd && Filament::getTenant()->can_add_candidates;
+                        })
                         ->icon('heroicon-o-document')
                         ->form(fn (Collection $records) => [
                             Select::make('level_id')
