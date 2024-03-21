@@ -112,9 +112,6 @@ class ExamResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(function () {
-                return Exam::orderByDesc('created_at');
-            })
             ->columns([
                 Tables\Columns\TextColumn::make('session_name')
                     ->sortable()
@@ -158,7 +155,8 @@ class ExamResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
