@@ -293,9 +293,14 @@ class InstituteResource extends Resource
                                 ->label('Can register candidates')
                                 ->default(false)
                         ])
-                        ->action(function ($records) {
+                        ->action(function ($records, $data) {
                             foreach ($records as $institute) {
-                                $institute->can_add_candidates = 1;
+                                if($data['can_add_candidates']) {
+                                    $institute->can_add_candidates = 1;
+                                }
+                                else {
+                                    $institute->can_add_candidates = 0;
+                                }
                                 $institute->save();
                             }
                         })
