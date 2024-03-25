@@ -321,9 +321,9 @@ class CandidateResource extends Resource
                                         }
                                     }
                                     $examSession = Exam::whereHas('modules', function ($query) use ($modules) {
-                                        $query->whereIn('module_id', $modules);
+                                        $query->orWhereIn('module_id', $modules);
                                     })->whereHas('levels', function ($query) use ($levels) {
-                                        $query->whereIn('level_id', $levels);
+                                        $query->orWhereIn('level_id', $levels);
                                     })->get()->pluck('session_name', 'id');
 
                                     return $examSession;
