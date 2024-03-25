@@ -430,10 +430,10 @@ class CandidateResource extends Resource
                                     $candidates = $action->getRecords();
                                     $pendingModules = [];
                                     foreach ($candidates as $candidate) {
-                                        $modules = $candidate->pendingModules->pluck('name', 'id');
+                                        $modules = $candidate->pendingModules;
                                         foreach ($modules as $module) {
-                                            if (!in_array($module, $pendingModules)) {
-                                                $pendingModules[] .= $module;
+                                            if (!isset($pendingModules[$module->id])) {
+                                                $pendingModules[$module->id] = $module->name;
                                             }
                                         }
                                     }
@@ -457,9 +457,9 @@ class CandidateResource extends Resource
                                         }
                                     }
                                     $examSession = Exam::whereHas('modules', function ($query) use ($modules) {
-                                        $query->orWhereIn('module_id', $modules);
+                                        $query->whereIn('module_id', $modules);
                                     })->whereHas('levels', function ($query) use ($levels) {
-                                        $query->orWhereIn('level_id', $levels);
+                                        $query->whereIn('level_id', $levels);
                                     })->get()->pluck('session_name', 'id');
 
                                     return $examSession;
