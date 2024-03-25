@@ -458,7 +458,7 @@ class CandidateResource extends Resource
                                     }
                                     $examSession = Exam::whereHas('modules', function ($query) use ($modules) {
                                         $query->whereIn('module_id', $modules);
-                                    })
+                                    }, '=', count($modules))
                                         ->whereHas('levels', function ($query) use ($levels) {
                                             $query->whereIn('level_id', $levels);
                                         }, '=', count($levels))
