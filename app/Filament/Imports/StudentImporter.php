@@ -41,7 +41,7 @@ class StudentImporter extends Importer
                 ->rules(['required'])
                 ->exampleHeader('Date of birth')
                 ->example('23/04/1999')
-                ->castStateUsing(function (string $state): ?Carbon {
+                ->castStateUsing(function (?string $state): ?Carbon {
                     if (blank($state)) {
                         return null;
                     }
@@ -50,7 +50,6 @@ class StudentImporter extends Importer
                     try {
                         return Carbon::createFromFormat('d/m/Y', $state);
                     } catch (\Exception $e) {
-                        Log::error('inport student exeption', [$e]);
                         return null;
                     }
                 }),
@@ -58,7 +57,7 @@ class StudentImporter extends Importer
                 ->label('Educational needs')
                 ->rules(['max:255', 'nullable'])
                 ->exampleHeader('Educational needs')
-                ->example('Needs x, y, z')
+                ->example('Needs x, y, z'),
         ];
     }
 
