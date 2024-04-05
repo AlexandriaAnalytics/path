@@ -3,7 +3,6 @@
 namespace App\Services\Payment\Contracts;
 
 use App\Models\Payment;
-use App\Services\Payment\PaymentResourceService;
 use Carbon\Carbon;
 
 abstract class AbstractPayment implements IPayment
