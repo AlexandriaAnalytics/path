@@ -104,8 +104,6 @@ class MercadoPagoPaymentMethod extends AbstractPayment
                 "reason" => "Exam Payment",
             ];
 
-            debug($data);
-
             $preapproval = (new PreApprovalClient)
                 ->create($data);
         } catch (MPApiException $e) {

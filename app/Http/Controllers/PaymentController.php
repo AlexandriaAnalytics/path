@@ -41,11 +41,9 @@ class PaymentController extends Controller
      */
     public function processTransaction(PaymentRequest $request)
     {
-
         $validated = $request->validated();
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-
 
             /** @var \App\Models\Candidate $candidate */
             $candidate = session('candidate');
@@ -66,7 +64,6 @@ class PaymentController extends Controller
                 $candidate->student->name ?? 'DESCRIPTION',
                 $candidate->currency ?? 'USD', //$candidate->student->region->monetary_unit,
                 $candidate->total_amount,
-
             );
 
             if ($paymentResult->getResult() == PaymentMethodResult::REDIRECT) {

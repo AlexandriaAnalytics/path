@@ -9,23 +9,20 @@ use App\Models\CandidateExam;
 use App\Models\Country as ModelsCountry;
 use App\Models\Payment;
 use App\Models\PaymentMethod as ModelsPaymentMethod;
+use App\Modules\Payments\MercadoPago\Data\SubscriptionData as MercadoPagoSubscriptionData;
+use App\Modules\Payments\MercadoPago\Services\PaymentService as MercadoPagoPaymentService;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use DateTime;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Illuminate\Notifications\Events\NotificationFailed;
-use Illuminate\Routing\Router;
 
 class Payments extends Page implements HasForms
 {
@@ -117,14 +114,30 @@ class Payments extends Page implements HasForms
             ->hidden(!$hidde);
     }
 
-    private function renderMercadoPagoFinancing(bool $hidde)
+    private function renderMercadoPagoFinancing(bool $visible): Action
     {
         return
-            Action::make('MP_financing')
+            Action::make('mercadopago_financing')
             ->label('Subscription payment (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
-            ->action(fn () => $this->mercadoPagoFinanciament())
-            ->hidden(!$hidde);
+            ->action(function (MercadoPagoPaymentService $service) {
+                /** @var Candidate $candidate */
+                $candidate = Candidate::find(session('candidate')->id);
+
+                $data = new MercadoPagoSubscriptionData(
+                    externalReference: 'PATH-' .  $candidate->id,
+                    email: $candidate->student->email,
+                    startDate: CarbonImmutable::now(),
+                    description: 'Exam Payment - ' . $candidate->student->full_name,
+                    amount: $candidate->total_amount,
+                    months: $candidate->installments,
+                );
+
+                $redirectUrl = $service->createSubscription($data);
+
+                return redirect()->away($redirectUrl);
+            })
+            ->visible($visible);
     }
 
     private function renderStripeFinancing(bool $hidde)
