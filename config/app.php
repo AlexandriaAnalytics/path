@@ -173,6 +173,8 @@ return [
         App\Providers\Filament\CandidatePanelProvider::class,
         App\Providers\Filament\ManagementPanelProvider::class,
 
+        App\Modules\Payments\Providers\PaymentServiceProvider::class,
+
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
     ])->toArray(),
