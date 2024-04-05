@@ -9,7 +9,6 @@ use App\Models\Candidate;
 use App\Models\Payment;
 use App\Services\Payment\Contracts\IPaymentFactory;
 use App\Services\Payment\PaymentFactory;
-use App\Services\Payment\PaymentResourceService;
 use Carbon\Carbon;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Http\Request;
@@ -88,7 +87,7 @@ class PaymentController extends Controller
 
         try {
             $paymentMethod = $this->paymentFactory->create($validated['payment_method']);
-            
+
             $paymentMethod->setRedirectSuccess(route('filament.candidate.pages.payments'));
             $paymentMethod->setRedirectCancel(route('payment.mp.cancel'));
             if ($validated['payment_method'] == 'paypal') { //TODO: sacar este horrible switch e implementar algun tipo de interfaz
@@ -139,7 +138,7 @@ class PaymentController extends Controller
                 'currency' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['currency_code'],
                 'amount' => $response['purchase_units'][0]['payments']['captures'][0]['amount']['value'],
                 'current_period' => Carbon::now()->day(1),
-                ]);
+            ]);
 
             return 'Transaction complete.';
         } else {
@@ -149,7 +148,7 @@ class PaymentController extends Controller
 
     /**
         @deprecated in the future this route action will be desapear
-    */
+     */
     public function mpSuccessTransaction(Request $request)
     {
         return $request['message'] ?? 'success';
@@ -157,7 +156,7 @@ class PaymentController extends Controller
 
     /**
         @deprecated in the future this route action will be reemplace by a generic view
-    */
+     */
     public function mpCancelTransaction(Request $request)
     {
         return 'something went wrong';

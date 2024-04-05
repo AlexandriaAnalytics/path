@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -25,7 +24,6 @@ class Country extends Model
 {
     use HasFactory;
     use LogsActivity;
-    use Sluggable;
 
     protected $fillable = [
         'name',
@@ -45,17 +43,6 @@ class Country extends Model
             ->logAll();
     }
 
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-                'separator' => '_',
-                'onUpdate' => true,
-            ],
-        ];
-    }
-
     public function monetaryString(): string
     {
         return $this->monetary_unit_symbol . $this->monetary_unit;
@@ -70,7 +57,7 @@ class Country extends Model
     {
         return $this->belongsToMany(PaymentMethod::class, 'country_payment_method')->withTimestamps();
     }
-// ->student->region->paymentMethods()->pluck('name')->toArray()
+    // ->student->region->paymentMethods()->pluck('name')->toArray()
     public function countryExams(): HasMany
     {
         return $this->hasMany(CountryExam::class);

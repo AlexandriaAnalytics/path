@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\LogOptions;
@@ -10,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class PaymentMethod extends Model
 {
-    use HasFactory, Sluggable;
+    use HasFactory;
     use LogsActivity;
 
     protected $fillable = [
@@ -31,16 +30,5 @@ class PaymentMethod extends Model
     {
         return LogOptions::defaults()
             ->logAll();
-    }
-
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'name',
-                'separator' => '_',
-                'onUpdate' => true,
-            ],
-        ];
     }
 }
