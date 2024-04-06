@@ -13,11 +13,16 @@ class PaymentService
 {
     public function __construct()
     {
-        MercadoPagoConfig::setAccessToken(config('mercadopago.access_token'));
+        static::setup();
 
         if (App::isLocal()) {
             MercadoPagoConfig::setRuntimeEnviroment(MercadoPagoConfig::LOCAL);
         }
+    }
+
+    public static function setup(): void
+    {
+        MercadoPagoConfig::setAccessToken(config('mercadopago.access_token'));
     }
 
     /**
