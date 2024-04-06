@@ -8,6 +8,8 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use MercadoPago\Client\Payment\PaymentClient;
+use MercadoPago\Client\PreApproval\PreApprovalClient;
 
 class MercadoPagoWebhookController extends Controller
 {
@@ -33,33 +35,22 @@ class MercadoPagoWebhookController extends Controller
     protected function handlePayment(Request $request)
     {
         $orderId = $request->input('data.id');
-        $token = config('mercadopago.access_token');
 
-        $url = 'https://api.mercadopago.com/v1/payments/' . $orderId;
+        $client = new PaymentClient;
 
-        $response = Http::withToken($token)
-            ->get($url);
-
-        if ($response->failed()) {
-            return response()->json(['status' => 'payment_not_found'], 500);
-        }
-
-        $result = $response->body();
-        $data = json_decode($result, true);
-
-        $candidateId = $data['external_reference'];
+        $payment = $client->get($orderId);
 
         Payment::firstOrCreate([
             'payment_method' => 'mercado_pago',
             'payment_id' => $orderId,
         ], [
-            'candidate_id' => $candidateId,
-            'currency' => $data['currency_id'],
-            'amount' => $data['additional_info']['items'][0]['unit_price'],
+            'candidate_id' => $payment->external_reference,
+            'currency' => $payment->currency_id,
+            'amount' => $payment->transaction_amount,
             'status' => 'approved',
         ]);
 
-        $candidate = Candidate::find($candidateId);
+        $candidate = Candidate::find($payment->external_reference);
         $candidate->status = 'paid';
         $candidate->save();
 
@@ -68,9 +59,11 @@ class MercadoPagoWebhookController extends Controller
 
     protected function handleSubscription(Request $request)
     {
-        // $subscriptionId = $request->input('data.id');
+        $subscriptionId = $request->input('data.id');
 
-        // $token = config('mercadopago.access_token');
+        $client = new PreApprovalClient;
+
+        $subscription = $client->get($subscriptionId);
 
         // $url = 'https://api.mercadopago.com/preapproval/' . $subscriptionId;
 
