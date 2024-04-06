@@ -177,42 +177,6 @@ class MercadoPagoWebhookController extends Controller
         return $this->successResponse($request);
     }
 
-    protected function handleMercadoPagoSubscriptionPayment(Request $request)
-    {
-        $paymentId = $request->input('data.id');
-
-        $token = config('mercadopago.access_token.ARG');
-
-        $response = Http::withToken($token)
-            ->get("https://api.mercadopago.com/authorized_payments/{$paymentId}");
-
-        if ($response->failed()) {
-            report(new \Exception('Webhook error' . $request->json()));
-            return response()->json(['status' => 'error'], 500);
-        }
-
-        $response = Http::withToken($token)->get(
-            "https://api.mercadopago.com/preapproval/" .
-                $response->json("preapproval_id")
-        );
-
-        if ($response->failed()) {
-            report(new \Exception('Webhook error' . $request->json()));
-            return response()->json(['status' => 'error'], 500);
-        }
-
-        Candidate::findOrFail($response->json('external_reference'))
-            ->payments()
-            ->where('current_installment', $response->json('summarized.charged_quantity'))
-            ->update([
-                'status' => 'approved',
-                'payment_id' => $paymentId,
-                'paid_date' => $response->json('summarized.last_charged_date')
-            ]);
-
-        return $this->successResponse();
-    }
-
     protected function successResponse()
     {
         return response()->json(['status' => 'success']);
