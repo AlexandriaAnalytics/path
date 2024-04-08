@@ -116,9 +116,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     private function getAccessToken($currency): string
     {
-        $currency = 'ARG';
-
-        return config('mercadopago.access_token.' . $currency);
+        return config('mercadopago.access_token');
     }
 
 

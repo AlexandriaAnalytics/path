@@ -27,7 +27,7 @@ class PaymentService
 
     /**
      * Create a subscription.
-     * 
+     *
      * @param SubscriptionData $data The data of the subscription.
      * @return string|null The redirect URL.
      * @throws MPApiException If an error occurs.
@@ -48,7 +48,7 @@ class PaymentService
                 "transaction_amount" => $monthlyAmount,
                 "currency_id" => "ARS",
             ],
-            "back_url" => "https://example.com",
+            "back_url" => App::isLocal() ? "https://example.com" : route('filament.candidate.pages.candidate-dahboard'),
             "payer_email" => App::isLocal() ? "test_user_1635860396@testuser.com" : $data->email,
             "reason" => $data->description,
         ];
