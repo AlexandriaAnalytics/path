@@ -135,11 +135,8 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     private const AVAILABLE_CURRENCIES = [
         'ARS',
-        'UYU',
-        'CLP',
-        'PYG',
-        'BRL',
     ];
+
     private function getAccessTokenByCurrency(string $currency): string
     {
         switch ($currency) {
