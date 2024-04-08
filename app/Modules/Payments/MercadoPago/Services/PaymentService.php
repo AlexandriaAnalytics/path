@@ -49,7 +49,7 @@ class PaymentService
                 "currency_id" => "ARS",
             ],
             "back_url" => "https://example.com",
-            "payer_email" => App::isProduction() ? $data->email : "test_user_1635860396@testuser.com",
+            "payer_email" => App::isLocal() ? "test_user_1635860396@testuser.com" : $data->email,
             "reason" => $data->description,
         ];
 

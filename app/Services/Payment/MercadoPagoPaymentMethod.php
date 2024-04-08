@@ -6,8 +6,11 @@ use App\Enums\PaymentMethodResult;
 use App\Exceptions\PaymentException;
 use App\Models\Candidate;
 use App\Models\Payment;
+use App\Modules\Payments\MercadoPago\Data\SubscriptionData;
+use App\Modules\Payments\MercadoPago\Services\PaymentService;
 use App\Services\Payment\Contracts\AbstractPayment;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use MercadoPago\Client\Common\RequestOptions;
 use MercadoPago\Client\PreApproval\PreApprovalClient;
@@ -81,42 +84,28 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         );
     }
 
+    // @TODO: Remove this method and instead instance from the controller directly
     public function suscribe(string $id, string $currency, string $total_amount_value, string $description, int $installment_number): PaymentResult
     {
-        $amount = round(floatval($total_amount_value) / $installment_number, 2);
-        $candidate = Candidate::with('student')->findOrFail($id);
+        $paymentService = new PaymentService;
 
-        MercadoPagoConfig::setAccessToken($this->getAccessToken($currency));
+        $candidate = Candidate::findOrFail($id);
 
-        try {
-            $data = [
-                "external_reference" => "PATH-" . $id,
-                "auto_recurring" => [
-                    "frequency" => 1,
-                    "frequency_type" => "months",
-                    "start_date" => now()->toISOString(),
-                    "end_date" => now()->addMonths($installment_number)->toISOString(),
-                    "transaction_amount" => $amount,
-                    "currency_id" => $currency,
-                ],
-                "back_url" => $this->getRedirectSuccess(),
-                "payer_email" => $candidate->student?->email,
-                "reason" => "Exam Payment",
-            ];
+        $preapprovalData = new SubscriptionData(
+            externalReference: $id,
+            email: $candidate->email,
+            startDate: CarbonImmutable::today(),
+            description: $description,
+            amount: $total_amount_value,
+            months: $installment_number,
+        );
 
-            $preapproval = (new PreApprovalClient)
-                ->create($data);
-        } catch (MPApiException $e) {
-            debug($e->getApiResponse()->getContent());
-            throw $e;
-        }
-
-        // $this->createGroupOfInstallments($id, 'mercado_pago', $currency, $amount, $preapproval->id, $installment_number);
+        $redirect = $paymentService->createSubscription($preapprovalData);
 
         return new PaymentResult(
             PaymentMethodResult::REDIRECT,
             null,
-            $preapproval->init_point
+            $redirect,
         );
     }
 
@@ -135,11 +124,8 @@ class MercadoPagoPaymentMethod extends AbstractPayment
 
     private const AVAILABLE_CURRENCIES = [
         'ARS',
-        'UYU',
-        'CLP',
-        'PYG',
-        'BRL',
     ];
+
     private function getAccessTokenByCurrency(string $currency): string
     {
         switch ($currency) {
