@@ -530,12 +530,12 @@ class CandidateResource extends Resource
                         ->preload()
                         ->rules([
                             fn (Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
-                                $level = Level::find($get('level_id'));
+                                $level = Level::find($value);
                                 if (!$level) {
                                     return;
                                 }
 
-                                $student = Student::find($value);
+                                $student = Student::find($get('student_id'));
 
                                 if (
                                     $level->minimum_age && $student->age < $level->minimum_age
