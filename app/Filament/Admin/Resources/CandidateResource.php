@@ -186,7 +186,7 @@ class CandidateResource extends Resource
                     ->trueLabel('Assigned modules')
                     ->falseLabel('Not assigned modules')
                     ->queries(
-                        true: fn (Builder $query) => $query->whereDoesntHaveHas('pendingModules'),
+                        true: fn (Builder $query) => $query->whereDoesntHave('pendingModules'),
                         false: fn (Builder $query) => $query->whereHas('pendingModules'),
                     )
                     ->native(false),
