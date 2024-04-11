@@ -74,7 +74,7 @@ class Student extends Authenticatable
 
     public function getAgeAttribute(): int
     {
-        return (int) Carbon::now()->diffInYears($this->birth_date);
+        return (int) Carbon::now()->diffInYears($this->birth_date, absolute: true);
     }
 
     public function country(): BelongsTo
