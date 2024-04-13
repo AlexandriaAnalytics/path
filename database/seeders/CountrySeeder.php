@@ -15,9 +15,9 @@ class CountrySeeder extends Seeder
      */
     public function run(): void
     {
-        $paymentMethodMercadoPago = PaymentMethod::where('slug', 'mercado_pago')->first();
-        $paymentMethodPaypal = PaymentMethod::where('slug', 'paypal')->first();
-        $paymentMethodStripe = PaymentMethod::where('slug', 'stripe')->first();
+        $paymentMethodMercadoPago = PaymentMethod::where('name', 'Mercado Pago')->first();
+        $paymentMethodPaypal = PaymentMethod::where('name', 'Paypal')->first();
+        $paymentMethodStripe = PaymentMethod::where('name', 'Stripe')->first();
 
 
         $countryAux = Country::create([

@@ -17,6 +17,10 @@ class PaymentMethod extends Model
         'description'
     ];
 
+    protected $attributes = [
+        'slug' => '',
+    ];
+
     public static function boot(): void
     {
         parent::boot();
