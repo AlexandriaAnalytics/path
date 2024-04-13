@@ -23,6 +23,7 @@ class PaymentService
     public static function setup(): void
     {
         MercadoPagoConfig::setAccessToken(config('mercadopago.access_token'));
+        MercadoPagoConfig::setIntegratorId(config('mercadopago.integrator_id'));
     }
 
     /**
