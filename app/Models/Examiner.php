@@ -23,6 +23,15 @@ class Examiner extends Authenticatable implements FilamentUser, HasName
         'password',
     ];
 
+    protected $appends = [
+        'name_surname'
+    ];
+
+    public function getNameSurnameAttribute()
+    {
+        return "$this->name + $this->surname";
+    }
+
     protected $hidden = [
         'password',
         'remember_token',
