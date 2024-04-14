@@ -69,15 +69,20 @@ class ExaminerResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('surname')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('address')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('phone')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('email')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
             ])
             ->filters([
                 //
