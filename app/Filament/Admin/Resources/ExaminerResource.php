@@ -68,11 +68,16 @@ class ExaminerResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('surname'),
-                TextColumn::make('address'),
-                TextColumn::make('phone'),
-                TextColumn::make('email'),
+                TextColumn::make('name')
+                ->sortable(),
+                TextColumn::make('surname')
+                ->sortable(),
+                TextColumn::make('address')
+                ->sortable(),
+                TextColumn::make('phone')
+                ->sortable(),
+                TextColumn::make('email')
+                ->sortable(),
             ])
             ->filters([
                 //
@@ -84,7 +89,8 @@ class ExaminerResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at','desc');
     }
 
     public static function getRelations(): array
