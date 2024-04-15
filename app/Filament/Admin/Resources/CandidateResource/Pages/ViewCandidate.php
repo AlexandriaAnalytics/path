@@ -109,7 +109,7 @@ class ViewCandidate extends ViewRecord
                             $get('module_id')
                                 ? Exam::whereHas('modules', fn ($query) => $query->where('modules.id', $get('module_id')))
                                 ->whereHas('levels', fn ($query) => $query->where('levels.id', $record->level_id))
-                                ->whereDoesntHave('candidates', fn ($query) => $query->where('candidates.id', $record->id))
+                                //->whereDoesntHave('candidates', fn ($query) => $query->where('candidates.id', $record->id))
                                 ->pluck('session_name', 'id')
                                 : []
                         )
