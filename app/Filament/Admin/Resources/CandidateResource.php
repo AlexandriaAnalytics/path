@@ -465,7 +465,6 @@ class CandidateResource extends Resource
     {
         return [
             Fieldset::make('Student')
-                ->disabledOn('edit')
                 ->schema([
                     Select::make('institute_id')
                         ->label('Member or centre')
@@ -545,16 +544,14 @@ class CandidateResource extends Resource
                                 }
                             },
                         ])
-                        ->afterStateUpdated(fn (Set $set) => $set('modules', null))
-                        ->disabledOn('edit'),
+                        ->afterStateUpdated(fn (Set $set) => $set('modules', null)),
                     Select::make('modules')
                         ->multiple()
                         ->required()
                         ->live()
                         ->relationship(name: 'modules', titleAttribute: 'name')
                         ->options(fn (Get $get) => Level::find($get('level_id'))?->modules->pluck('name', 'id'))
-                        ->preload()
-                        ->disabledOn('edit'),
+                        ->preload(),
                 ]),
         ];
     }

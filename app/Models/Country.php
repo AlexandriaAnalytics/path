@@ -35,6 +35,7 @@ class Country extends Model
     protected $attributes = [
         'monetary_unit' => 'USD',
         'monetary_unit_symbol' => '$',
+        'slug' => '',
     ];
 
     public function getActivitylogOptions(): LogOptions
