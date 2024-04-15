@@ -119,6 +119,11 @@ class Payments extends Page implements HasForms
         return
             Action::make('mercadopago_financing')
             ->label('Subscription payment (' . $this->installment_number . ' installments)')
+            ->disabled(function () {
+                $candidate = Candidate::find(session('candidate')->id);
+
+                return !filled($candidate->student?->email);
+            })
             ->icon('heroicon-o-currency-dollar')
             ->action(function (MercadoPagoPaymentService $service) {
                 /** @var Candidate $candidate */
