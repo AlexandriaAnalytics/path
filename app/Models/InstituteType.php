@@ -14,6 +14,10 @@ class InstituteType extends Model
         'files_url',
     ];
 
+    protected $attributes = [
+        'slug' => '',
+    ];
+
     public function institutes()
     {
         return $this->hasMany(Institute::class);
