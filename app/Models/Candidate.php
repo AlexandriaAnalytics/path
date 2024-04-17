@@ -222,7 +222,9 @@ class Candidate extends Model
                 if ($this->granted_discount == 100) {
                     $status = 'paid';
                 }
-
+                if ($this->status == 'paid') {
+                    $status = 'paid';
+                }
                 return $status;
             },
         );
