@@ -216,7 +216,15 @@ class Candidate extends Model
                 if ($installmentsPaid == 0) {
                     $status = 'unpaid';
                 }
-
+                if ($this->granted_discount > 0) {
+                    $status = 'paying';
+                }
+                if ($this->granted_discount == 100) {
+                    $status = 'paid';
+                }
+                if ($this->status == 'paid') {
+                    $status = 'paid';
+                }
                 return $status;
             },
         );
