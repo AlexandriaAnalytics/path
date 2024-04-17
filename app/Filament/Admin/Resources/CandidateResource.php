@@ -96,7 +96,11 @@ class CandidateResource extends Resource
                 TextColumn::make('installments')
                     ->label('Installment counter')
                     ->formatStateUsing(function (string $state, Candidate $record) {
-                        $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        if ($record->paymentStatus == 'paid') {
+                            $installmentsPaid = $state;
+                        } else {
+                            $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        }
                         return $installmentsPaid . ' / ' . $state;
                     })
                     ->sortable(),
