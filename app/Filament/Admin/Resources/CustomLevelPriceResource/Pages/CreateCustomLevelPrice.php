@@ -3,8 +3,10 @@
 namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 
 use App\Filament\Admin\Resources\CustomLevelPriceResource;
+use App\Models\Candidate;
 use App\Models\Level;
 use App\Models\LevelCountry;
+use App\Services\CandidateService;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -43,5 +45,15 @@ class CreateCustomLevelPrice extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->record]);
+    }
+
+    protected function afterCreate(): void
+    {
+        $candidates = Candidate::all();
+        foreach ($candidates as $candidate) {
+            if ($candidate->paymentStatus == 'unpaid') {
+                CandidateService::createConcepts($candidate);
+            }
+        }
     }
 }
