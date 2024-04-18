@@ -225,7 +225,7 @@ class CustomLevelPriceResource extends Resource
             'index' => Pages\ListCustomLevelPrices::route('/'),
             'create' => Pages\CreateCustomLevelPrice::route('/create'),
             'view' => Pages\ViewCustomLevelPrice::route('/{record}'),
-            // 'edit' => Pages\EditCustomLevelPrice::route('/{record}/edit'),
+            'edit' => Pages\EditCustomLevelPrice::route('/{record}/edit'),
         ];
     }
 
