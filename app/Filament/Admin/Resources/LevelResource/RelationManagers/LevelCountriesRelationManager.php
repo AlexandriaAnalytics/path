@@ -3,7 +3,10 @@
 namespace App\Filament\Admin\Resources\LevelResource\RelationManagers;
 
 use App\Enums\ModuleType;
+use App\Models\Candidate;
+use App\Models\Concept;
 use App\Models\Module;
+use App\Services\CandidateService;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
@@ -115,7 +118,16 @@ class LevelCountriesRelationManager extends RelationManager
                 Tables\Actions\ViewAction::make()
                     ->label('View exam fees'),
                 Tables\Actions\EditAction::make()
-                    ->label('Edit'),
+                    ->label('Edit')
+                    ->after(function () {
+                        $candidates = Candidate::all();
+                        foreach ($candidates as $candidate) {
+                            if ($candidate->paymentStatus == 'unpaid') {
+                                Concept::where('candidate_id', $candidate->id)->delete();
+                                CandidateService::createConcepts($candidate);
+                            }
+                        }
+                    }),
                 Tables\Actions\DeleteAction::make()
                     ->label('Delete'),
             ])
