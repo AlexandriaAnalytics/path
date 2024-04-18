@@ -119,7 +119,7 @@ class LevelCountriesRelationManager extends RelationManager
                     ->label('View exam fees'),
                 Tables\Actions\EditAction::make()
                     ->label('Edit')
-                    ->after(function () {
+                /*  ->after(function () {
                         $candidates = Candidate::all();
                         foreach ($candidates as $candidate) {
                             if ($candidate->paymentStatus == 'unpaid') {
@@ -127,7 +127,7 @@ class LevelCountriesRelationManager extends RelationManager
                                 CandidateService::createConcepts($candidate);
                             }
                         }
-                    }),
+                    }) */,
                 Tables\Actions\DeleteAction::make()
                     ->label('Delete'),
             ])
