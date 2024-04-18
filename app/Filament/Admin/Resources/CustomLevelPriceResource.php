@@ -5,12 +5,15 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\CustomPricing;
 use App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 use App\Filament\Admin\Resources\CustomLevelPriceResource\RelationManagers;
+use App\Models\Candidate;
+use App\Models\Concept;
 use App\Models\Country;
 use App\Models\CustomLevelPrice;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\LevelCountry;
 use App\Models\Module;
+use App\Services\CandidateService;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -201,7 +204,16 @@ class CustomLevelPriceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->after(function () {
+                        $candidates = Candidate::all();
+                        foreach ($candidates as $candidate) {
+                            if ($candidate->paymentStatus == 'unpaid') {
+                                Concept::where('candidate_id', $candidate->id)->delete();
+                                CandidateService::createConcepts($candidate);
+                            }
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
