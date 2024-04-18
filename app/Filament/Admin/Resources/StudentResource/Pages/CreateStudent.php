@@ -24,7 +24,7 @@ class CreateStudent extends CreateRecord
         $surname = $data['surname'];
         $data['surname'] = Str::ucwords(strtolower($surname));
 
-        if($data['email'] == null) {
+        if (empty($data['email'])) {
             $data['email'] = 'pagospathexaminations@gmail.com';
         }
 
