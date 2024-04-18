@@ -59,7 +59,7 @@ class ViewCustomLevelPrice extends ViewRecord
     {
         return [
             Actions\DeleteAction::make(),
-            // Actions\EditAction::make(),
+            Actions\EditAction::make(),
         ];
     }
 }
