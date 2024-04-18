@@ -186,14 +186,26 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
-                TextColumn::make('installments')
+                    TextColumn::make('installments')
+                    ->label('Installment counter')
                     ->formatStateUsing(function (string $state, Candidate $record) {
-                        $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        if ($record->paymentStatus == 'paid') {
+                            $installmentsPaid = $state;
+                        } else {
+                            $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
+                        }
+                        if ($record->paymentStatus == 'unpaid') {
+                            $payment_deadline = $record
+                                ->exams
+                                ->min('payment_deadline');
+                            $state = round(
+                                now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                0,
+                            ) + 1;
+                        }
                         return $installmentsPaid . ' / ' . $state;
                     })
-                    ->default('No installment')
-                    ->label('Installment counter')
-                    ->visible(fn () => Filament::getTenant()->installment_plans),
+                    ->sortable(),
                 TextColumn::make('total_amount')
                     ->label('Total amount')
                     ->money(
