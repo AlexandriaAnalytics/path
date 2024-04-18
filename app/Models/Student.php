@@ -47,6 +47,15 @@ class Student extends Authenticatable
         'status' => 'active',
     ];
 
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (Student $student) {
+            $student->candidates()->delete();
+        });
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
