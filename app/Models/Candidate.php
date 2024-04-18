@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property \App\Models\Student $student
@@ -27,6 +28,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Candidate extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'candidates';
 
     protected $fillable = [
