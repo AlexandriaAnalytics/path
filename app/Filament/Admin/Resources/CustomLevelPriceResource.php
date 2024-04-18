@@ -204,16 +204,7 @@ class CustomLevelPriceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
-                    ->after(function () {
-                        $candidates = Candidate::all();
-                        foreach ($candidates as $candidate) {
-                            if ($candidate->paymentStatus == 'unpaid') {
-                                Concept::where('candidate_id', $candidate->id)->delete();
-                                CandidateService::createConcepts($candidate);
-                            }
-                        }
-                    }),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
