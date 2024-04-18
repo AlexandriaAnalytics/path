@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 
 use App\Filament\Admin\Resources\CustomLevelPriceResource;
 use App\Models\Candidate;
+use App\Models\Concept;
 use App\Models\Level;
 use App\Models\LevelCountry;
 use App\Services\CandidateService;
@@ -52,6 +53,7 @@ class CreateCustomLevelPrice extends CreateRecord
         $candidates = Candidate::all();
         foreach ($candidates as $candidate) {
             if ($candidate->paymentStatus == 'unpaid') {
+                Concept::where('candidate_id', $candidate->id)->delete();
                 CandidateService::createConcepts($candidate);
             }
         }
