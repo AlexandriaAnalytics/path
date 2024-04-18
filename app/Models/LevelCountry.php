@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\CandidateService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,6 +19,22 @@ class LevelCountry extends Model
         'price_exam_right_all_modules',
         'price_exam_right',
     ];
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::saved(function () {
+            $candidates = Candidate::all();
+
+            foreach ($candidates as $candidate) {
+                if ($candidate->paymentStatus == 'unpaid') {
+                    $candidate->concepts()->delete();
+                    CandidateService::createConcepts($candidate);
+                }
+            }
+        });
+    }
 
     public function level(): BelongsTo
     {
