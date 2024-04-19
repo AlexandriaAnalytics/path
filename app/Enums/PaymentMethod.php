@@ -4,8 +4,9 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum PaymentMethod: string{
-    case MERCADO_PAGO = 'mercado_pago';
+enum PaymentMethod: string
+{
+    case MERCADO_PAGO = 'Mercado Pago';
     case PAYPAL = 'paypal';
     case STRIPE = 'stripe';
     case CASH = 'cash';

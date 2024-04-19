@@ -53,15 +53,15 @@ class Payments extends Page implements HasForms
         $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
         if ($exam) {
             $this->examDate = $exam->exam->scheduled_date;
-            if ($this->candidate->installments) {
-                $this->installment_number = $this->candidate->installments;
+            if ($this->candidate->installmentAttribute) {
+                $this->installment_number = $this->candidate->installmentAttribute;
             }
         }
 
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
 
-        $this->installment_number = $this->candidate->installments;
+        $this->installment_number = $this->candidate->installmentAttribute;
 
 
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
@@ -111,7 +111,7 @@ class Payments extends Page implements HasForms
             ->label('Financing with PayPal (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->paypalFinaciament())
-            ->hidden(!$hidde);
+            ->visible($hidde);
     }
 
     private function renderMercadoPagoFinancing(bool $visible): Action
@@ -135,7 +135,7 @@ class Payments extends Page implements HasForms
                     startDate: CarbonImmutable::now(),
                     description: 'Exam Payment - ' . $candidate->student->full_name,
                     amount: $candidate->total_amount,
-                    months: $candidate->installments,
+                    months: $candidate->installmentAttribute,
                 );
 
                 $redirectUrl = $service->createSubscription($data);
@@ -157,25 +157,27 @@ class Payments extends Page implements HasForms
 
     protected function getActions(): array
     {
-        $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
+        //$paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
+        $paymentMethodsAvailable = $this->candidate->student->region->paymentMethods->pluck('name')->toArray();
+        //dd($this->candidate->student->region->paymentMethods->pluck('name')->toArray());
         return [
             $this->renderPaypalFinancing(
                 in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderStripeFinancing(
                 in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderMercadoPagoFinancing(
                 in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
