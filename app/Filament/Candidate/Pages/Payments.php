@@ -111,7 +111,7 @@ class Payments extends Page implements HasForms
             ->label('Financing with PayPal (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
             ->action(fn () => $this->paypalFinaciament())
-            ->hidden(!$hidde);
+            ->visible($hidde);
     }
 
     private function renderMercadoPagoFinancing(bool $visible): Action
@@ -157,25 +157,27 @@ class Payments extends Page implements HasForms
 
     protected function getActions(): array
     {
-        $paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
+        //$paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
+        $paymentMethodsAvailable = $this->candidate->student->region->paymentMethods->pluck('name')->toArray();
+        //dd($this->candidate->student->region->paymentMethods->pluck('name')->toArray());
         return [
             $this->renderPaypalFinancing(
                 in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderStripeFinancing(
                 in_array(PaymentMethod::STRIPE->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
             $this->renderMercadoPagoFinancing(
                 in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->status == 'unpaid'
+                    && $this->candidate->paymentStatus == 'unpaid'
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
