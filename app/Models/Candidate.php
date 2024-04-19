@@ -232,4 +232,22 @@ class Candidate extends Model
             },
         );
     }
+
+    public function installmentAttribute(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->paymentStatus == 'unpaid') {
+                    $payment_deadline = $this
+                        ->exams
+                        ->min('payment_deadline');
+                    $installments = round(
+                        now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                        0,
+                    ) + 1;
+                }
+                return $installments;
+            }
+        );
+    }
 }

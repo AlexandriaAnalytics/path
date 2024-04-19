@@ -53,15 +53,15 @@ class Payments extends Page implements HasForms
         $exam = CandidateExam::where('candidate_id', $this->candidate->id)->first();
         if ($exam) {
             $this->examDate = $exam->exam->scheduled_date;
-            if ($this->candidate->installments) {
-                $this->installment_number = $this->candidate->installments;
+            if ($this->candidate->installmentAttribute) {
+                $this->installment_number = $this->candidate->installmentAttribute;
             }
         }
 
 
         $this->bankData = ModelsPaymentMethod::where('name', 'Transfer')->first()->description;
 
-        $this->installment_number = $this->candidate->installments;
+        $this->installment_number = $this->candidate->installmentAttribute;
 
 
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
@@ -135,7 +135,7 @@ class Payments extends Page implements HasForms
                     startDate: CarbonImmutable::now(),
                     description: 'Exam Payment - ' . $candidate->student->full_name,
                     amount: $candidate->total_amount,
-                    months: $candidate->installments,
+                    months: $candidate->installmentAttribute,
                 );
 
                 $redirectUrl = $service->createSubscription($data);
