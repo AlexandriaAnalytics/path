@@ -158,8 +158,8 @@ class Payments extends Page implements HasForms
     protected function getActions(): array
     {
         //$paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
-        $paymentMethodsAvailable = $this->candidate->student->region->paymentMethods->pluck('name')->toArray();
-        dd($this->candidate->student->region->paymentMethods->pluck('name')->toArray());
+        $paymentMethodsAvailable = $this->candidate->student->region->paymentMethods->pluck('slug')->toArray();
+        //dd($this->candidate->student->region->paymentMethods->pluck('slug')->toArray());
         return [
             $this->renderPaypalFinancing(
                 in_array(PaymentMethod::PAYPAL->value, $paymentMethodsAvailable)

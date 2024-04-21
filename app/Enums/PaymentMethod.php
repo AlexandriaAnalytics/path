@@ -6,7 +6,7 @@ use Filament\Support\Contracts\HasLabel;
 
 enum PaymentMethod: string
 {
-    case MERCADO_PAGO = 'Mercado Pago';
+    case MERCADO_PAGO = 'mercado_pago';
     case PAYPAL = 'paypal';
     case STRIPE = 'stripe';
     case CASH = 'cash';
