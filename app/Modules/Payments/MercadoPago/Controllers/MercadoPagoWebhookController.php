@@ -10,6 +10,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use MercadoPago\Client\Invoice\InvoiceClient;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\PreApproval\PreApprovalClient;
 use MercadoPago\Resources\PreApproval\Summarized;
@@ -123,17 +124,11 @@ class MercadoPagoWebhookController extends Controller
     {
         $invoiceId = $request->input('data.id');
 
-        // @TODO: Use Mercado Pago SDK after its InvoiceClient is fixed
-        // https://github.com/mercadopago/sdk-php/pull/506
-        $response = Http::withToken(config("mercadopago.access_token"))
-            ->get("https://api.mercadopago.com/authorized_payments/{$invoiceId}");
+        $invoiceClient = new InvoiceClient;
 
-        if ($response->failed()) {
-            report(new \Exception('Webhook error' . $request->json()));
-            return response()->json(['status' => 'error'], 500);
-        }
+        $invoice = $invoiceClient->get($invoiceId);
 
-        $preapprovalId = $response->json('preapproval_id');
+        $preapprovalId = $invoice->preapproval_id;
 
         // Get preapproval (subscription)
         $preapproval = (new PreApprovalClient)
@@ -163,7 +158,7 @@ class MercadoPagoWebhookController extends Controller
                     'payment_id' => $preapprovalId,
                     'currency' => 'ARS',
                     'amount' => $monthlyAmount,
-                    'installment_number' => $candidate->installments,
+                    'installment_number' => $preapprovalSummary->quotas,
                     'current_installment' => $installment,
                     'status' => 'pending',
                     'current_period' => $dateCreated->addMonths($installment)->day(1),
