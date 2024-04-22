@@ -53,6 +53,7 @@ class MercadoPagoWebhookController extends Controller
             'currency' => $payment->currency_id,
             'amount' => $payment->transaction_amount,
             'status' => 'approved',
+            'current_period' => CarbonImmutable::parse($payment->date_approved)->day(1),
         ]);
 
         $candidate = Candidate::find($payment->external_reference);
