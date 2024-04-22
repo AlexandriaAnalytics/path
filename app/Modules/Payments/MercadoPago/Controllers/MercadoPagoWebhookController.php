@@ -45,11 +45,16 @@ class MercadoPagoWebhookController extends Controller
 
         $payment = $client->get($orderId);
 
+        // Extract Candidate ID from external reference (PATH-1234)
+        $candidateId = preg_match('/PATH-(\d+)/', $payment->external_reference, $matches)
+            ? $matches[1]
+            : null;
+
         Payment::firstOrCreate([
             'payment_method' => 'mercado_pago',
             'payment_id' => $orderId,
         ], [
-            'candidate_id' => $payment->external_reference,
+            'candidate_id' => $candidateId,
             'currency' => $payment->currency_id,
             'amount' => $payment->transaction_amount,
             'status' => 'approved',
