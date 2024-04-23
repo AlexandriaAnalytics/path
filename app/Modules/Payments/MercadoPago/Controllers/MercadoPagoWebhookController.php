@@ -52,6 +52,12 @@ class MercadoPagoWebhookController extends Controller
             return;
         }
 
+        $status = match ($payment->status) {
+            'authorized', 'approved' => 'approved',
+            'rejected' => 'rejected',
+            default => 'pending',
+        };
+
         // Extract Candidate ID from external reference (PATH-1234)
         $candidateId = preg_match('/PATH-(\d+)/', $payment->external_reference, $matches)
             ? $matches[1]
@@ -64,7 +70,7 @@ class MercadoPagoWebhookController extends Controller
             'candidate_id' => $candidateId,
             'currency' => $payment->currency_id,
             'amount' => $payment->transaction_amount,
-            'status' => 'approved',
+            'status' => $status,
             'current_period' => CarbonImmutable::parse($payment->date_approved)->day(1),
         ]);
 
