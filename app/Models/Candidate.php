@@ -230,6 +230,9 @@ class Candidate extends Model
                 }
                 if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNull('installment_number')->count() > 0) {
                     $status = 'paid';
+                    $candidate = Candidate::find($this->id);
+                    $candidate->installments = 1;
+                    $candidate->save();
                 }
                 return $status;
             },
