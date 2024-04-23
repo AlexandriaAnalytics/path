@@ -368,7 +368,7 @@ class CandidateResource extends Resource
                     EditAction::make()
                         ->hidden(
                             fn (Candidate $candidate) =>
-                            $candidate->status !== 'unpaid'
+                            $candidate->paymentStatus !== 'unpaid'
                         ),
                     Action::make('request changes')
                         ->visible(fn (Candidate $candidate) => $candidate->status !== 'unpaid')
