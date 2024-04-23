@@ -151,7 +151,10 @@ class MercadoPagoWebhookController extends Controller
         $candidate = Candidate::findOrFail($candidateId);
 
         // Check if the candidate already has payments
-        if ($candidate->payments()->count() === 0) {
+        if ($candidate->payments()
+            ->whereNotNull('installment_number')
+            ->count() === 0
+        ) {
             $monthlyAmount = ($preapprovalSummary->charged_amount + $preapprovalSummary->pending_charge_amount) / ($preapprovalSummary->charged_quantity + $preapprovalSummary->pending_charge_quantity);
 
             $dateCreated = CarbonImmutable::parse($preapproval->date_created);
