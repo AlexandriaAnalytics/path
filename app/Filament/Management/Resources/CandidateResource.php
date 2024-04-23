@@ -186,9 +186,10 @@ class CandidateResource extends Resource
                         });
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
-                    TextColumn::make('installments')
+                TextColumn::make('installments')
                     ->label('Installment counter')
                     ->formatStateUsing(function (string $state, Candidate $record) {
+                        $state = $record->installmentAttribute;
                         if ($record->paymentStatus == 'paid') {
                             $installmentsPaid = $state;
                         } else {
