@@ -46,6 +46,11 @@ class MercadoPagoWebhookController extends Controller
 
         $payment = $client->get($orderId);
 
+        // Do not handle preapproval payments here
+        if ($payment->metadata->preapproval_id) {
+            return;
+        }
+
         // Extract Candidate ID from external reference (PATH-1234)
         $candidateId = preg_match('/PATH-(\d+)/', $payment->external_reference, $matches)
             ? $matches[1]
