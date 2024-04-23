@@ -96,6 +96,7 @@ class CandidateResource extends Resource
                 TextColumn::make('installments')
                     ->label('Installment counter')
                     ->formatStateUsing(function (string $state, Candidate $record) {
+                        $state = $record->installmentAttribute;
                         if ($record->paymentStatus == 'paid') {
                             $installmentsPaid = $state;
                         } else {

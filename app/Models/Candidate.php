@@ -243,17 +243,26 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                if ($this->paymentStatus == 'unpaid') {
-                    $payment_deadline = $this
-                        ->exams
-                        ->min('payment_deadline');
-                    $installments = round(
-                        now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
-                        0,
-                    ) + 1;
+                $payment_deadline = $this
+                    ->exams
+                    ->min('payment_deadline');
+                if (round(
+                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                    0,
+                ) + 1 < $this->installments) {
+                    if ($this->paymentStatus == 'unpaid') {
+
+                        $installments = round(
+                            now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                            0,
+                        ) + 1;
+                    } else {
+                        $installments = Payment::where('candidate_id', $this->id)->count();
+                    }
                 } else {
-                    $installments = Payment::where('candidate_id', $this->id)->count();
+                    $installments = $this->installments;
                 }
+
                 return $installments;
             }
         );
