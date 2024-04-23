@@ -371,7 +371,7 @@ class CandidateResource extends Resource
                             $candidate->paymentStatus !== 'unpaid'
                         ),
                     Action::make('request changes')
-                        ->visible(fn (Candidate $candidate) => $candidate->status !== 'unpaid')
+                        ->visible(fn (Candidate $candidate) => $candidate->paymentStatus !== 'unpaid')
                         ->icon('heroicon-o-arrows-right-left')
                         ->form([
                             Textarea::make('changes')
