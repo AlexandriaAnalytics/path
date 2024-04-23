@@ -228,6 +228,9 @@ class Candidate extends Model
                 if ($this->status == 'paid') {
                     $status = 'paid';
                 }
+                if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNull('installment_number')->count() > 0) {
+                    $status = 'paid';
+                }
                 return $status;
             },
         );
@@ -245,6 +248,8 @@ class Candidate extends Model
                         now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                         0,
                     ) + 1;
+                } else {
+                    $installments = Payment::where('candidate_id', $this->id)->count();
                 }
                 return $installments;
             }
