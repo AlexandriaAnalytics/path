@@ -22,7 +22,7 @@ class WidgetCandidate extends BaseWidget
         return [ // i want to show the candidate number here from session variable call candidate
             Stat::make('Candidate number', $candidate->id),
             Stat::make('Student name', $candidate->student->full_name),
-            Stat::make('Payment status', $candidate->status),
+            Stat::make('Payment status', $candidate->paymentStatus),
 
             /* Stat::make('Modules', function () use ($candidate) {
                 $modules = $candidate->modules->reduce(function ($carry, $module) {
