@@ -123,20 +123,4 @@ class MercadoPagoPaymentMethod extends AbstractPayment
     private const AVAILABLE_CURRENCIES = [
         'ARS',
     ];
-
-    private function getAccessTokenByCurrency(string $currency): string
-    {
-        switch ($currency) {
-            case 'ARG':
-                return config('mercadopago.access_token.ARG');
-            case 'UYU':
-                return config('mercadopago.access_token.UYU');
-            case 'CLP':
-                return config('mercadopago.access_token.CLP');
-            case 'PYG':
-                return config('mercadopago.access_token.PYG');
-            case 'BRS':
-                return config('mercadopago.access_token.BRS');
-        }
-    }
 }

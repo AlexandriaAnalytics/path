@@ -63,7 +63,6 @@ class MercadoPagoWebhookController extends Controller
         ]);
 
         $candidate = Candidate::find($candidateId);
-        $candidate->status = 'paid';
         $candidate->save();
 
         return response()->json(['status' => 'success']);
@@ -151,10 +150,16 @@ class MercadoPagoWebhookController extends Controller
         $candidate = Candidate::findOrFail($candidateId);
 
         // Check if the candidate already has payments
-        if ($candidate->payments()
-            ->whereNotNull('installment_number')
-            ->count() === 0
+        if (
+            $candidate->payments()
+            ->wherePaymentId($preapprovalId)
+            ->count() != $preapprovalSummary->quotas
         ) {
+            // Delete existing payments for this preapproval
+            $candidate->payments()
+                ->wherePaymentId($preapprovalId)
+                ->delete();
+
             $monthlyAmount = ($preapprovalSummary->charged_amount + $preapprovalSummary->pending_charge_amount) / ($preapprovalSummary->charged_quantity + $preapprovalSummary->pending_charge_quantity);
 
             $dateCreated = CarbonImmutable::parse($preapproval->date_created);
@@ -176,8 +181,9 @@ class MercadoPagoWebhookController extends Controller
         }
 
         $candidate->payments()
-            ->where('payment_id', $preapprovalId)
-            ->where('current_installment', $preapprovalSummary->charged_quantity)
+            ->wherePaymentId($preapprovalId)
+            ->whereNotNull('installment_number')
+            ->where('current_installment', '<=', $preapprovalSummary->charged_quantity)
             ->update([
                 'status' => 'approved',
                 'paid_date' => CarbonImmutable::parse($preapprovalSummary->last_charged_date),
