@@ -195,7 +195,7 @@ class CandidateResource extends Resource
                         } else {
                             $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
                         }
-                        if ($record->paymentStatus == 'unpaid') {
+                        /* if ($record->paymentStatus == 'unpaid') {
                             $payment_deadline = $record
                                 ->exams
                                 ->min('payment_deadline');
@@ -203,7 +203,7 @@ class CandidateResource extends Resource
                                 now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                                 0,
                             ) + 1;
-                        }
+                        } */
                         return $installmentsPaid . ' / ' . $state;
                     })
                     ->sortable(),
