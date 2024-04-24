@@ -52,11 +52,13 @@ class MercadoPagoWebhookController extends Controller
             return;
         }
 
-        $status = match ($payment->status) {
+        /* $status = match ($payment->status) {
             'authorized', 'approved' => 'approved',
             'rejected' => 'rejected',
             default => 'pending',
-        };
+        }; */
+
+        $status = $payment->status;
 
         // Extract Candidate ID from external reference (PATH-1234)
         $candidateId = preg_match('/PATH-(\d+)/', $payment->external_reference, $matches)
