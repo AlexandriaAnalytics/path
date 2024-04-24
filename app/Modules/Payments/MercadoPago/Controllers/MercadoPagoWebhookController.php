@@ -40,7 +40,7 @@ class MercadoPagoWebhookController extends Controller
 
     protected function handlePayment(Request $request)
     {
-        $orderId = $request->input('data.id');
+        $orderId = $request->json('data.id');
 
         $client = new PaymentClient;
 
@@ -135,7 +135,7 @@ class MercadoPagoWebhookController extends Controller
 
     public function handleSubscriptionAuthorizedPayment(Request $request)
     {
-        $invoiceId = $request->input('data.id');
+        $invoiceId = $request->json('data.id');
 
         $invoiceClient = new InvoiceClient;
 
