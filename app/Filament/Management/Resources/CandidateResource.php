@@ -245,10 +245,10 @@ class CandidateResource extends Resource
                     ->form([
                         TextInput::make('installments')
                             ->label('Number of installments')
-                            ->default(fn (Candidate $candidate) => $candidate->installments)
+                            ->default(fn (Candidate $candidate) => $candidate->installmentAttribute)
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(fn (Candidate $candidate) => $candidate->installments)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installmentAttribute)
                     ])
                     ->action(function (Candidate $candidate, array $data) {
                         if (!isset($data['installments'])) {
