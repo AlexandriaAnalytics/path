@@ -48,7 +48,7 @@ class MercadoPagoWebhookController extends Controller
 
         $metadata = (object) $payment->metadata;
         // Do not handle preapproval payments here
-        if ($metadata->preapproval_id !== null) {
+        if (isset($metadata->preapproval_id)) {
             return;
         }
 
