@@ -241,7 +241,7 @@ class CandidateResource extends Resource
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
-                    ->visible(fn (Candidate $candidate) => $candidate->student->institute->installment_plans && Payment::query()->where('candidate_id', $candidate->id)->where('status', 'approved')->count() == 0)
+                    ->visible(fn (Candidate $candidate) => $candidate->student->institute->installment_plans && Payment::query()->where('candidate_id', $candidate->id)->where('status', 'approved')->count() == 0 && $candidate->paymentStatus == 'unpaid')
                     ->form([
                         TextInput::make('installments')
                             ->label('Number of installments')
