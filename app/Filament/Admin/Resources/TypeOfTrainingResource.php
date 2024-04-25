@@ -61,7 +61,7 @@ class TypeOfTrainingResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                 ])
             ])
-            ->defaultSort('created_at', 'desc');;
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
