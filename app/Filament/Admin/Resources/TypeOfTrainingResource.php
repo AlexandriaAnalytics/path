@@ -43,6 +43,7 @@ class TypeOfTrainingResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
