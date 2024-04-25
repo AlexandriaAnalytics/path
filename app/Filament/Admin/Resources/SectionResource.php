@@ -38,7 +38,6 @@ class SectionResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 MarkdownEditor::make('description')
-                    ->required()
                     ->columnSpanFull(),
             ]);
     }
