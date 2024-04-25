@@ -48,17 +48,15 @@ class MercadoPagoWebhookController extends Controller
 
         $metadata = (object) $payment->metadata;
         // Do not handle preapproval payments here
-        if ($metadata->preapproval_id !== null) {
+        if (isset($metadata->preapproval_id)) {
             return;
         }
 
-        /* $status = match ($payment->status) {
+        $status = match ($payment->status) {
             'authorized', 'approved' => 'approved',
             'rejected' => 'rejected',
             default => 'pending',
-        }; */
-
-        $status = $payment->status;
+        };
 
         // Extract Candidate ID from external reference (PATH-1234)
         $candidateId = preg_match('/PATH-(\d+)/', $payment->external_reference, $matches)

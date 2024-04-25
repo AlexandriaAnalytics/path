@@ -195,7 +195,7 @@ class CandidateResource extends Resource
                         } else {
                             $installmentsPaid = Payment::query()->where('candidate_id', $record->id)->where('status', 'approved')->count();
                         }
-                        if ($record->paymentStatus == 'unpaid') {
+                        /* if ($record->paymentStatus == 'unpaid') {
                             $payment_deadline = $record
                                 ->exams
                                 ->min('payment_deadline');
@@ -203,7 +203,7 @@ class CandidateResource extends Resource
                                 now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                                 0,
                             ) + 1;
-                        }
+                        } */
                         return $installmentsPaid . ' / ' . $state;
                     })
                     ->sortable(),
@@ -241,14 +241,14 @@ class CandidateResource extends Resource
                 Action::make('financing')
                     ->label('Installments')
                     ->icon('heroicon-o-document')
-                    ->visible(fn (Candidate $candidate) => $candidate->student->institute->installment_plans && Payment::query()->where('candidate_id', $candidate->id)->where('status', 'approved')->count() == 0)
+                    ->visible(fn (Candidate $candidate) => $candidate->student->institute->installment_plans && Payment::query()->where('candidate_id', $candidate->id)->where('status', 'approved')->count() == 0 && $candidate->paymentStatus == 'unpaid')
                     ->form([
                         TextInput::make('installments')
                             ->label('Number of installments')
-                            ->default(fn (Candidate $candidate) => $candidate->installments)
+                            ->default(fn (Candidate $candidate) => $candidate->installmentAttribute)
                             ->numeric()
                             ->minValue(1)
-                            ->maxValue(fn (Candidate $candidate) => $candidate->installments)
+                            ->maxValue(fn (Candidate $candidate) => $candidate->installmentAttribute)
                     ])
                     ->action(function (Candidate $candidate, array $data) {
                         if (!isset($data['installments'])) {
