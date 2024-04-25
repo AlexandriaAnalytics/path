@@ -24,7 +24,7 @@ class SectionResource extends Resource
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationLabel = 'Section';
+    protected static ?string $navigationLabel = 'Sections';
 
     protected static ?string $pluralModelLabel = 'Sections';
 
