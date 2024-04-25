@@ -44,18 +44,23 @@ class TypeOfTrainingResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label('Created on')
+                    ->sortable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                ])
+            ])
+            ->defaultSort('created_at', 'desc');;
     }
 
     public static function getRelations(): array
