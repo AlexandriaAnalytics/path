@@ -101,7 +101,7 @@ class ViewCandidate extends ViewRecord
                         return $amount;
                     }),
                 TextEntry::make('installments')
-                    ->default(fn ($record) => $record->getInstallmentCounterAttribute())
+                    ->default(fn ($record) => $record->installmentAttribute)
             ]);
     }
 
