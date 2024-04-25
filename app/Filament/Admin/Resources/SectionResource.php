@@ -2,10 +2,11 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\TypeOfTrainingResource\Pages;
-use App\Filament\Admin\Resources\TypeOfTrainingResource\RelationManagers;
-use App\Models\TypeOfTraining;
+use App\Filament\Admin\Resources\SectionResource\Pages;
+use App\Filament\Admin\Resources\SectionResource\RelationManagers;
+use App\Models\Section;
 use Filament\Forms;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,17 +16,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TypeOfTrainingResource extends Resource
+class SectionResource extends Resource
 {
-    protected static ?string $model = TypeOfTraining::class;
+    protected static ?string $model = Section::class;
 
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Settings';
 
-    protected static ?string $navigationLabel = 'Type of training';
+    protected static ?string $navigationLabel = 'Section';
 
-    protected static ?string $pluralModelLabel = 'Types of training';
+    protected static ?string $pluralModelLabel = 'Sections';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
@@ -34,7 +35,10 @@ class TypeOfTrainingResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
+                MarkdownEditor::make('description')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -44,6 +48,10 @@ class TypeOfTrainingResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('description')
+                    ->searchable()
+                    ->wrap()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
@@ -59,9 +67,9 @@ class TypeOfTrainingResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                ])
+                ]),
             ])
-            ->defaultSort('created_at', 'desc');
+            ->defaultSort('created_at', 'desc');;
     }
 
     public static function getRelations(): array
@@ -74,9 +82,9 @@ class TypeOfTrainingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTypeOfTrainings::route('/'),
-            'create' => Pages\CreateTypeOfTraining::route('/create'),
-            'edit' => Pages\EditTypeOfTraining::route('/{record}/edit'),
+            'index' => Pages\ListSections::route('/'),
+            'create' => Pages\CreateSection::route('/create'),
+            'edit' => Pages\EditSection::route('/{record}/edit'),
         ];
     }
 }
