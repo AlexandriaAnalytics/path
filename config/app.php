@@ -171,7 +171,6 @@ return [
 
         App\Providers\Filament\AdminPanelProvider::class,
         App\Providers\Filament\CandidatePanelProvider::class,
-        App\Providers\Filament\ExaminerPanelProvider::class,
         App\Providers\Filament\ManagementPanelProvider::class,
 
         App\Modules\Payments\Providers\PaymentServiceProvider::class,
