@@ -4,6 +4,7 @@ namespace App\Modules\Payments\MercadoPago\Services;
 
 use App\Modules\Payments\MercadoPago\Data\SubscriptionData;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use MercadoPago\Client\PreApproval\PreApprovalClient;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\MercadoPagoConfig;
@@ -37,7 +38,7 @@ class PaymentService
     {
         $monthlyAmount = round(floatval($data->amount) / $data->months, 2);
 
-        $client = new PreApprovalClient();
+        $client = new PreApprovalClient;
 
         $data = [
             "external_reference" => $data->externalReference,
@@ -55,6 +56,12 @@ class PaymentService
         ];
 
         $preapproval = $client->create($data);
+
+        Log::info('Created preapproval', [
+            'preapproval_id' => $preapproval->id,
+            'external_reference' => $preapproval->external_reference,
+            'init_point' => $preapproval->init_point,
+        ]);
 
         return $preapproval->init_point;
     }

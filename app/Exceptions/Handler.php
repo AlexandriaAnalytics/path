@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Response;
 use MercadoPago\Exceptions\MPApiException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
@@ -32,9 +33,8 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (MPApiException $e) {
-            $status = $e->getApiResponse()->getStatusCode();
             $message = $e->getApiResponse()->getContent()['message'];
-            abort($status, $message);
+            abort(500, $message);
         });
     }
 }
