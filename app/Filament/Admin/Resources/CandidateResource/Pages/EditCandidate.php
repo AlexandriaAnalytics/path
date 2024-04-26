@@ -25,9 +25,9 @@ class EditCandidate extends EditRecord
 
     protected function afterSave(): void
     {
+        dd($this->record);
         Concept::where('candidate_id', $this->record->id)->delete();
         CandidateService::createConcepts($this->record);
-        dd($this->record);
     }
 
 
