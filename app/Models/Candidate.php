@@ -207,7 +207,7 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                $installments = $this->installments;
+                $installments = $this->installmentAttribute;
                 $installmentsPaid = Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->count();
                 $status = null;
                 if ($installments - $installmentsPaid == 0) {
@@ -228,7 +228,7 @@ class Candidate extends Model
                 if ($this->status == 'paid') {
                     $status = 'paid';
                 }
-                if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNot('payment_method','financing by associated')->whereNull('installment_number')->count() > 0) {
+                if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNull('installment_number')->where('payment_method', 'mercado_pago')->sum('amount') == Candidate::find($this->id)->totalAmount) {
                     $candidate = Candidate::find($this->id);
                     $status = 'paid';
                     $candidate->installments = 1;
