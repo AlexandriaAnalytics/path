@@ -27,11 +27,6 @@ class EditCandidate extends EditRecord
     {
         Concept::where('candidate_id', $this->record->id)->delete();
         CandidateService::createConcepts($this->record);
-    }
-
-
-    protected function beforeSave()
-    {
         $candidate = Candidate::find($this->data['id']);
         if ($candidate->status == 'unpaid') {
             $payment_deadline = $candidate->exams->min('payment_deadline');
