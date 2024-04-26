@@ -228,13 +228,11 @@ class Candidate extends Model
                 if ($this->status == 'paid') {
                     $status = 'paid';
                 }
-                if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNull('installment_number')->count() > 0) {
+                if (Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->whereNot('payment_method','financing by associated')->whereNull('installment_number')->count() > 0) {
                     $candidate = Candidate::find($this->id);
-                    if (!$candidate->student->institute->internal_payment_administration) {
                     $status = 'paid';
                     $candidate->installments = 1;
                     $candidate->save();
-                    }
                 }
                 return $status;
             },
