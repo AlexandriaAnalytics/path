@@ -7,12 +7,14 @@ use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\PaymentResource;
 use App\Models\Candidate;
+use App\Models\Concept;
 use App\Models\Country;
 use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Student;
 use Carbon\Carbon;
 use Filament\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -125,39 +127,101 @@ class ListPayments extends ListRecords
                     ->reactive()
                     ->relationship('candidate')
                     ->multiple()
+                    ->suffixAction(
+                        Action::make('select-all')
+                            ->disabled(function (callable $get) {
+                                $instituteId = $get('institute_id');
+                                $institute = Institute::find($instituteId);
+                                if (!$institute) {
+                                    return true;
+                                }
+                                return Candidate::query()
+                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                    ->has('exams')
+                                    ->get()
+                                    ->where('currency', $institute->currency)
+                                    ->mapWithKeys(fn (Candidate $candidate) => [
+                                        $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                                    ])->count() == 0;
+                            })
+                            ->icon('heroicon-o-user-group')
+                            ->label('Select All')
+                            ->tooltip('Select all candidates')
+                            ->action(function (callable $get, Set $set) {
+                                $instituteId = $get('institute_id');
+                                $institute = Institute::find($instituteId);
+                                $set('candidate_id', Candidate::query()
+                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                    ->has('exams')
+                                    ->get()
+                                    ->where('paymentStatus', '!=', 'paid')
+                                    ->where('currency', $institute->currency)
+                                    ->pluck('id')
+                                    ->toArray());
+
+
+                                $totalAmount = 0;
+                                foreach ($get('candidate_id') as $candidate) {
+                                    $concepts = Candidate::find($candidate)->concepts;
+                                    $candidateAmount = 0;
+                                    foreach ($concepts as $concept) {
+                                        $candidateAmount = $candidateAmount + $concept->amount;
+                                        if ($concept->type->value == 'registration_fee' && Institute::find($institute->id)->can_view_registration_fee && Institute::find($institute->id)->candidates->count() > 29) {
+                                            $candidateAmount = $candidateAmount - $concept->amount;
+                                        }
+                                    }
+                                    if (Candidate::find($candidate)->granted_discount > 0) {
+                                        $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
+                                    }
+                                    if (Institute::find($instituteId)->installment_plans && Candidate::find($candidate)->installmentAttribute > 0) {
+                                        $candidateAmount = $candidateAmount / Candidate::find($candidate)->installmentAttribute;
+                                    }
+                                    $totalAmount = $totalAmount + $candidateAmount;
+                                }
+                                $set('amount', $totalAmount);
+                            }),
+                    )
                     ->options(function (callable $get) {
                         $instituteId = $get('institute_id');
-
+                        $institute = Institute::find($instituteId);
                         if (!$instituteId) {
                             return [];
                         }
 
-                        $candidates = Candidate::query()->whereHas('student.institute', function ($query) use ($instituteId) {
-                            $query->where('id', $instituteId);
-                        })->get();
-
-                        $students = [];
-
-                        foreach ($candidates as $candidate) {
-                            $students[] .= "{$candidate->student->name} {$candidate->student->surname}";
-                        }
-
-                        return $students;
+                        return Candidate::query()
+                            ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                            ->has('exams')
+                            ->get()
+                            ->where('paymentStatus', '!=', 'paid')
+                            ->where('currency', $institute->currency)
+                            ->mapWithKeys(fn (Candidate $candidate) => [
+                                $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                            ]);
                     })
-                    ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
-                    ->afterStateUpdated(function (Set $set, Get $get) {
-                        foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
-                            $concepts = Candidate::find($candidate + 1)->concepts;
-                            $totalAmount = 0;
-                            foreach ($concepts as $concept) {
-                                if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                                    $totalAmount = $totalAmount + $concept->amount;
+                    ->afterStateUpdated(function (callable $get, Set $set) {
+                        $totalAmount = 0;
+                        $instituteId = $get('institute_id');
+                        $institute = Institute::find($instituteId);
+                        if ($get('candidate_id')) {
+                            foreach ($get('candidate_id') as $candidate) {
+                                $concepts = Candidate::find($candidate)->concepts;
+                                $candidateAmount = 0;
+                                foreach ($concepts as $concept) {
+                                    $candidateAmount = $candidateAmount + $concept->amount;
+                                    if ($concept->type->value == 'registration_fee' && Institute::find($instituteId)->can_view_registration_fee && Institute::find($instituteId)->candidates->count() > 29) {
+                                        $candidateAmount = $candidateAmount - $concept->amount;
+                                    }
                                 }
-                                if ($concept->type->value == 'registration_fee' && Institute::find($get('institute_id'))->can_view_registration_fee == 1) {
-                                    $totalAmount = $totalAmount - $concept->amount;
+                                if (Candidate::find($candidate)->granted_discount > 0) {
+                                    $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
                                 }
+                                if (Institute::find($instituteId)->installment_plans && Candidate::find($candidate)->installmentAttribute > 0) {
+                                    $candidateAmount = $candidateAmount / Candidate::find($candidate)->installmentAttribute;
+                                }
+                                $totalAmount = $totalAmount + $candidateAmount;
                             }
                         }
+
                         $set('amount', $totalAmount);
                     }),
 
@@ -178,29 +242,47 @@ class ListPayments extends ListRecords
                 MarkdownEditor::make('description')
             ])
             ->action(function (array $data) {
+                $totalAmount = 0;
                 foreach ($this->mountedActionsData[0]['candidate_id'] as $candidate) {
                     $newPayment = new Payment();
                     $newPayment->institute_id = $data['institute_id'];
-                    $newPayment->candidate_id = $candidate + 1;
-                    $concepts = Candidate::find($candidate + 1)->concepts;
-                    $totalAmount = 0;
+                    $newPayment->candidate_id = $candidate;
+                    $concepts = Candidate::find($candidate)->concepts;
+                    $candidateAmount = 0;
                     foreach ($concepts as $concept) {
-                        if ($concept->type->value == 'exam' || $concept->type->value == 'module') {
-                            $totalAmount = $totalAmount + $concept->amount;
-                        }
-                        if ($concept->type->value == 'registration_fee' && Institute::find($data['institute_id'])->can_view_registration_fee == 1) {
-                            $totalAmount = $totalAmount - $concept->amount;
+                        $candidateAmount = $candidateAmount + $concept->amount;
+                        if ($concept->type->value == 'registration_fee' && Institute::find($data['institute_id'])->can_view_registration_fee && Institute::find($data['institute_id'])->candidates->count() > 29) {
+                            $candidateAmount = $candidateAmount - $concept->amount;
                         }
                     }
+                    if (Candidate::find($candidate)->granted_discount > 0) {
+                        $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
+                    }
+                    if (Institute::find($data['institute_id'])->installment_plans && Candidate::find($candidate)->installmentAttribute > 0) {
+                        $candidateAmount = $candidateAmount / Candidate::find($candidate)->installmentAttribute;
+                    }
+                    $totalAmount = $candidateAmount;
                     $newPayment->amount = $totalAmount;
-                    $newPayment->status = $data['status'];
+                    $newPayment->status = 'pending';
                     $newPayment->payment_method = $data['payment_method'];
                     $newPayment->payment_id = $data['payment_id'];
-                    $newPayment->currency = $data['currency'];
+                    $newPayment->currency = Country::find(Institute::find($data['institute_id'])->country)->monetary_unit;
                     $newPayment->current_period = Carbon::now()->day(1);
                     $newPayment->link_to_ticket = $data['link_to_ticket'];
                     $newPayment->description = $data['description'];
                     $newPayment->save();
+
+                    $candidateUpdate = Candidate::find($candidate);
+                    if ($candidateUpdate->installments == $candidateUpdate->payments->count()) {
+                        $candidateUpdate->status = 'paid';
+                    }
+                    if ($candidateUpdate->payments->count() == 0) {
+                        $candidateUpdate->status = 'unpaid';
+                    }
+                    if ($candidateUpdate->installments > $candidateUpdate->payments->count() && $candidateUpdate->payments->count() != 0) {
+                        $candidateUpdate->status = 'paying';
+                    }
+                    $candidateUpdate->save();
                 }
             });
     }
