@@ -3,8 +3,11 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\Candidate;
 use App\Models\Concept;
+use App\Models\Payment;
 use App\Services\CandidateService;
+use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Colors\Color;
@@ -24,5 +27,12 @@ class EditCandidate extends EditRecord
     {
         Concept::where('candidate_id', $this->record->id)->delete();
         CandidateService::createConcepts($this->record);
+        $candidate = Candidate::find($this->data['id']);
+        if ($candidate->status == 'unpaid') {
+            $payment_deadline = $candidate->exams->min('payment_deadline');
+            $candidate->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
+            $candidate->save();
+            Payment::where('candidate_id', $candidate->id)->delete();
+        }
     }
 }
