@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\CandidateResource\Pages;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\Candidate;
 use App\Models\Concept;
 use App\Models\Payment;
 use App\Services\CandidateService;
@@ -29,18 +30,14 @@ class EditCandidate extends EditRecord
     }
 
 
-
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function BeforeSave()
     {
-        $status = $data['status'];
-        dd($this);
-        if ($status == 'unpaid') {
-            $payment_deadline = $this->record->exams->min('payment_deadline');
-            $this->record->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
-            $this->record->save();
-            Payment::where('candidate_id', $this->record->id)->delete();
+        $candidate = Candidate::find($this->data['id']);
+        if ($candidate->status == 'unpaid') {
+            $payment_deadline = $candidate->exams->min('payment_deadline');
+            $candidate->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
+            $candidate->save();
+            Payment::where('candidate_id', $candidate->id)->delete();
         }
-
-        return $data;
     }
 }
