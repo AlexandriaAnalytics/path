@@ -23,11 +23,11 @@ class EditCandidate extends EditRecord
         ];
     }
 
-    protected function afterSave(): void
+    /* protected function afterSave(): void
     {
         Concept::where('candidate_id', $this->record->id)->delete();
         CandidateService::createConcepts($this->record);
-    }
+    } */
 
 
     protected function BeforeSave()
