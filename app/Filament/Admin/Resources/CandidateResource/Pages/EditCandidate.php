@@ -23,14 +23,15 @@ class EditCandidate extends EditRecord
         ];
     }
 
-    /* protected function afterSave(): void
+    protected function afterSave(): void
     {
         Concept::where('candidate_id', $this->record->id)->delete();
         CandidateService::createConcepts($this->record);
-    } */
+        dd($this->record);
+    }
 
 
-    protected function BeforeSave()
+    /* protected function beforeSave()
     {
         $candidate = Candidate::find($this->data['id']);
         if ($candidate->status == 'unpaid') {
@@ -39,5 +40,5 @@ class EditCandidate extends EditRecord
             $candidate->save();
             Payment::where('candidate_id', $candidate->id)->delete();
         }
-    }
+    } */
 }
