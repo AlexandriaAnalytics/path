@@ -33,6 +33,7 @@ class EditCandidate extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $status = $data['status'];
+        dd($status);
         if ($status == 'unpaid') {
             $payment_deadline = $this->record->exams->min('payment_deadline');
             $this->record->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
