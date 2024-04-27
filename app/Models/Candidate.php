@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\UserStatus;
+use App\Observers\CandidateObserver;
 use App\Services\CandidateService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +28,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $status
  * @property string $type_of_certificate
  */
+
+#[ObservedBy([CandidateObserver::class])]
 class Candidate extends Model
 {
     use SoftDeletes;
