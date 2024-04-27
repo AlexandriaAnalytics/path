@@ -591,6 +591,9 @@ class CandidateResource extends Resource
                             '4' => 'warning',
                             '5' => 'warning',
                         ])
+                        ->formatStateUsing(function (string $state, Candidate $record) {
+                            return $record->paymentStatus;
+                        })
                         ->hiddenOn('create'),
                 ]),
         ];
