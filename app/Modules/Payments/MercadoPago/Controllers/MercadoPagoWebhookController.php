@@ -147,9 +147,10 @@ class MercadoPagoWebhookController extends Controller
 
 
         if ($preapproval->status !== 'authorized') {
-            report(new \Exception('Preapproval not authorized' . json_encode($request->json())));
+            report(new \Exception('Preapproval not authorized' . json_encode($request->json()->all())));
             abort(400, 'Preapproval not authorized');
         }
+
 
         /** @var Summarized $preapprovalSummary */
         $preapprovalSummary = $preapproval
