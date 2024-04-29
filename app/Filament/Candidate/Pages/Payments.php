@@ -199,7 +199,11 @@ class Payments extends Page implements HasForms
                         return $options;
                     })
                     ->afterStateUpdated(function (callable $set, callable $get) {
-                        return $set('description', ModelsPaymentMethod::where('slug', $get('payment_method'))->first()->description);
+                        $paymentMethod = ModelsPaymentMethod::where('slug', $get('payment_method'))->first();
+                        if ($paymentMethod) {
+                            return $set('description', $paymentMethod->description);
+                        }
+                        return $set('description', '');
                     }),
                 RichEditor::make('description')
                     ->disableAllToolbarButtons()
