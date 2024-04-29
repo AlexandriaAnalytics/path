@@ -211,7 +211,7 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                $installments = $this->installmentAttribute;
+                $installments = $this->getInstallments();
                 $installmentsPaid = Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->count();
                 $status = null;
                 if ($installments - $installmentsPaid == 0) {
@@ -247,28 +247,22 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
-                $payment_deadline = $this
-                    ->exams
-                    ->min('payment_deadline');
-                if (round(
-                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
-                    0,
-                ) + 1 < $this->installments) {
-                    if ($this->paymentStatus == 'unpaid') {
-
-                        $installments = round(
-                            now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
-                            0,
-                        ) + 1;
-                    } else {
-                        $installments = Payment::where('candidate_id', $this->id)->count();
-                    }
-                } else {
-                    $installments = $this->installments;
-                }
-
-                return $installments;
+                return $this->getInstallments();
             }
         );
+    }
+
+    private function getInstallments()
+    {
+        $payment_deadline = $this->exams->min('payment_deadline');
+        if (round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1 < $this->installments) {
+            if ($this->paymentStatus == 'unpaid') {
+                return round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
+            } else {
+                return Payment::where('candidate_id', $this->id)->count();
+            }
+        } else {
+            return $this->installments;
+        }
     }
 }
