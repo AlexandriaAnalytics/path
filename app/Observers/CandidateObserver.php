@@ -26,7 +26,7 @@ class CandidateObserver
             $candidate->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
             $payments = $candidate->payments;
             foreach ($payments as $payment) {
-                $payment->status = 'cancelled';
+                $payment->status = 'rejected';
                 $payment->save();
             }
             $candidate->saveQuietly();
