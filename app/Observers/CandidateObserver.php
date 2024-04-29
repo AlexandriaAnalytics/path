@@ -21,6 +21,7 @@ class CandidateObserver
      */
     public function updated(Candidate $candidate): void
     {
+        dd($candidate->status);
         if ($candidate->status == 'unpaid' && $candidate->payments->contains('status', 'approved')) {
             $payment_deadline = $candidate->exams->min('payment_deadline');
             $candidate->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
