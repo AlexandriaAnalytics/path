@@ -238,6 +238,8 @@ class Candidate extends Model
                     $candidate->installments = 1;
                     $candidate->save();
                 }
+                $this->status = $status;
+                $this->saveQuietly();
                 return $status;
             },
         );
