@@ -24,7 +24,11 @@ class CandidateObserver
         if ($candidate->status == 'unpaid' && $candidate->payments->contains('status', 'approved')) {
             $payment_deadline = $candidate->exams->min('payment_deadline');
             $candidate->installments = round(now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0,) + 1;
-            $candidate->payments->each->delete();
+            $payments = $candidate->payments;
+            foreach ($payments as $payment) {
+                $payment->status = 'cancelled';
+                $payment->save();
+            }
             $candidate->saveQuietly();
         }
     }
