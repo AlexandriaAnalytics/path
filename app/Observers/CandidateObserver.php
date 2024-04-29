@@ -27,7 +27,7 @@ class CandidateObserver
             $payments = $candidate->payments;
             foreach ($payments as $payment) {
                 $payment->status = 'cancelled';
-                $payment->saveQuietly();
+                $payment->save();
             }
             $candidate->saveQuietly();
         }
