@@ -147,7 +147,7 @@ class ListFinancings extends ListRecords
                                         }
                                     }
                                     if (Candidate::find($candidate)->granted_discount > 0) {
-                                        $candidateAmount = $candidateAmount + Concept::where('candidate_id', $candidate)->where('type', 'registration_fee')->first()->amount * Candidate::find($candidate)->granted_discount / 100;
+                                        $candidateAmount = $candidateAmount * Candidate::find($candidate)->granted_discount / 100;
                                     }
                                     if (Institute::find(Filament::getTenant()->id)->installment_plans && Candidate::find($candidate)->installmentAttribute > 0) {
                                         $candidateAmount = $candidateAmount / Candidate::find($candidate)->installmentAttribute;

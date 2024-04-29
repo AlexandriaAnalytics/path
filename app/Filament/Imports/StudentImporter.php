@@ -34,7 +34,10 @@ class StudentImporter extends Importer
                 ->label('Email address')
                 ->rules(['email', 'max:255', 'unique:students,email', 'nullable'])
                 ->exampleHeader('Email address')
-                ->example('john.doe@example.com'),
+                ->example('john.doe@example.com')
+                ->fillRecordUsing(function (Student $record): void {
+                    $record->email = 'pagospathexaminations@gmail.com';
+                }),
             ImportColumn::make('birth_date')
                 ->label('Date of birth')
                 ->requiredMapping()

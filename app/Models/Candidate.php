@@ -254,8 +254,7 @@ class Candidate extends Model
                     now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                     0,
                 ) + 1 < $this->installments) {
-                    if ($this->paymentStatus == 'unpaid') {
-
+                    if ($this->status == 'unpaid') {
                         $installments = round(
                             now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                             0,
