@@ -261,8 +261,6 @@ class Candidate extends Model
                             now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                             0,
                         ) + 1;
-                    } else {
-                        $installments = Payment::where('candidate_id', $this->id)->count();
                     }
                 } else {
                     $installments = $this->installments;
