@@ -249,6 +249,7 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
+                $installments = 0;
                 $payment_deadline = $this
                     ->exams
                     ->min('payment_deadline');
