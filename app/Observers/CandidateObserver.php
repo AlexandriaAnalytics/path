@@ -32,7 +32,6 @@ class CandidateObserver
             $candidate->saveQuietly();
         }
     }
-
     /**
      * Handle the Candidate "deleted" event.
      */
