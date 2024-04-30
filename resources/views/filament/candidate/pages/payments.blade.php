@@ -10,7 +10,7 @@
             <h2>Exam Paid</h2>
         @elseif ($candidate->status == 'processing payment')
             <h2>Payment in process</h2>
-        @elseif ($candidate->status == 'paying')
+        @elseif ($candidate->status == 'paying' && $candidate->granted_discount == 0)
             <div>
                 <header>
                     <h2>Payment State</h2>
