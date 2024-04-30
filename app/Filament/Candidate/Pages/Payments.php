@@ -177,7 +177,7 @@ class Payments extends Page implements HasForms
             ),
             $this->renderMercadoPagoFinancing(
                 in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
-                    && $this->candidate->paymentStatus == 'unpaid'
+                    && ($this->candidate->paymentStatus == 'unpaid' || ($this->candidate->paymentStatus == 'paying' && $this->candidate->granted_discount > 0))
                     && $this->candidate->installments > 0
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration

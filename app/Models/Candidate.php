@@ -238,6 +238,8 @@ class Candidate extends Model
                     $candidate->installments = 1;
                     $candidate->save();
                 }
+                $this->status = $status;
+                $this->saveQuietly();
                 return $status;
             },
         );
@@ -247,6 +249,7 @@ class Candidate extends Model
     {
         return Attribute::make(
             get: function () {
+                $installments = $this->installments;
                 $payment_deadline = $this
                     ->exams
                     ->min('payment_deadline');
@@ -259,11 +262,7 @@ class Candidate extends Model
                             now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
                             0,
                         ) + 1;
-                    } else {
-                        $installments = Payment::where('candidate_id', $this->id)->count();
                     }
-                } else {
-                    $installments = $this->installments;
                 }
 
                 return $installments;
