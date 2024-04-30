@@ -43,7 +43,6 @@ class Payments extends Page implements HasForms
 
     public function __construct()
     {
-        dd(session('candidate'));
         $this->candidate = Candidate::find(session('candidate')->id);
         $this->candidate_payment_methods = $this->candidate->student->region->paymentMethods()->pluck('name')->toArray();
 
