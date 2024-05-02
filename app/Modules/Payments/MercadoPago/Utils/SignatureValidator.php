@@ -36,6 +36,6 @@ class SignatureValidator implements DefaultSignatureValidator
 
         $computedSignature = hash_hmac('sha256', $manifest, $signingSecret);
 
-        return hash_equals($header, $computedSignature);
+        return hash_equals($key, $computedSignature);
     }
 }
