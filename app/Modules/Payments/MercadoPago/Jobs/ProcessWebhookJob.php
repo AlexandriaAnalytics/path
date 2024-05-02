@@ -28,7 +28,7 @@ class ProcessWebhookJob extends SpatieProcessWebhookJob
         $method = 'handle' . Str::studly($type);
 
         if (method_exists($this, $method)) {
-            $this->$method($this->webhookCall->request);
+            $this->$method($payload);
         }
     }
 
