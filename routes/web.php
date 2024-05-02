@@ -68,9 +68,9 @@ Route::get('/payment/paypal/canceled', [PaymentController::class, 'paypalCancelT
 Route::get('/payment/mp/success', [PaymentController::class, 'mpSuccessTransaction'])->name('payment.mp.success');
 Route::get('/payment/mp/canceled', [PaymentController::class, 'mpCancelTransaction'])->name('payment.mp.cancel');
 
-Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotificationURL'])->name('payment.mp.webhook');
+// Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotificationURL'])->name('payment.mp.webhook');
 
 // Payment webhooks
-Route::post('/payment/webhook/mp', [WebHookPaymentsController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
+// Route::post('/payment/webhook/mp', [WebHookPaymentsController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
 Route::post('/payment/webhook/paypal', [WebHookPaymentsController::class, 'paypalWebhook'])->name('payment.paypal.webhook');
 Route::post('/payment/webhook/stripe', [WebHookPaymentsController::class, 'stripeWebhook'])->name('payment.stripe.webhook');

@@ -1,26 +1,21 @@
 <?php
 
-namespace App\Modules\Payments\MercadoPago\Controllers;
+namespace App\Modules\Payments\MercadoPago\Jobs;
 
-use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\Payment;
 use App\Modules\Payments\MercadoPago\Services\PaymentService;
 use Carbon\CarbonImmutable;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use MercadoPago\Client\Invoice\InvoiceClient;
 use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\Client\PreApproval\PreApprovalClient;
 use MercadoPago\Resources\PreApproval\Summarized;
+use Spatie\WebhookClient\Jobs\ProcessWebhookJob as SpatieProcessWebhookJob;
 
-class MercadoPagoWebhookController extends Controller
+class ProcessWebhookJob extends SpatieProcessWebhookJob
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(Request $request)
+    public function handle()
     {
         // Example:
         // $type = 'payment.created'
@@ -28,19 +23,18 @@ class MercadoPagoWebhookController extends Controller
 
         PaymentService::setup();
 
-        $type = $request->string('type')->toString();
+        $payload = $this->webhookCall->payload;
+        $type = $payload['type'];
         $method = 'handle' . Str::studly($type);
 
         if (method_exists($this, $method)) {
-            return $this->$method($request);
+            $this->$method($this->webhookCall->request);
         }
-
-        return $this->notImplementedResponse($request);
     }
 
-    protected function handlePayment(Request $request)
+    protected function handlePayment(array $data)
     {
-        $orderId = $request->input('data.id');
+        $orderId = $data['id'];
 
         $client = new PaymentClient;
 
@@ -80,12 +74,12 @@ class MercadoPagoWebhookController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    protected function handleSubscriptionPreapproval(Request $request)
+    protected function handleSubscriptionPreapproval(array $data)
     {
         // Do not handle new subscriptions, as they need to be approved by the user first.
         // The handleSubscriptionAuthorizedPayment method will handle the subscription after it has been approved
         // and the first payment has been made.
-        return $this->successResponse($request);
+        // return $this->successResponse($request);
 
         // $preapprovalId = $request->input('data.id');
 
@@ -131,9 +125,9 @@ class MercadoPagoWebhookController extends Controller
         // return $this->successResponse($request);
     }
 
-    public function handleSubscriptionAuthorizedPayment(Request $request)
+    public function handleSubscriptionAuthorizedPayment(array $data)
     {
-        $invoiceId = $request->input('data.id');
+        $invoiceId = $data['id'];
 
         $invoiceClient = new InvoiceClient;
 
@@ -146,7 +140,7 @@ class MercadoPagoWebhookController extends Controller
             ->get($preapprovalId);
 
         if ($preapproval->status !== 'authorized') {
-            report(new \Exception('Preapproval not authorized' . $request->json()));
+            report(new \Exception('Preapproval not authorized - ' . $preapprovalId));
             abort(400, 'Preapproval not authorized');
         }
 
@@ -195,24 +189,9 @@ class MercadoPagoWebhookController extends Controller
         $payments = $candidate->payments()
             ->where('payment_id', $preapproval->id)
             ->where('current_installment', $preapprovalSummary->charged_quantity)
-            ->get();
-        foreach ($payments as $payment) {
-            $payment->status = 'approved';
-            $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
-            $payment->save();
-        }
-
-        return $this->successResponse($request);
-    }
-
-    protected function successResponse()
-    {
-        return response()->json(['status' => 'success']);
-    }
-
-    protected function notImplementedResponse(Request $request)
-    {
-        report(new \Exception('Webhook not implemented' . $request->json()));
-        return response()->json(['status' => 'not_implemented'], 501);
+            ->update([
+                'status' => 'approved',
+                'paid_date' => CarbonImmutable::parse($preapprovalSummary->last_charged_date),
+            ]);
     }
 }
