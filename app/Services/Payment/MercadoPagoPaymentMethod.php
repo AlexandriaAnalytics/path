@@ -67,6 +67,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         $preference->auto_return = "approved";
 
         redirect($preference->init_point);
+        dd($preference);
         Payment::create([
             'candidate_id' => $id,
             'payment_method' => 'mercado_pago',
