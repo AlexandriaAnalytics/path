@@ -175,11 +175,13 @@ class MercadoPagoWebhookController extends Controller
             $monthlyAmount = ($preapprovalSummary->charged_amount + $preapprovalSummary->pending_charge_amount) / ($preapprovalSummary->charged_quantity + $preapprovalSummary->pending_charge_quantity);
 
             $dateCreated = CarbonImmutable::parse($preapproval->date_created);
+            $resource = $request->input('resource');
+            $payment_id = $resource['id'];
             $payments = collect()->range(from: 1, to: $preapprovalSummary->quotas)
                 ->map(fn (int $installment) => [
                     'candidate_id' => $preapproval->external_reference,
                     'payment_method' => 'mercado_pago',
-                    'payment_id' => $request->input('payment_id'),
+                    'payment_id' => $payment_id,
                     'currency' => 'ARS',
                     'amount' => $monthlyAmount,
                     'installment_number' => $preapprovalSummary->quotas,
