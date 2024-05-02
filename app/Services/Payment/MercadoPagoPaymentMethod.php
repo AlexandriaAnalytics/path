@@ -70,7 +70,7 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         Payment::create([
             'candidate_id' => $id,
             'payment_method' => 'mercado_pago',
-            'payment_id' => $_GET['payment_id'],
+            'payment_id' => $preference->id,
             'currency' => $currency,
             'amount' => round($amount_value),
             'current_period' => Carbon::now()->day(1),
