@@ -193,7 +193,7 @@ class MercadoPagoWebhookController extends Controller
         }
 
         $candidate->payments()
-            ->wherePaymentId($preapprovalId)
+            ->wherePaymentId($preapproval->id)
             ->whereNotNull('installment_number')
             ->where('current_installment', $preapprovalSummary->charged_quantity)
             ->update([
