@@ -194,7 +194,8 @@ class MercadoPagoWebhookController extends Controller
 
         $payments = $candidate->payments()
             ->where('payment_id', $preapproval->id)
-            ->where('current_installment', $preapprovalSummary->charged_quantity);
+            ->where('current_installment', $preapprovalSummary->charged_quantity)
+            ->get();
         foreach ($payments as $payment) {
             $payment->status = 'approved';
             $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
