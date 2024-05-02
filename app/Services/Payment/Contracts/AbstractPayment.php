@@ -8,8 +8,8 @@ use Carbon\Carbon;
 abstract class AbstractPayment implements IPayment
 {
 
-     private string $redirectSuccess = '/';
-     private string $redirectCancel = '/';
+     private string $redirectSuccess = 'https://sinapsis.pathexaminations.com/candidate/';
+     private string $redirectCancel = 'https://sinapsis.pathexaminations.com/candidate/';
 
 
      public function setRedirectSuccess(string $url): void
