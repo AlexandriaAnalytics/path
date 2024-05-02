@@ -192,7 +192,7 @@ class MercadoPagoWebhookController extends Controller
             $candidate->payments()->createMany($payments);
         }
 
-        $payments = $candidate->payments()
+        $payments = $candidate->payments
             ->wherePaymentId($preapproval->id)
             ->whereNotNull('installment_number')
             ->where('current_installment', $preapprovalSummary->charged_quantity)
