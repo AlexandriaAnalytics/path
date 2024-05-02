@@ -179,7 +179,7 @@ class MercadoPagoWebhookController extends Controller
                 ->map(fn (int $installment) => [
                     'candidate_id' => $preapproval->external_reference,
                     'payment_method' => 'mercado_pago',
-                    'payment_id' => $request->input('payment_id'),
+                    'payment_id' => $request->input('data.oayment_id'),
                     'currency' => 'ARS',
                     'amount' => $monthlyAmount,
                     'installment_number' => $preapprovalSummary->quotas,
