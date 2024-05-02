@@ -198,10 +198,9 @@ class MercadoPagoWebhookController extends Controller
             ->get()
             ->whereNotNull('installment_number');
         foreach ($payments as $payment) {
-            $payment->update([
-                'status' => 'approved',
-                'paid_date' => CarbonImmutable::parse($preapprovalSummary->last_charged_date),
-            ]);
+            $payment->status = 'approved';
+            $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
+            $payment->save();
         }
 
         return $this->successResponse($request);
