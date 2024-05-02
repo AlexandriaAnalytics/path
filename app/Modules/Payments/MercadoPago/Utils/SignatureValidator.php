@@ -30,7 +30,7 @@ class SignatureValidator implements DefaultSignatureValidator
         $key = explode('=', $key)[1];
 
         $request_id = $request->header('x-request-id');
-        $data_id = $request->query('data_id', '');
+        $data_id = $request->query('data.id', '');
 
         $manifest = "id:{$data_id};request-id:{$request_id};ts:{$timestamp};";
 
