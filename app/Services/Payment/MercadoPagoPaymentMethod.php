@@ -67,11 +67,10 @@ class MercadoPagoPaymentMethod extends AbstractPayment
         $preference->auto_return = "approved";
 
         redirect($preference->init_point);
-        dd($preference);
         Payment::create([
             'candidate_id' => $id,
             'payment_method' => 'mercado_pago',
-            'payment_id' => $preference->id,
+            'payment_id' => $_GET['payment_id'],
             'currency' => $currency,
             'amount' => round($amount_value),
             'current_period' => Carbon::now()->day(1),
