@@ -7,7 +7,7 @@ return [
             'name' => 'mercadopago',
             'signing_secret' => env('MERCADOPAGO_WEBHOOK_CLIENT_SECRET'),
             'signature_header_name' => 'x-signature',
-            'signature_validator' => \Spatie\WebhookClient\SignatureValidator\DefaultSignatureValidator::class,
+            'signature_validator' => \App\Modules\Payments\MercadoPago\Utils\SignatureValidator::class,
             'webhook_profile' => \Spatie\WebhookClient\WebhookProfile\ProcessEverythingWebhookProfile::class,
             'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
             'webhook_model' => \Spatie\WebhookClient\Models\WebhookCall::class,
