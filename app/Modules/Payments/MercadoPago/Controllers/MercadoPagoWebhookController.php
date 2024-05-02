@@ -163,12 +163,12 @@ class MercadoPagoWebhookController extends Controller
 
         // Check if the candidate already has payments
         if (
-            $candidate->payments
+            $candidate->payments()
             ->where('payment_id', $preapproval->id)
             ->count() != $preapprovalSummary->quotas
         ) {
             // Delete existing payments for this preapproval
-            $candidate->payments
+            $candidate->payments()
                 ->where('payment_id', $preapproval->id)
                 ->delete();
 
@@ -192,7 +192,7 @@ class MercadoPagoWebhookController extends Controller
             $candidate->payments()->createMany($payments);
         }
 
-        $payments = $candidate->payments
+        $payments = $candidate->payments()
             ->where('payment_id', $preapproval->id)
             ->where('current_installment', $preapprovalSummary->charged_quantity);
         foreach ($payments as $payment) {

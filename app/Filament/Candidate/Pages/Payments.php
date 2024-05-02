@@ -63,7 +63,6 @@ class Payments extends Page implements HasForms
 
         $this->installment_number = $this->candidate->installmentAttribute;
 
-
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
         */
