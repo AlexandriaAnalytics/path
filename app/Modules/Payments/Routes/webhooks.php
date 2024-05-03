@@ -1,10 +1,11 @@
 <?php
 
+use App\Modules\Payments\MercadoPago\Controllers\MercadoPagoWebhookController;
 use Illuminate\Support\Facades\Route;
 
-
-Route::name('payments.')
-    ->prefix('payments')
+Route::prefix('payments')
+    ->name('payments.')
     ->group(function () {
-        Route::webhooks('/mercadopago/webhook', 'mercadopago');
+        Route::post('/mercadopago/webhook', MercadoPagoWebhookController::class)
+            ->name('mercadopago.webhook');
     });
