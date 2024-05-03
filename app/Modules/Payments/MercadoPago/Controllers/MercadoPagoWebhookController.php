@@ -185,14 +185,14 @@ class MercadoPagoWebhookController extends Controller
                     'amount' => $monthlyAmount,
                     'installment_number' => $preapprovalSummary->quotas,
                     'current_installment' => $installment,
-                    'status' => 'pending',
+                    'status' => $installment == $preapprovalSummary->charged_quantity ? 'approved' : 'pending',
                     'current_period' => $dateCreated->addMonths($installment)->day(1),
                 ]);
 
             $candidate->payments()->createMany($payments);
         }
 
-        $payments = $candidate->payments()
+        /* $payments = $candidate->payments()
             ->where('payment_id', $preapproval->id)
             ->where('current_installment', $preapprovalSummary->charged_quantity)
             ->get();
@@ -200,7 +200,7 @@ class MercadoPagoWebhookController extends Controller
             $payment->status = 'approved';
             $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
             $payment->save();
-        }
+        } */
 
         return $this->successResponse($request);
     }
