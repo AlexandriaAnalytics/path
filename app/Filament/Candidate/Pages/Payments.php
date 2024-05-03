@@ -199,7 +199,6 @@ class Payments extends Page implements HasForms
                         return $options;
                     })
                     ->afterStateUpdated(function (callable $set, callable $get) {
-                        dd($get('payment_method'));
                         $paymentMethod = ModelsPaymentMethod::where('slug', $get('payment_method'))->first();
                         if ($paymentMethod) {
                             return $set('description', $paymentMethod->description);

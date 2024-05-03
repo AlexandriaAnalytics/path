@@ -164,12 +164,12 @@ class MercadoPagoWebhookController extends Controller
         // Check if the candidate already has payments
         if (
             $candidate->payments()
-            ->wherePaymentId($preapprovalId)
+            ->where('payment_id', $preapproval->id)
             ->count() != $preapprovalSummary->quotas
         ) {
             // Delete existing payments for this preapproval
             $candidate->payments()
-                ->wherePaymentId($preapprovalId)
+                ->where('payment_id', $preapproval->id)
                 ->delete();
 
             $monthlyAmount = ($preapprovalSummary->charged_amount + $preapprovalSummary->pending_charge_amount) / ($preapprovalSummary->charged_quantity + $preapprovalSummary->pending_charge_quantity);
@@ -180,7 +180,7 @@ class MercadoPagoWebhookController extends Controller
                 ->map(fn (int $installment) => [
                     'candidate_id' => $preapproval->external_reference,
                     'payment_method' => 'mercado_pago',
-                    'payment_id' => $preapprovalId,
+                    'payment_id' => $preapproval->id,
                     'currency' => 'ARS',
                     'amount' => $monthlyAmount,
                     'installment_number' => $preapprovalSummary->quotas,
@@ -192,14 +192,15 @@ class MercadoPagoWebhookController extends Controller
             $candidate->payments()->createMany($payments);
         }
 
-        $candidate->payments()
-            ->wherePaymentId($preapprovalId)
-            ->whereNotNull('installment_number')
+        $payments = $candidate->payments()
+            ->where('payment_id', $preapproval->id)
             ->where('current_installment', $preapprovalSummary->charged_quantity)
-            ->update([
-                'status' => 'approved',
-                'paid_date' => CarbonImmutable::parse($preapprovalSummary->last_charged_date),
-            ]);
+            ->get();
+        foreach ($payments as $payment) {
+            $payment->status = 'approved';
+            $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
+            $payment->save();
+        }
 
         return $this->successResponse($request);
     }
