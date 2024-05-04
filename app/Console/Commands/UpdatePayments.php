@@ -29,7 +29,7 @@ class UpdatePayments extends Command
     {
         /* $payments = Payment::distinct()->pluck('payment_id');
         foreach ($payments as $payment) { */
-        $payment = '1337';
+        $payment = '3227c45f77364daca7dfd1997963d59f';
         $response = Http::withHeaders([
             'Accept' => '*/*',
             'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
