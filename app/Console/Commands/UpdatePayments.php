@@ -27,19 +27,18 @@ class UpdatePayments extends Command
      */
     public function handle()
     {
-        /* $payments = Payment::distinct()->pluck('payment_id');
-        foreach ($payments as $payment) { */
-        $payment = '3227c45f77364daca7dfd1997963d59f';
-        $response = Http::withHeaders([
-            'Accept' => '*/*',
-            'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
-            'Authorization' => 'Bearer ' . config('mercadopago.access_token'),
-        ])
-            ->get('https://api.mercadopago.com/preapproval/' . $payment);
-        if (json_decode($response->body())->status == "authorized") {
-            Payment::where('payment_id', $payment)->where('current_installment', json_decode($response->body())->summarized->charged_quantity)->update(['status' => 'approved']);
+        $payments = Payment::distinct()->pluck('payment_id');
+        foreach ($payments as $payment) {
+            $response = Http::withHeaders([
+                'Accept' => '*/*',
+                'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
+                'Authorization' => 'Bearer ' . config('mercadopago.access_token'),
+            ])
+                ->get('https://api.mercadopago.com/preapproval/' . $payment);
+            if (json_decode($response->body())->status == "authorized") {
+                Payment::where('payment_id', $payment)->where('current_installment', json_decode($response->body())->summarized->charged_quantity)->update(['status' => 'approved']);
+            }
         }
-        /* } */
 
         /* Payment::where('payment_id', '123')->where('current_installment', 1)->update(['suscription_code' => json_decode($response->body())->summarized->quotas]); */
     }
