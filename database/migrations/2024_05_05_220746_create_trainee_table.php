@@ -16,13 +16,13 @@ return new class extends Migration
             $table->string('full_name');
             $table->string('phone');
             $table->string('email');
-            $table->foreignId('type_of_training_id')->constrained('types_of_training');
+            $table->foreignId('type_of_training_id')->constrained();
             $table->string('street_name');
             $table->integer('street_number');
             $table->string('city');
             $table->string('postcode');
             $table->string('province_or_state');
-            $table->foreignId('country_id')->constrained('country');
+            $table->foreignId('country_id')->constrained();
             $table->json('sections')->nullable();
             $table->string('files');
             $table->timestamps();
