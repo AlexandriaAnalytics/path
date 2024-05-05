@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('activity_true_or_false', function (Blueprint $table) {
             $table->id();
-            $table->string('question',3000);
+            $table->string('question', 3000);
             $table->boolean('true')->nullable();
             $table->boolean('false')->nullable();
             $table->boolean('answer_response')->nullable();
-            $table->foreignId('training_id')->constrained()->references('id')->on('training')->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
             $table->softDeletes();
