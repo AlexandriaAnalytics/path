@@ -185,7 +185,7 @@ class MercadoPagoWebhookController extends Controller
                     'amount' => $monthlyAmount,
                     'installment_number' => $preapprovalSummary->quotas,
                     'current_installment' => $installment,
-                    'status' => 'pending',
+                    'status' => $installment == $preapprovalSummary->charged_quantity ? 'approved' : 'pending',
                     'current_period' => $dateCreated->addMonths($installment)->day(1),
                 ]);
 
