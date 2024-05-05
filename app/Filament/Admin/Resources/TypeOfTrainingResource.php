@@ -34,7 +34,8 @@ class TypeOfTrainingResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->unique(),
             ]);
     }
 

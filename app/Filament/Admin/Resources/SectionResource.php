@@ -36,6 +36,7 @@ class SectionResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
+                    ->unique()
                     ->columnSpanFull(),
                 MarkdownEditor::make('description')
                     ->columnSpanFull(),
