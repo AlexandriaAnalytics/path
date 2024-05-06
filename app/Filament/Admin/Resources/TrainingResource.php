@@ -58,7 +58,7 @@ class TrainingResource extends Resource
                     ->label('Question type')
                     ->options(TypeQuestion::class),
 
-                Select::make('activity')
+                Select::make('activity_type')
                     ->label('Activity')
                     ->options(ActivityType::class)
                     ->reactive(),
@@ -80,8 +80,27 @@ class TrainingResource extends Resource
                 //         }
                 //         return true;
                 //     }),
-            
-                ]);
+                //True or false
+                Section::make('True Or False')
+                    ->relationship('activityTrueOrFalseJustify')
+                    ->schema([
+                        Textarea::make('question')
+                            ->cols(20),
+                        Textarea::make('justify')
+                            ->rows(5)
+                            ->cols(20),
+                        Grid::make()
+                            ->schema([
+                                Checkbox::make('true'),
+                                Checkbox::make('false')
+                            ])->columns(2)
+                    ])->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'true or false justify') {
+                            return false;
+                        }
+                        return true;
+                    }),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -125,17 +144,5 @@ class TrainingResource extends Resource
     public static function getPluralLabel(): string
     {
         return ('Training');
-    }
-
-    public static function trueOrFalseForm(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Textarea::make('question'),
-
-                Checkbox::make('true'),
-
-                Checkbox::make('false')
-            ]);
     }
 }

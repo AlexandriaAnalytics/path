@@ -27,4 +27,8 @@ class Training extends Model
     // public function activityTrueOrFalse(){
     //     return $this->hasOne(ActivityTrueOrFalse::class);
     // }
+
+    public function activityTrueOrFalseJustify(){
+        return $this->hasOne(ActivityTrueOrFalseJustify::class);
+    }
 }
