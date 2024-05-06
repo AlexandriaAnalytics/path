@@ -39,7 +39,7 @@ class RecordResource extends Resource
                     ->required(),
                 Select::make('section_id')
                     ->label('Section')
-                    ->options(Section::all()->pluck('name', 'id'))
+                    ->options(Level::all()->pluck('name', 'id'))
                     ->required(),
                 Select::make('status_id')
                     ->label('Status')
@@ -58,10 +58,10 @@ class RecordResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('section_id')
-                ->label('Section')
-                ->formatStateUsing(function ($state) {
-                    return Level::find($state)->name;
-                })
+                    ->label('Section')
+                    ->formatStateUsing(function ($state) {
+                        return Level::find($state)->name;
+                    })
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),

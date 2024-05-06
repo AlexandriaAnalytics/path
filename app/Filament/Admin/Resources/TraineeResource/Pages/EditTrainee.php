@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\TraineeResource\Pages;
 
 use App\Filament\Admin\Resources\TraineeResource;
+use App\Models\Record;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -17,5 +18,26 @@ class EditTrainee extends EditRecord
             Actions\ForceDeleteAction::make(),
             Actions\RestoreAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
+    protected function afterSave(): void
+    {
+        if ($this->record->sections) {
+            $sections = $this->record->sections;
+            foreach ($sections as $section) {
+                if (Record::where('trainee_id', $this->record->id)->where('section_id', $section)->count() == 0) {
+                    $record = new Record();
+                    $record->trainee_id = $this->record->id;
+                    $record->section_id = $section;
+                    $record->status_id = 1;
+                    $record->save();
+                }
+            }
+        }
     }
 }
