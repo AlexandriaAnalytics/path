@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('true')->nullable();
             $table->boolean('false')->nullable();
             $table->string('justify', 3000)->nullable();
-            $table->foreignId('training_id')->constrained()->references('id')->on('training')->on('trining')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('training_id')->constrained()->references('id')->on('training')->on('training')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });

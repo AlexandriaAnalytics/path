@@ -25,7 +25,7 @@ use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 class TraineeResource extends Resource
 {
     protected static ?string $model = Trainee::class;
-    protected static ?string $navigationGroup = 'Corporate';
+    protected static ?string $navigationGroup = 'Training';
     protected static ?string $navigationIcon = 'heroicon-m-users';
 
     protected static ?int $navigationSort = 4;
