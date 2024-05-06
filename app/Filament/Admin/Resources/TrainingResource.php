@@ -25,6 +25,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -176,13 +177,18 @@ class TrainingResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                ->sortable()
+                ->searchable(),
                 TextColumn::make('description'),
                 TextColumn::make('question_type'),
                 TextColumn::make('activity_type'),
             ])
             ->filters([
-                //
+                SelectFilter::make('question_type')
+                ->options(TypeQuestion::class),
+                SelectFilter::make('activity_type')
+                ->options(ActivityType::class)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
