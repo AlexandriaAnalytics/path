@@ -11,6 +11,7 @@ use App\Models\Section as ModelsSection;
 use App\Models\Training;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
@@ -19,6 +20,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -64,42 +67,108 @@ class TrainingResource extends Resource
                     ->reactive(),
 
                 //True or false
-                // Section::make('True Or False')
-                //     ->relationship('activityTrueOrFalse')
-                //     ->schema([
-                //         Textarea::make('question'),
-
-                //         Grid::make()
-                //             ->schema([
-                //                 Checkbox::make('true'),
-                //                 Checkbox::make('false')
-                //             ])->columns(2)
-                //     ])->hidden(function (callable $get) {
-                //         if ($get('activity') == 'true_or_false') {
-                //             return false;
-                //         }
-                //         return true;
-                //     }),
-                //True or false
                 Section::make('True Or False')
-                    ->relationship('activityTrueOrFalseJustify')
+                    ->relationship('trueOrFalse')
                     ->schema([
-                        Textarea::make('question')
-                            ->cols(20),
-                        Textarea::make('justify')
-                            ->rows(5)
-                            ->cols(20),
+                        Textarea::make('question'),
+
                         Grid::make()
                             ->schema([
                                 Checkbox::make('true'),
                                 Checkbox::make('false')
                             ])->columns(2)
                     ])->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'true or false') {
+                            return false;
+                        }
+                        return true;
+                    }),
+                //True or false
+                Section::make('True Or False')
+                    ->relationship('activityTrueOrFalseJustify')
+                    ->schema([
+                        Textarea::make('question')
+                            ->cols(20),
+                        Grid::make()
+                            ->schema([
+                                Checkbox::make('true'),
+                                Checkbox::make('false')
+                            ])->columns(2),
+                        Textarea::make('justify')
+                            ->rows(5)
+                            ->cols(20),
+
+                    ])->hidden(function (callable $get) {
                         if ($get('activity_type') == 'true or false justify') {
                             return false;
                         }
                         return true;
                     }),
+
+                //MultipleChoice
+                Section::make('Multiple choice')
+                    ->live()
+                    ->relationship('ativityMultipleChoice')
+                    ->schema([
+                        Textarea::make('question')
+                            ->cols(20),
+                        Repeater::make('answers')
+                            ->relationship('multipleChoiceAnswer')
+                            ->schema([
+                                Checkbox::make('check'),
+                                TextInput::make('answer')
+                            ])
+                    ])->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'multiple choice') {
+                            return false;
+                        }
+                        return true;
+                    }),
+
+                //Multiple choice multiple answers
+                Section::make('Multiple choice multiple answers')
+                    ->live()
+                    ->relationship('ativityMultipleChoice')
+                    ->schema([
+                        Textarea::make('question')
+                            ->cols(20),
+                        Repeater::make('answers')
+                            ->relationship('multipleChoiceAnswer')
+                            ->schema([
+                                Checkbox::make('check'),
+                                TextInput::make('answer')
+                            ])
+                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                dd($get('MultipleChoice'));
+                            })
+                    ])->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'multiple choice multiple answers') {
+                            return false;
+                        }
+                        return true;
+                    }),
+                //Question answer
+                Section::make('Question answer')
+                    ->relationship('questionAnswer')
+                    ->schema([
+                        Textarea::make('question')
+                            ->required()
+                            ->cols(20),
+
+                        Textarea::make('answer')
+                            ->required()
+                            ->rows(10)
+                            ->cols(20),
+
+                    ])
+                    ->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'question answer') {
+                            return false;
+                        }
+                        return true;
+                    })
+                //Media
+
             ]);
     }
 

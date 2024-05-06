@@ -31,4 +31,16 @@ class Training extends Model
     public function activityTrueOrFalseJustify(){
         return $this->hasOne(ActivityTrueOrFalseJustify::class);
     }
+
+    public function trueOrFalse(){
+        return $this->hasOne(TrueOrFalse::class);
+    }
+
+    public function ativityMultipleChoice(){
+        return $this->hasOne(ActivityMultipleChoice::class);
+    }
+
+    public function questionAnswer(){
+        return $this->hasOne(QuestionAnswer::class);
+    }
 }

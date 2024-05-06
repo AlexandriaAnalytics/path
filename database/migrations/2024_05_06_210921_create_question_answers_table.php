@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('activity_true_or_false', function (Blueprint $table) {
+        Schema::create('question_answers', function (Blueprint $table) {
             $table->id();
             $table->string('question', 3000);
-            $table->boolean('true')->nullable();
-            $table->boolean('false')->nullable();
-            $table->boolean('answer_response')->nullable();
-
+            $table->string('answer', 5000);
+            $table->foreignId('training_id')->constrained()->references('id')->on('training')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activity_true_or_false');
+        Schema::dropIfExists('question_answers');
     }
 };
