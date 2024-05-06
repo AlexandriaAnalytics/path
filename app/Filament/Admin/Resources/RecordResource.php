@@ -4,8 +4,10 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\RecordResource\Pages;
 use App\Filament\Admin\Resources\RecordResource\RelationManagers;
+use App\Models\Level;
 use App\Models\Record;
 use App\Models\Section;
+use App\Models\StatusActivity;
 use App\Models\Trainee;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -41,7 +43,7 @@ class RecordResource extends Resource
                     ->required(),
                 Select::make('status_id')
                     ->label('Status')
-                    ->options(Trainee::all()->pluck('full_name', 'id'))
+                    ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->required(),
                 TextInput::make('comments')
             ]);
@@ -51,21 +53,26 @@ class RecordResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('trainee_id')
+                TextColumn::make('trainee.full_name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('section_id')
+                ->label('Section')
+                ->formatStateUsing(function ($state) {
+                    return Level::find($state)->name;
+                })
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                ColorColumn::make('status_id')
+                ColorColumn::make('status.color')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('comments')
                     ->sortable()
                     ->searchable()
+                    ->default('-')
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
