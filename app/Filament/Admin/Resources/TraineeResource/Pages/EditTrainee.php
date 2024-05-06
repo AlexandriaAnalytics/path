@@ -38,6 +38,12 @@ class EditTrainee extends EditRecord
                     $record->save();
                 }
             }
+            $borrarSections = array_diff(Record::where('trainee_id', $this->record->id)->pluck('id')->toArray(), $sections);
+            if ($borrarSections != []) {
+                foreach ($borrarSections as $section) {
+                    Record::where('trainee_id', $this->record->id)->where('section_id', $section)->delete();
+                }
+            }
         }
     }
 }
