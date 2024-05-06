@@ -36,7 +36,8 @@ class StatusActivityResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->unique(),
                 ColorPicker::make('color')
                     ->required(),
             ]);
