@@ -16,15 +16,15 @@ class Training extends Model
         'name',
         'description',
         'section_id',
-        'type_question',
-        'activity'
+        'question_type',
+        'activity_type'
     ];
 
     public function section(){
         return $this->belongsTo(Section::class, 'section_id');
     }
 
-    public function activityTrueOrFalse(){
-        return $this->hasOne(ActivityTrueOrFalse::class);
-    }
+    // public function activityTrueOrFalse(){
+    //     return $this->hasOne(ActivityTrueOrFalse::class);
+    // }
 }

@@ -6,6 +6,7 @@ use App\Enums\ActivityType;
 use App\Enums\TypeQuestion;
 use App\Filament\Admin\Resources\TrainingResource\Pages;
 use App\Filament\Admin\Resources\TrainingResource\RelationManagers;
+use App\Models\Level;
 use App\Models\Section as ModelsSection;
 use App\Models\Training;
 use Closure;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -52,7 +54,7 @@ class TrainingResource extends Resource
                     ->label('Section')
                     ->options(ModelsSection::all()->pluck('name', 'id')),
 
-                Select::make('type_question')
+                Select::make('question_type')
                     ->label('Question type')
                     ->options(TypeQuestion::class),
 
@@ -62,30 +64,34 @@ class TrainingResource extends Resource
                     ->reactive(),
 
                 //True or false
-                Section::make('True Or False')
-                    ->relationship('activityTrueOrFalse')
-                    ->schema([
-                        Textarea::make('question'),
+                // Section::make('True Or False')
+                //     ->relationship('activityTrueOrFalse')
+                //     ->schema([
+                //         Textarea::make('question'),
 
-                        Grid::make()
-                            ->schema([
-                                Checkbox::make('true'),
-                                Checkbox::make('false')
-                            ])->columns(2)
-                    ])->hidden(function (callable $get) {
-                        if ($get('activity') == 'true_or_false') {
-                            return false;
-                        }
-                        return true;
-                    }),
-            ]);
+                //         Grid::make()
+                //             ->schema([
+                //                 Checkbox::make('true'),
+                //                 Checkbox::make('false')
+                //             ])->columns(2)
+                //     ])->hidden(function (callable $get) {
+                //         if ($get('activity') == 'true_or_false') {
+                //             return false;
+                //         }
+                //         return true;
+                //     }),
+            
+                ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('name'),
+                TextColumn::make('description'),
+                TextColumn::make('question_type'),
+                TextColumn::make('activity_type'),
             ])
             ->filters([
                 //
