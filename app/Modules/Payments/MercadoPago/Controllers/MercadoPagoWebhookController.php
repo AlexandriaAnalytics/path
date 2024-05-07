@@ -192,7 +192,16 @@ class MercadoPagoWebhookController extends Controller
             $candidate->payments()->createMany($payments);
         }
 
-        $payments = $candidate->payments()
+        $response = Http::withHeaders([
+            'Accept' => '*/*',
+            'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
+            'Authorization' => 'Bearer ' . config('mercadopago.access_token'),
+        ])
+            ->get('https://api.mercadopago.com/preapproval/' . $preapproval->id);
+        if (json_decode($response->body())->status == "authorized") {
+            Payment::where('payment_id', $preapproval->id)->where('current_installment', json_decode($response->body())->summarized->charged_quantity)->update(['status' => 'approved']);
+        }
+        /* $payments = $candidate->payments()
             ->where('payment_id', $preapproval->id)
             ->where('current_installment', $preapprovalSummary->charged_quantity)
             ->get();
@@ -200,7 +209,7 @@ class MercadoPagoWebhookController extends Controller
             $payment->status = 'approved';
             $payment->paid_date = CarbonImmutable::parse($preapprovalSummary->last_charged_date);
             $payment->save();
-        }
+        } */
 
         return $this->successResponse($request);
     }
