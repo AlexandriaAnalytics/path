@@ -17,11 +17,7 @@ return new class extends Migration
             $table->boolean('true')->nullable();
             $table->boolean('false')->nullable();
             $table->string('justify', 3000)->nullable();
-<<<<<<< HEAD
-            $table->foreignId('training_id')->constrained()->references('id')->on('training')->on('training')->cascadeOnDelete()->cascadeOnUpdate();
-=======
             $table->foreignId('training_id')->constrained()->references('id')->on('training')->cascadeOnDelete()->cascadeOnUpdate();
->>>>>>> d1ea7a8 (feat: Implementacion de recurso training y manejo de tipo de actividades)
             $table->timestamps();
             $table->softDeletes();
         });
