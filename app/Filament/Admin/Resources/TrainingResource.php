@@ -139,10 +139,10 @@ class TrainingResource extends Resource
                             ->schema([
                                 Checkbox::make('check'),
                                 TextInput::make('answer')
-                            ])
+                            ])/* 
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 dd($get('MultipleChoice'));
-                            })
+                            }) */
                     ])->hidden(function (callable $get) {
                         if ($get('activity_type') == 'multiple choice multiple answers') {
                             return false;
