@@ -9,11 +9,12 @@ class Multimedia extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'trining_id',
+        'training_id',
         'file'
     ];
 
-    public function training(){
+    public function training()
+    {
         return $this->belongsTo(Training::class);
     }
 }

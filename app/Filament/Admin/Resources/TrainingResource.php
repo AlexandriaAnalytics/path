@@ -175,7 +175,6 @@ class TrainingResource extends Resource
                     ->schema([
                         FileUpload::make('file')
                             ->directory('activity_multimedia')
-                            ->multiple()
                             ->enableOpen()
                             ->columnSpanFull(),
                     ])
