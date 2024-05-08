@@ -53,6 +53,11 @@ class CandidateDahboard extends Dashboard  //implements HasTable
         return [
             //Action::make('Print ticket')
             //    ->icon('heroicon-o-printer'),
+            Action::make('important')
+                ->label('Payments may take up to 48 hours to be reflected')
+                ->disabled()
+                ->color('warning')
+                ->badge(),
             Action::make('Logout')
                 ->color('danger')
                 ->url('/candidate/logout'),

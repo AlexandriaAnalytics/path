@@ -20,6 +20,7 @@ class WidgetCandidate extends BaseWidget
         $candidate =  Candidate::find(session('candidate')->id);
 
         return [ // i want to show the candidate number here from session variable call candidate
+            Stat::make('Important', 'payments'),
             Stat::make('Candidate number', $candidate->id),
             Stat::make('Student name', $candidate->student->full_name),
             Stat::make('Payment status', $candidate->paymentStatus),
