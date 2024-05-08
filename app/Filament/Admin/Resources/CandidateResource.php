@@ -415,7 +415,7 @@ class CandidateResource extends Resource
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                        'paying' => 'info'
+                        'paying' => 'info',
                     }),
                 TextColumn::make('modules.name')
                     ->badge(),
@@ -580,6 +580,7 @@ class CandidateResource extends Resource
                         ->required()
                         ->native(false),
                     ToggleButtons::make('status')
+                        ->hiddenOn('create')
                         ->options(UserStatus::class)
                         ->enum(UserStatus::class)
                         ->required()
@@ -590,11 +591,7 @@ class CandidateResource extends Resource
                             '3' => 'success',
                             '4' => 'warning',
                             '5' => 'warning',
-                        ])
-                        ->formatStateUsing(function (string $state, Candidate $record) {
-                            return $record->paymentStatus;
-                        })
-                        ->hiddenOn('create'),
+                        ]),
                 ]),
         ];
     }
