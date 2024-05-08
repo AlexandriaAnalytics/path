@@ -43,4 +43,8 @@ class Training extends Model
     public function questionAnswer(){
         return $this->hasOne(QuestionAnswer::class);
     }
+
+    public function multimedia(){
+        return $this->hasOne(Multimedia::class);
+    }
 }

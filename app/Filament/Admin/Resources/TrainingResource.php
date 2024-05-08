@@ -13,6 +13,7 @@ use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
@@ -167,8 +168,23 @@ class TrainingResource extends Resource
                             return false;
                         }
                         return true;
-                    })
+                    }),
                 //Media
+                Section::make('Multimedia')
+                    ->relationship('multimedia')
+                    ->schema([
+                        FileUpload::make('file')
+                            ->directory('activity_multimedia')
+                            ->multiple()
+                            ->enableOpen()
+                            ->columnSpanFull(),
+                    ])
+                    ->hidden(function (callable $get) {
+                        if ($get('activity_type') == 'multimedia') {
+                            return false;
+                        }
+                        return true;
+                    })
 
             ]);
     }
@@ -178,17 +194,17 @@ class TrainingResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                ->sortable()
-                ->searchable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('description'),
                 TextColumn::make('question_type'),
                 TextColumn::make('activity_type'),
             ])
             ->filters([
                 SelectFilter::make('question_type')
-                ->options(TypeQuestion::class),
+                    ->options(TypeQuestion::class),
                 SelectFilter::make('activity_type')
-                ->options(ActivityType::class)
+                    ->options(ActivityType::class)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
