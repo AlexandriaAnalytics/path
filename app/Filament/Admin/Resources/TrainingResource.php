@@ -90,7 +90,7 @@ class TrainingResource extends Resource
                         }
                         return true;
                     }),
-                //True or false
+                //True or false justify
                 Section::make('True Or False')
                     ->relationship('activityTrueOrFalseJustify')
                     ->schema([
@@ -102,9 +102,9 @@ class TrainingResource extends Resource
                                 Checkbox::make('true'),
                                 Checkbox::make('false')
                             ])->columns(2),
-                        Textarea::make('justify')
-                            ->rows(5)
-                            ->cols(20),
+                        // Textarea::make('justify')
+                        //     ->rows(5)
+                        //     ->cols(20),
 
                     ])->hidden(function (callable $get) {
                         if ($get('activity_type') == 'true or false justify') {
@@ -165,10 +165,10 @@ class TrainingResource extends Resource
                             ->required()
                             ->cols(20),
 
-                        Textarea::make('answer')
-                            ->required()
-                            ->rows(10)
-                            ->cols(20),
+                        // Textarea::make('answer')
+                        //     ->required()
+                        //     ->rows(10)
+                        //     ->cols(20),
 
                     ])
                     ->hidden(function (callable $get) {

@@ -13,7 +13,7 @@ class ActivityTrueOrFalseJustify extends Model
         'question',
         'true',
         'false',
-        'justify',
+        // 'justify',
         'training_id',
     ];
 
