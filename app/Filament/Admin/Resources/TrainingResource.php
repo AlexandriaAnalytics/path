@@ -48,6 +48,7 @@ class TrainingResource extends Resource
                 TextInput::make('name')
                     ->label('Name')
                     ->required()
+                    ->unique()
                     ->columnSpanFull(),
 
                 Textarea::make('description')
@@ -57,14 +58,17 @@ class TrainingResource extends Resource
 
                 Select::make('section_id')
                     ->label('Section')
+                    ->required()
                     ->options(ModelsSection::all()->pluck('name', 'id')),
 
                 Select::make('question_type')
                     ->label('Question type')
+                    ->required()
                     ->options(TypeQuestion::class),
 
                 Select::make('activity_type')
                     ->label('Activity')
+                    ->required()
                     ->options(ActivityType::class)
                     ->reactive(),
 
@@ -72,7 +76,8 @@ class TrainingResource extends Resource
                 Section::make('True Or False')
                     ->relationship('trueOrFalse')
                     ->schema([
-                        Textarea::make('question'),
+                        Textarea::make('question')
+                            ->required(),
 
                         Grid::make()
                             ->schema([
@@ -90,6 +95,7 @@ class TrainingResource extends Resource
                     ->relationship('activityTrueOrFalseJustify')
                     ->schema([
                         Textarea::make('question')
+                            ->required()
                             ->cols(20),
                         Grid::make()
                             ->schema([
@@ -113,6 +119,7 @@ class TrainingResource extends Resource
                     ->relationship('ativityMultipleChoice')
                     ->schema([
                         Textarea::make('question')
+                            ->required()
                             ->cols(20),
                         Repeater::make('answers')
                             ->relationship('multipleChoiceAnswer')
@@ -133,6 +140,7 @@ class TrainingResource extends Resource
                     ->relationship('ativityMultipleChoice')
                     ->schema([
                         Textarea::make('question')
+                            ->required()
                             ->cols(20),
                         Repeater::make('answers')
                             ->relationship('multipleChoiceAnswer')
@@ -174,6 +182,7 @@ class TrainingResource extends Resource
                     ->relationship('multimedia')
                     ->schema([
                         FileUpload::make('file')
+                            ->required()
                             ->directory('activity_multimedia')
                             ->enableOpen()
                             ->columnSpanFull(),
