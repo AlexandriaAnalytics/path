@@ -192,6 +192,8 @@ class MercadoPagoWebhookController extends Controller
             $candidate->payments()->createMany($payments);
         }
 
+        sleep(120);
+
         $response = Http::withHeaders([
             'Accept' => '*/*',
             'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
