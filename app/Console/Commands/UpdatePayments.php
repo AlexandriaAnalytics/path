@@ -36,7 +36,7 @@ class UpdatePayments extends Command
             ])
                 ->get('https://api.mercadopago.com/preapproval/' . $payment);
             if (json_decode($response->body())->status == "authorized") {
-                Payment::where('payment_id', $payment)->where('current_installment', json_decode($response->body())->summarized->charged_quantity)->update(['status' => 'approved']);
+                Payment::where('payment_id', $payment)->where('current_installment', json_decode($response->body())->summarized->charged_quantity)->where('status', 'pending')->update(['status' => 'approved']);
             }
         }
 
