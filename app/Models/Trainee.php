@@ -11,10 +11,11 @@ class Trainee extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['full_name', 'phone', 'email', 'type_of_training_id', 'street_name', 'street_number', 'city', 'postcode', 'province_or_state', 'country_id', 'sections', 'files'];
+    protected $fillable = ['full_name', 'phone', 'email', 'types_of_training', 'street_name', 'street_number', 'city', 'postcode', 'province_or_state', 'country_id', 'sections', 'files', 'status'];
 
     protected $casts = [
         'sections' => 'array',
+        'types_of_training' => 'array'
     ];
 
     public function typeOfTraining()

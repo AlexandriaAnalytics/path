@@ -11,14 +11,19 @@ use App\Models\TypeOfTraining;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -38,34 +43,51 @@ class TraineeResource extends Resource
                     Step::make('Personal information')
                         ->schema([
                             TextInput::make('full_name')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             PhoneInput::make('phone')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('email')
                                 ->email()
-                                ->required(),
-                            Select::make('type_of_training_id')
-                                ->label('Type of training')
+                                ->required()
+                                ->columnSpan(8),
+                            Select::make('types_of_training')
+                                ->label('Type of trainee')
                                 ->options(TypeOfTraining::all()->pluck('name', 'id'))
-                                ->required(),
+                                ->multiple()
+                                ->required()
+                                ->columnSpan(8),
                             Select::make('country_id')
                                 ->label('Country')
                                 ->options(Country::all()->pluck('name', 'id'))
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('province_or_state')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('city')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('postcode')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('street_name')
-                                ->required(),
+                                ->required()
+                                ->columnSpan(8),
                             TextInput::make('street_number')
                                 ->numeric()
-                                ->required(),
-                            TextInput::make('files')
                                 ->required()
-                        ]),
+                                ->columnSpan(8),
+                            Toggle::make('status')
+                                ->label('Active')
+                                ->inline(false)
+                                ->default(true)
+                                ->required()
+                                ->columnSpan(1),
+                            TextInput::make('files')
+                                ->columnSpan(7)
+                        ])->columns(8),
                     Step::make('Sections')
                         ->schema([
                             Select::make('sections')
@@ -128,6 +150,15 @@ class TraineeResource extends Resource
                     })
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('status')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'inactive' => 'danger',
+                        'active' => 'success'
+                    }),
                 TextColumn::make('files')
                     ->sortable()
                     ->searchable()
@@ -145,6 +176,26 @@ class TraineeResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    BulkAction::make('change_status')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->form([
+                            Toggle::make('status')
+                                ->label('Active')
+                                ->inline(false)
+                                ->default(true)
+                                ->required()
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each->update([
+                                'status' => $data['status'] ? 'active' : 'inactive',
+                            ]);
+
+                            Notification::make()
+                                ->title('Trainee status updated successfully')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

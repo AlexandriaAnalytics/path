@@ -24,9 +24,9 @@ class CreateTrainee extends CreateRecord
 
     protected function afterCreate(): void
     {
-        if($this->record->sections) {
+        if ($this->record->sections) {
             $sections = $this->record->sections;
-            foreach($sections as $section) {
+            foreach ($sections as $section) {
                 $record = new Record();
                 $record->trainee_id = $this->record->id;
                 $record->section_id = $section;
@@ -34,5 +34,16 @@ class CreateTrainee extends CreateRecord
                 $record->save();
             }
         }
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        if ($data['status']) {
+            $data['status'] = 'active';
+        } else {
+            $data['status'] = 'inactive';
+        }
+
+        return $data;
     }
 }

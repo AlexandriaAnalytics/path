@@ -46,4 +46,15 @@ class EditTrainee extends EditRecord
             }
         }
     }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if ($data['status']) {
+            $data['status'] = 'active';
+        } else {
+            $data['status'] = 'inactive';
+        }
+
+        return $data;
+    }
 }
