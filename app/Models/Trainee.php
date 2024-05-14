@@ -41,7 +41,8 @@ class Trainee extends Authenticatable implements FilamentUser, HasName
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'trainee';
+        if($panel->getId() === 'trainee' && $this->status) return true;
+        
     }
 
     public function getFilamentName(): string

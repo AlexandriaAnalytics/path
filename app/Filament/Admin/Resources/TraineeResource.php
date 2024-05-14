@@ -60,7 +60,8 @@ class TraineeResource extends Resource
                                 ->required()
                                 ->maxLength(255)
                                 ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                                ->dehydrated(fn (?string $state): bool => filled($state)),
+                                ->dehydrated(fn (?string $state): bool => filled($state))
+                                ->columnSpan(8),
 
                             Select::make('types_of_training')
                                 ->label('Type of trainee')
