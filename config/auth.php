@@ -41,6 +41,11 @@ return [
             'provider' => 'users',
         ],
 
+        'trainee' => [
+            'driver' => 'session',
+            'provider' => 'trainees', // Nuevo guard para autenticar Trainee
+        ],
+
     ],
 
     /*
@@ -65,6 +70,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'trainees' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Trainee::class,
         ],
     ],
 

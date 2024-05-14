@@ -21,6 +21,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Illuminate\Support\Facades\Hash;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,6 +53,15 @@ class TraineeResource extends Resource
                                 ->email()
                                 ->required()
                                 ->columnSpan(8),
+
+                            TextInput::make('password')
+                                ->password()
+                                ->revealable()
+                                ->required()
+                                ->maxLength(255)
+                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                                ->dehydrated(fn (?string $state): bool => filled($state)),
+
                             Select::make('types_of_training')
                                 ->label('Type of trainee')
                                 ->options(TypeOfTraining::all()->pluck('name', 'id'))
