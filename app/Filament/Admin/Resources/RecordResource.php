@@ -17,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
@@ -78,7 +79,8 @@ class RecordResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                ColorColumn::make('status.color')
+                SelectColumn::make('status_id')
+                    ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),

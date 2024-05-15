@@ -18,4 +18,9 @@ class StatusActivity extends Model
     protected $casts = [
         'default' => 'boolean'
     ];
+
+    public function records()
+    {
+        return $this->hasMany(Record::class);
+    }
 }
