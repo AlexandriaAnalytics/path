@@ -10,7 +10,7 @@ class Record extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['trainee_id','section_id','status_id','comments'];
+    protected $fillable = ['trainee_id', 'section_id', 'status_id', 'comments', 'performance_id'];
 
     public function trainee()
     {
@@ -25,5 +25,10 @@ class Record extends Model
     public function status()
     {
         return $this->belongsTo(StatusActivity::class);
+    }
+
+    public function performance()
+    {
+        return $this->belongsTo(Performance::class);
     }
 }

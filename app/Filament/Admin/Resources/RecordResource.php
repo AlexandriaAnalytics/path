@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\StatusActivity;
 use App\Models\Trainee;
 use Filament\Forms;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -17,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -52,6 +54,12 @@ class RecordResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->groups([
+                GroupingGroup::make('trainee.full_name')
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('trainee.full_name'))
+                    ->collapsible(),
+            ])
+            ->defaultGroup('trainee.full_name')
             ->columns([
                 TextColumn::make('trainee.full_name')
                     ->sortable()
@@ -62,6 +70,11 @@ class RecordResource extends Resource
                     ->formatStateUsing(function ($state) {
                         return Level::find($state)->name;
                     })
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('performance')
+                    ->default('-')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
