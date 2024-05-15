@@ -19,7 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PerformanceResource extends Resource
 {
     protected static ?string $model = Performance::class;
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Training settings';
+    protected static ?int $navigationSort = 5;
     protected static ?string $modelLabel = 'Performance';
     protected static ?string $slug = 'performance';
     // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';

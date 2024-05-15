@@ -45,7 +45,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('User management'),
                 NavigationGroup::make()
-                    ->label('Settings')
+                    ->label('Settings'),
+                NavigationGroup::make()
+                    ->label('Training settings')
 
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')

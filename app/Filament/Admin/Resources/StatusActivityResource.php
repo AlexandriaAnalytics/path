@@ -23,7 +23,8 @@ class StatusActivityResource extends Resource
 
     //protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Training settings';
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationLabel = 'Status';
 

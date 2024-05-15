@@ -37,7 +37,8 @@ class TrainingResource extends Resource
     protected static ?string $model = Training::class;
 
     // protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Training settings';
+    protected static ?int $navigationSort = 3;
     protected static ?string $modelLabel = 'Training';
     protected static ?string $slug = 'training';
 
