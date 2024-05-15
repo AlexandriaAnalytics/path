@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\StatusActivityResource\Pages;
 use App\Filament\Admin\Resources\StatusActivityResource\RelationManagers;
 use App\Models\StatusActivity;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -41,6 +42,11 @@ class StatusActivityResource extends Resource
                     ->unique(),
                 ColorPicker::make('color')
                     ->required(),
+                Checkbox::make('default')
+                    ->label('Default status')
+                    ->disabled(function () {
+                        return StatusActivity::where('default', 1)->exists();
+                    })
             ]);
     }
 

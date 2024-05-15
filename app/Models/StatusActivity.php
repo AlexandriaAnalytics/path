@@ -12,6 +12,10 @@ class StatusActivity extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'color'
+        'name', 'color', 'default'
+    ];
+
+    protected $casts = [
+        'default' => 'boolean'
     ];
 }
