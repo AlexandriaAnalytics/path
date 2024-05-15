@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\TraineeResource\Pages;
 use App\Filament\Admin\Resources\TraineeResource\RelationManagers;
 use App\Models\Country;
 use App\Models\Level;
+use App\Models\Section;
 use App\Models\Trainee;
 use App\Models\TypeOfTraining;
 use Filament\Forms;
@@ -102,7 +103,7 @@ class TraineeResource extends Resource
                     Step::make('Sections')
                         ->schema([
                             Select::make('sections')
-                                ->options(Level::all()->pluck('name', 'id'))
+                                ->options(Section::all()->pluck('name', 'id'))
                                 ->multiple()
                         ])
                 ])->columnSpanFull()
