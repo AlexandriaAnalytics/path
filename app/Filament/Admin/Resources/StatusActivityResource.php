@@ -39,7 +39,7 @@ class StatusActivityResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->unique(),
+                    ->unique(ignoreRecord: true),
                 ColorPicker::make('color')
                     ->required(),
                 Checkbox::make('default')
