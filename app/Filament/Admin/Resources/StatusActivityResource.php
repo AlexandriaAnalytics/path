@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Validation\Rules\Unique;
 
 class StatusActivityResource extends Resource
 {
@@ -59,23 +60,28 @@ class StatusActivityResource extends Resource
                     ->sortable(),
                 ColorColumn::make('color')
                     ->searchable(),
+                TextColumn::make('default')
+                    ->formatStateUsing(function ($state) {
+                        if ($state) {
+                            return 'True';
+                        } else {
+                            return 'False';
+                        }
+                    })
+                    ->badge()
+                    ->color(function ($state) {
+                        return $state ? 'success' : 'gray';
+                    })
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created on')
                     ->sortable(),
             ])
-            ->filters([
-                Tables\Filters\TrashedFilter::make(),
-            ])
+
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                    Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                    Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
-                ]),
             ]);
     }
 
@@ -93,13 +99,5 @@ class StatusActivityResource extends Resource
             'create' => Pages\CreateStatusActivity::route('/create'),
             'edit' => Pages\EditStatusActivity::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }
