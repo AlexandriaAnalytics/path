@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\View\View;
 
 class TraineePanelProvider extends PanelProvider
 {
@@ -25,10 +26,13 @@ class TraineePanelProvider extends PanelProvider
         return $panel
             ->id('trainee')
             ->path('trainee')
-            ->authGuard('trainee')
             ->brandLogo(asset('images/logo/01-regular.png'))
             ->brandLogoHeight('4rem')
             ->login()
+            ->renderHook(
+                'panels::auth.login.form.after',
+                fn (): View => view('filament.management.login_management')
+            )
             ->colors([
                 'primary' => '#22526d',
             ])
