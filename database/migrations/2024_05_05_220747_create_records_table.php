@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('trainee_id')->constrained();
             $table->foreignId('section_id')->constrained()->references('id')->on('levels');
-            $table->foreignId('status_id')->constrained();
+            $table->foreignId('status_activity_id')->constrained();
             $table->string('comments')->nullable();
             $table->timestamps();
             $table->softDeletes();

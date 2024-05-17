@@ -56,13 +56,13 @@ class RecordResource extends Resource
     {
         return $table
             ->groups([
-                GroupingGroup::make('trainee.full_name')
+                GroupingGroup::make('trainee.user.name')
                     ->groupQueryUsing(fn (Builder $query) => $query->groupBy('trainee.full_name'))
                     ->collapsible(),
             ])
-            ->defaultGroup('trainee.full_name')
+            ->defaultGroup('trainee.user.name')
             ->columns([
-                TextColumn::make('trainee.full_name')
+                TextColumn::make('trainee.user.name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),

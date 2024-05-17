@@ -10,7 +10,7 @@ class Record extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['trainee_id', 'section_id', 'status_id', 'comments', 'performance_id'];
+    protected $fillable = ['trainee_id', 'section_id', 'status_activity_id', 'comments', 'performance_id'];
 
     public function trainee()
     {

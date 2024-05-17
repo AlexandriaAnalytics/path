@@ -31,7 +31,7 @@ class CreateTrainee extends CreateRecord
                 $record = new Record();
                 $record->trainee_id = $this->record->id;
                 $record->section_id = $section;
-                $record->status_id = StatusActivity::where('default', 1)->first()->id;
+                $record->status_activity_id = StatusActivity::where('default', 1)->first()->id;
                 $record->performance_id = null;
                 $record->save();
             }

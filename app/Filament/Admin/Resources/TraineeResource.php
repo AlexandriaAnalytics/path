@@ -67,8 +67,18 @@ class TraineeResource extends Resource
                                         ->hiddenOn(['view']),
                                 ])
                                 ->createOptionUsing(function (array $data): int {
-                                    $user = \App\Models\User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password']]);
-                                    return $user->id;
+                                    $existingUser = User::where('email', $data['email'])->first();
+
+                                    if ($existingUser) {
+                                        return $existingUser->id;
+                                    } else {
+                                        $user = \App\Models\User::create([
+                                            'name' => $data['name'],
+                                            'email' => $data['email'],
+                                            'password' => $data['password']
+                                        ]);
+                                        return $user->id;
+                                    }
                                 })
                                 ->columnSpan(4),
                             PhoneInput::make('phone')
