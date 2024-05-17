@@ -12,4 +12,9 @@ class ExaminerQuestion extends Model
     use SoftDeletes;
 
     protected $fillable = ['question', 'description', 'answers', 'open_or_close', 'performance', 'multimedia'];
+
+
+    protected $casts = [
+        'open_or_close' => 'boolean',
+    ];
 }
