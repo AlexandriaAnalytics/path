@@ -13,6 +13,10 @@ class ExaminerActivity extends Model
 
     protected $fillable = ['questions', 'section_id'];
 
+    protected $casts = [
+        'questions' => 'array',
+    ];
+
     public function section()
     {
         return $this->belongsTo(Section::class);

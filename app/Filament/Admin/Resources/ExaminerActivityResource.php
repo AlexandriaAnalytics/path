@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\ExaminerActivityResource\Pages;
 use App\Filament\Admin\Resources\ExaminerActivityResource\RelationManagers;
 use App\Models\ExaminerActivity;
 use App\Models\Performance;
+use App\Models\Section;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
@@ -34,7 +35,11 @@ class ExaminerActivityResource extends Resource
     {
         return $form
             ->schema([
-                Repeater::make('Questions')
+                Select::make('section_id')
+                    ->label('Section')
+                    ->options(Section::all()->pluck('name', 'id'))
+                    ->required(),
+                Repeater::make('questions')
                     ->schema([
                         TextInput::make('question')
                             ->required(),

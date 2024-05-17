@@ -11,10 +11,11 @@ class ExaminerQuestion extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['question', 'description', 'answers', 'open_or_close', 'performance', 'multimedia'];
-
+    protected $fillable = ['question', 'description', 'aswers', 'open_or_close', 'performance', 'multimedia'];
 
     protected $casts = [
         'open_or_close' => 'boolean',
+        'aswers' => 'array',
+        'performance' => 'array',
     ];
 }
