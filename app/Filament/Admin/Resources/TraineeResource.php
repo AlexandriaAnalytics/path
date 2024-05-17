@@ -9,6 +9,7 @@ use App\Models\Level;
 use App\Models\Section;
 use App\Models\Trainee;
 use App\Models\TypeOfTraining;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -44,26 +45,35 @@ class TraineeResource extends Resource
                 Wizard::make([
                     Step::make('Personal information')
                         ->schema([
-                            TextInput::make('full_name')
-                                ->required()
-                                ->columnSpan(8),
+                            Select::make('user_id')
+                                ->label('User')
+                                ->options(User::all()->pluck('name', 'id'))
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('name')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->autofocus(),
+                                    Forms\Components\TextInput::make('email')
+                                        ->email()
+                                        ->required()
+                                        ->maxLength(255),
+                                    Forms\Components\TextInput::make('password')
+                                        ->password()
+                                        ->revealable()
+                                        ->maxLength(255)
+                                        ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                                        ->dehydrated(fn (?string $state): bool => filled($state))
+                                        ->required(fn (string $operation): bool => $operation === 'create')
+                                        ->hiddenOn(['view']),
+                                ])
+                                ->createOptionUsing(function (array $data): int {
+                                    $user = \App\Models\User::create(['name' => $data['name'], 'email' => $data['email'], 'password' => $data['password']]);
+                                    return $user->id;
+                                })
+                                ->columnSpan(4),
                             PhoneInput::make('phone')
                                 ->required()
-                                ->columnSpan(8),
-                            TextInput::make('email')
-                                ->email()
-                                ->required()
-                                ->columnSpan(8),
-
-                            TextInput::make('password')
-                                ->password()
-                                ->revealable()
-                                ->required()
-                                ->maxLength(255)
-                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
-                                ->dehydrated(fn (?string $state): bool => filled($state))
-                                ->columnSpan(8),
-
+                                ->columnSpan(4),
                             Select::make('types_of_training')
                                 ->label('Type of trainee')
                                 ->options(TypeOfTraining::all()->pluck('name', 'id'))
@@ -114,7 +124,8 @@ class TraineeResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('full_name')
+                TextColumn::make('user.name')
+                    ->label('Full name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
@@ -122,7 +133,8 @@ class TraineeResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('email')
+                TextColumn::make('user.email')
+                    ->label('Email')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
