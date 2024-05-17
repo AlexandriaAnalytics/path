@@ -22,7 +22,7 @@ class Record extends Model
         return $this->belongsTo(Section::class);
     }
 
-    public function status()
+    public function statusActivity()
     {
         return $this->belongsTo(StatusActivity::class);
     }
