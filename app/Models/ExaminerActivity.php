@@ -21,4 +21,14 @@ class ExaminerActivity extends Model
     {
         return $this->belongsTo(Section::class);
     }
+
+    public function preguntas()
+    {
+        $questions = $this->questions;
+        $questionsArray = [];
+        foreach ($questions as $question) {
+            $questionsArray[] = ExaminerQuestion::find($question)->first();
+        }
+        return $questionsArray;
+    }
 }

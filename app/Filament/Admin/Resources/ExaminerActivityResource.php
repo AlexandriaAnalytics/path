@@ -17,6 +17,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -44,10 +45,12 @@ class ExaminerActivityResource extends Resource
                         TextInput::make('question')
                             ->required(),
                         TextInput::make('description'),
-                        Toggle::make('open_or_close'),
-                        Repeater::make('Answers')
+                        Toggle::make('open_or_close')
+                            ->label('Open question'),
+                        Repeater::make('aswers')
+                            ->label('Answers')
                             ->schema([
-                                TextInput::make('answer'),
+                                TextInput::make('aswer'),
                                 Select::make('performance')
                                     ->options(Performance::all()->pluck('answer', 'id'))
                             ])->columns(2),
@@ -61,7 +64,7 @@ class ExaminerActivityResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('section.name'),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

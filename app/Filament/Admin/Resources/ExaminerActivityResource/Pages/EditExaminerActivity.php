@@ -18,4 +18,11 @@ class EditExaminerActivity extends EditRecord
             Actions\RestoreAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['questions'] = $this->record->preguntas();
+
+        return $data;
+    }
 }

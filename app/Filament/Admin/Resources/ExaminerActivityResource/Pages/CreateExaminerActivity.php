@@ -32,7 +32,7 @@ class CreateExaminerActivity extends CreateRecord
             $examinerQuestion->open_or_close = $question['open_or_close'];
             $aswers = [];
             $performances = [];
-            foreach ($question['Answers'] as $answer) {
+            foreach ($question['aswers'] as $answer) {
                 $aswers[] = $answer['answer'];
                 $performances[] = $answer['performance'];
             }
