@@ -33,7 +33,7 @@ class CreateExaminerActivity extends CreateRecord
             $aswers = [];
             $performances = [];
             foreach ($question['aswers'] as $answer) {
-                $aswers[] = $answer['answer'];
+                $aswers[] = $answer['aswer'];
                 $performances[] = $answer['performance'];
             }
             $examinerQuestion->aswers = $aswers;
