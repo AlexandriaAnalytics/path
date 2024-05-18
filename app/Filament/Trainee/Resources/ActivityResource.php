@@ -66,7 +66,7 @@ class ActivityResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 ColorColumn::make('statusActivity.color')
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('performance.name')
+                TextColumn::make('performance.answer')
                     ->sortable()
                     ->searchable()
                     ->default('-')
