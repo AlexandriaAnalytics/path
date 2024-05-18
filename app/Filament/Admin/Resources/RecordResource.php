@@ -36,15 +36,13 @@ class RecordResource extends Resource
     {
         return $form
             ->schema([
-                Select::make('trainee_id')
-                    ->label('Trainee')
-                    ->options(Trainee::all()->pluck('full_name', 'id'))
-                    ->required(),
+                TextInput::make('trainee_id')
+                    ->label('Trainee'),
                 Select::make('section_id')
                     ->label('Section')
-                    ->options(Level::all()->pluck('name', 'id'))
+                    ->options(Section::all()->pluck('name', 'id'))
                     ->required(),
-                Select::make('status_id')
+                Select::make('status_activity_id')
                     ->label('Status')
                     ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->required(),
@@ -74,12 +72,12 @@ class RecordResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('performance')
+                TextColumn::make('performance.answer')
                     ->default('-')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                SelectColumn::make('status_id')
+                SelectColumn::make('status_activity_id')
                     ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->sortable()
                     ->searchable()
