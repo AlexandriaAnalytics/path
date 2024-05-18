@@ -27,7 +27,7 @@ class ExaminerActivity extends Model
         $questions = $this->questions;
         $questionsArray = [];
         foreach ($questions as $question) {
-            $questionsArray[] = ExaminerQuestion::find($question)->first();
+            $questionsArray[] = ExaminerQuestion::find($question);
         }
         return $questionsArray;
     }
