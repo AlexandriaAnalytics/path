@@ -11,4 +11,9 @@ class OpenText extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['text', 'question_id'];
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

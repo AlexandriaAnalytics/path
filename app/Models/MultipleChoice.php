@@ -17,4 +17,9 @@ class MultipleChoice extends Model
         'correct' => 'array',
         'comments' => 'array'
     ];
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

@@ -37,4 +37,9 @@ class Trainee extends Authenticatable
     {
         return $this->belongsTo(User::class);
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
 }

@@ -11,4 +11,14 @@ class Answer extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['answer_text', 'selected_option', 'trainee_id', 'question_id'];
+
+    public function trainee()
+    {
+        return $this->belongsTo(Trainee::class);
+    }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

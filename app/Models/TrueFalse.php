@@ -13,4 +13,9 @@ class TrueFalse extends Model
     protected $fillable = ['true', 'question_id'];
 
     protected $casts = ['open_or_close' => 'boolean'];
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }
