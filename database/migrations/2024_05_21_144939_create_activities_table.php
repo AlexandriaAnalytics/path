@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('section_id')->constrained();
+            $table->foreignId('type_of_training_id')->constrained();
             $table->timestamps();
             $table->softDeletes();
         });
