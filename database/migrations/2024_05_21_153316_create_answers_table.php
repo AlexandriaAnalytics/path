@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('answer_text')->nullable();
             $table->string('selected_option')->nullable();
-            $table->foreignId('trainee_id')->constrained();
-            $table->foreignId('question_id')->constrained();
+            $table->foreignId('trainee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

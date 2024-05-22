@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->boolean('true');
             $table->json('comments')->nullable();
-            $table->foreignId('question_id')->constrained();
+            $table->foreignId('question_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

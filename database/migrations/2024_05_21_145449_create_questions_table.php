@@ -16,9 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('question');
             $table->string('description')->nullable();
-            $table->enum('question_type', ActivityType::values());
+            $table->enum('question_type', ActivityType::values())->nullable();
             $table->string('multimedia')->nullable();
-            $table->foreignId('activity_id')->constrained();
+            $table->foreignId('activity_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
