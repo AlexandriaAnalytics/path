@@ -6,13 +6,11 @@ use Filament\Support\Contracts\HasLabel;
 
 enum ActivityType: string implements HasLabel
 {
-    case TRUE_OR_FALSE = 'true or false';
-    case TRUE_OR_FALSE_JUSTIFY = 'true or false justify';
-    case MULTIPLE_CHOICE_SINGLE_ANSWER = 'multiple choice';
-    case MULTIPLE_CHOICE_MULTIPLE_ANSWERS = 'multiple choice multiple answers';
-    case QUESTION_ANSWER = 'question answer';
-    case MULTIMEDIA = 'multimedia';
-    
+    case TRUE_OR_FALSE = 'True or false';
+    case TRUE_OR_FALSE_JUSTIFY = 'True or false with justification';
+    case MULTIPLE_CHOICE_SINGLE_ANSWER = 'Multiple choice with one answer';
+    case MULTIPLE_CHOICE_MULTIPLE_ANSWERS = 'Multiple choice with many answers';
+    case QUESTION_ANSWER = 'Open answer';
 
 
     public static function values(): array
@@ -23,12 +21,11 @@ enum ActivityType: string implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::TRUE_OR_FALSE => 'true or false',
-            self::TRUE_OR_FALSE_JUSTIFY => 'true or false justify',
-            self::MULTIPLE_CHOICE_SINGLE_ANSWER => 'multiple choice',
-            self::MULTIPLE_CHOICE_MULTIPLE_ANSWERS => 'multiple choice multiple answers',
-            self::QUESTION_ANSWER => 'question answer',
-            self::MULTIMEDIA => 'multimedia',
+            self::TRUE_OR_FALSE => 'True or false',
+            self::TRUE_OR_FALSE_JUSTIFY => 'True or false with justification',
+            self::MULTIPLE_CHOICE_SINGLE_ANSWER => 'Multiple choice with one answer',
+            self::MULTIPLE_CHOICE_MULTIPLE_ANSWERS => 'Multiple choice with many answers',
+            self::QUESTION_ANSWER => 'Open answer',
         };
     }
 }

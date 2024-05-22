@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->json('answers');
             $table->json('correct');
-            $table->json('comments');
+            $table->json('comments')->nullable();
             $table->foreignId('question_id')->constrained();
             $table->timestamps();
             $table->softDeletes();

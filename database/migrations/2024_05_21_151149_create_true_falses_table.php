@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('true_falses', function (Blueprint $table) {
             $table->id();
             $table->boolean('true');
+            $table->json('comments')->nullable();
             $table->foreignId('question_id')->constrained();
             $table->timestamps();
             $table->softDeletes();
