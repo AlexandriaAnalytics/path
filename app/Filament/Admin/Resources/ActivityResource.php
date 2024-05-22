@@ -23,6 +23,8 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -93,8 +95,17 @@ class ActivityResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->groups([
+                Group::make('section.name')
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('section.name'))
+                    ->collapsible(),
+                Group::make('typeOfTraining.name')
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('typeOfTraining.name'))
+                    ->collapsible(),
+            ])
             ->columns([
-                //
+                TextColumn::make('section.name'),
+                TextColumn::make('typeOfTraining.name')
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
@@ -108,7 +119,8 @@ class ActivityResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');;
     }
 
     public static function getRelations(): array
