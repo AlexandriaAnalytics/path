@@ -84,10 +84,9 @@ class TraineeResource extends Resource
                             PhoneInput::make('phone')
                                 ->required()
                                 ->columnSpan(4),
-                            Select::make('types_of_training')
+                            Select::make('type_of_training_id')
                                 ->label('Type of trainee')
                                 ->options(TypeOfTraining::all()->pluck('name', 'id'))
-                                ->multiple()
                                 ->required()
                                 ->columnSpan(8),
                             Select::make('country_id')

@@ -15,11 +15,10 @@ class Trainee extends Authenticatable
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['phone', 'types_of_training', 'street_name', 'street_number', 'city', 'postcode', 'province_or_state', 'country_id', 'sections', 'files', 'status', 'user_id'];
+    protected $fillable = ['phone', 'type_of_training_id', 'street_name', 'street_number', 'city', 'postcode', 'province_or_state', 'country_id', 'sections', 'files', 'status', 'user_id'];
 
     protected $casts = [
         'sections' => 'array',
-        'types_of_training' => 'array',
     ];
 
 
