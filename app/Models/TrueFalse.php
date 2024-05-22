@@ -12,7 +12,7 @@ class TrueFalse extends Model
 
     protected $fillable = ['true', 'comments', 'question_id'];
 
-    protected $casts = ['open_or_close' => 'boolean', 'comments' => 'array'];
+    protected $casts = ['true' => 'boolean', 'comments' => 'array'];
 
     public function question()
     {

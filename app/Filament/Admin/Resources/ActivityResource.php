@@ -53,7 +53,6 @@ class ActivityResource extends Resource
                         FileUpload::make('multimedia'),
                         Select::make('question_type')
                             ->live()
-                            ->required()
                             ->options(ActivityType::class),
                         Grid::make()
                             ->schema([
