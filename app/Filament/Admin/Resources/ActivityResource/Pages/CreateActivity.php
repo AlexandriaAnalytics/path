@@ -8,10 +8,21 @@ use App\Models\Question;
 use App\Models\TrueFalse;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreateActivity extends CreateRecord
 {
     protected static string $resource = ActivityResource::class;
+
+    public function getTitle(): string | Htmlable
+    {
+        return __('Create activity');
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 
     protected function afterCreate(): void
     {
