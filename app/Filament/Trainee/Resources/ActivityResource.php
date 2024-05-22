@@ -5,6 +5,7 @@ namespace App\Filament\Trainee\Resources;
 use App\Filament\Trainee\Resources\ActivityResource\Pages;
 use App\Filament\Trainee\Resources\ActivityResource\RelationManagers;
 use App\Models\Activity;
+use App\Models\Answer;
 use App\Models\ExaminerActivity;
 use App\Models\ExaminerQuestion;
 use App\Models\Performance;
@@ -12,12 +13,14 @@ use App\Models\Record;
 use App\Models\Section;
 use App\Models\Trainee;
 use Closure;
+use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section as ComponentsSection;
+use Filament\Forms\Components\Textarea as ComponentsTextarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
@@ -25,12 +28,14 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Mpdf\Tag\TextArea;
 
 class ActivityResource extends Resource
 {
@@ -86,95 +91,162 @@ class ActivityResource extends Resource
                     ->iconButton()
                     ->color('warning')
                     ->form(function (Record $record) {
-                        dd($record->trainee);
-                        $examinerActivity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->typeOfTraining);
-
-                        if (!$examinerActivity || !is_array($examinerActivity->questions)) {
-                            return [];
-                        }
-
-
+                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
+                        $questions = $activity->questions;
                         $steps = [];
-                        foreach ($examinerActivity->questions as $index => $questionId) {
+                        foreach ($questions as $index => $question) {
                             $schema = [];
-                            $questionModel = ExaminerQuestion::find($questionId);
 
-                            if ($questionModel) {
-                                $schema = [
-                                    TextInput::make('question' . $index)
-                                        ->default($questionModel->question)
+                            if ($question->multimedia) {
+                                $multimediaUrl = asset('storage/' . $question->multimedia);
+                                if (strpos($question->multimedia, 'mp4') !== false) {
+                                    $schema[] = MarkdownEditor::make('video' . $index)
                                         ->disabled()
                                         ->hiddenLabel()
-                                        ->columnSpanFull(),
-                                    TextInput::make('description' . $index)
-                                        ->default($questionModel->description)
-                                        ->hidden(fn () => empty($questionModel->description))
-                                        ->disabled()
-                                        ->hiddenLabel()
-                                        ->columnSpanFull()
-                                ];
-
-                                if ($questionModel->multimedia) {
-                                    $multimediaUrl = asset('storage/' . $questionModel->multimedia);
-                                    if (strpos($questionModel->multimedia, 'mp4') !== false) {
-                                        $schema[] = MarkdownEditor::make('video' . $index)
-                                            ->disabled()
-                                            ->hiddenLabel()
-                                            ->default('<video width="320" height="240" controls style="width: 100%;">
+                                        ->default('<video width="320" height="240" controls style="width: 100%;">
                                                           <source src="' . $multimediaUrl . '" type="video/mp4">
                                                           Your browser does not support the video tag.
                                                        </video>')
-                                            ->columnSpanFull();
-                                    } else {
-                                        $schema[] = MarkdownEditor::make('image' . $index)
-                                            ->disabled()
-                                            ->hiddenLabel()
-                                            ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
-                                            ->columnSpanFull();
-                                    }
-                                }
-
-
-                                $schema[] = Radio::make('answers' . $index)
-                                    ->options($questionModel->aswers)
-                                    ->label('Answers')
-                                    ->disabled(fn () => $index == 0)
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($set, $state) use ($index, $questionModel) {
-                                        $performanceId = $questionModel->performance[$state] ?? null;
-                                        if ($performanceId) {
-                                            $performance = Performance::find($performanceId);
-                                            if ($performance) {
-                                                $set('performance' . $index, $performance->answer);
-                                            }
-                                        }
-                                    });
-
-                                if ($index == 0) {
-                                    $schema[] = CheckboxList::make('answers' . $index)
-                                        ->label('Performance')
-                                        ->options($questionModel->performance)
-                                        ->disabled();
+                                        ->columnSpanFull();
                                 } else {
-                                    $schema[] = TextInput::make('performance' . $index)
+                                    $schema[] = MarkdownEditor::make('image' . $index)
                                         ->disabled()
-                                        ->label('Performance')
-                                        ->hidden(fn () => $index == count($examinerActivity->questions) - 1)
-                                        ->default('Choose an answer');
+                                        ->hiddenLabel()
+                                        ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
+                                        ->columnSpanFull();
                                 }
                             }
-                            $steps[] = Step::make('Question ' . ($index + 1))
-                                ->schema($schema)->columns(2);
+
+                            $schema[] = TextInput::make('question' . $index)
+                                ->readOnly()
+                                ->hiddenLabel()
+                                ->default($question->question);
+
+                            if ($question->description) {
+                                $schema[] = MarkdownEditor::make('description' . $index)
+                                    ->disabled()
+                                    ->hiddenLabel()
+                                    ->default($question->description);
+                            }
+
+                            if ($question->question_type == 'True or false') {
+                                $schema[] = Radio::make('true_or_false' . $index)
+                                    ->hiddenLabel()
+                                    ->options([
+                                        1 => 'True',
+                                        0 => 'False'
+                                    ])
+                                    ->columns(3);
+                            }
+
+                            if ($question->question_type == 'True or false with justification') {
+                                $schema[] = Radio::make('true_or_false_justify' . $index)
+                                    ->hiddenLabel()
+                                    ->options([
+                                        1 => 'True',
+                                        0 => 'False'
+                                    ])
+                                    ->columns(3);
+                                $schema[] = TextInput::make('justify' . $index)
+                                    ->label('Justify the answer');
+                            }
+
+                            if ($question->question_type == 'Multiple choice with one answer') {
+                                $schema[] = Radio::make('multiplechoice_one_answer' . $index)
+                                    ->hiddenLabel()
+                                    ->options($question->multipleChoices[0]->answers);
+                            }
+
+                            if ($question->question_type == 'Multiple choice with many answers') {
+                                $schema[] = CheckboxList::make('multiplechoice_many_answers' . $index)
+                                    ->hiddenLabel()
+                                    ->options($question->multipleChoices[0]->answers);
+                            }
+
+                            if ($question->question_type == 'Open answer') {
+                                $schema[] = ComponentsTextarea::make('open_answer' . $index)
+                                    ->hiddenLabel();
+                            }
+
+                            $steps[] = Step::make('Step ' . ($index + 1))
+                                ->schema($schema);
                         }
                         return [
-                            Wizard::make($steps)
+                            Wizard::make($steps)->columnSpanFull()
                         ];
                     })
                     ->action(function (array $data, Record $record) {
-                        $examinerActivity = ExaminerActivity::where('section_id', $record->section_id)->first();
-                        $record->performance_id = ExaminerQuestion::find($examinerActivity->questions[count($examinerActivity->questions) - 1])->performance[$data['answers' . count($examinerActivity->questions) - 1]];
+                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
+                        $questions = $activity->questions;
+
+                        $correct = true;
+
+                        foreach ($questions as $index => $question) {
+                            if ($question->question_type == 'True or false') {
+                                $answer = new Answer();
+                                $answer->trainee_id = $record->trainee->id;
+                                $answer->question_id = $question->id;
+                                $answer->selected_option = $data['true_or_false' . $index];
+                                $answer->save();
+
+                                if ($question->trueOrFalses[0]->true != $answer->selected_option) {
+                                    $correct = false;
+                                }
+                            }
+
+                            if ($question->question_type == 'True or false with justification') {
+                                $answer = new Answer();
+                                $answer->trainee_id = $record->trainee->id;
+                                $answer->question_id = $question->id;
+                                $answer->selected_option = $data['true_or_false_justify' . $index];
+                                $answer->answer_text = $data['justify' . $index];
+                                $answer->save();
+
+                                if ($question->trueOrFalses[0]->true != $answer->selected_option) {
+                                    $correct = false;
+                                }
+                            }
+
+                            if ($question->question_type == 'Multiple choice with one answer') {
+                                $answer = new Answer();
+                                $answer->trainee_id = $record->trainee->id;
+                                $answer->question_id = $question->id;
+                                $answer->selected_option = $data['multiplechoice_one_answer' . $index];
+                                $answer->save();
+
+                                if ($question->multipleChoices[0]->correct[$answer->selected_option] != 'false') {
+                                    $correct = false;
+                                }
+                            }
+
+                            if ($question->question_type == 'Multiple choice with many answers') {
+                                $answer = new Answer();
+                                $answer->trainee_id = $record->trainee->id;
+                                $answer->question_id = $question->id;
+                                $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . $index]);
+                                $answer->save();
+                                foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
+                                    if ($question->multipleChoices[0]->correct[$answer] != 'false') {
+                                        $correct = false;
+                                    }
+                                }
+                            }
+
+                            if ($question->question_type == 'Open answer') {
+                                $answer = new Answer();
+                                $answer->trainee_id = $record->trainee->id;
+                                $answer->question_id = $question->id;
+                                $answer->selected_option = $data['open_answer' . $index];
+                                $answer->save();
+                            }
+                        }
+
+
+                        $record->result = $correct ? 'Approved' : 'Desapproved';
+
                         $record->save();
                     })
+                    ->modalWidth(MaxWidth::SevenExtraLarge)
             ]);
     }
 
