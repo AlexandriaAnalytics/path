@@ -5,6 +5,8 @@ namespace App\Filament\Admin\Resources\CustomLevelPriceResource\Pages;
 use App\Filament\Admin\Resources\CustomLevelPriceResource;
 use App\Models\Candidate;
 use App\Models\Concept;
+use App\Models\CustomLevelPrice;
+use App\Models\CustomModulePrice;
 use App\Models\Level;
 use App\Models\LevelCountry;
 use App\Services\CandidateService;
@@ -50,6 +52,27 @@ class CreateCustomLevelPrice extends CreateRecord
 
     protected function beforeCreate()
     {
+        foreach ($this->data['institute'] as $institute) {
+            $customLevelPrice = new CustomLevelPrice();
+            $customLevelPrice->institute_id = $institute;
+            $customLevelPrice->level_country_id = $this->data['level_country_id'];
+            $customLevelPrice->full_exam_fee = $this->data['full_exam_fee'];
+            $customLevelPrice->full_exam_registration_fee = $this->data['full_exam_registration_fee'];
+            $customLevelPrice->module_registration_fee = $this->data['module_registration_fee'];
+            $customLevelPrice->type = $this->data['type'];
+            $customLevelPrice->save();
+
+            if ($this->data['custom_module_prices'] != []) {
+                foreach ($this->data['custom_module_prices'] as $module) {
+                    $customModulePrice = new CustomModulePrice();
+                    $customModulePrice->custom_level_price_id = $customLevelPrice->id;
+                    $customModulePrice->module_id = $module['module_id'];
+                    $customModulePrice->price = $module['price'];
+                    $customModulePrice->save();
+                }
+            }
+        }
+        $this->halt();
     }
 
     protected function afterCreate(): void
