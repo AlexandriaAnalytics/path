@@ -72,7 +72,7 @@ class RecordResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('performance.answer')
+                TextColumn::make('result')
                     ->default('-')
                     ->sortable()
                     ->searchable()
