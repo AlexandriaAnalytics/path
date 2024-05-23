@@ -48,6 +48,10 @@ class CreateCustomLevelPrice extends CreateRecord
         return $this->getResource()::getUrl('view', ['record' => $this->record]);
     }
 
+    protected function beforeCreate()
+    {
+    }
+
     protected function afterCreate(): void
     {
         $candidates = Candidate::all();

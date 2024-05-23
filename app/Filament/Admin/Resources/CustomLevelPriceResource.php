@@ -59,6 +59,7 @@ class CustomLevelPriceResource extends Resource
                             ->preload()
                             ->native(false)
                             ->searchable()
+                            ->multiple()
                             ->hiddenOn('edit'),
                         Forms\Components\Select::make('level_id')
                             ->label('Exam')
