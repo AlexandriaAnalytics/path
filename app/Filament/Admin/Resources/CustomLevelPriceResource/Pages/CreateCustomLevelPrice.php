@@ -53,7 +53,20 @@ class CreateCustomLevelPrice extends CreateRecord
     protected function beforeCreate()
     {
         foreach ($this->data['institute'] as $institute) {
-            CustomLevelPrice::where('institute_id', $institute)->delete();
+            $levelCountryIds = LevelCountry::where('level_id', $this->data['level_id'])
+                ->where('country_id', $this->data['country_id'])
+                ->pluck('id');
+
+            $customLevelPrices = CustomLevelPrice::where('institute_id', $institute)
+                ->whereIn('level_country_id', $levelCountryIds)
+                ->get();
+
+            CustomModulePrice::whereIn('custom_level_price_id', $customLevelPrices->pluck('id'))->delete();
+
+            foreach ($customLevelPrices as $customLevelPrice) {
+                $customLevelPrice->delete();
+            };
+
             $customLevelPrice = new CustomLevelPrice();
             $customLevelPrice->institute_id = $institute;
             $customLevelPrice->level_country_id = $this->data['level_country_id'];
