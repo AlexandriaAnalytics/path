@@ -99,4 +99,9 @@ class CreateCustomLevelPrice extends CreateRecord
         }
         $this->data['institute'] = end($this->data['institute']);
     }
+
+    protected function afterCreate()
+    {
+        CustomLevelPrice::where('institute_id', $this->data['institute'])->latest()->first()->delete();
+    }
 }
