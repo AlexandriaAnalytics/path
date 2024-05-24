@@ -250,20 +250,23 @@ class Candidate extends Model
         return Attribute::make(
             get: function () {
                 $installments = $this->installments;
-                $payment_deadline = $this
-                    ->exams
-                    ->min('payment_deadline');
-                if (round(
-                    now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
-                    0,
-                ) + 1 < $this->installments) {
-                    if ($this->status == 'unpaid') {
-                        $installments = round(
-                            now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
-                            0,
-                        ) + 1;
+                if ($this->exams) {
+                    $payment_deadline = $this
+                        ->exams
+                        ->min('payment_deadline');
+                    if (round(
+                        now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                        0,
+                    ) + 1 < $this->installments) {
+                        if ($this->status == 'unpaid') {
+                            $installments = round(
+                                now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
+                                0,
+                            ) + 1;
+                        }
                     }
                 }
+
 
                 return $installments;
             }
