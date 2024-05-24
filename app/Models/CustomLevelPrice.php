@@ -33,7 +33,7 @@ class CustomLevelPrice extends Model
     {
         parent::boot();
 
-        static::saved(function () {
+        /* static::saved(function () {
             $candidates = Candidate::all();
 
             foreach ($candidates as $candidate) {
@@ -42,7 +42,7 @@ class CustomLevelPrice extends Model
                     CandidateService::createConcepts($candidate);
                 }
             }
-        });
+        }); */
     }
 
     public function institute(): BelongsTo
