@@ -250,7 +250,7 @@ class Candidate extends Model
         return Attribute::make(
             get: function () {
                 $installments = $this->installments;
-                if ($this->exams != []) {
+                if ($this->exams != '[]') {
                     $payment_deadline = $this
                         ->exams
                         ->min('payment_deadline');
