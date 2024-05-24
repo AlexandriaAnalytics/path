@@ -11,6 +11,7 @@ use App\Models\Level;
 use App\Models\LevelCountry;
 use App\Services\CandidateService;
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateCustomLevelPrice extends CreateRecord
@@ -86,17 +87,16 @@ class CreateCustomLevelPrice extends CreateRecord
                 }
             }
         }
-        $this->halt();
-    }
 
-    protected function afterCreate(): void
-    {
-        $candidates = Candidate::all();
+        $candidates = Candidate::whereHas('student', function ($query) use ($institute) {
+            $query->where('institute_id', $institute);
+        })->get();
         foreach ($candidates as $candidate) {
             if ($candidate->paymentStatus == 'unpaid') {
                 Concept::where('candidate_id', $candidate->id)->delete();
                 CandidateService::createConcepts($candidate);
             }
         }
+        $this->data['institute'] = end($this->data['institute']);
     }
 }
