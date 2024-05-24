@@ -88,7 +88,7 @@ class CreateCustomLevelPrice extends CreateRecord
             }
         }
 
-        $candidates = Candidate::whereHas('student', function ($query) use ($institute) {
+        $candidates = Candidate::where('level_id', $this->data['level_id'])->whereHas('student', function ($query) use ($institute) {
             $query->where('institute_id', $institute);
         })->get();
         foreach ($candidates as $candidate) {

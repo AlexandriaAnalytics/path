@@ -25,7 +25,7 @@ class LevelCountryModule extends Pivot
     {
         parent::boot();
 
-        static::saved(function () {
+        /* static::saved(function () {
             $candidates = Candidate::all();
 
             foreach ($candidates as $candidate) {
@@ -34,7 +34,7 @@ class LevelCountryModule extends Pivot
                     CandidateService::createConcepts($candidate);
                 }
             }
-        });
+        }); */
     }
 
     public function levelCountry(): BelongsTo

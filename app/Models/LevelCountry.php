@@ -24,7 +24,7 @@ class LevelCountry extends Model
     {
         parent::boot();
 
-        static::saved(function () {
+        /*  static::saved(function () {
             $candidates = Candidate::all();
 
             foreach ($candidates as $candidate) {
@@ -33,7 +33,7 @@ class LevelCountry extends Model
                     CandidateService::createConcepts($candidate);
                 }
             }
-        });
+        }); */
     }
 
     public function level(): BelongsTo
