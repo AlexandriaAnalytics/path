@@ -19,6 +19,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section as ComponentsSection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
@@ -49,6 +50,8 @@ class ActivityResource extends Resource
                     ->options(TypeOfTraining::all()->pluck('name', 'id')),
                 Repeater::make('questions')
                     ->schema([
+                        TextInput::make('title')
+                            ->required(),
                         TextInput::make('question')
                             ->required(),
                         RichEditor::make('description'),
@@ -56,6 +59,9 @@ class ActivityResource extends Resource
                         Select::make('question_type')
                             ->live()
                             ->options(ActivityType::class),
+                        Toggle::make('evaluation')
+                            ->label('Include in the evaluation')
+                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification') || $get('question_type') == 'Multiplechoice with one answer' || $get('question_type') == 'Multiplechoice with many answers'),
                         Grid::make()
                             ->schema([
                                 Checkbox::make('true'),

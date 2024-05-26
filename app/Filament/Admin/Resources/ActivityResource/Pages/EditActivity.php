@@ -69,9 +69,11 @@ class EditActivity extends EditRecord
         foreach ($questions as $question) {
             $newQuestion = new Question();
             $newQuestion->question = $question['question'];
+            $newQuestion->title = $question['title'];
             $newQuestion->description = $question['description'];
             $newQuestion->multimedia = reset($question['multimedia']);
             $newQuestion->question_type = $question['question_type'];
+            $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
             $newQuestion->save();
 
