@@ -20,14 +20,14 @@ class CreateCustomLevelPrice extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['level_country_id'] = LevelCountry::query()
+        /*  $data['level_country_id'] = LevelCountry::query()
             ->where('level_id', $data['level_id'])
             ->where('country_id', $data['country_id'])
             ->firstOrFail()
             ->id;
 
         unset($data['level_id'], $data['country_id']);
-
+ */
         return $data;
     }
 
@@ -53,48 +53,56 @@ class CreateCustomLevelPrice extends CreateRecord
 
     protected function beforeCreate()
     {
-        foreach ($this->data['institute'] as $institute) {
-            $levelCountryIds = LevelCountry::where('level_id', $this->data['level_id'])
+        foreach ($this->data['level_id'] as $level) {
+            $this->data['level_country_id'] = LevelCountry::query()
+                ->where('level_id', $level)
                 ->where('country_id', $this->data['country_id'])
-                ->pluck('id');
+                ->firstOrFail()
+                ->id;
 
-            $customLevelPrices = CustomLevelPrice::where('institute_id', $institute)
-                ->whereIn('level_country_id', $levelCountryIds)
-                ->get();
+            foreach ($this->data['institute'] as $institute) {
+                $levelCountryIds = LevelCountry::where('level_id', $level)
+                    ->where('country_id', $this->data['country_id'])
+                    ->pluck('id');
 
-            CustomModulePrice::whereIn('custom_level_price_id', $customLevelPrices->pluck('id'))->delete();
+                $customLevelPrices = CustomLevelPrice::where('institute_id', $institute)
+                    ->whereIn('level_country_id', $levelCountryIds)
+                    ->get();
 
-            foreach ($customLevelPrices as $customLevelPrice) {
-                $customLevelPrice->delete();
-            };
+                CustomModulePrice::whereIn('custom_level_price_id', $customLevelPrices->pluck('id'))->delete();
 
-            $customLevelPrice = new CustomLevelPrice();
-            $customLevelPrice->institute_id = $institute;
-            $customLevelPrice->level_country_id = $this->data['level_country_id'];
-            $customLevelPrice->full_exam_fee = $this->data['full_exam_fee'];
-            $customLevelPrice->full_exam_registration_fee = $this->data['full_exam_registration_fee'];
-            $customLevelPrice->module_registration_fee = $this->data['module_registration_fee'];
-            $customLevelPrice->type = $this->data['type'];
-            $customLevelPrice->save();
+                foreach ($customLevelPrices as $customLevelPrice) {
+                    $customLevelPrice->delete();
+                };
 
-            if ($this->data['custom_module_prices'] != []) {
-                foreach ($this->data['custom_module_prices'] as $module) {
-                    $customModulePrice = new CustomModulePrice();
-                    $customModulePrice->custom_level_price_id = $customLevelPrice->id;
-                    $customModulePrice->module_id = $module['module_id'];
-                    $customModulePrice->price = $module['price'];
-                    $customModulePrice->save();
+                $customLevelPrice = new CustomLevelPrice();
+                $customLevelPrice->institute_id = $institute;
+                $customLevelPrice->level_country_id = $this->data['level_country_id'];
+                $customLevelPrice->full_exam_fee = $this->data['full_exam_fee'];
+                $customLevelPrice->full_exam_registration_fee = $this->data['full_exam_registration_fee'];
+                $customLevelPrice->module_registration_fee = $this->data['module_registration_fee'];
+                $customLevelPrice->type = $this->data['type'];
+                $customLevelPrice->save();
+
+                if ($this->data['custom_module_prices'] != []) {
+                    foreach ($this->data['custom_module_prices'] as $module) {
+                        $customModulePrice = new CustomModulePrice();
+                        $customModulePrice->custom_level_price_id = $customLevelPrice->id;
+                        $customModulePrice->module_id = $module['module_id'];
+                        $customModulePrice->price = $module['price'];
+                        $customModulePrice->save();
+                    }
                 }
             }
-        }
 
-        $candidates = Candidate::where('level_id', $this->data['level_id'])->whereHas('student', function ($query) use ($institute) {
-            $query->where('institute_id', $institute);
-        })->get();
-        foreach ($candidates as $candidate) {
-            if ($candidate->paymentStatus == 'unpaid') {
-                Concept::where('candidate_id', $candidate->id)->delete();
-                CandidateService::createConcepts($candidate);
+            $candidates = Candidate::where('level_id', $level)->whereHas('student', function ($query) use ($institute) {
+                $query->where('institute_id', $institute);
+            })->get();
+            foreach ($candidates as $candidate) {
+                if ($candidate->paymentStatus == 'unpaid') {
+                    Concept::where('candidate_id', $candidate->id)->delete();
+                    CandidateService::createConcepts($candidate);
+                }
             }
         }
         $this->data['institute'] = end($this->data['institute']);
