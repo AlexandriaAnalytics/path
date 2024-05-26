@@ -168,7 +168,7 @@ class ActivityResource extends Resource
                                     ->hiddenLabel();
                             }
 
-                            $steps[] = Step::make('Step ' . ($index + 1))
+                            $steps[] = Step::make($question->title)
                                 ->schema($schema);
                         }
                         return [
@@ -182,65 +182,66 @@ class ActivityResource extends Resource
                         $correct = true;
 
                         foreach ($questions as $index => $question) {
-                            if ($question->question_type == 'True or false') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['true_or_false' . $index];
-                                $answer->save();
+                            if ($question->evaluation) {
+                                if ($question->question_type == 'True or false') {
+                                    $answer = new Answer();
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question->id;
+                                    $answer->selected_option = $data['true_or_false' . $index];
+                                    $answer->save();
 
-                                if ($question->trueOrFalses[0]->true != $answer->selected_option) {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'True or false with justification') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['true_or_false_justify' . $index];
-                                $answer->answer_text = $data['justify' . $index];
-                                $answer->save();
-
-                                if ($question->trueOrFalses[0]->true != $answer->selected_option) {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'Multiple choice with one answer') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['multiplechoice_one_answer' . $index];
-                                $answer->save();
-
-                                if ($question->multipleChoices[0]->correct[$answer->selected_option] != 'false') {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'Multiple choice with many answers') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . $index]);
-                                $answer->save();
-                                foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
-                                    if ($question->multipleChoices[0]->correct[$answer] != 'false') {
+                                    if ($question->trueOrFalses[0]->true != $answer->selected_option) {
                                         $correct = false;
                                     }
                                 }
-                            }
 
-                            if ($question->question_type == 'Open answer') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['open_answer' . $index];
-                                $answer->save();
+                                if ($question->question_type == 'True or false with justification') {
+                                    $answer = new Answer();
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question->id;
+                                    $answer->selected_option = $data['true_or_false_justify' . $index];
+                                    $answer->answer_text = $data['justify' . $index];
+                                    $answer->save();
+
+                                    if ($question->trueOrFalses[0]->true != $answer->selected_option) {
+                                        $correct = false;
+                                    }
+                                }
+
+                                if ($question->question_type == 'Multiple choice with one answer') {
+                                    $answer = new Answer();
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question->id;
+                                    $answer->selected_option = $data['multiplechoice_one_answer' . $index];
+                                    $answer->save();
+
+                                    if ($question->multipleChoices[0]->correct[$answer->selected_option] != 'false') {
+                                        $correct = false;
+                                    }
+                                }
+
+                                if ($question->question_type == 'Multiple choice with many answers') {
+                                    $answer = new Answer();
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question->id;
+                                    $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . $index]);
+                                    $answer->save();
+                                    foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
+                                        if ($question->multipleChoices[0]->correct[$answer] != 'false') {
+                                            $correct = false;
+                                        }
+                                    }
+                                }
+
+                                if ($question->question_type == 'Open answer') {
+                                    $answer = new Answer();
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question->id;
+                                    $answer->selected_option = $data['open_answer' . $index];
+                                    $answer->save();
+                                }
                             }
                         }
-
 
                         $record->result = $correct ? 'Approved' : 'Desapproved';
 
