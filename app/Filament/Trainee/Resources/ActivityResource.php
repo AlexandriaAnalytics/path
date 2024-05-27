@@ -235,7 +235,7 @@ class ActivityResource extends Resource
                                 $answer = new Answer();
                                 $answer->trainee_id = $record->trainee->id;
                                 $answer->question_id = $question->id;
-                                $answer->selected_option = $data['open_answer' . $index];
+                                $answer->answer_text = $data['open_answer' . $index];
                                 $answer->save();
                             }
                         }

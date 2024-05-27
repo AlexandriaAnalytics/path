@@ -106,6 +106,7 @@ class RecordResource extends Resource
                         ->label('Download PDF')
                         ->icon('heroicon-o-document')
                         ->action(function (Record $record) {
+                            //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
                             try {
                                 $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
                                 $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
