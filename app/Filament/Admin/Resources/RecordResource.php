@@ -4,11 +4,13 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\RecordResource\Pages;
 use App\Filament\Admin\Resources\RecordResource\RelationManagers;
+use App\Models\Candidate;
 use App\Models\Level;
 use App\Models\Record;
 use App\Models\Section;
 use App\Models\StatusActivity;
 use App\Models\Trainee;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
@@ -16,6 +18,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,6 +27,7 @@ use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\File;
 
 class RecordResource extends Resource
 {
@@ -95,7 +100,30 @@ class RecordResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Action::make('download-pdf')
+                        ->label('Download PDF')
+                        ->icon('heroicon-o-document')
+                        ->action(function (Record $record) {
+                            try {
+                                $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
+                                $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
+
+                                // Ensure the temporary directory exists and has write permissions
+                                if (!File::exists(storage_path('app/temp_pdfs'))) {
+                                    File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                                }
+                                Pdf::loadView('pdf.record', ['record' => $record])
+                                    ->save($pdfPath);
+                                return response()->download($pdfPath, $filename, [
+                                    'Content-Type' => 'application/pdf',
+                                ]);
+                            } catch (\Exception $e) {
+                                return response()->json(['error' => 'PDF generation or download failed'], 500);
+                            }
+                        })
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

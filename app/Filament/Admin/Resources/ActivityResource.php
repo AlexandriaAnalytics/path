@@ -61,7 +61,7 @@ class ActivityResource extends Resource
                             ->options(ActivityType::class),
                         Toggle::make('evaluation')
                             ->label('Include in the evaluation')
-                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification') || $get('question_type') == 'Multiplechoice with one answer' || $get('question_type') == 'Multiplechoice with many answers'),
+                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification') || $get('question_type') == 'Multiple choice with one answer' || $get('question_type') == 'Multiple choice with many answers'),
                         Grid::make()
                             ->schema([
                                 Checkbox::make('true'),
