@@ -51,12 +51,12 @@
         body {
             font-family: 'Skolar Sans';
             margin: 0;
-        }
+        } */
 
         #label {
             font-family: 'Skolar Sans';
             font-weight: 900;
-        } */
+        }
     </style>
 </head>
 
@@ -69,11 +69,11 @@
             use App\Enums\TypeOfCertificate;
 
             $fields = [
-                'Type of training' => $record->trainee->typeOfTraining->name,
-                'Full Name' => $record->trainee->user->name,
-                'Section' => $record->section->name,
+                'Type of training: ' => $record->trainee->typeOfTraining->name,
+                'Full Name: ' => $record->trainee->user->name,
+                'Section: ' => $record->section->name,
 
-                'Comments' => $record->comments ?? '-',
+                'Comments: ' => $record->comments ?? '-',
             ];
         @endphp
 
