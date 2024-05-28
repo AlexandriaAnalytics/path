@@ -96,7 +96,7 @@
                 <div>
                     <p>{{ $answer->question->question }}</p>
                     @if ($answer->question->description)
-                        <p>{{ $answer->question->description }}</p>
+                        <html>{{ $answer->question->description }}</html>
                     @endif
                     @if ($answer->question->question_type == 'True or false')
                         <div class="radio-container">
@@ -150,7 +150,13 @@
                                 <input type="radio"
                                     {{ in_array($index, array_map('intval', explode(',', $answer->selected_option))) ? 'checked' : '' }}>
                                 <label>{{ $multiplechoice }}</label>
-                                @if (Performance::find($answer->question->multipleChoices[0]->comments))
+                                @php
+                                $comments = $answer->question->multipleChoices[0]->comments;
+                                $nonNullComments = array_filter($comments, function($comment) {
+                                    return $comment !== null;
+                                });
+                                @endphp
+                                @if (count($nonNullComments) > 0) 
                                     <div>Comment:
                                         {{ Performance::find($answer->question->multipleChoices[0]->comments[$index])->answer }}
                                     </div>

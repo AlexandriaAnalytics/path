@@ -12,6 +12,7 @@ use App\Models\Performance;
 use App\Models\Record;
 use App\Models\Section;
 use App\Models\Trainee;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Closure;
 use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Forms;
@@ -30,11 +31,14 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\File;
 use Mpdf\Tag\TextArea;
 
 class ActivityResource extends Resource
@@ -86,7 +90,34 @@ class ActivityResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('download-pdf')
+                    ->visible(function (Record $record) {
+                        return $record->result == null ? false : true;
+                    })
+                    ->label('Download PDF')
+                    ->icon('heroicon-o-document')
+                    ->action(function (Record $record) {
+                        //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
+                        try {
+                            $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
+                            $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
+                            // Ensure the temporary directory exists and has write permissions
+                            if (!File::exists(storage_path('app/temp_pdfs'))) {
+                                File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                            }
+                            Pdf::loadView('pdf.record', ['record' => $record])
+                                ->save($pdfPath);
+                            return response()->download($pdfPath, $filename, [
+                                'Content-Type' => 'application/pdf',
+                            ]);
+                        } catch (\Exception $e) {
+                            return response()->json(['error' => 'PDF generation or download failed'], 500);
+                        }
+                    }),
                 Tables\Actions\Action::make('solve')
+                    ->visible(function (Record $record) {
+                        return $record->result == null ? true : false;
+                    })
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
                     ->color('warning')
@@ -241,11 +272,13 @@ class ActivityResource extends Resource
                         }
 
 
-                        $record->result = $correct ? 'Approved' : 'Desapproved';
+                        $record->result = $correct ? 'Certified' : 'To be reviewed';
 
                         $record->save();
                     })
                     ->modalWidth(MaxWidth::SevenExtraLarge)
+
+
             ]);
     }
 
