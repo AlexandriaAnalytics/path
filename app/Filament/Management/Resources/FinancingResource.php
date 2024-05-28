@@ -90,8 +90,8 @@ class FinancingResource extends Resource
                     ->trueLabel('Yes')
                     ->falseLabel('No')
                     ->queries(
-                        true: fn (Builder $query) => $query->whereHas('candidate', fn (Builder $query) => $query->whereNotNull('deleted_at')),
-                        false: fn (Builder $query) => $query->whereHas('candidate', fn (Builder $query) => $query->whereNull('deleted_at')),
+                        true: fn (Builder $query) => $query->whereDoesntHave('candidate'),
+                        false: fn (Builder $query) => $query->whereHas('candidate'),
                     )
                     ->native(false),
             ])
