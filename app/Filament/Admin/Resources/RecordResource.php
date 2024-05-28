@@ -103,6 +103,9 @@ class RecordResource extends Resource
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Action::make('download-pdf')
+                        ->visible(function (Record $record) {
+                            return $record->result == null ? false : true;
+                        })
                         ->label('Download PDF')
                         ->icon('heroicon-o-document')
                         ->action(function (Record $record) {
