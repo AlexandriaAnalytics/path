@@ -51,6 +51,7 @@ class FinancingResource extends Resource
                 Tables\Columns\TextColumn::make('candidate_id')
                     ->label('Candidate')
                     ->formatStateUsing(function ($state) {
+                        dd(Payment::where('institute_id', 7));
                         $candidate = Candidate::find($state);
                         return $state . ' - ' . $candidate->student->name . ' ' . $candidate->student->surname;
                     }),
