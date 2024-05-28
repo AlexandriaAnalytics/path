@@ -10,6 +10,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -52,7 +53,11 @@ class FinancingResource extends Resource
                     ->label('Candidate')
                     ->formatStateUsing(function ($state) {
                         $candidate = Candidate::find($state);
-                        return $state . ' - ' . $candidate->student->name . ' ' . $candidate->student->surname;
+                        if ($candidate) {
+                            return $state . ' - ' . $candidate->student->name . ' ' . $candidate->student->surname;
+                        } else {
+                            return 'Withdrawn candidate';
+                        }
                     }),
 
                 Tables\Columns\TextColumn::make('currency')
@@ -80,7 +85,15 @@ class FinancingResource extends Resource
                     ->color('primary')
             ])
             ->filters([
-                //    
+                TernaryFilter::make('Withdraw candidates')
+                    ->label('Withdraw candidates')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereHas('candidate', fn (Builder $query) => $query->whereNotNull('deleted_at')),
+                        false: fn (Builder $query) => $query->whereDoesntHave('candidate', fn (Builder $query) => $query->whereNotNull('deleted_at')),
+                    )
+                    ->native(false),
             ])
             ->actions([
                 //
