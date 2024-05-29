@@ -62,7 +62,7 @@
 
 <body>
     </style>
-    <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/training-programme.png'))); ?>" alt="">
+    <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/training-programme.png'))); ?>" alt="" style="width: 100%;">
     <div style="padding: 2%;">
         @php
             use Carbon\Carbon;
