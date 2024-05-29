@@ -10,7 +10,7 @@ class Question extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['question', 'description', 'question_type', 'activity_id', 'multimedia', 'title', 'evaluation'];
+    protected $fillable = ['question', 'description', 'question_type', 'activity_id', 'multimedia', 'title', 'evaluation', 'url'];
 
     protected $casts = [
         'evaluation' => 'boolean'

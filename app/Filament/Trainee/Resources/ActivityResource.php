@@ -129,9 +129,12 @@ class ActivityResource extends Resource
                         foreach ($questions as $index => $question) {
                             $schema = [];
 
-                            $schema[] = ViewField::make('field')
-                                ->hiddenLabel()
-                                ->view('filament.iframes');
+                            if ($question->url) {
+                                $schema[] = ViewField::make('field')
+                                    ->hiddenLabel()
+                                    ->view('filament.iframes')
+                                    ->viewData(['url' => $question->url]);
+                            }
                             if ($question->multimedia) {
                                 $multimediaUrl = asset('storage/' . $question->multimedia);
                                 if (strpos($question->multimedia, 'mp4') !== false) {

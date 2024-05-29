@@ -63,6 +63,7 @@ class ActivityResource extends Resource
                         TextInput::make('question')
                             ->required(),
                         RichEditor::make('description'),
+                        TextInput::make('url'),
                         FileUpload::make('multimedia'),
                         Select::make('question_type')
                             ->live()
