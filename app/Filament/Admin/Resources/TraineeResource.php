@@ -36,7 +36,7 @@ class TraineeResource extends Resource
     protected static ?string $navigationGroup = 'Training';
     protected static ?string $navigationIcon = 'heroicon-m-users';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

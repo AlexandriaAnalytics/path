@@ -23,6 +23,7 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section as ComponentsSection;
 use Filament\Forms\Components\Textarea as ComponentsTextarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
@@ -128,6 +129,9 @@ class ActivityResource extends Resource
                         foreach ($questions as $index => $question) {
                             $schema = [];
 
+                            $schema[] = ViewField::make('field')
+                                ->hiddenLabel()
+                                ->view('filament.iframes');
                             if ($question->multimedia) {
                                 $multimediaUrl = asset('storage/' . $question->multimedia);
                                 if (strpos($question->multimedia, 'mp4') !== false) {

@@ -34,8 +34,8 @@ class RecordResource extends Resource
     protected static ?string $model = Record::class;
 
     protected static ?string $navigationGroup = 'Training';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-s-document-chart-bar';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
