@@ -16,7 +16,7 @@ class CreateActivity extends CreateRecord
 
     public function getTitle(): string | Htmlable
     {
-        return __('Create activity');
+        return __('Create section');
     }
 
     protected function getRedirectUrl(): string
