@@ -110,6 +110,18 @@ class TraineeResource extends Resource
                                 ->numeric()
                                 ->required()
                                 ->columnSpan(8),
+                            TextInput::make('cbu')
+                                ->required()
+                                ->columnSpan(8),
+                            TextInput::make('alias')
+                                ->required()
+                                ->columnSpan(8),
+                            TextInput::make('bank_account_owner')
+                                ->required()
+                                ->columnSpan(8),
+                            TextInput::make('bank_account_owner_id')
+                                ->required()
+                                ->columnSpan(8),
                             Toggle::make('status')
                                 ->label('Active')
                                 ->inline(false)
@@ -167,10 +179,25 @@ class TraineeResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('street_number')
+                TextColumn::make('cbu')
+                    ->label('CBU')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('alias')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('bank_account_owner')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('bank_account_owner_id')
+                    ->label('Bank account owner\'s ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+
                 TextColumn::make('sections')
                     ->sortable()
                     ->searchable()
