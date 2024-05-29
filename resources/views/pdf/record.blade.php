@@ -72,7 +72,7 @@
                 'Type of training: ' => $record->trainee->typeOfTraining->name,
                 'Full Name: ' => $record->trainee->user->name,
                 'Section: ' => $record->section->name,
-
+                'Performance: ' => $record->result,
                 'Comments: ' => $record->comments ?? '-',
             ];
         @endphp
