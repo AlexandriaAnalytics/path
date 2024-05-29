@@ -116,9 +116,6 @@ class ActivityResource extends Resource
                         }
                     }),
                 Tables\Actions\Action::make('solve')
-                    ->visible(function (Record $record) {
-                        return $record->result == null ? true : false;
-                    })
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
                     ->color('warning')
@@ -128,86 +125,87 @@ class ActivityResource extends Resource
                         $steps = [];
                         foreach ($questions as $index => $question) {
                             $schema = [];
-
-                            if ($question->url) {
-                                $schema[] = ViewField::make('field')
-                                    ->hiddenLabel()
-                                    ->view('filament.iframes')
-                                    ->viewData(['url' => $question->url]);
-                            }
-                            if ($question->multimedia) {
-                                $multimediaUrl = asset('storage/' . $question->multimedia);
-                                if (strpos($question->multimedia, 'mp4') !== false) {
-                                    $schema[] = MarkdownEditor::make('video' . $index)
-                                        ->disabled()
+                            if (!$record->result || ($record->result && !$question->evaluation)) {
+                                if ($question->url) {
+                                    $schema[] = ViewField::make('field')
                                         ->hiddenLabel()
-                                        ->default('<video width="320" height="240" controls style="width: 100%;">
+                                        ->view('filament.iframes')
+                                        ->viewData(['url' => $question->url]);
+                                }
+                                if ($question->multimedia) {
+                                    $multimediaUrl = asset('storage/' . $question->multimedia);
+                                    if (strpos($question->multimedia, 'mp4') !== false) {
+                                        $schema[] = MarkdownEditor::make('video' . $index)
+                                            ->disabled()
+                                            ->hiddenLabel()
+                                            ->default('<video width="320" height="240" controls style="width: 100%;">
                                                           <source src="' . $multimediaUrl . '" type="video/mp4">
                                                           Your browser does not support the video tag.
                                                        </video>')
-                                        ->columnSpanFull();
-                                } else {
-                                    $schema[] = MarkdownEditor::make('image' . $index)
+                                            ->columnSpanFull();
+                                    } else {
+                                        $schema[] = MarkdownEditor::make('image' . $index)
+                                            ->disabled()
+                                            ->hiddenLabel()
+                                            ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
+                                            ->columnSpanFull();
+                                    }
+                                }
+
+                                $schema[] = TextInput::make('question' . $index)
+                                    ->readOnly()
+                                    ->hiddenLabel()
+                                    ->default($question->question);
+
+                                if ($question->description) {
+                                    $schema[] = MarkdownEditor::make('description' . $index)
                                         ->disabled()
                                         ->hiddenLabel()
-                                        ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
-                                        ->columnSpanFull();
+                                        ->default($question->description);
                                 }
+
+                                if ($question->question_type == 'True or false') {
+                                    $schema[] = Radio::make('true_or_false' . $index)
+                                        ->hiddenLabel()
+                                        ->options([
+                                            1 => 'True',
+                                            0 => 'False'
+                                        ])
+                                        ->columns(3);
+                                }
+
+                                if ($question->question_type == 'True or false with justification') {
+                                    $schema[] = Radio::make('true_or_false_justify' . $index)
+                                        ->hiddenLabel()
+                                        ->options([
+                                            1 => 'True',
+                                            0 => 'False'
+                                        ])
+                                        ->columns(3);
+                                    $schema[] = TextInput::make('justify' . $index)
+                                        ->label('Justify the answer');
+                                }
+
+                                if ($question->question_type == 'Multiple choice with one answer') {
+                                    $schema[] = Radio::make('multiplechoice_one_answer' . $index)
+                                        ->hiddenLabel()
+                                        ->options($question->multipleChoices[0]->answers);
+                                }
+
+                                if ($question->question_type == 'Multiple choice with many answers') {
+                                    $schema[] = CheckboxList::make('multiplechoice_many_answers' . $index)
+                                        ->hiddenLabel()
+                                        ->options($question->multipleChoices[0]->answers);
+                                }
+
+                                if ($question->question_type == 'Open answer') {
+                                    $schema[] = ComponentsTextarea::make('open_answer' . $index)
+                                        ->hiddenLabel();
+                                }
+
+                                $steps[] = Step::make($question->title)
+                                    ->schema($schema);
                             }
-
-                            $schema[] = TextInput::make('question' . $index)
-                                ->readOnly()
-                                ->hiddenLabel()
-                                ->default($question->question);
-
-                            if ($question->description) {
-                                $schema[] = MarkdownEditor::make('description' . $index)
-                                    ->disabled()
-                                    ->hiddenLabel()
-                                    ->default($question->description);
-                            }
-
-                            if ($question->question_type == 'True or false') {
-                                $schema[] = Radio::make('true_or_false' . $index)
-                                    ->hiddenLabel()
-                                    ->options([
-                                        1 => 'True',
-                                        0 => 'False'
-                                    ])
-                                    ->columns(3);
-                            }
-
-                            if ($question->question_type == 'True or false with justification') {
-                                $schema[] = Radio::make('true_or_false_justify' . $index)
-                                    ->hiddenLabel()
-                                    ->options([
-                                        1 => 'True',
-                                        0 => 'False'
-                                    ])
-                                    ->columns(3);
-                                $schema[] = TextInput::make('justify' . $index)
-                                    ->label('Justify the answer');
-                            }
-
-                            if ($question->question_type == 'Multiple choice with one answer') {
-                                $schema[] = Radio::make('multiplechoice_one_answer' . $index)
-                                    ->hiddenLabel()
-                                    ->options($question->multipleChoices[0]->answers);
-                            }
-
-                            if ($question->question_type == 'Multiple choice with many answers') {
-                                $schema[] = CheckboxList::make('multiplechoice_many_answers' . $index)
-                                    ->hiddenLabel()
-                                    ->options($question->multipleChoices[0]->answers);
-                            }
-
-                            if ($question->question_type == 'Open answer') {
-                                $schema[] = ComponentsTextarea::make('open_answer' . $index)
-                                    ->hiddenLabel();
-                            }
-
-                            $steps[] = Step::make($question->title)
-                                ->schema($schema);
                         }
                         return [
                             Wizard::make($steps)->columnSpanFull()

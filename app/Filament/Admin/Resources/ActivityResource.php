@@ -69,7 +69,7 @@ class ActivityResource extends Resource
                             ->live()
                             ->options(ActivityType::class),
                         Toggle::make('evaluation')
-                            ->label('Include in the evaluation')
+                            ->label('Include in marking stage')
                             ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification') || $get('question_type') == 'Multiple choice with one answer' || $get('question_type') == 'Multiple choice with many answers'),
                         Grid::make()
                             ->schema([
