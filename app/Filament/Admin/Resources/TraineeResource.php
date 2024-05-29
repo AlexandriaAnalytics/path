@@ -204,7 +204,7 @@ class TraineeResource extends Resource
                     ->formatStateUsing(function ($state) {
                         $sections = [];
                         foreach (explode(", ", $state) as $section) {
-                            array_push($sections, Level::whereId($section)->pluck('name')->first());
+                            array_push($sections, Section::whereId($section)->pluck('name')->first());
                         }
                         return implode(", ", $sections);
                     })
