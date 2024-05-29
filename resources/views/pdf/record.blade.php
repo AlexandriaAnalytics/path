@@ -13,7 +13,7 @@
             margin: 0cm 0cm;
         }
 
-        /*  @font-face {
+        @font-face {
             font-family: 'Montserrat';
             font-weight: normal;
             font-style: normal;
@@ -51,7 +51,7 @@
         body {
             font-family: 'Skolar Sans';
             margin: 0;
-        } */
+        }
 
         #label {
             font-family: 'Skolar Sans';
