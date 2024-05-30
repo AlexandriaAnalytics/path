@@ -531,7 +531,7 @@ class CandidateResource extends Resource
                 ->default(0)
                 ->minValue(0)
                 ->maxValue(100)
-                ->visible(fn (callable $get) => Institute::find($get('institute_id'))->maximum_cumulative_discount != 0)
+                ->visible(fn (callable $get) => dd($get('institute_id')))
                 ->hint(fn (callable $get) => 'Available discount: ' . Institute::find($get('institute_id'))->remaining_discount . '%')
                 ->rules([
                     fn (): Closure => function (string $attribute, $value, Closure $fail, callable $get) {
