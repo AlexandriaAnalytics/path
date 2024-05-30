@@ -10,7 +10,7 @@ class Answer extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['answer_text', 'selected_option', 'trainee_id', 'question_id'];
+    protected $fillable = ['answer_text', 'selected_option', 'trainee_id', 'question_id', 'question_type'];
 
     public function trainee()
     {

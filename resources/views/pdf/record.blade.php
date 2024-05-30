@@ -86,20 +86,23 @@
 
         @php
             use App\Models\Performance;
+            use App\Models\TrueFalse;
+            use App\Models\OpenAnswer;
+            use App\Models\MultipleChoice;
             $answers = $record->trainee->answers;
         @endphp
 
         <div id="label">Answers:</div>
         @foreach ($answers as $answer)
             <div style="background-color: #d9d9d9; color: #1e1e1e; padding: 0.75rem 1rem; margin-bottom: 2%">
-                <div id="label">{{ $answer->question->title }}</div>
                 <div>
-                    <p>{{ $answer->question->question }}</p>
-                    @if ($answer->question->description)
-                        <html>{{ $answer->question->description }}</html>
-                    @endif
-                    @if ($answer->question->question_type == 'True or false')
-                        <div class="radio-container">
+                    @if ($answer->question_type == 'True or false')
+                    @php
+                        $respuesta = TrueFalse::find($answer->question_id);
+                    @endphp
+                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
+                     
+                    <div class="radio-container">
                             <input type="radio" {{ $answer->selected_option == 1 ? 'checked' : '' }}>
                             <label>True</label>
                         </div>
@@ -107,14 +110,20 @@
                             <input type="radio" {{ $answer->selected_option == 0 ? 'checked' : '' }}>
                             <label>False</label>
                         </div>
-
-                        <p>Correct answer: {{ $answer->question->trueOrFalses[0]->true == 1 ? 'True' : 'False' }}</p>
-                        <p>Comment:
-                            {{ $answer->selected_option == 1 ? Performance::find($answer->question->trueOrFalses[0]->comments[0])->answer : Performance::find($answer->question->trueOrFalses[0]->comments[1])->answer }}
+                        <p>Correct answer: {{ $respuesta->true == 1 ? 'True' : 'False' }}</p>
+                        @if (Performance::find($respuesta->comments))
+                            <p>Comment:
+                            {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
                         </p>
+                        @endif
+                        
                     @endif
 
-                    @if ($answer->question->question_type == 'True or false with justification')
+                  @if ($answer->question_type == 'True or false with justification')
+                  @php
+                        $respuesta = TrueFalse::find($answer->question_id);
+                    @endphp
+                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
                         <div class="radio-container">
                             <input type="radio" {{ $answer->selected_option == 1 ? 'checked' : '' }}>
                             <label>True</label>
@@ -123,26 +132,36 @@
                             <input type="radio" {{ $answer->selected_option == 0 ? 'checked' : '' }}>
                             <label>False</label>
                         </div>
-                        <p>Correct answer: {{ $answer->question->trueOrFalses[0]->true == 1 ? 'True' : 'False' }}</p>
+                        <p>Correct answer: {{ $respuesta->true == 1 ? 'True' : 'False' }}</p>
                         <p>Justification: {{ $answer->answer_text }}</p>
-                        <p>Comment:
-                            {{ $answer->selected_option == 1 ? Performance::find($answer->question->trueOrFalses[0]->comments[0])->answer : Performance::find($answer->question->trueOrFalses[0]->comments[1])->answer }}
+                        @if (Performance::find($respuesta->comments))
+                            <p>Comment:
+                            {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
                         </p>
+                        @endif
                     @endif
 
-                    @if ($answer->question->question_type == 'Open answer')
+                    @if ($answer->question_type == 'Open answer')
+                    @php
+                        $respuesta = OpenAnswer::find($answer->question_id);
+                    @endphp
+                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
                         <p>Answer: {{ $answer->answer_text }}</p>
                     @endif
 
                     @if (
-                        $answer->question->question_type == 'Multiple choice with one answer' ||
-                            $answer->question->question_type == 'Multiple choice with many answers')
+                        $answer->question_type == 'Multiple choice with one answer' ||
+                            $answer->question_type == 'Multiple choice with many answers')
+                            @php
+                            $respuesta = MultipleChoice::find($answer->question_id);
+                        @endphp
+                        <p style="font-weight: 200;">{{$respuesta->question}}</p>
                         @php
                             $corrects = '';
                         @endphp
-                        @foreach ($answer->question->multipleChoices[0]->answers as $index => $multiplechoice)
+                        @foreach ($respuesta->answers as $index => $multiplechoice)
                             @php
-                                if ($answer->question->multipleChoices[0]->correct[$index]) {
+                                if ($respuesta->correct[$index]) {
                                     $corrects = $corrects . $multiplechoice . ', ';
                                 }
                             @endphp
@@ -151,14 +170,14 @@
                                     {{ in_array($index, array_map('intval', explode(',', $answer->selected_option))) ? 'checked' : '' }}>
                                 <label>{{ $multiplechoice }}</label>
                                 @php
-                                $comments = $answer->question->multipleChoices[0]->comments;
+                                $comments = $respuesta->comments;
                                 $nonNullComments = array_filter($comments, function($comment) {
                                     return $comment !== null;
                                 });
                                 @endphp
                                 @if (count($nonNullComments) > 0) 
                                     <div>Comment:
-                                        {{ Performance::find($answer->question->multipleChoices[0]->comments[$index])->answer }}
+                                        {{ Performance::find($respuesta->comments[$index])->answer }}
                                     </div>
                                 @endif
 

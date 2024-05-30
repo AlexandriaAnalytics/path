@@ -56,52 +56,55 @@ class ActivityResource extends Resource
                     ->label('Type of training')
                     ->required()
                     ->options(TypeOfTraining::all()->pluck('name', 'id')),
-                Repeater::make('questions')
+                Repeater::make('sections')
                     ->schema([
                         TextInput::make('title')
-                            ->required(),
-                        TextInput::make('question')
                             ->required(),
                         RichEditor::make('description'),
                         TextInput::make('url'),
                         FileUpload::make('multimedia'),
-                        Select::make('question_type')
-                            ->live()
-                            ->options(ActivityType::class),
                         Toggle::make('evaluation')
-                            ->label('Include in marking stage')
-                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification') || $get('question_type') == 'Multiple choice with one answer' || $get('question_type') == 'Multiple choice with many answers'),
-                        Grid::make()
+                            ->label('Include in marking stage'),
+                        Repeater::make('questions')
                             ->schema([
-                                Checkbox::make('true'),
-                                Select::make('comments_true')
-                                    ->hiddenLabel()
-                                    ->options(Performance::all()->pluck('answer', 'id')),
-                            ])
-                            ->columns(2)
-                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
-                        Grid::make()
-                            ->schema([
-                                Checkbox::make('false'),
-                                Select::make('comments_false')
-                                    ->hiddenLabel()
-                                    ->options(Performance::all()->pluck('answer', 'id')),
-                            ])
-                            ->columns(2)
-                            ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
-                        Repeater::make('multiplechoice')
-                            ->schema([
+                                Select::make('question_type')
+                                    ->live()
+                                    ->options(ActivityType::class),
+                                TextInput::make('question')
+                                    ->required(),
                                 Grid::make()
                                     ->schema([
-                                        TextInput::make('answer'),
-                                        Checkbox::make('correct')
-                                            ->inline(false),
-                                        Select::make('comments')
-                                            ->options(Performance::all()->pluck('answer', 'id'))
+                                        Checkbox::make('true'),
+                                        Select::make('comments_true')
+                                            ->hiddenLabel()
+                                            ->options(Performance::all()->pluck('answer', 'id')),
                                     ])
-                                    ->columns(3)
+                                    ->columns(2)
+                                    ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
+                                Grid::make()
+                                    ->schema([
+                                        Checkbox::make('false'),
+                                        Select::make('comments_false')
+                                            ->hiddenLabel()
+                                            ->options(Performance::all()->pluck('answer', 'id')),
+                                    ])
+                                    ->columns(2)
+                                    ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
+                                Repeater::make('multiplechoice')
+                                    ->schema([
+                                        Grid::make()
+                                            ->schema([
+                                                TextInput::make('answer'),
+                                                Checkbox::make('correct')
+                                                    ->inline(false),
+                                                Select::make('comments')
+                                                    ->options(Performance::all()->pluck('answer', 'id'))
+                                            ])
+                                            ->columns(3)
+                                    ])
+                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with one answer') || ($get('question_type') == 'Multiple choice with many answers'))
                             ])
-                            ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with one answer') || ($get('question_type') == 'Multiple choice with many answers'))
+
                     ])
                     ->columnSpanFull()
             ]);
