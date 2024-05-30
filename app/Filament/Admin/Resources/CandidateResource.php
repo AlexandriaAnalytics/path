@@ -521,24 +521,24 @@ class CandidateResource extends Resource
                         ->getOptionLabelFromRecordUsing(fn (Student $record) => "{$record->name} {$record->surname}")
                         ->afterStateUpdated(function (Set $set) {
                             $set('exam_id', null);
-                        })
-                ]),
-            TextInput::make('granted_discount')
-                ->label('Scholarship')
-                ->postfix('%')
-                ->required()
-                ->numeric()
-                ->default(0)
-                ->minValue(0)
-                ->maxValue(100)
-                ->visible(fn (callable $get) => dd($get('institute_id')))
-                ->hint(fn (callable $get) => 'Available discount: ' . Institute::find($get('institute_id'))->remaining_discount . '%')
-                ->rules([
-                    fn (): Closure => function (string $attribute, $value, Closure $fail, callable $get) {
-                        if ($value > Institute::find($get('institute_id'))->remaining_discount) {
-                            $fail('The institution does not have enough discount to grant.');
-                        }
-                    },
+                        }),
+                    TextInput::make('granted_discount')
+                        ->label('Scholarship')
+                        ->postfix('%')
+                        ->required()
+                        ->numeric()
+                        ->default(0)
+                        ->minValue(0)
+                        ->maxValue(100)
+                        ->visible(fn (callable $get) => dd($get('institute_id')))
+                        ->hint(fn (callable $get) => 'Available discount: ' . Institute::find($get('institute_id'))->remaining_discount . '%')
+                        ->rules([
+                            fn (): Closure => function (string $attribute, $value, Closure $fail, callable $get) {
+                                if ($value > Institute::find($get('institute_id'))->remaining_discount) {
+                                    $fail('The institution does not have enough discount to grant.');
+                                }
+                            },
+                        ])
                 ]),
         ];
     }
