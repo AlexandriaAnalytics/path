@@ -532,13 +532,7 @@ class CandidateResource extends Resource
                         ->maxValue(100)
                         ->visible(fn (callable $get) => Institute::find(Student::find($get('institute_id'))->institute_id)->maximum_cumulative_discount != 0)
                         ->hint(fn (callable $get) => 'Available discount: ' . Institute::find(Student::find($get('institute_id'))->institute_id)->remaining_discount . '%')
-                        ->rules([
-                            fn (): Closure => function (string $attribute, $value, Closure $fail, callable $get) {
-                                if ($value > Institute::find(Student::find($get('institute_id'))->institute_id)->remaining_discount) {
-                                    $fail('The institution does not have enough discount to grant.');
-                                }
-                            },
-                        ])
+
                 ]),
         ];
     }
