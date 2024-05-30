@@ -21,6 +21,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -28,6 +29,7 @@ use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 
 class RecordResource extends Resource
@@ -137,7 +139,7 @@ class RecordResource extends Resource
                         }),
                     Action::make('refresh-status')
                         ->label('Refresh status')
-                        ->icon('heroicon-o-arrows-right-left')
+                        ->icon('heroicon-o-arrow-path')
                         ->action(function (Record $record) {
                             $record->result = null;
                             $record->save();
@@ -149,6 +151,53 @@ class RecordResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    BulkAction::make('refresh-status')
+                        ->label('Refresh status')
+                        ->icon('heroicon-o-arrow-path')
+                        ->action(function (Collection $records) {
+                            foreach ($records as $record) {
+                                $record->result = null;
+                                $record->save();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('update-status')
+                        ->label('Update status')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->form([
+                            Select::make('status_activity_id')
+                                ->label('Status section')
+                                ->options(StatusActivity::all()->pluck('name', 'id'))
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, $data) {
+                            foreach ($records as $record) {
+                                $record->status_activity_id = $data['status_activity_id'];
+                                $record->save();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('download-pdf')
+                        ->label('Download PDF')
+                        ->icon('heroicon-o-arrow-path')
+                        ->icon('heroicon-o-document')
+                        ->action(function (Collection $records) {
+                            foreach ($records as $record) {
+                                $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
+                                $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
+
+                                // Ensure the temporary directory exists and has write permissions
+                                if (!File::exists(storage_path('app/temp_pdfs'))) {
+                                    File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                                }
+                                Pdf::loadView('pdf.record', ['record' => $record])
+                                    ->save($pdfPath);
+                                return response()->download($pdfPath, $filename, [
+                                    'Content-Type' => 'application/pdf',
+                                ]);
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
