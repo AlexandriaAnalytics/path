@@ -134,6 +134,13 @@ class RecordResource extends Resource
                             } catch (\Exception $e) {
                                 return response()->json(['error' => 'PDF generation or download failed'], 500);
                             }
+                        }),
+                    Action::make('refresh-status')
+                        ->label('Refresh status')
+                        ->icon('heroicon-o-arrows-right-left')
+                        ->action(function (Record $record) {
+                            $record->result = null;
+                            $record->save();
                         })
                 ]),
             ])
