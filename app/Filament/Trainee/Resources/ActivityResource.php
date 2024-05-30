@@ -8,10 +8,13 @@ use App\Models\Activity;
 use App\Models\Answer;
 use App\Models\ExaminerActivity;
 use App\Models\ExaminerQuestion;
+use App\Models\MultipleChoice;
+use App\Models\OpenAnswer;
 use App\Models\Performance;
 use App\Models\Record;
 use App\Models\Section;
 use App\Models\Trainee;
+use App\Models\TrueFalse;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Closure;
 use Cmgmyr\PHPLOC\Log\Text;
@@ -152,11 +155,6 @@ class ActivityResource extends Resource
                                     }
                                 }
 
-                                $schema[] = TextInput::make('question' . $index)
-                                    ->readOnly()
-                                    ->hiddenLabel()
-                                    ->default($question->question);
-
                                 if ($question->description) {
                                     $schema[] = MarkdownEditor::make('description' . $index)
                                         ->disabled()
@@ -164,45 +162,75 @@ class ActivityResource extends Resource
                                         ->default($question->description);
                                 }
 
-                                if ($question->question_type == 'True or false') {
-                                    $schema[] = Radio::make('true_or_false' . $index)
-                                        ->hiddenLabel()
-                                        ->options([
-                                            1 => 'True',
-                                            0 => 'False'
-                                        ])
-                                        ->columns(3);
-                                }
+                                foreach ($question->question_type as $indice => $type) {
+                                    if ($type == 'True or false') {
+                                        $schema[] =
+                                            TextInput::make('question' . $indice)
+                                            ->readOnly()
+                                            ->hiddenLabel()
+                                            ->default(TrueFalse::find($question->question_ids[$indice])->question);
+                                        $schema[] =
+                                            Radio::make('true_or_false' . '-' . $index . '-' . $indice)
+                                            ->hiddenLabel()
+                                            ->options([
+                                                1 => 'True',
+                                                0 => 'False'
+                                            ])
+                                            ->columns(3);
+                                    }
 
-                                if ($question->question_type == 'True or false with justification') {
-                                    $schema[] = Radio::make('true_or_false_justify' . $index)
-                                        ->hiddenLabel()
-                                        ->options([
-                                            1 => 'True',
-                                            0 => 'False'
-                                        ])
-                                        ->columns(3);
-                                    $schema[] = TextInput::make('justify' . $index)
-                                        ->label('Justify the answer');
-                                }
+                                    if ($type == 'True or false with justification') {
+                                        $schema[] =
+                                            TextInput::make('question' . $indice)
+                                            ->readOnly()
+                                            ->hiddenLabel()
+                                            ->default(TrueFalse::find($question->question_ids[$indice])->question);
+                                        $schema[] = Radio::make('true_or_false_justify' . '-' . $index . '-' . $indice)
+                                            ->hiddenLabel()
+                                            ->options([
+                                                1 => 'True',
+                                                0 => 'False'
+                                            ])
+                                            ->columns(3);
+                                        $schema[] = TextInput::make('justify' . $index)
+                                            ->label('Justify the answer');
+                                    }
 
-                                if ($question->question_type == 'Multiple choice with one answer') {
-                                    $schema[] = Radio::make('multiplechoice_one_answer' . $index)
-                                        ->hiddenLabel()
-                                        ->options($question->multipleChoices[0]->answers);
-                                }
+                                    if ($type == 'Multiple choice with one answer') {
+                                        $schema[] =
+                                            TextInput::make('question' . $indice)
+                                            ->readOnly()
+                                            ->hiddenLabel()
+                                            ->default(MultipleChoice::find($question->question_ids[$indice])->question);
+                                        $schema[] =
+                                            Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
+                                            ->hiddenLabel()
+                                            ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
+                                    }
 
-                                if ($question->question_type == 'Multiple choice with many answers') {
-                                    $schema[] = CheckboxList::make('multiplechoice_many_answers' . $index)
-                                        ->hiddenLabel()
-                                        ->options($question->multipleChoices[0]->answers);
-                                }
+                                    if ($type == 'Multiple choice with many answers') {
+                                        $schema[] =
+                                            TextInput::make('question' . $indice)
+                                            ->readOnly()
+                                            ->hiddenLabel()
+                                            ->default(MultipleChoice::find($question->question_ids[$indice])->question);
+                                        $schema[] =
+                                            CheckboxList::make('multiplechoice_many_answers' . '-' . $index . '-' . $indice)
+                                            ->hiddenLabel()
+                                            ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
+                                    }
 
-                                if ($question->question_type == 'Open answer') {
-                                    $schema[] = ComponentsTextarea::make('open_answer' . $index)
-                                        ->hiddenLabel();
+                                    if ($type == 'Open answer') {
+                                        $schema[] =
+                                            TextInput::make('question' . $indice)
+                                            ->readOnly()
+                                            ->hiddenLabel()
+                                            ->default(OpenAnswer::find($question->question_ids[$indice])->question);
+                                        $schema[] =
+                                            ComponentsTextarea::make('open_answer' . '-' . $index . '-' . $indice)
+                                            ->hiddenLabel();
+                                    }
                                 }
-
                                 $steps[] = Step::make($question->title)
                                     ->schema($schema);
                             }
@@ -216,63 +244,69 @@ class ActivityResource extends Resource
                         $questions = $activity->questions;
 
                         $correct = true;
-
                         foreach ($questions as $index => $question) {
-                            if ($question->question_type == 'True or false') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['true_or_false' . $index];
-                                $answer->save();
-                                if ($question->trueOrFalses[0]->true != $answer->selected_option && $question->evaluation) {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'True or false with justification') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['true_or_false_justify' . $index];
-                                $answer->answer_text = $data['justify' . $index];
-                                $answer->save();
-
-                                if ($question->trueOrFalses[0]->true != $answer->selected_option && $question->evaluation) {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'Multiple choice with one answer') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = $data['multiplechoice_one_answer' . $index];
-                                $answer->save();
-
-                                if ($question->multipleChoices[0]->correct[$answer->selected_option] != 'false' && $question->evaluation) {
-                                    $correct = false;
-                                }
-                            }
-
-                            if ($question->question_type == 'Multiple choice with many answers') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . $index]);
-                                $answer->save();
-                                foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
-                                    if ($question->multipleChoices[0]->correct[$answer] != 'false' && $question->evaluation) {
+                            foreach ($question['question_type'] as $indice => $type) {
+                                if ($type == 'True or false') {
+                                    $answer = new Answer();
+                                    $answer->question_type = $type;
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question['question_ids'][$indice];
+                                    $answer->selected_option = $data['true_or_false' . '-' . $index . '-' . $indice];
+                                    $answer->save();
+                                    if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
                                         $correct = false;
                                     }
                                 }
-                            }
 
-                            if ($question->question_type == 'Open answer') {
-                                $answer = new Answer();
-                                $answer->trainee_id = $record->trainee->id;
-                                $answer->question_id = $question->id;
-                                $answer->answer_text = $data['open_answer' . $index];
-                                $answer->save();
+                                if ($type == 'True or false with justification') {
+                                    $answer = new Answer();
+                                    $answer->question_type = $type;
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question['question_ids'][$indice];
+                                    $answer->selected_option = $data['true_or_false_justify' . '-' . $index . '-' . $indice];
+                                    $answer->answer_text = $data['justify' . $index];
+                                    $answer->save();
+
+                                    if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
+                                        $correct = false;
+                                    }
+                                }
+
+                                if ($type == 'Multiple choice with one answer') {
+                                    $answer = new Answer();
+                                    $answer->question_type = $type;
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question['question_ids'][$indice];
+                                    $answer->selected_option = $data['multiplechoice_one_answer' . '-' . $index . '-' . $indice];
+                                    $answer->save();
+
+                                    if (MultipleChoice::find($answer->question_id)->correct[$answer->selected_option] != 'false' && $question->evaluation) {
+                                        $correct = false;
+                                    }
+                                }
+
+                                if ($type == 'Multiple choice with many answers') {
+                                    $answer = new Answer();
+                                    $answer->question_type = $type;
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question['question_ids'][$indice];
+                                    $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
+                                    $answer->save();
+                                    foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
+                                        if (MultipleChoice::find($answer->question_id)->correct[$answer] != 'false' && $question->evaluation) {
+                                            $correct = false;
+                                        }
+                                    }
+                                }
+
+                                if ($type == 'Open answer') {
+                                    $answer = new Answer();
+                                    $answer->question_type = $type;
+                                    $answer->trainee_id = $record->trainee->id;
+                                    $answer->question_id = $question['question_ids'][$indice];
+                                    $answer->answer_text = $data['open_answer' . '-' . $index . '-' . $indice];
+                                    $answer->save();
+                                }
                             }
                         }
 

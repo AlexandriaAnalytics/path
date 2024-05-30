@@ -27,44 +27,52 @@ class CreateActivity extends CreateRecord
     protected function afterCreate(): void
     {
         $activityId = $this->record->id;
-        $questions = $this->data['questions'];
-        foreach ($questions as $question) {
+        $sections = $this->data['sections'];
+        foreach ($sections as $question) {
             $newQuestion = new Question();
-            $newQuestion->question = $question['question'];
             $newQuestion->title = $question['title'];
             $newQuestion->description = $question['description'];
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
-            $newQuestion->question_type = $question['question_type'];
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
-            $newQuestion->save();
 
-            if ($newQuestion->question_type == 'True or false' || $newQuestion->question_type == 'True or false with justification') {
-                $trueFalse = new TrueFalse();
-                $trueFalse->question_id = $newQuestion->id;
-                $trueFalse->true = $question['true'];
-                $comments = $question['comments_true'] ? array($question['comments_true'], $question['comments_false']) : null;
-                $trueFalse->comments = $comments;
-                $trueFalse->save();
-            }
+            $question_type = [];
+            $question_ids = [];
 
-            if ($newQuestion->question_type == 'Multiple choice with one answer' || $newQuestion->question_type == 'Multiple choice with many answers') {
-                $newMultiplechoice = new MultipleChoice();
-                $answersArray = [];
-                $correctsArray = [];
-                $commentsArray = [];
-                foreach ($question['multiplechoice'] as $multiplechoice) {
-                    $answersArray[] = $multiplechoice['answer'];
-                    $correctsArray[] = $multiplechoice['correct'];
-                    $commentsArray[] = $multiplechoice['comments'];
+            foreach ($question['questions'] as $question) {
+                $question_type[] = $question['question_type'];
+                if ($question['question_type'] == 'True or false' || $question['question_type'] == 'True or false with justification') {
+                    $trueFalse = new TrueFalse();
+                    $trueFalse->true = $question['true'];
+                    $comments = $question['comments_true'] ? array($question['comments_true'], $question['comments_false']) : null;
+                    $trueFalse->comments = $comments;
+                    $trueFalse->question = $question['question'];
+                    $trueFalse->save();
+                    $question_ids[] = $trueFalse->id;
                 }
-                $newMultiplechoice->question_id = $newQuestion->id;
-                $newMultiplechoice->answers = $answersArray;
-                $newMultiplechoice->correct = $correctsArray;
-                $newMultiplechoice->comments = $commentsArray;
-                $newMultiplechoice->save();
+
+                if ($question['question_type'] == 'Multiple choice with one answer' || $question['question_type'] == 'Multiple choice with many answers') {
+                    $newMultiplechoice = new MultipleChoice();
+                    $answersArray = [];
+                    $correctsArray = [];
+                    $commentsArray = [];
+                    foreach ($question['multiplechoice'] as $multiplechoice) {
+                        $answersArray[] = $multiplechoice['answer'];
+                        $correctsArray[] = $multiplechoice['correct'];
+                        $commentsArray[] = $multiplechoice['comments'];
+                    }
+                    $newMultiplechoice->answers = $answersArray;
+                    $newMultiplechoice->correct = $correctsArray;
+                    $newMultiplechoice->comments = $commentsArray;
+                    $newMultiplechoice->question = $question['question'];
+                    $newMultiplechoice->save();
+                    $question_ids[] = $newMultiplechoice->id;
+                }
             }
+            $newQuestion->question_type = $question_type;
+            $newQuestion->question_ids = $question_ids;
+            $newQuestion->save();
         }
     }
 }

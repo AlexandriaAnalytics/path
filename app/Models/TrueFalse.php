@@ -10,7 +10,7 @@ class TrueFalse extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['true', 'comments', 'question_id'];
+    protected $fillable = ['true', 'comments', 'question'];
 
     protected $casts = ['true' => 'boolean', 'comments' => 'array'];
 
