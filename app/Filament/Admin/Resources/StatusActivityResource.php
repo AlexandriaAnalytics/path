@@ -45,8 +45,8 @@ class StatusActivityResource extends Resource
                     ->required(),
                 Checkbox::make('default')
                     ->label('Default status')
-                    ->disabled(function () {
-                        return StatusActivity::where('default', 1)->exists();
+                    ->disabled(function (StatusActivity $record) {
+                        return StatusActivity::where('default', 1)->where('id', '!=', $record->id)->exists();
                     })
             ]);
     }
