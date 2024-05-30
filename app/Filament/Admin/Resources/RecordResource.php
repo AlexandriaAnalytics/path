@@ -17,6 +17,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
@@ -82,8 +83,14 @@ class RecordResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                SelectColumn::make('status_activity_id')
-                    ->options(StatusActivity::all()->pluck('name', 'id'))
+                TextColumn::make('status_activity_id')
+                    ->formatStateUsing(function ($state) {
+                        return StatusActivity::find($state)->name;
+                    })
+                    ->badge()
+                    ->color(function ($state) {
+                        return Color::hex(StatusActivity::find($state)->color);
+                    })
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
