@@ -522,6 +522,24 @@ class CandidateResource extends Resource
                         ->afterStateUpdated(function (Set $set) {
                             $set('exam_id', null);
                         }),
+                    TextInput::make('granted_discount')
+                        ->label('Scholarship')
+                        ->postfix('%')
+                        ->required()
+                        ->numeric()
+                        ->default(0)
+                        ->minValue(0)
+                        ->maxValue(100)
+                        ->visible(fn (callable $get) => Institute::find($get('institute_id'))->maximum_cumulative_discount != 0)
+                        ->hiddenOn('edit')
+                        ->hint(fn (callable $get) => 'Available discount: ' . Institute::find($get('institute_id'))->remaining_discount . '%')
+                        ->rules([
+                            fn (): Closure => function (string $attribute, $value, Closure $fail, callable $get) {
+                                if ($value > Institute::find($get('institute_id'))->remaining_discount) {
+                                    $fail('The institution does not have enough discount to grant.');
+                                }
+                            },
+                        ])
                 ]),
         ];
     }
