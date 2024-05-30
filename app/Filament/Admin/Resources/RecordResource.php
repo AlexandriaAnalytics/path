@@ -49,7 +49,7 @@ class RecordResource extends Resource
                     ->options(Section::all()->pluck('name', 'id'))
                     ->required(),
                 Select::make('status_activity_id')
-                    ->label('Status')
+                    ->label('Status section')
                     ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->required(),
                 TextInput::make('comments')
@@ -84,6 +84,7 @@ class RecordResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('status_activity_id')
+                    ->label('Status section')
                     ->formatStateUsing(function ($state) {
                         return StatusActivity::find($state)->name;
                     })
