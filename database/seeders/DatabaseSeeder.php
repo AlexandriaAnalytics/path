@@ -82,7 +82,7 @@ class DatabaseSeeder extends Seeder
             )
             ->create([
                 'name' => 'Test User',
-                'email' => 'test@example.com',
+                'email' => 'admin@pathexaminations.com',
             ]);
 
         $testUser->assignRole(Role::firstOrCreate(['name' => 'Superadministrator'])->first());
