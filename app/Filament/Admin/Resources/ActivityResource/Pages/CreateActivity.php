@@ -75,6 +75,7 @@ class CreateActivity extends CreateRecord
                     $openAnswer = new OpenAnswer();
                     $openAnswer->question = $question['question'];
                     $openAnswer->save();
+                    $question_ids[] = $openAnswer->id;
                 }
             }
             $newQuestion->question_type = $question_type;

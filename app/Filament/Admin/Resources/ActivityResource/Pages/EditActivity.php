@@ -60,7 +60,7 @@ class EditActivity extends EditRecord
                 }
 
                 if($type == 'Open answer') {
-                    $openAnswer = new OpenAnswer();
+                    $openAnswer = OpenAnswer::find($question['question_ids'][$index]);
                     $openAnswer->question = $question['question'];
                     $openAnswer->save();
                 }
