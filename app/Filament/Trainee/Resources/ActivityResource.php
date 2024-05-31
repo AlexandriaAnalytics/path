@@ -138,6 +138,9 @@ class ActivityResource extends Resource
                     ->visible(function (Record $record) {
                         return Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                     })
+                    ->modalSubmitAction(function (Record $record) {
+                        return $record->result != null ? false : null;
+                    })
                     ->form(function (Record $record) {
                         $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                         $steps = [];
