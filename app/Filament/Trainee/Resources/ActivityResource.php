@@ -126,6 +126,7 @@ class ActivityResource extends Resource
                         $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
                         $questions = $activity->questions;
                         $steps = [];
+                        if($questions) {
                         foreach ($questions as $index => $question) {
                             $schema = [];
                             if (!$record->result || ($record->result && !$question->evaluation)) {
@@ -234,6 +235,7 @@ class ActivityResource extends Resource
                                 $steps[] = Step::make($question->title)
                                     ->schema($schema);
                             }
+                        }
                         }
                         return [
                             Wizard::make($steps)->columnSpanFull()
