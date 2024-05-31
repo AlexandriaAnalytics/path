@@ -30,6 +30,7 @@ class StatusResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->unique()
                     ->required(),
                 TextInput::make('description')
             ]);

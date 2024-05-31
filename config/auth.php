@@ -41,10 +41,11 @@ return [
             'provider' => 'users',
         ],
 
-        'examiner' => [
+        'trainee' => [
             'driver' => 'session',
-            'provider' => 'examiners',
+            'provider' => 'trainees', // Nuevo guard para autenticar Trainee
         ],
+
     ],
 
     /*
@@ -65,14 +66,15 @@ return [
     */
 
     'providers' => [
-        'examiners' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Examiner::class,
-        ],
 
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+
+        'trainees' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Trainee::class,
         ],
     ],
 
