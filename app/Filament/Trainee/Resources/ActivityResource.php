@@ -295,7 +295,7 @@ class ActivityResource extends Resource
                                 }
 
                                 if ($type == 'Multiple choice with many answers') {
-                                    dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]));
+                                    dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
                                     $answer = new Answer();
                                     $answer->question_type = $type;
                                     $answer->trainee_id = $record->trainee->id;
