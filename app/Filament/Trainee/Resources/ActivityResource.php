@@ -46,6 +46,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\File;
 use Mpdf\Tag\TextArea;
+use Stripe\FundingInstructions;
 
 class ActivityResource extends Resource
 {
@@ -257,7 +258,9 @@ class ActivityResource extends Resource
                             }
                         }
                         return [
-                            Wizard::make($steps)->columnSpanFull()
+                            Wizard::make($steps)->columnSpanFull()->disabled(function (Record $record) {
+                                return $record->result;
+                            })
                         ];
                     })
                     ->action(function (array $data, Record $record) {
