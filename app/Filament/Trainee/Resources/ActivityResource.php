@@ -138,7 +138,11 @@ class ActivityResource extends Resource
                                     }
                                     if ($question->multimedia) {
                                         $multimediaUrl = asset('storage/' . $question->multimedia);
-                                        if (strpos($question->multimedia, 'mp4') !== false) {
+                                        $schema[] = ViewField::make('field')
+                                            ->hiddenLabel()
+                                            ->view('filament.iframes')
+                                            ->viewData(['url' => $multimediaUrl]);
+                                        /* if (strpos($question->multimedia, 'mp4') !== false) {
                                             $schema[] = MarkdownEditor::make('video' . $index)
                                                 ->disabled()
                                                 ->hiddenLabel()
@@ -153,7 +157,7 @@ class ActivityResource extends Resource
                                                 ->hiddenLabel()
                                                 ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
                                                 ->columnSpanFull();
-                                        }
+                                        } */
                                     }
 
                                     if ($question->description) {
