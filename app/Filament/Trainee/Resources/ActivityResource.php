@@ -294,7 +294,7 @@ class ActivityResource extends Resource
                                     $answer->question_id = $question['question_ids'][$indice];
                                     $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
                                     $answer->save();
-                                    foreach ($data['multiplechoice_many_answers' . $index] as $answer) {
+                                    foreach ($data['multiplechoice_many_answers' . $index . '-' . $indice] as $answer) {
                                         if (MultipleChoice::find($answer->question_id)->correct[$answer] != 'false' && $question->evaluation) {
                                             $correct = false;
                                         }
