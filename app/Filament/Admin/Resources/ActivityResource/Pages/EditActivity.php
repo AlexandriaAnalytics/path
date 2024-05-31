@@ -57,6 +57,13 @@ class EditActivity extends EditRecord
                         })->toArray();
                     }
                 }
+
+                if($type == 'Open answer') {
+                    $openAnswer = new OpenAnswer();
+                    $openAnswer->question = $question['question'];
+                    $openAnswer->save();
+                }
+
                 $questionData['questions'][] = $questionEdit;
             }
             return $questionData;

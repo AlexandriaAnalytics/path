@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\ActivityResource\Pages;
 
 use App\Filament\Admin\Resources\ActivityResource;
 use App\Models\MultipleChoice;
+use App\Models\OpenAnswer;
 use App\Models\Question;
 use App\Models\TrueFalse;
 use Filament\Actions;
@@ -68,6 +69,12 @@ class CreateActivity extends CreateRecord
                     $newMultiplechoice->question = $question['question'];
                     $newMultiplechoice->save();
                     $question_ids[] = $newMultiplechoice->id;
+                }
+
+                if($question['question_type'] == 'Open answer') {
+                    $openAnswer = new OpenAnswer();
+                    $openAnswer->question = $question['question'];
+                    $openAnswer->save();
                 }
             }
             $newQuestion->question_type = $question_type;
