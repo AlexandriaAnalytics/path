@@ -122,6 +122,9 @@ class ActivityResource extends Resource
                     ->icon('heroicon-m-pencil-square')
                     ->iconButton()
                     ->color('warning')
+                    ->visible(function (Record $record) {
+                        return $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
+                    })
                     ->form(function (Record $record) {
                         $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                         $steps = [];
