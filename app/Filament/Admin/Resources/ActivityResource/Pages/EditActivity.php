@@ -119,6 +119,13 @@ class EditActivity extends EditRecord
                     $newMultiplechoice->save();
                     $question_ids[] = $newMultiplechoice->id;
                 }
+
+                if($question['question_type'] == 'Open answer') {
+                    $openAnswer = new OpenAnswer();
+                    $openAnswer->question = $question['question'];
+                    $openAnswer->save();
+                    $question_ids[] = $openAnswer->id;
+                }
             }
             $newQuestion->question_type = $question_type;
             $newQuestion->question_ids = $question_ids;
