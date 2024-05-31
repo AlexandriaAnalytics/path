@@ -13,6 +13,7 @@ use App\Models\OpenAnswer;
 use App\Models\Performance;
 use App\Models\Record;
 use App\Models\Section;
+use App\Models\StatusActivity;
 use App\Models\Trainee;
 use App\Models\TrueFalse;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -33,6 +34,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
@@ -77,7 +79,17 @@ class ActivityResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                ColorColumn::make('statusActivity.color')
+                TextColumn::make('statusActivity.id')
+                    ->label('Status section')
+                    ->formatStateUsing(function ($state) {
+                        return StatusActivity::find($state)->name;
+                    })
+                    ->badge()
+                    ->color(function ($state) {
+                        return Color::hex(StatusActivity::find($state)->color);
+                    })
+                    ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('result')
                     ->sortable()
