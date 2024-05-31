@@ -98,7 +98,7 @@ class ActivityResource extends Resource
                     ->visible(function (Record $record) {
                         return $record->result == null ? false : true;
                     })
-                    ->label('Download PDF')
+                    ->label('PDF')
                     ->icon('heroicon-o-document')
                     ->action(function (Record $record) {
                         //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
@@ -118,12 +118,12 @@ class ActivityResource extends Resource
                             return response()->json(['error' => 'PDF generation or download failed'], 500);
                         }
                     }),
-                Tables\Actions\Action::make('solve')
+                Tables\Actions\Action::make('access')
+                    ->label('Access')
                     ->icon('heroicon-m-pencil-square')
-                    ->iconButton()
                     ->color('warning')
                     ->visible(function (Record $record) {
-                        return $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
+                        return Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                     })
                     ->form(function (Record $record) {
                         $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
