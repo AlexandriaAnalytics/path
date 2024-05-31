@@ -75,7 +75,7 @@ class RecordResource extends Resource
                 TextColumn::make('section_id')
                     ->label('Section')
                     ->formatStateUsing(function ($state) {
-                        return Level::find($state)->name;
+                        return Section::find($state)->name;
                     })
                     ->sortable()
                     ->searchable()
