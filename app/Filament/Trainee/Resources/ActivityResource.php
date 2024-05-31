@@ -123,7 +123,7 @@ class ActivityResource extends Resource
                     ->iconButton()
                     ->color('warning')
                     ->form(function (Record $record) {
-                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->where('deleted_at',null)->first();
+                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                         $steps = [];
                         if ($activity) {
                             $questions = $activity->questions;
