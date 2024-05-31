@@ -124,9 +124,9 @@ class ActivityResource extends Resource
                     ->color('warning')
                     ->form(function (Record $record) {
                         $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
+                        $steps = [];
                         if ($activity) {
                             $questions = $activity->questions;
-                            $steps = [];
                             foreach ($questions as $index => $question) {
                                 $schema = [];
                                 if (!$record->result || ($record->result && !$question->evaluation)) {
