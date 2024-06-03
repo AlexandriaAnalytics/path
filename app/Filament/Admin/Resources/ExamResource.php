@@ -21,7 +21,7 @@ class ExamResource extends Resource
 {
     protected static ?string $model = Exam::class;
 
-    protected static ?string $navigationGroup = 'Exam management';
+    protected static ?string $navigationGroup = 'Corporate';
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
