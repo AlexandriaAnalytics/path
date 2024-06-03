@@ -63,6 +63,7 @@ class ActivityResource extends Resource
                         RichEditor::make('description'),
                         TextInput::make('url'),
                         FileUpload::make('multimedia'),
+                        RichEditor::make('text'),
                         Toggle::make('evaluation')
                             ->label('Include in marking stage'),
                         Repeater::make('questions')

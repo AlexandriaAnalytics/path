@@ -35,6 +35,7 @@ class CreateActivity extends CreateRecord
             $newQuestion->description = $question['description'];
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
+            $newQuestion->text = $question['text'];
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
 
@@ -71,7 +72,7 @@ class CreateActivity extends CreateRecord
                     $question_ids[] = $newMultiplechoice->id;
                 }
 
-                if($question['question_type'] == 'Open answer') {
+                if ($question['question_type'] == 'Open answer') {
                     $openAnswer = new OpenAnswer();
                     $openAnswer->question = $question['question'];
                     $openAnswer->save();

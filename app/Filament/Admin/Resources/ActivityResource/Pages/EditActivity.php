@@ -59,7 +59,7 @@ class EditActivity extends EditRecord
                     }
                 }
 
-                if($type == 'Open answer') {
+                if ($type == 'Open answer') {
                     $openAnswer = OpenAnswer::find($question['question_ids'][$index]);
                     $questionEdit['question'] = $openAnswer->question;
                 }
@@ -83,6 +83,7 @@ class EditActivity extends EditRecord
             $newQuestion->description = $question['description'];
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
+            $newQuestion->text = $question['text'];
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
 
@@ -119,7 +120,7 @@ class EditActivity extends EditRecord
                     $question_ids[] = $newMultiplechoice->id;
                 }
 
-                if($question['question_type'] == 'Open answer') {
+                if ($question['question_type'] == 'Open answer') {
                     $openAnswer = new OpenAnswer();
                     $openAnswer->question = $question['question'];
                     $openAnswer->save();

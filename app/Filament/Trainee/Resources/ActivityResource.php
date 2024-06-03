@@ -186,6 +186,13 @@ class ActivityResource extends Resource
                                         } */
                                     }
 
+                                    if ($question->text) {
+                                        $schema[] = ViewField::make('field')
+                                            ->hiddenLabel()
+                                            ->view('filament.trainee.text')
+                                            ->viewData(['description' => $question->text]);
+                                    }
+
                                     foreach ($question->question_type as $indice => $type) {
                                         if ($type == 'True or false') {
                                             $schema[] =
