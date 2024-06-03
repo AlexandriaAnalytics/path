@@ -8,7 +8,6 @@ use App\Enums\ModuleType;
 use App\Models\CertificateType;
 use App\Models\Country;
 use App\Models\Exam;
-use App\Models\Examiner;
 use App\Models\Institute;
 use App\Models\Level;
 use App\Models\LevelCountry;
@@ -83,17 +82,10 @@ class DatabaseSeeder extends Seeder
             )
             ->create([
                 'name' => 'Test User',
-                'email' => 'test@example.com',
+                'email' => 'admin@pathexaminations.com',
             ]);
 
         $testUser->assignRole(Role::firstOrCreate(['name' => 'Superadministrator'])->first());
-
-        Examiner::factory()
-            ->create([
-                'name' => 'Test',
-                'surname' => 'Examiner',
-                'email' => 'examiner@pathexaminations.com',
-            ]);
 
         User::factory(10)
             ->has(
