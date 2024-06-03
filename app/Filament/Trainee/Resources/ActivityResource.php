@@ -149,6 +149,13 @@ class ActivityResource extends Resource
                             foreach ($questions as $index => $question) {
                                 $schema = [];
                                 if (!$record->result || ($record->result && !$question->evaluation)) {
+                                    if ($question->description) {
+                                        $schema[] = ViewField::make('field')
+                                            ->hiddenLabel()
+                                            ->view('filament.trainee.text')
+                                            ->viewData(['description' => $question->description]);
+                                    }
+
                                     if ($question->url) {
                                         $schema[] = ViewField::make('field')
                                             ->hiddenLabel()
@@ -177,13 +184,6 @@ class ActivityResource extends Resource
                                                 ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
                                                 ->columnSpanFull();
                                         } */
-                                    }
-
-                                    if ($question->description) {
-                                        $schema[] = MarkdownEditor::make('description' . $index)
-                                            ->disabled()
-                                            ->hiddenLabel()
-                                            ->default($question->description);
                                     }
 
                                     foreach ($question->question_type as $indice => $type) {
