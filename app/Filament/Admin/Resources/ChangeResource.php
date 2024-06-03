@@ -60,7 +60,7 @@ class ChangeResource extends Resource
                 TextColumn::make('user')
                     ->label('Requested by')
                     ->formatStateUsing(function ($record) {
-                        return $record->user->name . ' / ' . $record->candidate->student->institute->name;
+                        return $record->user->name . ' / ' . $record->user->institute->name;
                     }),
                 TextColumn::make('description')
                     ->wrap(),
