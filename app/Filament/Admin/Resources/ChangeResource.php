@@ -55,12 +55,12 @@ class ChangeResource extends Resource
             ->columns([
                 TextColumn::make('candidate')
                     ->formatStateUsing(function ($record) {
-                        return $record->candidate->student->name . ' ' . $record->candidate->student->surname;
+                        return $record->candidate->student->name . ' ' . $record->candidate->student->surname . '/' . $record->candidate->student->institute->name;
                     }),
                 TextColumn::make('user')
                     ->label('Requested by')
                     ->formatStateUsing(function ($record) {
-                        return $record->user->name . ' / ' . $record->user->institute->name;
+                        return $record->user->name;
                     }),
                 TextColumn::make('description')
                     ->wrap(),
