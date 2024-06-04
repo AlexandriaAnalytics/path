@@ -2,6 +2,7 @@
 
 namespace App\Filament\Trainee\Resources;
 
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use App\Filament\Trainee\Resources\ActivityResource\Pages;
 use App\Filament\Trainee\Resources\ActivityResource\RelationManagers;
 use App\Models\Activity;
@@ -24,6 +25,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section as ComponentsSection;
 use Filament\Forms\Components\Textarea as ComponentsTextarea;
 use Filament\Forms\Components\TextInput;
@@ -42,10 +44,11 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\File;
-use Mpdf\Tag\TextArea;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use Stripe\FundingInstructions;
 
 class ActivityResource extends Resource
@@ -150,10 +153,11 @@ class ActivityResource extends Resource
                                 $schema = [];
                                 if (!$record->result || ($record->result && !$question->evaluation)) {
                                     if ($question->description) {
-                                        $schema[] = ViewField::make('field')
+                                        $schema[] = TiptapEditor::make('description')
                                             ->hiddenLabel()
-                                            ->view('filament.trainee.text')
-                                            ->viewData(['description' => $question->description]);
+                                            ->default($question->description)
+                                            ->disableBubbleMenus()
+                                            ->disabled();
                                     }
 
                                     if ($question->url) {
@@ -187,10 +191,11 @@ class ActivityResource extends Resource
                                     }
 
                                     if ($question->text) {
-                                        $schema[] = ViewField::make('field')
+                                        $schema[] = TiptapEditor::make('text')
                                             ->hiddenLabel()
-                                            ->view('filament.trainee.text')
-                                            ->viewData(['description' => $question->text]);
+                                            ->default($question->text)
+                                            ->disableBubbleMenus()
+                                            ->disabled();
                                     }
 
                                     foreach ($question->question_type as $indice => $type) {
