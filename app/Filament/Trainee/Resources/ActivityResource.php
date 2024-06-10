@@ -153,7 +153,7 @@ class ActivityResource extends Resource
                                 $schema = [];
                                 if (!$record->result || ($record->result && !$question->evaluation)) {
                                     if ($question->description) {
-                                        $schema[] = TiptapEditor::make('description')
+                                        $schema[] = TiptapEditor::make('description' . $index)
                                             ->hiddenLabel()
                                             ->default($question->description)
                                             ->disableBubbleMenus()
@@ -161,7 +161,7 @@ class ActivityResource extends Resource
                                     }
 
                                     if ($question->url) {
-                                        $schema[] = ViewField::make('field')
+                                        $schema[] = ViewField::make('field' . $index)
                                             ->hiddenLabel()
                                             ->view('filament.iframes')
                                             ->viewData(['url' => $question->url]);
@@ -191,7 +191,7 @@ class ActivityResource extends Resource
                                     }
 
                                     if ($question->text) {
-                                        $schema[] = TiptapEditor::make('text')
+                                        $schema[] = TiptapEditor::make('text' . $index)
                                             ->hiddenLabel()
                                             ->default($question->text)
                                             ->disableBubbleMenus()
