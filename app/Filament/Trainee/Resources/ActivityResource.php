@@ -23,12 +23,14 @@ use Cmgmyr\PHPLOC\Log\Text;
 use Filament\Forms;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section as ComponentsSection;
 use Filament\Forms\Components\Textarea as ComponentsTextarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\ViewField;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
@@ -189,13 +191,23 @@ class ActivityResource extends Resource
                                                 ->columnSpanFull();
                                         } */
                                     }
+                                    $schema[] = Hidden::make('visible_text_' . $index)
+                                        ->default(function () use ($question) {
+                                            if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                return true;
+                                            } else {
+                                                return false;
+                                            }
+                                        });
 
                                     if ($question->text) {
                                         $schema[] = TiptapEditor::make('text' . $index)
                                             ->hiddenLabel()
                                             ->default($question->text)
                                             ->disableBubbleMenus()
-                                            ->disabled();
+                                            ->disabled()
+                                            ->live()
+                                            ->hidden(fn ($get) => !$get('visible_text_' . $index));
                                     }
 
                                     foreach ($question->question_type as $indice => $type) {
@@ -267,6 +279,18 @@ class ActivityResource extends Resource
                                                 ->hiddenLabel();
                                         }
                                     }
+
+                                    $schema[] = ToggleButtons::make('button' . $index)
+                                        ->live()
+                                        ->hiddenLabel()
+                                        ->visible($question->title === 'Practice stage' || $question->title === 'Marking stage')
+                                        ->afterStateUpdated(function (Set $set, string $state) use ($index) {
+                                            if ($state === 'submit') {
+                                                $set('visible_text_' . $index, true);
+                                            }
+                                        })
+                                        ->options(['submit' => 'Submit']);
+
                                     $steps[] = Step::make($question->title)
                                         ->schema($schema);
                                 }
