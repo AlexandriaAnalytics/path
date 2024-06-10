@@ -192,13 +192,7 @@ class ActivityResource extends Resource
                                         } */
                                     }
                                     $schema[] = Hidden::make('visible_text_' . $index)
-                                        ->default(function () use ($question) {
-                                            if ($question->title !== 'Practice stage' || $question->title !== 'Marking stage') {
-                                                return true;
-                                            } else {
-                                                return false;
-                                            }
-                                        });
+                                        ->default(false);
 
                                     if ($question->text) {
                                         $schema[] = TiptapEditor::make('text' . $index)
@@ -207,7 +201,13 @@ class ActivityResource extends Resource
                                             ->disableBubbleMenus()
                                             ->disabled()
                                             ->live()
-                                            ->hidden(fn ($get) => !$get('visible_text_' . $index));
+                                            ->hidden(function ($get) use ($index, $question) {
+                                                if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                    return !$get('visible_text_' . $index);
+                                                } else {
+                                                    return false;
+                                                }
+                                            });
                                     }
 
                                     foreach ($question->question_type as $indice => $type) {
