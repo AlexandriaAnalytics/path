@@ -193,7 +193,7 @@ class ActivityResource extends Resource
                                     }
                                     $schema[] = Hidden::make('visible_text_' . $index)
                                         ->default(function () use ($question) {
-                                            if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                            if ($question->title !== 'Practice stage' || $question->title !== 'Marking stage') {
                                                 return true;
                                             } else {
                                                 return false;
