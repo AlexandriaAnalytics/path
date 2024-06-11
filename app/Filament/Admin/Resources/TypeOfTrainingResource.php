@@ -37,7 +37,7 @@ class TypeOfTrainingResource extends Resource
             ->schema([
                 TextInput::make('name')
                     ->required()
-                    ->unique(),
+                    ->unique(ignoreRecord: true),
                 TextInput::make('files')
             ]);
     }
