@@ -12,7 +12,7 @@ class TypeOfTraining extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name'
+        'name', 'files'
     ];
 
     public function activities()

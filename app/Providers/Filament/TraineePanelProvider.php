@@ -3,9 +3,13 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Trainee\Widgets\Files;
+use App\Models\Trainee;
+use App\Models\User;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -45,6 +49,18 @@ class TraineePanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Trainee/Widgets'), for: 'App\\Filament\\Trainee\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make()
+                    ->label('My files')
+                    ->icon('heroicon-o-folder')
+                    ->url(fn () => Trainee::where('user_id', auth()->user()->id)->first()->files, shouldOpenInNewTab: true)
+                    ->visible(fn () => Trainee::where('user_id', auth()->user()->id)->first()->files),
+                NavigationItem::make()
+                    ->label('General files')
+                    ->icon('heroicon-o-folder')
+                    ->url(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files, shouldOpenInNewTab: true)
+                    ->visible(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files != null),
             ])
             ->middleware([
                 EncryptCookies::class,

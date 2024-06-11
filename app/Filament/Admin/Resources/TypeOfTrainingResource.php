@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -37,6 +38,7 @@ class TypeOfTrainingResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->unique(),
+                TextInput::make('files')
             ]);
     }
 
@@ -45,6 +47,13 @@ class TypeOfTrainingResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('files')
+                    ->label('Files URL')
+                    ->url(fn (TypeOfTraining $record) => $record->files, shouldOpenInNewTab: true)
+                    ->wrap()
+                    ->placeholder('(no url)')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
