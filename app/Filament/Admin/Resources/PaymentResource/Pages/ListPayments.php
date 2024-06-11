@@ -190,7 +190,7 @@ class ListPayments extends ListRecords
                                     $candidateAmount = 0;
                                     foreach ($concepts as $concept) {
                                         $candidateAmount = $candidateAmount + $concept->amount;
-                                        if ($concept->type->value == 'registration_fee' && Institute::find($institute->id)->can_view_registration_fee && Institute::find($institute->id)->candidates->count() > 29) {
+                                        if ($concept->type->value == 'registration_fee' && Institute::find($institute->id)->internal_payment_administration && Institute::find($institute->id)->candidates->count() > 29) {
                                             $candidateAmount = $candidateAmount - $concept->amount;
                                         }
                                     }
@@ -244,7 +244,7 @@ class ListPayments extends ListRecords
                                 $candidateAmount = 0;
                                 foreach ($concepts as $concept) {
                                     $candidateAmount = $candidateAmount + $concept->amount;
-                                    if ($concept->type->value == 'registration_fee' && Institute::find($instituteId)->can_view_registration_fee && Institute::find($instituteId)->candidates->count() > 29) {
+                                    if ($concept->type->value == 'registration_fee' && Institute::find($instituteId)->internal_payment_administration && Institute::find($instituteId)->candidates->count() > 29) {
                                         $candidateAmount = $candidateAmount - $concept->amount;
                                     }
                                 }
@@ -287,7 +287,7 @@ class ListPayments extends ListRecords
                     $candidateAmount = 0;
                     foreach ($concepts as $concept) {
                         $candidateAmount = $candidateAmount + $concept->amount;
-                        if ($concept->type->value == 'registration_fee' && Institute::find($data['institute_id'])->can_view_registration_fee && Institute::find($data['institute_id'])->candidates->count() > 29) {
+                        if ($concept->type->value == 'registration_fee' && Institute::find($data['institute_id'])->internal_payment_administration && Institute::find($data['institute_id'])->candidates->count() > 29) {
                             $candidateAmount = $candidateAmount - $concept->amount;
                         }
                     }

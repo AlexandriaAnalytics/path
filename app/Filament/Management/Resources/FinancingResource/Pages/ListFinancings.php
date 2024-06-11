@@ -102,7 +102,7 @@ class ListFinancings extends ListRecords
                                         $candidateAmount = 0;
                                         foreach ($concepts as $concept) {
                                             $candidateAmount = $candidateAmount + $concept->amount;
-                                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
+                                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->internal_payment_administration && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                                 $candidateAmount = $candidateAmount - $concept->amount;
                                             }
                                         }
@@ -142,7 +142,7 @@ class ListFinancings extends ListRecords
                                     $candidateAmount = 0;
                                     foreach ($concepts as $concept) {
                                         $candidateAmount = $candidateAmount + $concept->amount;
-                                        if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
+                                        if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->internal_payment_administration && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                             $candidateAmount = $candidateAmount - $concept->amount;
                                         }
                                     }
@@ -176,7 +176,7 @@ class ListFinancings extends ListRecords
                         $candidateAmount = 0;
                         foreach ($concepts as $concept) {
                             $candidateAmount = $candidateAmount + $concept->amount;
-                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->can_view_registration_fee && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
+                            if ($concept->type->value == 'registration_fee' && Institute::find(Filament::getTenant()->id)->internal_payment_administration && Institute::find(Filament::getTenant()->id)->candidates->count() > 29) {
                                 $candidateAmount = $candidateAmount - $concept->amount;
                             }
                         }
