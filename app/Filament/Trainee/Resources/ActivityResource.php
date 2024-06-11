@@ -50,8 +50,10 @@ use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\HtmlString;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use Stripe\FundingInstructions;
+use Filament\Forms\Components\Actions\Action as WizardAction;
 
 class ActivityResource extends Resource
 {
@@ -203,7 +205,7 @@ class ActivityResource extends Resource
                                             ->live()
                                             ->hidden(function ($get) use ($index, $question) {
                                                 if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
-                                                    return !$get('visible_text_' . $index);
+                                                    return true;
                                                 } else {
                                                     return false;
                                                 }
@@ -289,7 +291,37 @@ class ActivityResource extends Resource
                                                 $set('visible_text_' . $index, true);
                                             }
                                         })
-                                        ->options(['submit' => 'Submit']);
+                                        ->options(['submit' => 'Submit task']);
+
+                                    if ($question->text) {
+                                        $schema[] = TiptapEditor::make('text' . $index)
+                                            ->hiddenLabel()
+                                            ->default($question->text)
+                                            ->disableBubbleMenus()
+                                            ->disabled()
+                                            ->live()
+                                            ->hidden(function ($get) use ($index, $question) {
+                                                if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                    return !$get('visible_text_' . $index);
+                                                } else {
+                                                    return true;
+                                                }
+                                            });
+                                    }
+
+                                    $schema[] = TiptapEditor::make('final' . $index)
+                                        ->hiddenLabel()
+                                        ->default('Thank you!')
+                                        ->disableBubbleMenus()
+                                        ->disabled()
+                                        ->live()
+                                        ->hidden(function ($get) use ($index, $question) {
+                                            if ($question->title === 'Marking stage') {
+                                                return !$get('visible_text_' . $index);
+                                            } else {
+                                                return true;
+                                            }
+                                        });
 
                                     $steps[] = Step::make($question->title)
                                         ->schema($schema);
@@ -297,9 +329,17 @@ class ActivityResource extends Resource
                             }
                         }
                         return [
-                            Wizard::make($steps)->columnSpanFull()->disabled(function (Record $record) {
-                                return $record->result;
-                            })
+                            Wizard::make($steps)
+                                ->nextAction(
+                                    fn (WizardAction $action) => $action->label('Next stage'),
+                                )
+                                ->previousAction(
+                                    fn (WizardAction $action) => $action->label('Previous stage'),
+                                )
+                                ->columnSpanFull()
+                                ->disabled(function (Record $record) {
+                                    return $record->result;
+                                })
                         ];
                     })
                     ->action(function (array $data, Record $record) {
