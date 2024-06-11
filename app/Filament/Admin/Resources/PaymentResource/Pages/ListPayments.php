@@ -129,7 +129,7 @@ class ListPayments extends ListRecords
                     ->multiple()
                     ->suffixAction(
                         Action::make('select-all')
-                            ->disabled(function (callable $get) {
+                            ->disabled(function (Get $get) {
                                 $instituteId = $get('institute_id');
                                 $institute = Institute::find($instituteId);
                                 if (!$institute) {
@@ -147,7 +147,7 @@ class ListPayments extends ListRecords
                             ->icon('heroicon-o-user-group')
                             ->label('Select All')
                             ->tooltip('Select all candidates')
-                            ->action(function (callable $get, Set $set) {
+                            ->action(function (Get $get, Set $set) {
                                 $instituteId = $get('institute_id');
                                 $institute = Institute::find($instituteId);
                                 $set('candidate_id', Candidate::query()
@@ -181,7 +181,7 @@ class ListPayments extends ListRecords
                                 $set('amount', $totalAmount);
                             }),
                     )
-                    ->options(function (callable $get) {
+                    ->options(function (Get $get) {
                         $instituteId = $get('institute_id');
                         $institute = Institute::find($instituteId);
                         if (!$instituteId) {
@@ -198,7 +198,7 @@ class ListPayments extends ListRecords
                                 $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
                             ]);
                     })
-                    ->afterStateUpdated(function (callable $get, Set $set) {
+                    ->afterStateUpdated(function (Get $get, Set $set) {
                         $totalAmount = 0;
                         $instituteId = $get('institute_id');
                         $institute = Institute::find($instituteId);
