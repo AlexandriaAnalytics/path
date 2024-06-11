@@ -183,6 +183,7 @@ class ListPayments extends ListRecords
                     )
                     ->options(function (callable $get) {
                         $instituteId = $get('institute_id');
+                        dd($get('institute_id'));
                         $institute = Institute::find($instituteId);
                         if (!$instituteId) {
                             return [];
