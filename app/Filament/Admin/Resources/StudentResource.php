@@ -63,7 +63,7 @@ class StudentResource extends Resource
                             ->rules([
                                 function () {
                                     return function (string $attribute, $value, Closure $fail) {
-                                        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+(?:\s[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s]+)?$/', $value)) {
+                                        if (!preg_match('/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s\']+(?:\s[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s\']+)?$/', $value)) {
                                             $fail('This field can only contain letters, accent marks and apostrophes');
                                         }
                                     };
