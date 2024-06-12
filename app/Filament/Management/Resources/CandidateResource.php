@@ -431,7 +431,7 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class)
                         ->deselectRecordsAfterCompletion(),
-                    DeleteBulkAction::make()
+                    /* DeleteBulkAction::make()
                         ->hidden(
                             function (Collection $records) {
 
@@ -443,7 +443,7 @@ class CandidateResource extends Resource
                                 return false;
                             }
                         )
-                        ->deselectRecordsAfterCompletion(),
+                        ->deselectRecordsAfterCompletion(), */
                     BulkAction::make('assign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
