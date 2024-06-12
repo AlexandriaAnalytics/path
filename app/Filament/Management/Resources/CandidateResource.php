@@ -187,8 +187,8 @@ class CandidateResource extends Resource
                         return $allModulesHaveExamSession ? 'success' : 'warning';
                     }),
                 TextColumn::make('installments')
-                    ->visible(function (Candidate $candidate) {
-                        return $candidate->student->institute->installment_plans;
+                    ->visible(function () {
+                        return Filament::getTenant()->installment_plans;
                     })
                     ->label('Installment counter')
                     ->formatStateUsing(function (string $state, Candidate $record) {
