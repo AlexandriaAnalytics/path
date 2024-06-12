@@ -136,25 +136,24 @@ class ListPayments extends ListRecords
                                     return true;
                                 }
 
-                                if($institute->installment_plans) {
+                                if ($institute->installment_plans) {
                                     return Candidate::query()
-                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                                    ->has('exams')
-                                    ->get()
-                                    ->where('currency', $institute->currency)
-                                    ->mapWithKeys(fn (Candidate $candidate) => [
-                                        $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
-                                    ])->count() == 0;
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
+                                        ->get()
+                                        ->where('currency', $institute->currency)
+                                        ->mapWithKeys(fn (Candidate $candidate) => [
+                                            $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                                        ])->count() == 0;
                                 } else {
                                     return Candidate::query()
-                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                                    ->get()
-                                    ->where('currency', $institute->currency)
-                                    ->mapWithKeys(fn (Candidate $candidate) => [
-                                        $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
-                                    ])->count() == 0;
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->get()
+                                        ->where('currency', $institute->currency)
+                                        ->mapWithKeys(fn (Candidate $candidate) => [
+                                            $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                                        ])->count() == 0;
                                 }
-                                
                             })
                             ->icon('heroicon-o-user-group')
                             ->label('Select All')
@@ -163,25 +162,25 @@ class ListPayments extends ListRecords
                                 $instituteId = $get('institute_id');
                                 $institute = Institute::find($instituteId);
 
-                                if($institute->installment_plans) {
+                                if ($institute->installment_plans) {
                                     $set('candidate_id', Candidate::query()
-                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                                    ->has('exams')
-                                    ->get()
-                                    ->where('paymentStatus', '!=', 'paid')
-                                    ->where('currency', $institute->currency)
-                                    ->pluck('id')
-                                    ->toArray());
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->has('exams')
+                                        ->get()
+                                        ->where('paymentStatus', '!=', 'paid')
+                                        ->where('currency', $institute->currency)
+                                        ->pluck('id')
+                                        ->toArray());
                                 } else {
                                     $set('candidate_id', Candidate::query()
-                                    ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                                    ->get()
-                                    ->where('paymentStatus', '!=', 'paid')
-                                    ->where('currency', $institute->currency)
-                                    ->pluck('id')
-                                    ->toArray());
+                                        ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                        ->get()
+                                        ->where('paymentStatus', '!=', 'paid')
+                                        ->where('currency', $institute->currency)
+                                        ->pluck('id')
+                                        ->toArray());
                                 }
-                                
+
 
 
                                 $totalAmount = 0;
@@ -190,9 +189,9 @@ class ListPayments extends ListRecords
                                     $candidateAmount = 0;
                                     foreach ($concepts as $concept) {
                                         $candidateAmount = $candidateAmount + $concept->amount;
-                                        if ($concept->type->value == 'registration_fee' && Institute::find($institute->id)->internal_payment_administration && Institute::find($institute->id)->candidates->count() > 29) {
+                                        /* if ($concept->type->value == 'registration_fee' && Institute::find($institute->id)->internal_payment_administration && Institute::find($institute->id)->candidates->count() > 29) {
                                             $candidateAmount = $candidateAmount - $concept->amount;
-                                        }
+                                        } */
                                     }
                                     if (Candidate::find($candidate)->granted_discount > 0) {
                                         $candidateAmount = $candidateAmount * Candidate::find($candidate)->granted_discount / 100;
@@ -212,27 +211,26 @@ class ListPayments extends ListRecords
                             return [];
                         }
 
-                        if($institute->installment_plans) {
+                        if ($institute->installment_plans) {
                             return Candidate::query()
-                            ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                            ->has('exams')
-                            ->get()
-                            ->where('paymentStatus', '!=', 'paid')
-                            ->where('currency', $institute->currency)
-                            ->mapWithKeys(fn (Candidate $candidate) => [
-                                $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
-                            ]);
+                                ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                ->has('exams')
+                                ->get()
+                                ->where('paymentStatus', '!=', 'paid')
+                                ->where('currency', $institute->currency)
+                                ->mapWithKeys(fn (Candidate $candidate) => [
+                                    $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                                ]);
                         } else {
                             return Candidate::query()
-                            ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
-                            ->get()
-                            ->where('paymentStatus', '!=', 'paid')
-                            ->where('currency', $institute->currency)
-                            ->mapWithKeys(fn (Candidate $candidate) => [
-                                $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
-                            ]);
+                                ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
+                                ->get()
+                                ->where('paymentStatus', '!=', 'paid')
+                                ->where('currency', $institute->currency)
+                                ->mapWithKeys(fn (Candidate $candidate) => [
+                                    $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                                ]);
                         }
-                        
                     })
                     ->afterStateUpdated(function (Get $get, Set $set) {
                         $totalAmount = 0;
