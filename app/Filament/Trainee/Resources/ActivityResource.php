@@ -423,6 +423,9 @@ class ActivityResource extends Resource
                                 ->previousAction(
                                     fn (WizardAction $action) => $action->label('Previous stage'),
                                 )
+                                ->submitAction(
+                                    new HtmlString('<button>Close</button>')
+                                )
                                 ->columnSpanFull()
                                 ->disabled(function (Record $record) {
                                     return $record->result;
