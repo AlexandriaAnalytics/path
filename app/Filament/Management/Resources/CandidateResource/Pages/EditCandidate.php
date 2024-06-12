@@ -3,6 +3,7 @@
 namespace App\Filament\Management\Resources\CandidateResource\Pages;
 
 use App\Filament\Management\Resources\CandidateResource;
+use App\Models\Candidate;
 use App\Models\Concept;
 use App\Services\CandidateService;
 use Filament\Actions;
@@ -15,7 +16,11 @@ class EditCandidate extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->hidden(
+                    fn (Candidate $candidate) =>
+                    $candidate->paymentStatus !== 'unpaid'
+                ),
         ];
     }
 

@@ -257,6 +257,18 @@ class ActivityResource extends Resource
                                                 Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
+                                            $schema[] = TextInput::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice . '-perfo')
+                                                ->hiddenLabel()
+                                                ->default(function (Get $get) use ($question, $indice, $index) {
+                                                    return MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)];
+                                                })
+                                                ->hidden(function ($get) use ($index, $question) {
+                                                    if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                        return !$get('visible_text_' . $index);
+                                                    } else {
+                                                        return true;
+                                                    }
+                                                });
                                         }
 
                                         if ($type == 'Multiple choice with many answers') {
@@ -378,7 +390,7 @@ class ActivityResource extends Resource
                                         ->options(['submit' => 'Submit task']);
 
                                     if ($question->text) {
-                                        $schema[] = TiptapEditor::make('text' . $index)
+                                        $schema[] = TiptapEditor::make('textfinal' . $index)
                                             ->hiddenLabel()
                                             ->default($question->text)
                                             ->disableBubbleMenus()
