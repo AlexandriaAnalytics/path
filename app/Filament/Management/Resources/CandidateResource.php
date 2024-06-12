@@ -431,7 +431,20 @@ class CandidateResource extends Resource
                     ExportBulkAction::make()
                         ->exporter(CandidateExporterAsociated::class)
                         ->deselectRecordsAfterCompletion(),
-                    DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make()
+                        ->hidden(
+                            function (Collection $candidates) {
+                                $bool = false;
+                                foreach ($candidates as $candidate) {
+                                    if ($candidate->paymentStatus !== 'unpaid') {
+                                        $bool = true;
+                                    }
+                                }
+                                return $bool;
+                            }
+
+                        )
+                        ->deselectRecordsAfterCompletion(),
                     BulkAction::make('assign_exam_session')
                         ->icon('heroicon-o-document')
                         ->form(fn (BulkAction $action) => [
