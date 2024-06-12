@@ -213,7 +213,7 @@ class Candidate extends Model
             get: function () {
                 $installments = $this->installmentAttribute;
                 $installmentsPaid = Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->count();
-                $status = null;
+                $status = $this->status;
                 if ($installments - $installmentsPaid == 0) {
                     $status = 'paid';
                 }
