@@ -144,7 +144,7 @@ class RecordResource extends Resource
                             }
                         }),
                     Action::make('refresh-status')
-                        ->label('Refresh status')
+                        ->label('Refresh access')
                         ->icon('heroicon-o-arrow-path')
                         ->action(function (Record $record) {
                             $record->result = null;
