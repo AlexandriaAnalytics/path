@@ -432,7 +432,7 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporterAsociated::class)
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
-                        ->hidden(
+                        ->visible(
                             function (Collection $candidates) {
                                 $bool = false;
                                 foreach ($candidates as $candidate) {
