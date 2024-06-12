@@ -432,15 +432,17 @@ class CandidateResource extends Resource
                         ->exporter(CandidateExporterAsociated::class)
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
-                        ->visible(
-                            function (Collection $candidates) {
-                                $bool = false;
+                        ->hidden(
+                            function (?Collection $candidates) {
+                                if (is_null($candidates)) {
+                                    return true;
+                                }
                                 foreach ($candidates as $candidate) {
                                     if ($candidate->paymentStatus !== 'unpaid') {
-                                        $bool = true;
+                                        return true;
                                     }
                                 }
-                                return $bool;
+                                return false;
                             }
                         )
                         ->deselectRecordsAfterCompletion(),
