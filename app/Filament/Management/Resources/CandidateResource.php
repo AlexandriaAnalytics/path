@@ -433,7 +433,7 @@ class CandidateResource extends Resource
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
                         ->hidden(
-                            function (Collection $candidates) {
+                            function ($candidates) {
                                 $bool = false;
                                 foreach ($candidates as $candidate) {
                                     if ($candidate->paymentStatus !== 'unpaid') {
@@ -442,7 +442,6 @@ class CandidateResource extends Resource
                                 }
                                 return $bool;
                             }
-
                         )
                         ->deselectRecordsAfterCompletion(),
                     BulkAction::make('assign_exam_session')
