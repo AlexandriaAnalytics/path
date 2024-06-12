@@ -112,7 +112,10 @@ class ViewCandidate extends ViewRecord
         return [
 
             Actions\DeleteAction::make()
-                ->visible(fn (Candidate $candidate) => $candidate->status !== 'paid'),
+                ->hidden(
+                    fn (Candidate $candidate) =>
+                    $candidate->paymentStatus !== 'unpaid'
+                ),
 
             Action::make('Assign exam session')
                 ->disabled(fn (Candidate $record) => $record->pendingModules->isEmpty())
