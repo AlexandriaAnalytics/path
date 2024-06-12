@@ -433,7 +433,7 @@ class CandidateResource extends Resource
                         ->deselectRecordsAfterCompletion(),
                     DeleteBulkAction::make()
                         ->hidden(
-                            function ($candidates) {
+                            function (Collection $candidates) {
                                 $bool = false;
                                 foreach ($candidates as $candidate) {
                                     if ($candidate->paymentStatus !== 'unpaid') {
