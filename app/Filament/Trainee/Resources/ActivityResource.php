@@ -257,18 +257,6 @@ class ActivityResource extends Resource
                                                 Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
-                                            $schema[] = TextInput::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice . '-perfo')
-                                                ->hiddenLabel()
-                                                ->default(function (Get $get) use ($question, $indice, $index) {
-                                                    return MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)];
-                                                })
-                                                ->hidden(function ($get) use ($index, $question) {
-                                                    if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
-                                                        return !$get('visible_text_' . $index);
-                                                    } else {
-                                                        return true;
-                                                    }
-                                                });
                                         }
 
                                         if ($type == 'Multiple choice with many answers') {
@@ -309,78 +297,81 @@ class ActivityResource extends Resource
 
                                                         $correct = true;
                                                         foreach ($questions as $index => $question) {
-                                                            foreach ($question['question_type'] as $indice => $type) {
-                                                                if ($question->evaluation) {
-                                                                    Answer::where('question_id', $question['question_ids'][$indice])->where('trainee_id', $question['question_ids'][$indice])->delete();
-                                                                }
-
-                                                                if ($type == 'True or false') {
-                                                                    $answer = new Answer();
-                                                                    $answer->question_type = $type;
-                                                                    $answer->trainee_id = $question['question_ids'][$indice];
-                                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                                    $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
-                                                                    $answer->save();
-                                                                    if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
-                                                                        $correct = false;
+                                                            if ($question->title == 'Marking stage') {
+                                                                foreach ($question['question_type'] as $indice => $type) {
+                                                                    if ($question->evaluation) {
+                                                                        Answer::where('question_id', $question['question_ids'][$indice])->where('trainee_id', $question['question_ids'][$indice])->delete();
                                                                     }
-                                                                }
 
-                                                                if ($type == 'True or false with justification') {
-                                                                    $answer = new Answer();
-                                                                    $answer->question_type = $type;
-                                                                    $answer->trainee_id = $record->trainee->id;
-                                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                                    $answer->selected_option = $get('true_or_false_justify' . '-' . $index . '-' . $indice);
-                                                                    $answer->answer_text = $get('justify' . $index);
-                                                                    $answer->save();
-
-                                                                    if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
-                                                                        $correct = false;
-                                                                    }
-                                                                }
-
-                                                                if ($type == 'Multiple choice with one answer') {
-                                                                    $answer = new Answer();
-                                                                    $answer->question_type = $type;
-                                                                    $answer->trainee_id = $record->trainee->id;
-                                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                                    $answer->selected_option = $get('multiplechoice_one_answer' . '-' . $index . '-' . $indice);
-                                                                    $answer->save();
-
-                                                                    if (MultipleChoice::find($answer->question_id)->correct[$answer->selected_option] != 'false' && $question->evaluation) {
-                                                                        $correct = false;
-                                                                    }
-                                                                }
-
-                                                                if ($type == 'Multiple choice with many answers') {
-                                                                    //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
-                                                                    $answer = new Answer();
-                                                                    $answer->question_type = $type;
-                                                                    $answer->trainee_id = $record->trainee->id;
-                                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                                    $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
-                                                                    $answer->save();
-                                                                    foreach ($get('multiplechoice_many_answers' . '-' . $index . '-' . $indice) as $answer) {
-                                                                        if (MultipleChoice::find($answer)->correct[$answer] != 'false' && $question->evaluation) {
+                                                                    if ($type == 'True or false') {
+                                                                        $answer = new Answer();
+                                                                        $answer->question_type = $type;
+                                                                        $answer->trainee_id = $question['question_ids'][$indice];
+                                                                        $answer->question_id = $question['question_ids'][$indice];
+                                                                        $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
+                                                                        $answer->save();
+                                                                        if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
                                                                             $correct = false;
                                                                         }
                                                                     }
-                                                                }
 
-                                                                if ($type == 'Open answer') {
-                                                                    $answer = new Answer();
-                                                                    $answer->question_type = $type;
-                                                                    $answer->trainee_id = $record->trainee->id;
-                                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                                    $answer->answer_text = $get('open_answer' . '-' . $index . '-' . $indice);
-                                                                    $answer->save();
+                                                                    if ($type == 'True or false with justification') {
+                                                                        $answer = new Answer();
+                                                                        $answer->question_type = $type;
+                                                                        $answer->trainee_id = $record->trainee->id;
+                                                                        $answer->question_id = $question['question_ids'][$indice];
+                                                                        $answer->selected_option = $get('true_or_false_justify' . '-' . $index . '-' . $indice);
+                                                                        $answer->answer_text = $get('justify' . $index);
+                                                                        $answer->save();
+
+                                                                        if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {
+                                                                            $correct = false;
+                                                                        }
+                                                                    }
+
+                                                                    if ($type == 'Multiple choice with one answer') {
+                                                                        $answer = new Answer();
+                                                                        $answer->question_type = $type;
+                                                                        $answer->trainee_id = $record->trainee->id;
+                                                                        $answer->question_id = $question['question_ids'][$indice];
+                                                                        $answer->selected_option = $get('multiplechoice_one_answer' . '-' . $index . '-' . $indice);
+                                                                        $answer->save();
+
+                                                                        if (MultipleChoice::find($answer->question_id)->correct[$answer->selected_option] != 'false' && $question->evaluation) {
+                                                                            $correct = false;
+                                                                        }
+                                                                    }
+
+                                                                    if ($type == 'Multiple choice with many answers') {
+                                                                        //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
+                                                                        $answer = new Answer();
+                                                                        $answer->question_type = $type;
+                                                                        $answer->trainee_id = $record->trainee->id;
+                                                                        $answer->question_id = $question['question_ids'][$indice];
+                                                                        $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
+                                                                        $answer->save();
+                                                                        foreach ($get('multiplechoice_many_answers' . '-' . $index . '-' . $indice) as $answer) {
+                                                                            if (MultipleChoice::find($answer)->correct[$answer] != 'false' && $question->evaluation) {
+                                                                                $correct = false;
+                                                                            }
+                                                                        }
+                                                                    }
+
+                                                                    if ($type == 'Open answer') {
+                                                                        $answer = new Answer();
+                                                                        $answer->question_type = $type;
+                                                                        $answer->trainee_id = $record->trainee->id;
+                                                                        $answer->question_id = $question['question_ids'][$indice];
+                                                                        $answer->answer_text = $get('open_answer' . '-' . $index . '-' . $indice);
+                                                                        $answer->save();
+                                                                    }
                                                                 }
                                                             }
                                                         }
 
 
                                                         $record->result = $correct ? 'Certified' : 'To be reviewed';
+                                                        $record->status_activity_id = 2;
 
                                                         $record->save();
                                                     }

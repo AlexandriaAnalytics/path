@@ -62,7 +62,7 @@
 
 <body>
     </style>
-    <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/training-programme.png'))); ?>" alt="" >
+    <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/training-programme.png'))); ?>" alt="">
     <div style="padding: 2%;">
         @php
             use Carbon\Carbon;
@@ -97,12 +97,12 @@
             <div style="background-color: #d9d9d9; color: #1e1e1e; padding: 0.75rem 1rem; margin-bottom: 2%">
                 <div>
                     @if ($answer->question_type == 'True or false')
-                    @php
-                        $respuesta = TrueFalse::find($answer->question_id);
-                    @endphp
-                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
-                     
-                    <div class="radio-container">
+                        @php
+                            $respuesta = TrueFalse::find($answer->question_id);
+                        @endphp
+                        <p style="font-weight: 200;">{{ $respuesta->question }}</p>
+
+                        <div class="radio-container">
                             <input type="radio" {{ $answer->selected_option == 1 ? 'checked' : '' }}>
                             <label>True</label>
                         </div>
@@ -113,17 +113,16 @@
                         <p>Correct answer: {{ $respuesta->true == 1 ? 'True' : 'False' }}</p>
                         @if (Performance::find($respuesta->comments))
                             <p>Comment:
-                            {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
-                        </p>
+                                {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
+                            </p>
                         @endif
-                        
                     @endif
 
-                  @if ($answer->question_type == 'True or false with justification')
-                  @php
-                        $respuesta = TrueFalse::find($answer->question_id);
-                    @endphp
-                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
+                    @if ($answer->question_type == 'True or false with justification')
+                        @php
+                            $respuesta = TrueFalse::find($answer->question_id);
+                        @endphp
+                        <p style="font-weight: 200;">{{ $respuesta->question }}</p>
                         <div class="radio-container">
                             <input type="radio" {{ $answer->selected_option == 1 ? 'checked' : '' }}>
                             <label>True</label>
@@ -136,26 +135,26 @@
                         <p>Justification: {{ $answer->answer_text }}</p>
                         @if (Performance::find($respuesta->comments))
                             <p>Comment:
-                            {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
-                        </p>
+                                {{ $answer->selected_option == 1 ? Performance::find($respuesta->comments[0])->answer : Performance::find($respuesta->comments[1])->answer }}
+                            </p>
                         @endif
                     @endif
 
                     @if ($answer->question_type == 'Open answer')
-                    @php
-                        $respuesta = OpenAnswer::find($answer->question_id);
-                    @endphp
-                    <p style="font-weight: 200;">{{$respuesta->question}}</p>
+                        @php
+                            $respuesta = OpenAnswer::find($answer->question_id);
+                        @endphp
+                        <p style="font-weight: 200;">{{ $respuesta->question }}</p>
                         <p>Answer: {{ $answer->answer_text }}</p>
                     @endif
 
                     @if (
                         $answer->question_type == 'Multiple choice with one answer' ||
                             $answer->question_type == 'Multiple choice with many answers')
-                            @php
+                        @php
                             $respuesta = MultipleChoice::find($answer->question_id);
                         @endphp
-                        <p style="font-weight: 200;">{{$respuesta->question}}</p>
+                        <p style="font-weight: 200;">{{ $respuesta->question }}</p>
                         @php
                             $corrects = '';
                         @endphp
@@ -170,12 +169,12 @@
                                     {{ in_array($index, array_map('intval', explode(',', $answer->selected_option))) ? 'checked' : '' }}>
                                 <label>{{ $multiplechoice }}</label>
                                 @php
-                                $comments = $respuesta->comments;
-                                $nonNullComments = array_filter($comments, function($comment) {
-                                    return $comment !== null;
-                                });
+                                    $comments = $respuesta->comments;
+                                    $nonNullComments = array_filter($comments, function ($comment) {
+                                        return $comment !== null;
+                                    });
                                 @endphp
-                                @if (count($nonNullComments) > 0) 
+                                @if (count($nonNullComments) > 0)
                                     <div>Comment:
                                         {{ Performance::find($respuesta->comments[$index])->answer }}
                                     </div>
