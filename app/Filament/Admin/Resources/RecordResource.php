@@ -54,6 +54,12 @@ class RecordResource extends Resource
                     ->label('Status section')
                     ->options(StatusActivity::all()->pluck('name', 'id'))
                     ->required(),
+                Select::make('result')
+                    ->hiddenOn('create')
+                    ->options([
+                        'To be reviewed' => 'To be reviewed',
+                        'Certified' => 'Certified'
+                    ]),
                 TextInput::make('comments')
             ]);
     }
