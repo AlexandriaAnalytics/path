@@ -398,12 +398,12 @@ class ActivityResource extends Resource
 
                                     $schema[] = TiptapEditor::make('final' . $index)
                                         ->hiddenLabel()
-                                        ->default('Thank you!')
+                                        ->default($activity->comment_at_the_end)
                                         ->disableBubbleMenus()
                                         ->disabled()
                                         ->live()
-                                        ->hidden(function ($get) use ($index, $question) {
-                                            if ($question->title === 'Marking stage') {
+                                        ->hidden(function ($get) use ($index, $question, $activity) {
+                                            if ($question->title === 'Marking stage' && $activity->comment_at_the_end) {
                                                 return !$get('visible_text_' . $index);
                                             } else {
                                                 return true;
