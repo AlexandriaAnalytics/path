@@ -36,6 +36,7 @@ class CreateActivity extends CreateRecord
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
             $newQuestion->text = $question['text'];
+            $newQuestion->text_after_answer = $question['text_after_answer'];
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
 

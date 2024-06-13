@@ -105,7 +105,8 @@ class ActivityResource extends Resource
                                             ->columns(3)
                                     ])
                                     ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with one answer') || ($get('question_type') == 'Multiple choice with many answers'))
-                            ])
+                            ]),
+                        TextInput::make('text_after_answer')
 
                     ])
                     ->columnSpanFull(),

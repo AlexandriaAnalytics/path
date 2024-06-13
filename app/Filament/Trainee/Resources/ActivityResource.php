@@ -380,10 +380,10 @@ class ActivityResource extends Resource
                                         })
                                         ->options(['submit' => 'Submit task']);
 
-                                    if ($question->text) {
+                                    if ($question->text_after_answer) {
                                         $schema[] = TiptapEditor::make('textfinal' . $index)
                                             ->hiddenLabel()
-                                            ->default($question->text)
+                                            ->default($question->text_after_answer)
                                             ->disableBubbleMenus()
                                             ->disabled()
                                             ->live()
