@@ -54,6 +54,7 @@ class EditActivity extends EditRecord
                                 'answer' => $answer,
                                 'correct' => $multipleChoice->correct[$index] ?? false,
                                 'comments' => $multipleChoice->comments[$index] ?? null,
+                                'correct_in_pdf' => $multipleChoice->correct_in_pdf[$index] ?? false
                             ];
                         })->toArray();
                     }
@@ -108,14 +109,17 @@ class EditActivity extends EditRecord
                     $answersArray = [];
                     $correctsArray = [];
                     $commentsArray = [];
+                    $correctsInPdfArray = [];
                     foreach ($question['multiplechoice'] as $multiplechoice) {
                         $answersArray[] = $multiplechoice['answer'];
                         $correctsArray[] = $multiplechoice['correct'];
                         $commentsArray[] = $multiplechoice['comments'];
+                        $correctsInPdfArray[] = $multiplechoice['correct_in_pdf'] ?? null;
                     }
                     $newMultiplechoice->answers = $answersArray;
                     $newMultiplechoice->correct = $correctsArray;
                     $newMultiplechoice->comments = $commentsArray;
+                    $newMultiplechoice->correct_in_pdf = $question['question_type'] == 'Multiple choice with many answers' ? $correctsInPdfArray : null;
                     $newMultiplechoice->question = $question['question'];
                     $newMultiplechoice->save();
                     $question_ids[] = $newMultiplechoice->id;

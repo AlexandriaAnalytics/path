@@ -10,12 +10,13 @@ class MultipleChoice extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['answers', 'correct', 'comments', 'question'];
+    protected $fillable = ['answers', 'correct', 'comments', 'question', 'correct_in_pdf'];
 
     protected $casts = [
         'answers' => 'array',
         'correct' => 'array',
-        'comments' => 'array'
+        'comments' => 'array',
+        'correct_in_pdf' => 'array'
     ];
 
     public function question()
