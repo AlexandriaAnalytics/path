@@ -10,7 +10,7 @@ class Activity extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['section_id', 'type_of_training_id'];
+    protected $fillable = ['section_id', 'type_of_training_id', 'comment_at_the_end'];
 
     public function section()
     {

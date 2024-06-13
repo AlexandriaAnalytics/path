@@ -18,6 +18,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section as ComponentsSection;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -107,6 +108,9 @@ class ActivityResource extends Resource
                             ])
 
                     ])
+                    ->columnSpanFull(),
+                Textarea::make('comment_at_the_end')
+                    ->helperText('The text will be displayed when the trainee submits the last activity.')
                     ->columnSpanFull()
             ]);
     }
