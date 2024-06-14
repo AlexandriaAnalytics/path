@@ -153,17 +153,11 @@
                             $answer->question_type == 'Multiple choice with many answers')
                         @php
                             $respuesta = MultipleChoice::find($answer->question_id);
+                            $comment = '';
                         @endphp
                         <p style="font-weight: 200;">{{ $respuesta->question }}</p>
-                        @php
-                            $corrects = '';
-                        @endphp
+
                         @foreach ($respuesta->answers as $index => $multiplechoice)
-                            @php
-                                if ($respuesta->correct[$index]) {
-                                    $corrects = $corrects . $multiplechoice . ', ';
-                                }
-                            @endphp
                             <div class="radio-container">
                                 <input type="radio"
                                     {{ in_array($index, array_map('intval', explode(',', $answer->selected_option))) ? 'checked' : '' }}>
@@ -174,15 +168,21 @@
                                         return $comment !== null;
                                     });
                                 @endphp
-                                @if (count($nonNullComments) > 0)
-                                    <div>Comment:
-                                        {{ Performance::find($respuesta->comments[$index])->answer }}
-                                    </div>
-                                @endif
 
                             </div>
+                            @php
+                                if (
+                                    count($nonNullComments) > 0 &&
+                                    in_array($index, array_map('intval', explode(',', $answer->selected_option)))
+                                ) {
+                                    $comment = Performance::find($respuesta->comments[$index])->answer;
+                                }
+                            @endphp
                         @endforeach
-                        <p>Correct answer: {{ substr($corrects, 0, -2) . '.' }}</p>
+                        <p>Comment: {{ $comment }}</p>
+                        <p>Correct answer:
+                            {{ $answer->question_type == 'Multiple choice with many answers' ? $respuesta->answers[array_search(true, $respuesta->correct_in_pdf)] : $respuesta->answers[array_search(true, $respuesta->correct)] }}
+                        </p>
                     @endif
                 </div>
             </div>

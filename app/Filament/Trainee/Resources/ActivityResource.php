@@ -268,7 +268,19 @@ class ActivityResource extends Resource
                                             $schema[] =
                                                 CheckboxList::make('multiplechoice_many_answers' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
-                                                ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
+                                                ->live()
+                                                ->reactive()
+                                                ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
+                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer));
+                                            $schema[] = TiptapEditor::make('performance' . '-' . $index . '-' . $indice)
+                                                ->label('Performance')
+                                                ->hidden(function ($get) use ($index, $question) {
+                                                    if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                        return !$get('visible_text_' . $index);
+                                                    } else {
+                                                        return true;
+                                                    }
+                                                });
                                         }
 
                                         if ($type == 'Open answer') {
@@ -350,8 +362,8 @@ class ActivityResource extends Resource
                                                                         $answer->question_id = $question['question_ids'][$indice];
                                                                         $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
                                                                         $answer->save();
-                                                                        foreach ($get('multiplechoice_many_answers' . '-' . $index . '-' . $indice) as $answer) {
-                                                                            if (MultipleChoice::find($answer)->correct[$answer] != 'false' && $question->evaluation) {
+                                                                        foreach ($get('multiplechoice_many_answers' . '-' . $index . '-' . $indice) as $resp) {
+                                                                            if (MultipleChoice::find($answer->question_id)->correct[$resp] != 'false' && $question->evaluation) {
                                                                                 $correct = false;
                                                                             }
                                                                         }
