@@ -25,6 +25,11 @@ class CreateActivity extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    /* protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        dd($data);
+    } */
+
     protected function afterCreate(): void
     {
         $activityId = $this->record->id;
@@ -35,7 +40,7 @@ class CreateActivity extends CreateRecord
             $newQuestion->description = $question['description'];
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
-            $newQuestion->text = $question['text'];
+            $newQuestion->text = json_encode($question['text']);
             $newQuestion->text_after_answer = $question['text_after_answer'];
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;

@@ -59,8 +59,8 @@ class TraineePanelProvider extends PanelProvider
                 NavigationItem::make()
                     ->label('General files')
                     ->icon('heroicon-o-folder')
-                    ->url(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files, shouldOpenInNewTab: true)
-                    ->visible(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files != null),
+                /* ->url(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files, shouldOpenInNewTab: true)
+                    ->visible(fn () => Trainee::where('user_id', auth()->user()->id)->first()->typeOfTraining->files != null), */
             ])
             ->middleware([
                 EncryptCookies::class,

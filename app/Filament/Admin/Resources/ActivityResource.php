@@ -28,6 +28,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -64,7 +65,7 @@ class ActivityResource extends Resource
                         RichEditor::make('description'),
                         TextInput::make('url'),
                         FileUpload::make('multimedia'),
-                        RichEditor::make('text'),
+                        TiptapEditor::make('text'),
                         Toggle::make('evaluation')
                             ->label('Include in marking stage'),
                         Repeater::make('questions')

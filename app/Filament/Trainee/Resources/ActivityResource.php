@@ -88,6 +88,10 @@ class ActivityResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('typeOfTraining.name')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('statusActivity.id')
                     ->label('Status section')
                     ->formatStateUsing(function ($state) {
@@ -143,14 +147,14 @@ class ActivityResource extends Resource
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
                     ->color('warning')
-                    ->visible(function (Record $record) {
-                        return Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
-                    })
+                    /* ->visible(function (Record $record) {
+                        return Activity::where('section_id', $record->section_id)->where('typeOfT', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
+                    }) */
                     ->modalSubmitAction(function (Record $record) {
                         return $record->result != null ? false : null;
                     })
                     ->form(function (Record $record) {
-                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
+                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->whereNull('deleted_at')->first();
                         $steps = [];
                         if ($activity) {
                             $questions = $activity->questions;
@@ -448,7 +452,7 @@ class ActivityResource extends Resource
                     ->modalCancelAction(false)
                     ->action(function (array $data, Record $record) {
                         if (!$record->result) {
-                            $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
+                            $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->first();
                             $questions = $activity->questions;
 
                             $correct = true;

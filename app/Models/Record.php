@@ -31,4 +31,9 @@ class Record extends Model
     {
         return $this->belongsTo(Performance::class);
     }
+
+    public function typeOfTraining()
+    {
+        return $this->belongsTo(TypeOfTraining::class);
+    }
 }

@@ -32,7 +32,7 @@ class EditTrainee extends EditRecord
             if ($this->record->sections) {
                 $sections = $this->record->sections;
                 foreach ($sections as $section) {
-                    if (Record::where('trainee_id', $this->record->id)->where('section_id', $section)->count() == 0) {
+                    if (Record::where('trainee_id', $this->record->id)->where('section_id', $section)->where('type_of_training_id', $typeOfTraining)->count() == 0) {
                         $record = new Record();
                         $record->trainee_id = $this->record->id;
                         $record->section_id = $section;
