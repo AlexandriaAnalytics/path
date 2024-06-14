@@ -133,6 +133,8 @@ class ViewCandidate extends ViewRecord
                     Select::make('exam_id')
                         ->label('Exam session')
                         ->native(false)
+                        ->preload()
+                        ->searchable()
                         ->options(
                             fn (callable $get, Candidate $record) =>
                             $get('module_id')
