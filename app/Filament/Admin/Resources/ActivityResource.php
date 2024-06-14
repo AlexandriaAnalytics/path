@@ -122,7 +122,7 @@ class ActivityResource extends Resource
                                     ])
                                     ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with many answers'))
                             ]),
-                        TextInput::make('text_after_answer')
+                        TiptapEditor::make('text_after_answer')
 
                     ])
                     ->columnSpanFull(),
