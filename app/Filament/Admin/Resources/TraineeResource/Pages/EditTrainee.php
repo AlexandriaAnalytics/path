@@ -28,22 +28,25 @@ class EditTrainee extends EditRecord
 
     protected function afterSave(): void
     {
-        if ($this->record->sections) {
-            $sections = $this->record->sections;
-            foreach ($sections as $section) {
-                if (Record::where('trainee_id', $this->record->id)->where('section_id', $section)->count() == 0) {
-                    $record = new Record();
-                    $record->trainee_id = $this->record->id;
-                    $record->section_id = $section;
-                    $record->status_activity_id = StatusActivity::where('default', 1)->first()->id;
-                    $record->performance_id = null;
-                    $record->save();
+        foreach ($this->data['typeOfTraining'] as $typeOfTraining) {
+            if ($this->record->sections) {
+                $sections = $this->record->sections;
+                foreach ($sections as $section) {
+                    if (Record::where('trainee_id', $this->record->id)->where('section_id', $section)->count() == 0) {
+                        $record = new Record();
+                        $record->trainee_id = $this->record->id;
+                        $record->section_id = $section;
+                        $record->status_activity_id = StatusActivity::where('default', 1)->first()->id;
+                        $record->performance_id = null;
+                        $record->type_of_training_id = $typeOfTraining;
+                        $record->save();
+                    }
                 }
-            }
-            $borrarSections = array_diff(Record::where('trainee_id', $this->record->id)->pluck('id')->toArray(), $sections);
-            if ($borrarSections != []) {
-                foreach ($borrarSections as $section) {
-                    Record::where('trainee_id', $this->record->id)->where('section_id', $section)->delete();
+                $borrarSections = array_diff(Record::where('trainee_id', $this->record->id)->pluck('id')->toArray(), $sections);
+                if ($borrarSections != []) {
+                    foreach ($borrarSections as $section) {
+                        Record::where('trainee_id', $this->record->id)->where('section_id', $section)->delete();
+                    }
                 }
             }
         }

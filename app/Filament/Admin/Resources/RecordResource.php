@@ -10,6 +10,7 @@ use App\Models\Record;
 use App\Models\Section;
 use App\Models\StatusActivity;
 use App\Models\Trainee;
+use App\Models\TypeOfTraining;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\Group;
@@ -82,6 +83,14 @@ class RecordResource extends Resource
                     ->label('Section')
                     ->formatStateUsing(function ($state) {
                         return Section::find($state)->name;
+                    })
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('type_of_training_id')
+                    ->label('Type of training')
+                    ->formatStateUsing(function ($state) {
+                        return TypeOfTraining::find($state)->name;
                     })
                     ->sortable()
                     ->searchable()
