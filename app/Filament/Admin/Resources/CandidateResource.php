@@ -81,7 +81,7 @@ class CandidateResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->numeric(),
-                TextColumn::make('paymentStatus')
+                TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
                     ->sortable()
