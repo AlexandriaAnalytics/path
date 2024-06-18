@@ -85,6 +85,7 @@ class CandidateResource extends Resource
                     ->label('Payment status')
                     ->badge()
                     ->sortable()
+                    ->value(fn ($candidate) => $candidate->paymentStatus()->get())
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
