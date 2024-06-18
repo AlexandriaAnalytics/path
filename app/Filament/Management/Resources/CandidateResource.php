@@ -123,15 +123,17 @@ class CandidateResource extends Resource
                     ->searchable()
                     ->numeric()
                     ->toggleable(),
-                TextColumn::make('paymentStatus')
+                    TextColumn::make('status')
                     ->label('Payment status')
                     ->badge()
+                    ->sortable()
+                    ->default(fn ($candidate) => $candidate->paymentStatus()->get())
                     ->color(fn (string $state): string => match ($state) {
                         'cancelled' => 'gray',
                         'unpaid' => 'danger',
                         'paid' => 'success',
-                        'processing payment' => 'warning',
                         'paying' => 'warning',
+                        'processing payment' => 'warning'
                     })
                     ->toggleable(),
                 //Student
