@@ -266,7 +266,14 @@ class Candidate extends Model
                         }
                     }
                 }
-
+                if(!$this->student->institute->installment_plans) {
+                    $installments = 1;
+                    $candidate = Candidate::find($this->id);
+                    $candidate->installments = 1;
+                    $candidate->save();
+                }
+                $this->installments = $installments;
+                $this->saveQuietly();
 
                 return $installments;
             }
