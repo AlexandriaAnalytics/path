@@ -69,7 +69,6 @@ class EditActivity extends EditRecord
             }
             return $questionData;
         })->toArray();
-
         return $data;
     }
 
