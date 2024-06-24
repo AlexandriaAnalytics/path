@@ -1,3 +1,6 @@
+@php
+    use App\Models\Activity;
+@endphp
 <x-filament-panels::page>
     @php
         $exams = [];
@@ -11,7 +14,7 @@
         @if (!isset($exams[$examKey]))
             <div class="card">
                 <div>
-                    <p class="title">{{$exam->session_name}}</p>
+                    <p class="title">{{ $exam->session_name }}</p>
                     <p>
                         @foreach ($exam->modules as $module)
                             {{ $module->name }}
@@ -24,21 +27,33 @@
                 </div>
                 <div class="buttons">
                     <button class="button-join">Join a meeting</button>
-                    <button class="button-solve" id="solveButton-{{$examKey}}">Solve</button>
+                    <button class="button-solve" id="solveButton-{{ $examKey }}">Solve</button>
                 </div>
             </div>
 
-            <div class="modal" id="solveModal-{{$examKey}}">
+            <div class="modal" id="solveModal-{{ $examKey }}">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Solve Exam</h5>
-                            <button type="button" class="close" id="solveModal-{{$examKey}}-close" aria-label="Close">
+                            <button type="button" class="close" id="solveModal-{{ $examKey }}-close"
+                                aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <p>Modal body text goes here.</p>
+                            @php
+                                $activity = Activity::whereHas('section', function ($query) use ($candidate) {
+                                    $query->where('name', $candidate->level->name);
+                                })->first();
+                            @endphp
+                            @foreach ($activity->questions as $index => $question)
+                            <div class="steps">
+
+                                <span class="step-number">{{$index +1}}</span>
+                            </div>
+                            @endforeach
+                            <p>{{ $activity->questions }}</p>
                         </div>
                     </div>
                 </div>
@@ -56,14 +71,15 @@
                 @php
                     $examKey = $exam->exam_id . '-' . $exam->candidate_id;
                 @endphp
-    
+
                 document.getElementById('solveButton-{{ $examKey }}').addEventListener('click', function() {
                     document.getElementById('solveModal-{{ $examKey }}').style.display = 'block';
                 });
 
-                document.getElementById('solveModal-{{ $examKey }}-close').addEventListener('click', function() {
-                    document.getElementById('solveModal-{{ $examKey }}').style.display = 'none';
-                });
+                document.getElementById('solveModal-{{ $examKey }}-close').addEventListener('click',
+                    function() {
+                        document.getElementById('solveModal-{{ $examKey }}').style.display = 'none';
+                    });
             @endforeach
         });
     </script>
@@ -104,7 +120,7 @@
             align-items: center;
         }
 
-         .modal {
+        .modal {
             display: none;
             position: fixed;
             z-index: 9999;
@@ -122,8 +138,7 @@
             padding: 20px;
             border: 1px solid #888;
             border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
+            width: 80vw;
             color: #000;
         }
 
@@ -135,6 +150,9 @@
 
         .modal-header {
             padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .modal-body {
@@ -147,9 +165,6 @@
         }
 
         .close {
-            position: fixed;
-            margin-right: 0; 
-            margin-top: 0;
             font-size: 1.5rem;
             font-weight: bold;
             color: #666666;
@@ -159,6 +174,20 @@
         .close:focus {
             color: #000;
             text-decoration: none;
+        }
+
+        .steps {
+            display: inline-block;
+        }
+        .step-number {
+            border: 1px solid #000;
+            border-radius: 50%;
+            padding: 5px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </x-filament-panels::page>
