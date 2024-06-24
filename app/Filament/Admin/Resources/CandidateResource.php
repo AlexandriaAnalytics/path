@@ -305,20 +305,7 @@ class CandidateResource extends Resource
                                 ->native(false)
                                 ->live()
                                 ->multiple()
-                                ->options(function () use ($action) {
-                                    $candidates = $action->getRecords();
-                                    $pendingModules = [];
-                                    foreach ($candidates as $candidate) {
-                                        $modules = $candidate->pendingModules;
-                                        foreach ($modules as $module) {
-                                            if (!isset($pendingModules[$module->id])) {
-                                                $pendingModules[$module->id] = $module->name;
-                                            }
-                                        }
-                                    }
-
-                                    return $pendingModules;
-                                })
+                                ->options(fn () => Module::all()->pluck('name', 'id'))
                                 ->preload()
                                 ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
 
@@ -367,6 +354,7 @@ class CandidateResource extends Resource
                             foreach ($records as $record) {
                                 $modules = $record->modules;
                                 foreach ($modules as $module) {
+                                    CandidateExam::where('candidate_id', $record->id)->where('module_id',$module->id)->delete();
                                     $newExamSession = CandidateExam::create([
                                         'candidate_id' => $record->id,
                                         'exam_id' => $data['exam_id'],
