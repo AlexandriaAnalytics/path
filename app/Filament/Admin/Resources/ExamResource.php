@@ -10,6 +10,7 @@ use App\Models\Module;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -63,7 +64,11 @@ class ExamResource extends Resource
                             ->options(\App\Enums\ExamType::class)
                             ->native(false)
                             ->required()
+                            ->live()
                             ->enum(\App\Enums\ExamType::class),
+                        Forms\Components\TextInput::make('duration')
+                        ->numeric()
+                        ->visible(fn (Get $get) => $get('type') == 'online'),
                         Forms\Components\TextInput::make('location')
                             ->default('-')
                             ->columnSpanFull(),

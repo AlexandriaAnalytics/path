@@ -37,7 +37,8 @@ class Exam extends Model
         'maximum_number_of_students',
         'comments',
         'payment_deadline',
-        'location'
+        'location',
+        'duration'
     ];
 
     protected $casts = [
