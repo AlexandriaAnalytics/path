@@ -47,13 +47,15 @@
                                     $query->where('name', $candidate->level->name);
                                 })->first();
                             @endphp
-                            @foreach ($activity->questions as $index => $question)
-                            <div class="steps">
-
-                                <span class="step-number">{{$index +1}}</span>
+                            <div class="steps-container">
+                                @foreach ($activity->questions as $index => $question)
+                                    <div class="steps">
+                                        <span class="step-number">{{ $index + 1 }}</span>
+                                        <span>{{ $question->title }}</span>
+                                    </div>
+                                @endforeach
                             </div>
-                            @endforeach
-                            <p>{{ $activity->questions }}</p>
+                            <p>{{ $activity->questions[$index] }}</p>
                         </div>
                     </div>
                 </div>
@@ -176,18 +178,29 @@
             text-decoration: none;
         }
 
-        .steps {
-            display: inline-block;
+        .steps-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
         }
+
+        .steps {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 10px;
+        }
+
         .step-number {
             border: 1px solid #000;
             border-radius: 50%;
             padding: 5px;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-right: 10px;
         }
     </style>
 </x-filament-panels::page>
