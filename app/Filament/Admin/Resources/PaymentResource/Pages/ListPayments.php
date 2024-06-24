@@ -138,6 +138,7 @@ class ListPayments extends ListRecords
 
                                 if ($institute->installment_plans) {
                                     return Candidate::query()
+                                    ->where('status', '!=', 'paid')
                                         ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                         ->has('exams')
                                         ->get()
@@ -147,6 +148,7 @@ class ListPayments extends ListRecords
                                         ])->count() == 0;
                                 } else {
                                     return Candidate::query()
+                                    ->where('status', '!=', 'paid')
                                         ->whereHas('student.institute', fn ($query) => $query->where('id', $instituteId))
                                         ->get()
                                         ->where('currency', $institute->currency)
