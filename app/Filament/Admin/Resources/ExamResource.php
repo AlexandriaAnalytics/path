@@ -9,13 +9,17 @@ use App\Models\Level;
 use App\Models\Module;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ExamResource extends Resource
@@ -67,8 +71,8 @@ class ExamResource extends Resource
                             ->live()
                             ->enum(\App\Enums\ExamType::class),
                         Forms\Components\TextInput::make('duration')
-                        ->numeric()
-                        ->visible(fn (Get $get) => $get('type') == 'online'),
+                            ->numeric()
+                            ->visible(fn (Get $get) => $get('type') == 'online'),
                         Forms\Components\TextInput::make('location')
                             ->default('-')
                             ->columnSpanFull(),
@@ -159,6 +163,27 @@ class ExamResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
+                    BulkAction::make('extendDuration')
+                    ->icon('heroicon-o-clock')
+                    ->form([
+                        TextInput::make('duration')
+                        ->numeric()
+                        ->helperText('Extra minutes')
+                    ])
+                    ->action(function (Collection $records, array $data): void {
+                        $records->each(function ($record) use ($data) {
+                            $record->update([
+                                'duration' => $record->duration + $data['duration'],
+                            ]);
+                        });
+                    
+
+                        Notification::make()
+                            ->title('Exam session extended successfully')
+                            ->success()
+                            ->send();
+                    })
+                    ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
