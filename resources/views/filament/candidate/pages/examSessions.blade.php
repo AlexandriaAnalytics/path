@@ -117,13 +117,14 @@
         }
 
         .modal-dialog {
-            background-color: #fefefe;
+            background-color: #fff;
             margin: 15% auto;
             padding: 20px;
             border: 1px solid #888;
             border-radius: 10px;
             width: 80%;
             max-width: 600px;
+            color: #000;
         }
 
         .modal-content {
@@ -134,7 +135,6 @@
 
         .modal-header {
             padding: 10px 15px;
-            border-bottom: 1px solid #e9ecef;
         }
 
         .modal-body {
@@ -147,21 +147,18 @@
         }
 
         .close {
-            float: right;
+            position: fixed;
+            margin-right: 0; 
+            margin-top: 0;
             font-size: 1.5rem;
             font-weight: bold;
-            line-height: 1;
-            color: #000;
-            text-shadow: none;
-            opacity: 0.5;
+            color: #666666;
         }
 
         .close:hover,
         .close:focus {
             color: #000;
             text-decoration: none;
-            cursor: pointer;
-            opacity: 0.75;
         }
     </style>
 </x-filament-panels::page>
