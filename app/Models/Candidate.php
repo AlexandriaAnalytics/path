@@ -256,7 +256,13 @@ class Candidate extends Model
                         ->min('payment_deadline');
                     if ($this->status == 'paying') {
                         $firstPayment = Payment::where('candidate_id', $this->id)->where('status', 'approved')->first()->created_at;
-                        $installments = round(Carbon::parse($firstPayment)->diffInMonths(Carbon::parse($payment_deadline), absolute: false), 0) + 1;
+                        $firstPaymentDate = Carbon::parse($firstPayment);
+                        $paymentDeadlineDate = Carbon::parse($payment_deadline);
+
+                        $firstPaymentDate->day($paymentDeadlineDate->day);
+
+
+                        $installments = round($firstPaymentDate->diffInMonths($paymentDeadlineDate) + 1);
                     }
                     if (round(
                         now()->diffInMonths(Carbon::parse($payment_deadline), absolute: false),
