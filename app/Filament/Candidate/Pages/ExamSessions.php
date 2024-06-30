@@ -108,15 +108,20 @@ class ExamSessions extends Page implements HasForms, HasTable
             ])
             ->actions([
                 Action::make('Join Zoom meeting')
-                    ->visible(function (CandidateRecord $record) {
+                    /* ->visible(function (CandidateRecord $record) {
                         $currentDate = date('Y-m-d H:i:s');
                         $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
                         $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
                         return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes');
-                    })
+                    }) */
                     ->label('Join Zoom meeting')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
-                    ->url(fn ($record) => CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->location, shouldOpenInNewTab: true),
+                    ->url(function ($record) {
+                        $record->attendance = 'Present';
+                        $record->save();
+                        return CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->location;
+                    })
+                    ->openUrlInNewTab(),
                 Action::make('access')
                     ->visible(function (CandidateRecord $record) {
                         $currentDate = date('Y-m-d H:i:s');
