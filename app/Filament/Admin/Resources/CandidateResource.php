@@ -305,20 +305,7 @@ class CandidateResource extends Resource
                                 ->native(false)
                                 ->live()
                                 ->multiple()
-                                ->options(function () use ($action) {
-                                    $candidates = $action->getRecords();
-                                    $pendingModules = [];
-                                    foreach ($candidates as $candidate) {
-                                        $modules = $candidate->pendingModules;
-                                        foreach ($modules as $module) {
-                                            if (!isset($pendingModules[$module->id])) {
-                                                $pendingModules[$module->id] = $module->name;
-                                            }
-                                        }
-                                    }
-
-                                    return $pendingModules;
-                                })
+                                ->options(fn () => Module::all()->pluck('name', 'id'))
                                 ->preload()
                                 ->afterStateUpdated(fn (callable $set) => $set('exam_id', null)),
 
@@ -367,6 +354,7 @@ class CandidateResource extends Resource
                             foreach ($records as $record) {
                                 $modules = $record->modules;
                                 foreach ($modules as $module) {
+                                    CandidateExam::where('candidate_id', $record->id)->where('module_id', $module->id)->delete();
                                     $newExamSession = CandidateExam::create([
                                         'candidate_id' => $record->id,
                                         'exam_id' => $data['exam_id'],
@@ -491,7 +479,7 @@ class CandidateResource extends Resource
                         ->searchable()
                         ->preload()
                         ->reactive()
-                        ->afterStateUpdated(function (Set $set) {
+                        ->afterStateUpdated(function (Set $set, $state) {
                             $set('student_id', null);
                             $set('exam_id', null);
                         }),
@@ -531,6 +519,20 @@ class CandidateResource extends Resource
                         ->default(0)
                         ->minValue(0)
                         ->maxValue(100)
+                        ->visibleOn('create')
+                        ->hiddenOn('edit')
+                        ->visible(fn (callable $get) => $get('institute_id') && Institute::find($get('institute_id'))->maximum_cumulative_discount != 0)
+                        ->hint(fn (callable $get) => 'Available discount: ' . Institute::find($get('institute_id'))->remaining_discount . '%'),
+                    TextInput::make('granted_discount')
+                        ->label('Scholarship')
+                        ->postfix('%')
+                        ->required()
+                        ->numeric()
+                        ->default(0)
+                        ->minValue(0)
+                        ->maxValue(100)
+                        ->visibleOn('edit')
+                        ->hiddenOn('create')
                         ->visible(fn (callable $get) => $get('institute_id') && Institute::find(Student::find($get('institute_id'))->institute_id)->maximum_cumulative_discount != 0)
                         ->hint(fn (callable $get) => 'Available discount: ' . Institute::find(Student::find($get('institute_id'))->institute_id)->remaining_discount . '%')
 

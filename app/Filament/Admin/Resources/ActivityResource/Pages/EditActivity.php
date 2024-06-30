@@ -83,8 +83,8 @@ class EditActivity extends EditRecord
             $newQuestion->description = $question['description'];
             $newQuestion->url = $question['url'];
             $newQuestion->multimedia = reset($question['multimedia']);
-            $newQuestion->text = json_encode($question['text']);
-            $newQuestion->text_after_answer = json_encode($question['text_after_answer']);
+            $newQuestion->text = $question['text'] ? json_encode($question['text']) : null;
+            $newQuestion->text_after_answer = $question['text_after_answer'] ? json_encode($question['text_after_answer']) : null;
             $newQuestion->evaluation = $question['evaluation'];
             $newQuestion->activity_id = $activityId;
 
