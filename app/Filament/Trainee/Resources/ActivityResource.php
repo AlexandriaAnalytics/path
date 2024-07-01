@@ -322,7 +322,7 @@ class ActivityResource extends Resource
                                                                     if ($type == 'True or false') {
                                                                         $answer = new Answer();
                                                                         $answer->question_type = $type;
-                                                                        $answer->trainee_id = $question['question_ids'][$indice];
+                                                                        $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
                                                                         $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
                                                                         $answer->save();
@@ -465,7 +465,7 @@ class ActivityResource extends Resource
                                     if ($type == 'True or false') {
                                         $answer = new Answer();
                                         $answer->question_type = $type;
-                                        $answer->trainee_id = $question['question_ids'][$indice];
+                                        $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
                                         $answer->selected_option = $data['true_or_false' . '-' . $index . '-' . $indice];
                                         $answer->save();
