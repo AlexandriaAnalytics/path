@@ -267,7 +267,17 @@ class ActivityResource extends Resource
                                             $schema[] =
                                                 Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
-                                                ->options(MultipleChoice::find($question->question_ids[$indice])->answers);
+                                                ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
+                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]])->answer));
+                                            $schema[] = TiptapEditor::make('performance' . '-' . $index . '-' . $indice)
+                                                ->label('Performance')
+                                                ->hidden(function ($get) use ($index, $question) {
+                                                    if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
+                                                        return !$get('visible_text_' . $index);
+                                                    } else {
+                                                        return true;
+                                                    }
+                                                });
                                         }
 
                                         if ($type == 'Multiple choice with many answers') {
