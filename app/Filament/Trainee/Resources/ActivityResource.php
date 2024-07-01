@@ -271,6 +271,9 @@ class ActivityResource extends Resource
                                                 ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-one' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]])->answer));
                                             $schema[] = TiptapEditor::make('performance-one' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
+                                                ->disableBubbleMenus()
+                                                ->disabled()
+                                                ->live()
                                                 ->hidden(function ($get) use ($index, $question) {
                                                     if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
                                                         return !$get('visible_text_' . $index);
@@ -295,6 +298,9 @@ class ActivityResource extends Resource
                                                 ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-many' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer));
                                             $schema[] = TiptapEditor::make('performance-many' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
+                                                ->disableBubbleMenus()
+                                                ->disabled()
+                                                ->live()
                                                 ->hidden(function ($get) use ($index, $question) {
                                                     if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
                                                         return !$get('visible_text_' . $index);
