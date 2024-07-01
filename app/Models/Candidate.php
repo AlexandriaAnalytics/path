@@ -255,8 +255,9 @@ class Candidate extends Model
                         ->exams
                         ->min('payment_deadline');
                     if ($this->status == 'paying') {
-                        $firstPayment = Payment::where('candidate_id', $this->id)->where('status', 'approved')->first()->created_at;
-                        if ($firstPayment) {
+                        $payment =  Payment::where('candidate_id', $this->id)->where('status', 'approved')->first();
+                        if ($payment) {
+                            $firstPayment = $payment->created_at;
                             $firstPaymentDate = Carbon::parse($firstPayment);
                             $paymentDeadlineDate = Carbon::parse($payment_deadline);
 
