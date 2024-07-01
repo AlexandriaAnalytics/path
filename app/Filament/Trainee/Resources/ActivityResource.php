@@ -55,6 +55,7 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use Stripe\FundingInstructions;
 use Filament\Forms\Components\Actions\Action as WizardAction;
 use Filament\Forms\Get;
+use Illuminate\Support\Facades\DB;
 
 class ActivityResource extends Resource
 {
@@ -81,7 +82,13 @@ class ActivityResource extends Resource
         return $table
             ->query(function () {
                 $trainee = Trainee::where('user_id', auth()->user()->id)->first();
-                return Record::where('trainee_id', $trainee->id);
+                return Record::where('trainee_id', $trainee->id)
+                    ->whereExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('activities')
+                            ->whereRaw('activities.type_of_training_id = records.type_of_training_id')
+                            ->whereRaw('activities.section_id = records.section_id');
+                    });
             })
             ->columns([
                 TextColumn::make('section.name')
