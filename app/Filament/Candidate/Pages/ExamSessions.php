@@ -48,7 +48,7 @@ class ExamSessions extends Page implements HasForms, HasTable
     use InteractsWithTable;
     use InteractsWithForms;
 
-    public $candidate, $exam;
+    public $candidate, $exam, $record;
 
     public function __construct()
     {
@@ -124,6 +124,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                     ->openUrlInNewTab(),
                 Action::make('access')
                     ->visible(function (CandidateRecord $record) {
+                        $this->record = $record;
                         $currentDate = date('Y-m-d H:i:s');
                         $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
                         $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;

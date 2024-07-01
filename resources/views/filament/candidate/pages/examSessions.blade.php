@@ -4,17 +4,18 @@
     </div>
 
     <script>
-      let confirmation = false;
+        let confirmation = false;
+
         function setupModalListener() {
             const modal = document.getElementById('modal');
             if (modal) {
                 document.addEventListener("visibilitychange", function() {
                     if (document.hidden && !confirmation) {
                         const alert = confirm(
-                        'You must ask the administrator for authorization to enter the exam.');
-                        confirm = true;
+                            'You must ask the administrator for authorization to enter the exam.');
+                        confirmation = true;
                         if (alert) {
-                            window.location.href = '/candidate/logout';
+                            window.location.href = '/candidate/forze-logout/{{ $this->record->id }}';
                         }
                     }
                 });
