@@ -454,6 +454,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                     ->default(function (CandidateRecord $record) {
                                         return $record->help == 'Pending' ? 'submit' : '';
                                     })
+                                    ->extraAttributes(['id' => 'modal'])
                                     ->colors(['submit' => 'warning']);
 
                                 $steps[] = Step::make($question->title)
