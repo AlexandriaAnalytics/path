@@ -268,8 +268,8 @@ class ActivityResource extends Resource
                                                 Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]])->answer));
-                                            $schema[] = TiptapEditor::make('performance' . '-' . $index . '-' . $indice)
+                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-one' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]])->answer));
+                                            $schema[] = TiptapEditor::make('performance-one' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
                                                 ->hidden(function ($get) use ($index, $question) {
                                                     if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
@@ -292,8 +292,8 @@ class ActivityResource extends Resource
                                                 ->live()
                                                 ->reactive()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer));
-                                            $schema[] = TiptapEditor::make('performance' . '-' . $index . '-' . $indice)
+                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-many' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer));
+                                            $schema[] = TiptapEditor::make('performance-many' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
                                                 ->hidden(function ($get) use ($index, $question) {
                                                     if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
