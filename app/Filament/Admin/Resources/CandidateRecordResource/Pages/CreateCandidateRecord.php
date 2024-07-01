@@ -14,6 +14,7 @@ class CreateCandidateRecord extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['type_of_training_id'] = TypeOfTraining::where('name', 'Candidate')->first()->id;
+        $data['can_access'] = 'can';
         return $data;
     }
 }

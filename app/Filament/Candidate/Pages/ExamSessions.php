@@ -108,12 +108,12 @@ class ExamSessions extends Page implements HasForms, HasTable
             ])
             ->actions([
                 Action::make('Join Zoom meeting')
-                    /* ->visible(function (CandidateRecord $record) {
+                    ->visible(function (CandidateRecord $record) {
                         $currentDate = date('Y-m-d H:i:s');
                         $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
                         $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
                         return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes');
-                    }) */
+                    })
                     ->label('Join Zoom meeting')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->url(function ($record) {
@@ -127,7 +127,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                         $currentDate = date('Y-m-d H:i:s');
                         $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
                         $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
-                        return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes');
+                        return /* $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes') && */ $record->can_access == 'can';
                     })
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
@@ -447,7 +447,12 @@ class ExamSessions extends Page implements HasForms, HasTable
                         return [
                             Wizard::make($steps)
                                 ->nextAction(
-                                    fn (WizardAction $action) => $action->label('Next stage'),
+                                    function (WizardAction $action, CandidateRecord $record) {
+                                        if ($record->can_access == 'cant') {
+                                            redirect()->route('candidate.logout');
+                                        }
+                                        return $action->label('Next stage');
+                                    },
                                 )
                                 ->previousAction(
                                     fn (WizardAction $action) => $action->label('Previous stage'),

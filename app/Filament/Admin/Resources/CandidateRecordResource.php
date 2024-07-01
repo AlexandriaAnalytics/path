@@ -10,6 +10,7 @@ use App\Models\Section;
 use App\Models\StatusActivity;
 use App\Models\TypeOfTraining;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -68,6 +69,8 @@ class CandidateRecordResource extends Resource
                     ]),
                 Textarea::make('comments'),
                 TextInput::make('type_of_training_id')
+                    ->hidden(),
+                TextInput::make('can_access')
                     ->hidden()
             ]);
     }
@@ -141,9 +144,20 @@ class CandidateRecordResource extends Resource
                     Tables\Actions\EditAction::make(),
 
                     Action::make('refresh-status')
-                        ->label('Refresh access')
+                        ->label('Update access')
                         ->icon('heroicon-o-arrow-path')
-                        ->action(function () {
+                        ->form([
+                            Checkbox::make('can_access')
+                                ->default(function (CandidateRecord $record) {
+                                    if ($record->can_access == 'can') {
+                                        return true;
+                                    }
+                                    return false;
+                                })
+                        ])
+                        ->action(function (array $data, CandidateRecord $record) {
+                            $record->can_access = $data['can_access'] ? 'can' : 'cant';
+                            $record->save();
                         })
                 ]),
             ])
