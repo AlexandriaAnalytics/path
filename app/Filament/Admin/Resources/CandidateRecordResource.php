@@ -15,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -22,6 +23,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -135,9 +137,21 @@ class CandidateRecordResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('help')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                TernaryFilter::make('ask_for_help')
+                    ->label('Ask for help')
+                    ->trueLabel('Pending')
+                    ->falseLabel('No ask')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('help', 'Pending'),
+                        false: fn (Builder $query) => $query->where('help', '!=', 'Pending')->orWhereNull('help'),
+                    )
+                    ->native(false),
             ])
             ->actions([
                 ActionGroup::make([
@@ -158,6 +172,18 @@ class CandidateRecordResource extends Resource
                         ->action(function (array $data, CandidateRecord $record) {
                             $record->can_access = $data['can_access'] ? 'can' : 'cant';
                             $record->save();
+                        }),
+
+                    Action::make('resolve-request-for-help')
+                        ->label('Resolve request for help')
+                        ->icon('heroicon-o-hand-raised')
+                        ->action(function (CandidateRecord $record) {
+                            $record->help = 'Solved';
+                            $record->save();
+                            Notification::make()
+                                ->title('Query resolved successfully')
+                                ->success()
+                                ->send();
                         })
                 ]),
             ])

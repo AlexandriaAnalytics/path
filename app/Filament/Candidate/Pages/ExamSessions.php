@@ -440,6 +440,22 @@ class ExamSessions extends Page implements HasForms, HasTable
                                         }
                                     });
 
+                                $schema[] = ToggleButtons::make('button-help' . $index)
+                                    ->live()
+                                    ->hiddenLabel()
+                                    ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record) {
+                                        if ($state === 'submit') {
+                                            $record->help = 'Pending';
+                                            $record->save();
+                                        }
+                                    })
+                                    ->options(['submit' => 'Ask for help'])
+                                    ->icons(['submit' => 'heroicon-o-hand-raised'])
+                                    ->default(function (CandidateRecord $record) {
+                                        return $record->help == 'Pending' ? 'submit' : '';
+                                    })
+                                    ->colors(['submit' => 'warning']);
+
                                 $steps[] = Step::make($question->title)
                                     ->schema($schema);
                             }

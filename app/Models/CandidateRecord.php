@@ -11,7 +11,7 @@ class CandidateRecord extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['candidate_id', 'section_id', 'status_activity_id', 'comments', 'performance_id', 'result', 'type_of_training_id', 'attendance', 'can_access'];
+    protected $fillable = ['candidate_id', 'section_id', 'status_activity_id', 'comments', 'performance_id', 'result', 'type_of_training_id', 'attendance', 'can_access', 'help'];
 
     public function candidate()
     {
