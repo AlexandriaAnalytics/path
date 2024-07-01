@@ -315,7 +315,7 @@ class ActivityResource extends Resource
                                                 $set('visible_text_' . $index, true);
                                                 if ($question->title === 'Marking stage') {
                                                     if (!$record->result) {
-                                                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->trainee->typeOfTraining->id)->first();
+                                                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->first();
                                                         $questions = $activity->questions;
 
                                                         $correct = true;
