@@ -155,6 +155,7 @@ class ActivityResource extends Resource
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
                     ->color('warning')
+                    ->modalHeading('')
                     /* ->visible(function (Record $record) {
                         return Activity::where('section_id', $record->section_id)->where('typeOfT', $record->trainee->typeOfTraining->id)->whereNull('deleted_at')->first();
                     }) */
