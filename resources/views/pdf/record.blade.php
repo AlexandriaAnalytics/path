@@ -65,11 +65,9 @@
     <img src="data:image/svg+xml;base64,<?php echo base64_encode(file_get_contents(base_path('public/images/training-programme.png'))); ?>" alt="">
     <div style="padding: 2%;">
         @php
-            use Carbon\Carbon;
-            use App\Enums\TypeOfCertificate;
-
+        use App\Models\TypeOfTraining;
             $fields = [
-                'Type of training: ' => $record->trainee->typeOfTraining->name,
+                'Type of training: ' => TypeOfTraining::find($record->type_of_training_id)->name,
                 'Full Name: ' => $record->trainee->user->name,
                 'Section: ' => $record->section->name,
                 'Performance: ' => $record->result,
@@ -186,6 +184,7 @@
                     @endif
                 </div>
             </div>
+            
         @endforeach
     </div>
 </body>

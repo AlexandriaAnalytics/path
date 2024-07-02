@@ -133,6 +133,7 @@ class ActivityResource extends Resource
                     ->label('PDF')
                     ->icon('heroicon-o-document')
                     ->action(function (Record $record) {
+
                         //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
                         try {
                             $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
