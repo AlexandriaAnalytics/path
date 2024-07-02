@@ -92,6 +92,7 @@
 
         <div id="label">Answers:</div>
         @foreach ($answers as $answer)
+        @if ($answer->section_id == $record->section_id)
             <div style="background-color: #d9d9d9; color: #1e1e1e; padding: 0.75rem 1rem; margin-bottom: 2%">
                 <div>
                     @if ($answer->question_type == 'True or false')
@@ -184,6 +185,8 @@
                     @endif
                 </div>
             </div>
+        @endif
+            
             
         @endforeach
     </div>

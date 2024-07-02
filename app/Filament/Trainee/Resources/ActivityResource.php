@@ -270,7 +270,10 @@ class ActivityResource extends Resource
                                                 Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-one' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]])->answer));
+                                                ->afterStateUpdated(function (Get $get, Set $set) use ($index, $indice, $question) {
+                                                    $performance = Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_one_answer' . '-' . $index . '-' . $indice)[0]]);
+                                                    $set('performance-one' . '-' . $index . '-' . $indice, $performance ? $performance->answer : null);
+                                                });
                                             $schema[] = TiptapEditor::make('performance-one' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
                                                 ->disableBubbleMenus()
@@ -297,7 +300,10 @@ class ActivityResource extends Resource
                                                 ->live()
                                                 ->reactive()
                                                 ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                                ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance-many' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer));
+                                                ->afterStateUpdated(function (Get $get, Set $set) use ($index, $indice, $question) {
+                                                    $performance = Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]]);
+                                                    $set('performance-many' . '-' . $index . '-' . $indice, $performance ? $performance->answer : null);
+                                                });
                                             $schema[] = TiptapEditor::make('performance-many' . '-' . $index . '-' . $indice)
                                                 ->label('Performance')
                                                 ->disableBubbleMenus()
@@ -346,6 +352,7 @@ class ActivityResource extends Resource
 
                                                                     if ($type == 'True or false') {
                                                                         $answer = new Answer();
+                                                                        $answer->section_id = $record->section_id;
                                                                         $answer->question_type = $type;
                                                                         $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
@@ -358,6 +365,7 @@ class ActivityResource extends Resource
 
                                                                     if ($type == 'True or false with justification') {
                                                                         $answer = new Answer();
+                                                                        $answer->section_id = $record->section_id;
                                                                         $answer->question_type = $type;
                                                                         $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
@@ -372,6 +380,7 @@ class ActivityResource extends Resource
 
                                                                     if ($type == 'Multiple choice with one answer') {
                                                                         $answer = new Answer();
+                                                                        $answer->section_id = $record->section_id;
                                                                         $answer->question_type = $type;
                                                                         $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
@@ -386,6 +395,7 @@ class ActivityResource extends Resource
                                                                     if ($type == 'Multiple choice with many answers') {
                                                                         //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
                                                                         $answer = new Answer();
+                                                                        $answer->section_id = $record->section_id;
                                                                         $answer->question_type = $type;
                                                                         $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
@@ -400,6 +410,7 @@ class ActivityResource extends Resource
 
                                                                     if ($type == 'Open answer') {
                                                                         $answer = new Answer();
+                                                                        $answer->section_id = $record->section_id;
                                                                         $answer->question_type = $type;
                                                                         $answer->trainee_id = $record->trainee->id;
                                                                         $answer->question_id = $question['question_ids'][$indice];
@@ -489,6 +500,7 @@ class ActivityResource extends Resource
 
                                     if ($type == 'True or false') {
                                         $answer = new Answer();
+                                        $answer->section_id = $record->section_id;
                                         $answer->question_type = $type;
                                         $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
@@ -501,6 +513,7 @@ class ActivityResource extends Resource
 
                                     if ($type == 'True or false with justification') {
                                         $answer = new Answer();
+                                        $answer->section_id = $record->section_id;
                                         $answer->question_type = $type;
                                         $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
@@ -515,6 +528,7 @@ class ActivityResource extends Resource
 
                                     if ($type == 'Multiple choice with one answer') {
                                         $answer = new Answer();
+                                        $answer->section_id = $record->section_id;
                                         $answer->question_type = $type;
                                         $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
@@ -529,6 +543,7 @@ class ActivityResource extends Resource
                                     if ($type == 'Multiple choice with many answers') {
                                         //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
                                         $answer = new Answer();
+                                        $answer->section_id = $record->section_id;
                                         $answer->question_type = $type;
                                         $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
@@ -543,6 +558,7 @@ class ActivityResource extends Resource
 
                                     if ($type == 'Open answer') {
                                         $answer = new Answer();
+                                        $answer->section_id = $record->section_id;
                                         $answer->question_type = $type;
                                         $answer->trainee_id = $record->trainee->id;
                                         $answer->question_id = $question['question_ids'][$indice];
