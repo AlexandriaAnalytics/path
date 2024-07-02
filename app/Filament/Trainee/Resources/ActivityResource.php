@@ -229,7 +229,7 @@ class ActivityResource extends Resource
                                     foreach ($question->question_type as $indice => $type) {
                                         if ($type == 'True or false') {
                                             $schema[] =
-                                                TextInput::make('question' . $indice)
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default(TrueFalse::find($question->question_ids[$indice])->question);
@@ -245,7 +245,7 @@ class ActivityResource extends Resource
 
                                         if ($type == 'True or false with justification') {
                                             $schema[] =
-                                                TextInput::make('question' . $indice)
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default(TrueFalse::find($question->question_ids[$indice])->question);
@@ -262,7 +262,7 @@ class ActivityResource extends Resource
 
                                         if ($type == 'Multiple choice with one answer') {
                                             $schema[] =
-                                                TextInput::make('question' . $indice)
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default(MultipleChoice::find($question->question_ids[$indice])->question);
@@ -287,7 +287,7 @@ class ActivityResource extends Resource
 
                                         if ($type == 'Multiple choice with many answers') {
                                             $schema[] =
-                                                TextInput::make('question' . $indice)
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default(MultipleChoice::find($question->question_ids[$indice])->question);
@@ -314,7 +314,7 @@ class ActivityResource extends Resource
 
                                         if ($type == 'Open answer') {
                                             $schema[] =
-                                                TextInput::make('question' . $indice)
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default(OpenAnswer::find($question->question_ids[$indice])->question);
