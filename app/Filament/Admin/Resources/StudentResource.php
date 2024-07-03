@@ -115,7 +115,7 @@ class StudentResource extends Resource
                             ->preload()
                             ->native(false),
                     ]),
-                Components\RichEditor::make('personal_educational_needs')
+                Components\Textarea::make('personal_educational_needs')
                     ->label('Personal Educational Needs')
                     ->columnSpanFull()
             ]);
