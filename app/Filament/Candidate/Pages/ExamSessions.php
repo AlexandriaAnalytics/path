@@ -48,12 +48,11 @@ class ExamSessions extends Page implements HasForms, HasTable
     use InteractsWithTable;
     use InteractsWithForms;
 
-    public $candidate, $exam, $record;
+    public $candidate, $record;
 
     public function __construct()
     {
         $this->candidate = Candidate::find(session('candidate')->id);
-        $this->exam = Exam::find(CandidateExam::where('candidate_id', $this->candidate->id)->first()->exam_id);
     }
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
