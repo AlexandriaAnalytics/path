@@ -109,9 +109,13 @@ class ExamSessions extends Page implements HasForms, HasTable
                 Action::make('Join Zoom meeting')
                     ->visible(function (CandidateRecord $record) {
                         $currentDate = date('Y-m-d H:i:s');
-                        $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
-                        $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
-                        return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes');
+                        $exam = CandidateExam::where('candidate_id', $record->candidate_id)->first();
+                        if ($exam) {
+                            $scheduledDate = $exam->exam->scheduled_date->modify('+3 hours');
+                            $duration = $exam->exam->duration;
+                            return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes');
+                        }
+                        return false;
                     })
                     ->label('Join Zoom meeting')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
