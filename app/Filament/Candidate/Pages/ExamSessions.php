@@ -129,9 +129,13 @@ class ExamSessions extends Page implements HasForms, HasTable
                     ->visible(function (CandidateRecord $record) {
                         $this->record = $record;
                         $currentDate = date('Y-m-d H:i:s');
-                        $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
-                        $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
-                        return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes') && $record->can_access == 'can';
+                        $exam = CandidateExam::where('candidate_id', $record->candidate_id)->first();
+                        if ($exam) {
+                            $scheduledDate = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->scheduled_date->modify('+3 hours');
+                            $duration = CandidateExam::where('candidate_id', $record->candidate_id)->first()->exam->duration;
+                            return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes') && $record->can_access == 'can';
+                        }
+                        return false;
                     })
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
