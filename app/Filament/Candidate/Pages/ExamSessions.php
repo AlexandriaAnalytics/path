@@ -483,7 +483,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                     fn (WizardAction $action) => $action->label('Previous stage'),
                                 )
                                 ->submitAction(
-                                    new HtmlString('<button>Close</button>')
+                                    new HtmlString('<button style="background-color: #579ACB; color: #fff; padding: 12% 26%; border-radius: 5px; margin-right: 20px;">Close</button>')
                                 )
                                 ->columnSpanFull()
                         ];
