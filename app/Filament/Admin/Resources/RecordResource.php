@@ -31,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class RecordResource extends Resource
@@ -70,6 +71,12 @@ class RecordResource extends Resource
         return $table
             ->query(function () {
                 return Record::query()
+                    ->whereExists(function ($query) {
+                        $query->select(DB::raw(1))
+                            ->from('activities')
+                            ->whereRaw('activities.type_of_training_id = records.type_of_training_id')
+                            ->whereRaw('activities.section_id = records.section_id');
+                    })
                     ->whereHas('trainee', function (Builder $query) {
                         $query->whereNull('deleted_at');
                     });
@@ -143,21 +150,26 @@ class RecordResource extends Resource
                             //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
                             try {
                                 $filename = "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
-                                $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
+                                $pdfPath = storage_path('app/public/temp_pdfs') . '/' . $filename;
 
                                 // Ensure the temporary directory exists and has write permissions
-                                if (!File::exists(storage_path('app/temp_pdfs'))) {
-                                    File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                                if (!File::exists(storage_path('app/public/temp_pdfs'))) {
+                                    File::makeDirectory(storage_path('app/public/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
                                 }
                                 Pdf::loadView('pdf.record', ['record' => $record])
                                     ->save($pdfPath);
+
+                                /*  return redirect('/storage/temp_pdfs/' . $filename);
                                 return response()->download($pdfPath, $filename, [
                                     'Content-Type' => 'application/pdf',
-                                ]);
+                                ]); */
                             } catch (\Exception $e) {
                                 return response()->json(['error' => 'PDF generation or download failed'], 500);
                             }
-                        }),
+                        })
+                        ->url(function (Record $record) {
+                            return '/storage/temp_pdfs/' . "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
+                        }, shouldOpenInNewTab: true),
                     Action::make('refresh-status')
                         ->label('Refresh access')
                         ->icon('heroicon-o-arrow-path')
