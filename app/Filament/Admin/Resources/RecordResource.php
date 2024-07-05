@@ -68,9 +68,15 @@ class RecordResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(function () {
+                return Record::query()
+                    ->whereHas('trainee', function (Builder $query) {
+                        $query->whereNull('deleted_at');
+                    });
+            })
             ->groups([
                 GroupingGroup::make('trainee.user.name')
-                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('trainee.full_name'))
+                    ->groupQueryUsing(fn (Builder $query) => $query->groupBy('trainee.user.name'))
                     ->collapsible(),
             ])
             ->defaultGroup('trainee.user.name')
