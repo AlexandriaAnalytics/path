@@ -159,17 +159,16 @@ class RecordResource extends Resource
                                 Pdf::loadView('pdf.record', ['record' => $record])
                                     ->save($pdfPath);
 
-                                /*  return redirect('/storage/temp_pdfs/' . $filename);
+                                return redirect('/storage/temp_pdfs/' . $filename);
+                                /*
                                 return response()->download($pdfPath, $filename, [
                                     'Content-Type' => 'application/pdf',
                                 ]); */
                             } catch (\Exception $e) {
                                 return response()->json(['error' => 'PDF generation or download failed'], 500);
                             }
-                        })
-                        ->url(function (Record $record) {
-                            return '/storage/temp_pdfs/' . "{$record->trainee->user->name} {$record->trainee->user->surname} - {$record->section->name}.pdf";
-                        }, shouldOpenInNewTab: true),
+                        }),
+
                     Action::make('refresh-status')
                         ->label('Refresh access')
                         ->icon('heroicon-o-arrow-path')

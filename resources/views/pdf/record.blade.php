@@ -87,7 +87,13 @@
             use App\Models\TrueFalse;
             use App\Models\OpenAnswer;
             use App\Models\MultipleChoice;
-            $answers = $record->trainee->answers;
+            $traineeAnswers = $record->trainee->answers;
+            $answers = [];
+            foreach ($traineeAnswers as $answer) {
+                if ($answer->section_id == $record->section_id) {
+                    $answers[] = $answer;
+                }
+            }
         @endphp
 
         <div id="label">Answers:</div>
@@ -180,7 +186,7 @@
                         @endforeach
                         <p>Comment: {{ $comment }}</p>
                         <p>Correct answer:
-                            {{ $answer->question_type == 'Multiple choice with many answers' ? $respuesta->answers[array_search(true, $respuesta->correct_in_pdf)] : $respuesta->answers[array_search(true, $respuesta->correct)] }}
+                            {{ $respuesta->answers[array_search(true, $respuesta->correct_in_pdf)] }}
                         </p>
                     @endif
                 </div>

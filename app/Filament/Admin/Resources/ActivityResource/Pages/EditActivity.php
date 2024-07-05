@@ -119,7 +119,7 @@ class EditActivity extends EditRecord
                     $newMultiplechoice->answers = $answersArray;
                     $newMultiplechoice->correct = $correctsArray;
                     $newMultiplechoice->comments = $commentsArray;
-                    $newMultiplechoice->correct_in_pdf = $question['question_type'] == 'Multiple choice with many answers' ? $correctsInPdfArray : null;
+                    $newMultiplechoice->correct_in_pdf = $correctsInPdfArray;
                     $newMultiplechoice->question = $question['question'];
                     $newMultiplechoice->save();
                     $question_ids[] = $newMultiplechoice->id;

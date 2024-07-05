@@ -420,12 +420,6 @@ class ActivityResource extends Resource
                                                                 }
                                                             }
                                                         }
-
-
-                                                        $record->result = $correct ? 'Certified' : 'To be reviewed';
-                                                        $record->status_activity_id = 2;
-
-                                                        $record->save();
                                                     }
                                                 }
                                             }
@@ -549,8 +543,8 @@ class ActivityResource extends Resource
                                         $answer->question_id = $question['question_ids'][$indice];
                                         $answer->selected_option = implode(',', $data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
                                         $answer->save();
-                                        foreach ($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice] as $answer) {
-                                            if (MultipleChoice::find($answer)->correct[$answer] != 'false' && $question->evaluation) {
+                                        foreach ($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice] as $answerSelected) {
+                                            if (MultipleChoice::find($answer->question_id)->correct[$answerSelected] != 'false' && $question->evaluation) {
                                                 $correct = false;
                                             }
                                         }

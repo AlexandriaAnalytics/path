@@ -100,19 +100,6 @@ class ActivityResource extends Resource
                                                 TextInput::make('answer'),
                                                 Checkbox::make('correct')
                                                     ->inline(false),
-                                                Select::make('comments')
-                                                    ->options(Performance::all()->pluck('answer', 'id'))
-                                            ])
-                                            ->columns(3)
-                                    ])
-                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with one answer')),
-                                Repeater::make('multiplechoice')
-                                    ->schema([
-                                        Grid::make()
-                                            ->schema([
-                                                TextInput::make('answer'),
-                                                Checkbox::make('correct')
-                                                    ->inline(false),
                                                 Checkbox::make('correct_in_pdf')
                                                     ->inline(false),
                                                 Select::make('comments')
@@ -120,7 +107,7 @@ class ActivityResource extends Resource
                                             ])
                                             ->columns(4)
                                     ])
-                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with many answers'))
+                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with many answers') || ($get('question_type') == 'Multiple choice with one answer'))
                             ]),
                         TiptapEditor::make('text_after_answer')
 
