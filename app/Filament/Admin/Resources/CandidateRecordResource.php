@@ -9,6 +9,7 @@ use App\Models\CandidateRecord;
 use App\Models\Section;
 use App\Models\StatusActivity;
 use App\Models\TypeOfTraining;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
@@ -29,6 +30,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 
 class CandidateRecordResource extends Resource
 {
@@ -156,7 +158,31 @@ class CandidateRecordResource extends Resource
             ->actions([
                 ActionGroup::make([
                     Tables\Actions\EditAction::make(),
+                    Action::make('download-pdf')
+                        ->visible(function (CandidateRecord $record) {
+                            return $record->result == null ? false : true;
+                        })
+                        ->label('Download PDF')
+                        ->icon('heroicon-o-document')
+                        ->action(function (CandidateRecord $record) {
+                            //dd($record->trainee->answers[3]->question->multipleChoices[0]->answers);
+                            try {
+                                $filename = "{$record->candidate->student->name} {$record->candidate->student->surname} - {$record->section->name}.pdf";
+                                $pdfPath = storage_path('app/temp_pdfs') . '/' . $filename;
 
+                                // Ensure the temporary directory exists and has write permissions
+                                if (!File::exists(storage_path('app/temp_pdfs'))) {
+                                    File::makeDirectory(storage_path('app/temp_pdfs'), 0755, true); // Create directory with appropriate permissions
+                                }
+                                Pdf::loadView('pdf.candidaterecord', ['record' => $record])
+                                    ->save($pdfPath);
+                                return response()->download($pdfPath, $filename, [
+                                    'Content-Type' => 'application/pdf',
+                                ]);
+                            } catch (\Exception $e) {
+                                return response()->json(['error' => 'PDF generation or download failed'], 500);
+                            }
+                        }),
                     Action::make('refresh-status')
                         ->label('Update access')
                         ->icon('heroicon-o-arrow-path')
