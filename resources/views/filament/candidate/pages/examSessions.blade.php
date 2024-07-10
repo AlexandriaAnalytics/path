@@ -3,7 +3,7 @@
         {{ $this->table }}
     </div>
 
-    <script>
+{{--     <script>
         let confirmation = false;
 
         function setupModalListener() {
@@ -25,4 +25,4 @@
         document.addEventListener('DOMContentLoaded', setupModalListener);
 
         setInterval(setupModalListener, 1000);
-    </script>
+    </script> --}}

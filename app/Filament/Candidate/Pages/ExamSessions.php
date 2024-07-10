@@ -4,6 +4,7 @@ namespace App\Filament\Candidate\Pages;
 
 use App\Models\Activity;
 use App\Models\Candidate;
+use App\Models\CandidateActivity;
 use App\Models\candidateAnswer;
 use App\Models\CandidateExam;
 use App\Models\Exam;
@@ -126,7 +127,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                     })
                     ->openUrlInNewTab(),
                 Action::make('access')
-                    ->visible(function (CandidateRecord $record) {
+                    /* ->visible(function (CandidateRecord $record) {
                         $this->record = $record;
                         $currentDate = date('Y-m-d H:i:s');
                         $exam = CandidateExam::where('candidate_id', $record->candidate_id)->first();
@@ -136,7 +137,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                             return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes') && $record->can_access == 'can';
                         }
                         return false;
-                    })
+                    }) */
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
                     ->color('warning')
@@ -147,306 +148,258 @@ class ExamSessions extends Page implements HasForms, HasTable
                         return $record->result != null ? false : null;
                     })
                     ->form(function (CandidateRecord $record) {
-                        $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->whereNull('deleted_at')->first();
+                        $activity = CandidateActivity::where('section_id', $record->section_id)->whereNull('deleted_at')->first();
                         $steps = [];
                         if ($activity) {
-                            $questions = $activity->questions;
-                            foreach ($questions as $index => $question) {
+                            $stages = $activity->stages;
+                            foreach ($stages as $stage) {
                                 $schema = [];
+                                $content = $stage['content'];
+                                foreach ($content as $index => $activity) {
 
-                                if ($question->description) {
-                                    $schema[] = TiptapEditor::make('description' . $index)
-                                        ->hiddenLabel()
-                                        ->default($question->description)
-                                        ->disableBubbleMenus()
-                                        ->disabled();
-                                }
+                                    if ($activity['type'] == 'url') {
+                                        $schema[] = ViewField::make('field' . $index)
+                                            ->hiddenLabel()
+                                            ->view('filament.iframes')
+                                            ->viewData(['url' => $activity['data']['content']]);
+                                    }
+                                    if ($activity['type'] == 'multimedia') {
+                                        $multimediaUrl = asset('storage/' . $activity['data']['content']);
+                                        $schema[] = ViewField::make('field')
+                                            ->hiddenLabel()
+                                            ->view('filament.iframes')
+                                            ->viewData(['url' => $multimediaUrl]);
+                                    }
 
-                                if ($question->url) {
-                                    $schema[] = ViewField::make('field' . $index)
-                                        ->hiddenLabel()
-                                        ->view('filament.iframes')
-                                        ->viewData(['url' => $question->url]);
-                                }
-                                if ($question->multimedia) {
-                                    $multimediaUrl = asset('storage/' . $question->multimedia);
-                                    $schema[] = ViewField::make('field')
-                                        ->hiddenLabel()
-                                        ->view('filament.iframes')
-                                        ->viewData(['url' => $multimediaUrl]);
-                                    /* if (strpos($question->multimedia, 'mp4') !== false) {
-                                        $schema[] = MarkdownEditor::make('video' . $index)
+                                    if ($activity['type'] == 'text') {
+                                        $schema[] = TiptapEditor::make('text' . $index)
+                                            ->hiddenLabel()
+                                            ->default($activity['data']['content'])
+                                            ->disableBubbleMenus()
                                             ->disabled()
-                                            ->hiddenLabel()
-                                            ->default('<video width="320" height="240" controls style="width: 100%;">
-                                                      <source src="' . $multimediaUrl . '" type="video/mp4">
-                                                      Your browser does not support the video tag.
-                                                   </video>')
-                                            ->columnSpanFull();
-                                    } else {
-                                        $schema[] = MarkdownEditor::make('image' . $index)
-                                            ->disabled()
-                                            ->hiddenLabel()
-                                            ->default('<img src="' . $multimediaUrl . '" alt="Multimedia" style="max-width: 100%; height: auto;">')
-                                            ->columnSpanFull();
-                                    } */
-                                }
-                                $schema[] = Hidden::make('visible_text_' . $index)
-                                    ->default(false);
-
-                                if ($question->text) {
-                                    $schema[] = TiptapEditor::make('text' . $index)
-                                        ->hiddenLabel()
-                                        ->default($question->text)
-                                        ->disableBubbleMenus()
-                                        ->disabled()
-                                        ->live()
-                                        ->hidden(function ($get) use ($index, $question) {
-                                            if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
-                                                return true;
-                                            } else {
-                                                return false;
-                                            }
-                                        });
-                                }
-
-                                foreach ($question->question_type as $indice => $type) {
-                                    if ($type == 'True or false') {
-                                        $schema[] =
-                                            TextInput::make('question' . '-' . $index . '-' . $indice)
-                                            ->readOnly()
-                                            ->hiddenLabel()
-                                            ->default(TrueFalse::find($question->question_ids[$indice])->question);
-                                        $schema[] =
-                                            Radio::make('true_or_false' . '-' . $index . '-' . $indice)
-                                            ->hiddenLabel()
-                                            ->options([
-                                                1 => 'True',
-                                                0 => 'False'
-                                            ])
-                                            ->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'True or false')
-                                                    ->first();
-
-                                                if ($candidateAnswer) {
-                                                    return $candidateAnswer->selected_option;
-                                                }
-
-                                                return null;
-                                            })
-                                            ->columns(3);
+                                            ->live();
                                     }
 
-                                    if ($type == 'True or false with justification') {
-                                        $schema[] =
-                                            TextInput::make('question' . '-' . $index . '-' . $indice)
-                                            ->readOnly()
-                                            ->hiddenLabel()
-                                            ->default(TrueFalse::find($question->question_ids[$indice])->question);
-                                        $schema[] = Radio::make('true_or_false_justify' . '-' . $index . '-' . $indice)
-                                            ->hiddenLabel()
-                                            ->options([
-                                                1 => 'True',
-                                                0 => 'False'
-                                            ])
-                                            ->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'True or false with justification')
-                                                    ->first();
-                                                if ($candidateAnswer) {
-                                                    return $candidateAnswer->selected_option;
-                                                }
+                                    $indice = 0;
+                                    if ($activity['type'] == 'questions') {
+                                        $type = $activity['data']['content'][0]['question_type'];
+                                        $question = $activity['data']['content'][0]['question'];
+                                        if ($type == 'True or false') {
+                                            $indice++;
+                                            $schema[] =
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                ->readOnly()
+                                                ->hiddenLabel()
+                                                ->default($question);
+                                            $schema[] =
+                                                Radio::make('true_or_false' . '-' . $index . '-')
+                                                ->hiddenLabel()
+                                                ->options([
+                                                    1 => 'True',
+                                                    0 => 'False'
+                                                ])
+                                                ->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'True or false')
+                                                        ->first();
 
-                                                return null;
-                                            })
-                                            ->columns(3);
-                                        $schema[] = TextInput::make('justify' . $index)
-                                            ->label('Justify the answer')->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'True or false with justification')
-                                                    ->first();
-                                                if ($candidateAnswer) {
-                                                    return $candidateAnswer->answer_text;
-                                                }
+                                                    if ($candidateAnswer) {
+                                                        return $candidateAnswer->selected_option;
+                                                    }
 
-                                                return null;
-                                            });
-                                    }
+                                                    return null;
+                                                })
+                                                ->columns(3);
+                                        }
 
-                                    if ($type == 'Multiple choice with one answer') {
-                                        $schema[] =
-                                            TextInput::make('question' . '-' . $index . '-' . $indice)
-                                            ->readOnly()
-                                            ->hiddenLabel()
-                                            ->default(MultipleChoice::find($question->question_ids[$indice])->question);
-                                        $schema[] =
-                                            Radio::make('multiplechoice_one_answer' . '-' . $index . '-' . $indice)
-                                            ->hiddenLabel()
-                                            ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                            ->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'Multiple choice with one answer')
-                                                    ->first();
-                                                if ($candidateAnswer) {
-                                                    return $candidateAnswer->selected_option;
-                                                }
+                                        if ($type == 'True or false with justification') {
+                                            $indice++;
+                                            $schema[] =
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                ->readOnly()
+                                                ->hiddenLabel()
+                                                ->default($question);
+                                            $schema[] = Radio::make('true_or_false_justify' . '-' . $index)
+                                                ->hiddenLabel()
+                                                ->options([
+                                                    1 => 'True',
+                                                    0 => 'False'
+                                                ])
+                                                ->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'True or false with justification')
+                                                        ->first();
+                                                    if ($candidateAnswer) {
+                                                        return $candidateAnswer->selected_option;
+                                                    }
 
-                                                return null;
-                                            });
-                                    }
+                                                    return null;
+                                                })
+                                                ->columns(3);
+                                            $schema[] = TextInput::make('justify' . $index)
+                                                ->label('Justify the answer')->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'True or false with justification')
+                                                        ->first();
+                                                    if ($candidateAnswer) {
+                                                        return $candidateAnswer->answer_text;
+                                                    }
 
-                                    if ($type == 'Multiple choice with many answers') {
-                                        $schema[] =
-                                            TextInput::make('question' . '-' . $index . '-' . $indice)
-                                            ->readOnly()
-                                            ->hiddenLabel()
-                                            ->default(MultipleChoice::find($question->question_ids[$indice])->question);
-                                        $schema[] =
-                                            CheckboxList::make('multiplechoice_many_answers' . '-' . $index . '-' . $indice)
-                                            ->hiddenLabel()
+                                                    return null;
+                                                });
+                                        }
+
+                                        if ($type == 'Multiple choice with one answer') {
+                                            $indice++;
+                                            $schema[] =
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                ->readOnly()
+                                                ->hiddenLabel()
+                                                ->default($question);
+                                            $schema[] =
+                                                Radio::make('multiplechoice_one_answer' . '-' . $index)
+                                                ->hiddenLabel()
+                                                ->options(function () use ($activity) {
+                                                    $answers = [];
+                                                    foreach ($activity['data']['content'][0]['multiplechoice'] as $multiplechoice) {
+                                                        $answers[] = $multiplechoice['answer'];
+                                                    }
+                                                    return $answers;
+                                                })
+                                                ->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'Multiple choice with one answer')
+                                                        ->first();
+                                                    if ($candidateAnswer) {
+                                                        return $candidateAnswer->selected_option;
+                                                    }
+
+                                                    return null;
+                                                });
+                                        }
+
+                                        if ($type == 'Multiple choice with many answers') {
+                                            $indice++;
+                                            $schema[] =
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                ->readOnly()
+                                                ->hiddenLabel()
+                                                ->default($question);
+                                            $schema[] =
+                                                CheckboxList::make('multiplechoice_many_answers' . '-' . $index)
+                                                ->hiddenLabel()
+                                                ->live()
+                                                ->reactive()
+                                                ->options([])
+                                                ->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'Multiple choice with many answers')
+                                                        ->first();
+
+                                                    if ($candidateAnswer) {
+                                                        $selectedOptions = explode(',', $candidateAnswer->selected_option);
+                                                        return array_map('intval', $selectedOptions);
+                                                    }
+
+                                                    return [];
+                                                });
+                                                /* ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer)) */;
+                                        }
+
+                                        if ($type == 'Open answer') {
+                                            $indice++;
+                                            $schema[] =
+                                                TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                ->readOnly()
+                                                ->hiddenLabel()
+                                                ->default($question);
+                                            $schema[] =
+                                                Textarea::make('open_answer' . '-' . $index)
+                                                ->hiddenLabel()
+                                                ->default(function (CandidateRecord $record) {
+                                                    $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
+                                                        ->where('question_type', 'Open answer')
+                                                        ->first();
+                                                    if ($candidateAnswer) {
+                                                        return $candidateAnswer->answer_text;
+                                                    }
+
+                                                    return null;
+                                                });
+                                        }
+                                        $schema[] = ToggleButtons::make('button' . $index)
                                             ->live()
-                                            ->reactive()
-                                            ->options(MultipleChoice::find($question->question_ids[$indice])->answers)
-                                            ->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'Multiple choice with many answers')
-                                                    ->first();
+                                            ->hiddenLabel()
+                                            ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question) {
+                                                if ($state === 'submit') {
+                                                    $set('visible_text_' . $index, true);
 
-                                                if ($candidateAnswer) {
-                                                    $selectedOptions = explode(',', $candidateAnswer->selected_option);
-                                                    return array_map('intval', $selectedOptions);
-                                                }
+                                                    $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->first();
+                                                    $questions = $activity->questions;
 
-                                                return [];
-                                            });
-                                            /* ->afterStateUpdated(fn (Get $get, Set $set) => $set('performance' . '-' . $index . '-' . $indice, Performance::find(MultipleChoice::find($question->question_ids[$indice])->comments[$get('multiplechoice_many_answers' . '-' . $index . '-' . $indice)[0]])->answer)) */;
-                                        /* $schema[] = TiptapEditor::make('performance' . '-' . $index . '-' . $indice)
-                                            ->label('Performance')
-                                            ->hidden(function ($get) use ($index, $question) {
-                                                if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
-                                                    return !$get('visible_text_' . $index);
-                                                } else {
-                                                    return true;
+
+                                                    foreach ($question['question_type'] as $indice => $type) {
+
+                                                        if ($type == 'True or false') {
+                                                            $answer = new candidateAnswer();
+                                                            $answer->question_type = $type;
+                                                            $answer->candidate_id = $record->candidate->id;
+                                                            $answer->question_id = $question['question_ids'][$indice];
+                                                            $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
+                                                            $answer->save();
+                                                        }
+
+                                                        if ($type == 'True or false with justification') {
+                                                            $answer = new candidateAnswer();
+                                                            $answer->question_type = $type;
+                                                            $answer->candidate_id = $record->candidate->id;
+                                                            $answer->question_id = $question['question_ids'][$indice];
+                                                            $answer->selected_option = $get('true_or_false_justify' . '-' . $index . '-' . $indice);
+                                                            $answer->answer_text = $get('justify' . $index);
+                                                            $answer->save();
+                                                        }
+
+                                                        if ($type == 'Multiple choice with one answer') {
+                                                            $answer = new candidateAnswer();
+                                                            $answer->question_type = $type;
+                                                            $answer->candidate_id = $record->candidate->id;
+                                                            $answer->question_id = $question['question_ids'][$indice];
+                                                            $answer->selected_option = $get('multiplechoice_one_answer' . '-' . $index . '-' . $indice);
+                                                            $answer->save();
+                                                        }
+
+                                                        if ($type == 'Multiple choice with many answers') {
+                                                            //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
+                                                            $answer = new candidateAnswer();
+                                                            $answer->question_type = $type;
+                                                            $answer->candidate_id = $record->candidate->id;
+                                                            $answer->question_id = $question['question_ids'][$indice];
+                                                            $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
+                                                            $answer->save();
+                                                        }
+
+                                                        if ($type == 'Open answer') {
+                                                            $answer = new candidateAnswer();
+                                                            $answer->question_type = $type;
+                                                            $answer->candidate_id = $record->candidate->id;
+                                                            $answer->question_id = $question['question_ids'][$indice];
+                                                            $answer->answer_text = $get('open_answer' . '-' . $index . '-' . $indice);
+                                                            $answer->save();
+                                                        }
+                                                    }
                                                 }
-                                            }); */
+                                            })
+                                            ->colors(['submit' => 'info'])
+                                            ->options(['submit' => 'Submit task']);
                                     }
-
-                                    if ($type == 'Open answer') {
-                                        $schema[] =
-                                            TextInput::make('question' . '-' . $index . '-' . $indice)
-                                            ->readOnly()
-                                            ->hiddenLabel()
-                                            ->default(OpenAnswer::find($question->question_ids[$indice])->question);
-                                        $schema[] =
-                                            Textarea::make('open_answer' . '-' . $index . '-' . $indice)
-                                            ->hiddenLabel()
-                                            ->default(function (CandidateRecord $record) {
-                                                $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
-                                                    ->where('question_type', 'Open answer')
-                                                    ->first();
-                                                if ($candidateAnswer) {
-                                                    return $candidateAnswer->answer_text;
-                                                }
-
-                                                return null;
-                                            });
+                                    $title = '';
+                                    foreach ($content as $item) {
+                                        if ($item['type'] === 'title') {
+                                            $title = $item['data']['content'];
+                                            break;
+                                        }
                                     }
                                 }
-
-                                $schema[] = ToggleButtons::make('button' . $index)
-                                    ->live()
-                                    ->hiddenLabel()
-                                    ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question) {
-                                        if ($state === 'submit') {
-                                            $set('visible_text_' . $index, true);
-
-                                            $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->first();
-                                            $questions = $activity->questions;
-
-
-                                            foreach ($question['question_type'] as $indice => $type) {
-
-                                                if ($type == 'True or false') {
-                                                    $answer = new candidateAnswer();
-                                                    $answer->question_type = $type;
-                                                    $answer->candidate_id = $record->candidate->id;
-                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                    $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
-                                                    $answer->save();
-                                                }
-
-                                                if ($type == 'True or false with justification') {
-                                                    $answer = new candidateAnswer();
-                                                    $answer->question_type = $type;
-                                                    $answer->candidate_id = $record->candidate->id;
-                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                    $answer->selected_option = $get('true_or_false_justify' . '-' . $index . '-' . $indice);
-                                                    $answer->answer_text = $get('justify' . $index);
-                                                    $answer->save();
-                                                }
-
-                                                if ($type == 'Multiple choice with one answer') {
-                                                    $answer = new candidateAnswer();
-                                                    $answer->question_type = $type;
-                                                    $answer->candidate_id = $record->candidate->id;
-                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                    $answer->selected_option = $get('multiplechoice_one_answer' . '-' . $index . '-' . $indice);
-                                                    $answer->save();
-                                                }
-
-                                                if ($type == 'Multiple choice with many answers') {
-                                                    //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
-                                                    $answer = new candidateAnswer();
-                                                    $answer->question_type = $type;
-                                                    $answer->candidate_id = $record->candidate->id;
-                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                    $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
-                                                    $answer->save();
-                                                }
-
-                                                if ($type == 'Open answer') {
-                                                    $answer = new candidateAnswer();
-                                                    $answer->question_type = $type;
-                                                    $answer->candidate_id = $record->candidate->id;
-                                                    $answer->question_id = $question['question_ids'][$indice];
-                                                    $answer->answer_text = $get('open_answer' . '-' . $index . '-' . $indice);
-                                                    $answer->save();
-                                                }
-                                            }
-                                        }
-                                    })
-                                    ->options(['submit' => 'Submit task']);
-
-                                if ($question->text_after_answer) {
-                                    $schema[] = TiptapEditor::make('textfinal' . $index)
-                                        ->hiddenLabel()
-                                        ->default($question->text_after_answer)
-                                        ->disableBubbleMenus()
-                                        ->disabled()
-                                        ->live()
-                                        ->hidden(function ($get) use ($index, $question) {
-                                            if ($question->title === 'Practice stage' || $question->title === 'Marking stage') {
-                                                return !$get('visible_text_' . $index);
-                                            } else {
-                                                return true;
-                                            }
-                                        });
-                                }
-
-                                $schema[] = TiptapEditor::make('final' . $index)
-                                    ->hiddenLabel()
-                                    ->default($activity->comment_at_the_end)
-                                    ->disableBubbleMenus()
-                                    ->disabled()
-                                    ->live()
-                                    ->hidden(function ($get) use ($index, $questions) {
-                                        if ($index + 1 == count($questions)) {
-                                            return !$get('visible_text_' . $index);
-                                        } else {
-                                            return true;
-                                        }
-                                    });
 
                                 $schema[] = ToggleButtons::make('button-help' . $index)
                                     ->live()
@@ -464,29 +417,28 @@ class ExamSessions extends Page implements HasForms, HasTable
                                     })
                                     ->extraAttributes(['id' => 'modal'])
                                     ->colors(['submit' => 'warning']);
-
-                                $steps[] = Step::make($question->title)
+                                $steps[] = Step::make($title)
                                     ->schema($schema);
                             }
+                            return [
+                                Wizard::make($steps)
+                                    ->nextAction(
+                                        function (WizardAction $action, CandidateRecord $record) {
+                                            if ($record->can_access == 'cant') {
+                                                redirect()->route('candidate.logout');
+                                            }
+                                            return $action->label('Next stage');
+                                        },
+                                    )
+                                    ->previousAction(
+                                        fn (WizardAction $action) => $action->label('Previous stage'),
+                                    )
+                                    ->submitAction(
+                                        new HtmlString('<button style="background-color: #579ACB; color: #fff; padding: 12% 26%; border-radius: 5px; margin-right: 20px;">Close</button>')
+                                    )
+                                    ->columnSpanFull()
+                            ];
                         }
-                        return [
-                            Wizard::make($steps)
-                                ->nextAction(
-                                    function (WizardAction $action, CandidateRecord $record) {
-                                        if ($record->can_access == 'cant') {
-                                            redirect()->route('candidate.logout');
-                                        }
-                                        return $action->label('Next stage');
-                                    },
-                                )
-                                ->previousAction(
-                                    fn (WizardAction $action) => $action->label('Previous stage'),
-                                )
-                                ->submitAction(
-                                    new HtmlString('<button style="background-color: #579ACB; color: #fff; padding: 12% 26%; border-radius: 5px; margin-right: 20px;">Close</button>')
-                                )
-                                ->columnSpanFull()
-                        ];
                     })
                     ->modalSubmitAction(false)
                     ->modalCancelAction(false)
