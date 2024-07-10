@@ -89,20 +89,15 @@ class ActivityResource extends Resource
                                     ->schema([
                                         FileUpload::make('content')
                                             ->label('Multimedia')
-                                            ->reactive(),
-                                        TextInput::make('cantidad')
+                                    ]),
+                                Block::make('audio')
+                                    ->schema([
+                                        FileUpload::make('content')
+                                            ->label('Audio')
+                                            ->acceptedFileTypes(['audio/*', 'video/*']),
+                                        TextInput::make('replay')
                                             ->label('Number of times it can be played')
                                             ->numeric()
-                                            ->live()
-                                            ->visible(function (Get $get) {
-                                                $file = $get('content');
-                                                if ($file) {
-                                                    if ($file[array_key_first($file)]->getClientOriginalExtension() == 'mp4') {
-                                                        return true;
-                                                    }
-                                                }
-                                                return false;
-                                            })
                                     ]),
                                 Block::make('questions')
                                     ->schema([
