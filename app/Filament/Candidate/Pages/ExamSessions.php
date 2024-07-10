@@ -42,6 +42,7 @@ use FilamentTiptapEditor\TiptapEditor;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Actions\Action as WizardAction;
+use Mpdf\Tag\TextArea as TagTextArea;
 
 class ExamSessions extends Page implements HasForms, HasTable
 {
@@ -314,8 +315,9 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->hiddenLabel()
                                                 ->default($question);
                                             $schema[] =
-                                                Textarea::make('answer' . '-' . $index . '-' . $indice)
+                                                TextArea::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
+                                                ->extraAttributes(['onpaste' => 'return false'])
                                                 ->default(function (CandidateRecord $record) {
                                                     $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                         ->where('question_type', 'Open answer')
