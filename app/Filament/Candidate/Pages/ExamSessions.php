@@ -192,7 +192,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->hiddenLabel()
                                                 ->default($question);
                                             $schema[] =
-                                                Radio::make('true_or_false' . '-' . $index . '-')
+                                                Radio::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options([
                                                     1 => 'True',
@@ -219,7 +219,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->readOnly()
                                                 ->hiddenLabel()
                                                 ->default($question);
-                                            $schema[] = Radio::make('true_or_false_justify' . '-' . $index)
+                                            $schema[] = Radio::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options([
                                                     1 => 'True',
@@ -236,7 +236,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                     return null;
                                                 })
                                                 ->columns(3);
-                                            $schema[] = TextInput::make('justify' . $index)
+                                            $schema[] = TextInput::make('justify' . $index . '-' . $indice)
                                                 ->label('Justify the answer')->default(function (CandidateRecord $record) {
                                                     $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                         ->where('question_type', 'True or false with justification')
@@ -257,7 +257,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->hiddenLabel()
                                                 ->default($question);
                                             $schema[] =
-                                                Radio::make('multiplechoice_one_answer' . '-' . $index)
+                                                Radio::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->options(function () use ($activity) {
                                                     $answers = [];
@@ -286,7 +286,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->hiddenLabel()
                                                 ->default($question);
                                             $schema[] =
-                                                CheckboxList::make('multiplechoice_many_answers' . '-' . $index)
+                                                CheckboxList::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->live()
                                                 ->reactive()
@@ -314,7 +314,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 ->hiddenLabel()
                                                 ->default($question);
                                             $schema[] =
-                                                Textarea::make('open_answer' . '-' . $index)
+                                                Textarea::make('answer' . '-' . $index . '-' . $indice)
                                                 ->hiddenLabel()
                                                 ->default(function (CandidateRecord $record) {
                                                     $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)
@@ -330,62 +330,56 @@ class ExamSessions extends Page implements HasForms, HasTable
                                         $schema[] = ToggleButtons::make('button' . $index)
                                             ->live()
                                             ->hiddenLabel()
-                                            ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question) {
+                                            ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question, $indice, $activity) {
+                                                $type = $activity['data']['content'][0]['question_type'];
                                                 if ($state === 'submit') {
-                                                    $set('visible_text_' . $index, true);
+                                                    //$set('visible_text_' . $index, true);
 
-                                                    $activity = Activity::where('section_id', $record->section_id)->where('type_of_training_id', $record->type_of_training_id)->first();
-                                                    $questions = $activity->questions;
+                                                    if ($type == 'True or false') {
+                                                        $answer = new candidateAnswer();
+                                                        $answer->question_type = $type;
+                                                        $answer->candidate_id = $record->candidate->id;
+                                                        $answer->question = $activity['data']['content'][0];
+                                                        $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                        $answer->save();
+                                                    }
 
+                                                    if ($type == 'True or false with justification') {
+                                                        $answer = new candidateAnswer();
+                                                        $answer->question_type = $type;
+                                                        $answer->candidate_id = $record->candidate->id;
+                                                        $answer->question = $activity['data']['content'][0];
+                                                        $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                        $answer->answer_text = $get('justify' . $index . '-' . $indice);
+                                                        $answer->save();
+                                                    }
 
-                                                    foreach ($question['question_type'] as $indice => $type) {
+                                                    if ($type == 'Multiple choice with one answer') {
+                                                        $answer = new candidateAnswer();
+                                                        $answer->question_type = $type;
+                                                        $answer->candidate_id = $record->candidate->id;
+                                                        $answer->question = $activity['data']['content'][0];
+                                                        $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                        $answer->save();
+                                                    }
 
-                                                        if ($type == 'True or false') {
-                                                            $answer = new candidateAnswer();
-                                                            $answer->question_type = $type;
-                                                            $answer->candidate_id = $record->candidate->id;
-                                                            $answer->question_id = $question['question_ids'][$indice];
-                                                            $answer->selected_option = $get('true_or_false' . '-' . $index . '-' . $indice);
-                                                            $answer->save();
-                                                        }
+                                                    if ($type == 'Multiple choice with many answers') {
+                                                        //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
+                                                        $answer = new candidateAnswer();
+                                                        $answer->question_type = $type;
+                                                        $answer->candidate_id = $record->candidate->id;
+                                                        $answer->question = $activity['data']['content'][0];
+                                                        $answer->selected_option = implode(',', $get('answer' . '-' . $index . '-' . $indice));
+                                                        $answer->save();
+                                                    }
 
-                                                        if ($type == 'True or false with justification') {
-                                                            $answer = new candidateAnswer();
-                                                            $answer->question_type = $type;
-                                                            $answer->candidate_id = $record->candidate->id;
-                                                            $answer->question_id = $question['question_ids'][$indice];
-                                                            $answer->selected_option = $get('true_or_false_justify' . '-' . $index . '-' . $indice);
-                                                            $answer->answer_text = $get('justify' . $index);
-                                                            $answer->save();
-                                                        }
-
-                                                        if ($type == 'Multiple choice with one answer') {
-                                                            $answer = new candidateAnswer();
-                                                            $answer->question_type = $type;
-                                                            $answer->candidate_id = $record->candidate->id;
-                                                            $answer->question_id = $question['question_ids'][$indice];
-                                                            $answer->selected_option = $get('multiplechoice_one_answer' . '-' . $index . '-' . $indice);
-                                                            $answer->save();
-                                                        }
-
-                                                        if ($type == 'Multiple choice with many answers') {
-                                                            //dd($data['multiplechoice_many_answers' . '-' . $index . '-' . $indice]);
-                                                            $answer = new candidateAnswer();
-                                                            $answer->question_type = $type;
-                                                            $answer->candidate_id = $record->candidate->id;
-                                                            $answer->question_id = $question['question_ids'][$indice];
-                                                            $answer->selected_option = implode(',', $get('multiplechoice_many_answers' . '-' . $index . '-' . $indice));
-                                                            $answer->save();
-                                                        }
-
-                                                        if ($type == 'Open answer') {
-                                                            $answer = new candidateAnswer();
-                                                            $answer->question_type = $type;
-                                                            $answer->candidate_id = $record->candidate->id;
-                                                            $answer->question_id = $question['question_ids'][$indice];
-                                                            $answer->answer_text = $get('open_answer' . '-' . $index . '-' . $indice);
-                                                            $answer->save();
-                                                        }
+                                                    if ($type == 'Open answer') {
+                                                        $answer = new candidateAnswer();
+                                                        $answer->question_type = $type;
+                                                        $answer->candidate_id = $record->candidate->id;
+                                                        $answer->question = $activity['data']['content'][0];
+                                                        $answer->answer_text = $get('answer' . '-' . $index . '-' . $indice);
+                                                        $answer->save();
                                                     }
                                                 }
                                             })
@@ -472,7 +466,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                         $answer->candidate_id = $record->candidate->id;
                                         $answer->question_id = $question['question_ids'][$indice];
                                         $answer->selected_option = $data['true_or_false_justify' . '-' . $index . '-' . $indice];
-                                        $answer->answer_text = $data['justify' . $index];
+                                        $answer->answer_text = $data['justify' . $index . '-' . $indice];
                                         $answer->save();
 
                                         if (TrueFalse::find($answer->question_id)->true != $answer->selected_option && $question->evaluation) {

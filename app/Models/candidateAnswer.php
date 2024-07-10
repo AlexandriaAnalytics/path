@@ -10,7 +10,11 @@ class candidateAnswer extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['answer_text', 'selected_option', 'candidate_id', 'question_id', 'question_type'];
+    protected $fillable = ['answer_text', 'selected_option', 'candidate_id', 'question', 'question_type'];
+
+    protected $casts = [
+        'question' => 'array',
+    ];
 
     public function candidate()
     {
