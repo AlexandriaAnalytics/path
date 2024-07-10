@@ -10,6 +10,8 @@ use App\Models\Performance;
 use App\Models\Section;
 use App\Models\TypeOfTraining;
 use Filament\Forms;
+use Filament\Forms\Components\Builder as ComponentsBuilder;
+use Filament\Forms\Components\Builder\Block;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -57,8 +59,116 @@ class ActivityResource extends Resource
                 Select::make('type_of_training_id')
                     ->label('Type of training')
                     ->required()
+                    ->reactive()
                     ->options(TypeOfTraining::all()->pluck('name', 'id')),
+                //stages de candidates
+                Repeater::make('stages')
+                    ->live()
+                    ->visible(fn (Get $get) => $get('type_of_training_id') && TypeOfTraining::find($get('type_of_training_id'))->name == 'Candidate')
+                    ->schema([
+                        ComponentsBuilder::make('content')
+                            ->blocks([
+                                Block::make('title')
+                                    ->schema([
+                                        TextInput::make('content')
+                                            ->label('Title')
+                                            ->required()
+                                    ]),
+                                Block::make('text')
+                                    ->schema([
+                                        TiptapEditor::make('content')
+                                            ->label('Text')
+                                    ]),
+                                Block::make('url')
+                                    ->schema([
+                                        TextInput::make('content')
+                                            ->label('Url')
+                                    ]),
+
+                                Block::make('multimedia')
+                                    ->schema([
+                                        FileUpload::make('content')
+                                            ->label('Multimedia')
+                                            ->reactive(),
+                                        TextInput::make('cantidad')
+                                            ->label('Number of times it can be played')
+                                            ->numeric()
+                                            ->live()
+                                            ->visible(function (Get $get) {
+                                                $file = $get('content');
+                                                if ($file) {
+                                                    if ($file[array_key_first($file)]->getClientOriginalExtension() == 'mp4') {
+                                                        return true;
+                                                    }
+                                                }
+                                                return false;
+                                            })
+                                    ]),
+                                Block::make('questions')
+                                    ->schema([
+                                        Repeater::make('content')
+                                            ->schema([
+                                                Select::make('question_type')
+                                                    ->live()
+                                                    ->options(ActivityType::class),
+                                                TextInput::make('question')
+                                                    ->required(),
+                                                Grid::make()
+                                                    ->schema([
+                                                        Checkbox::make('true'),
+                                                        Select::make('comments_true')
+                                                            ->hiddenLabel()
+                                                            ->options(Performance::all()->pluck('answer', 'id')),
+                                                    ])
+                                                    ->columns(2)
+                                                    ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
+                                                Grid::make()
+                                                    ->schema([
+                                                        Checkbox::make('false'),
+                                                        Select::make('comments_false')
+                                                            ->hiddenLabel()
+                                                            ->options(Performance::all()->pluck('answer', 'id')),
+                                                    ])
+                                                    ->columns(2)
+                                                    ->visible(fn (Get $get) => ($get('question_type') == 'True or false') || ($get('question_type') == 'True or false with justification')),
+                                                Repeater::make('multiplechoice')
+                                                    ->schema([
+                                                        Grid::make()
+                                                            ->schema([
+                                                                TextInput::make('answer'),
+                                                                Checkbox::make('correct')
+                                                                    ->inline(false),
+                                                                Select::make('comments')
+                                                                    ->options(Performance::all()->pluck('answer', 'id'))
+                                                            ])
+                                                            ->columns(3)
+                                                    ])
+                                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with one answer')),
+                                                Repeater::make('multiplechoice')
+                                                    ->schema([
+                                                        Grid::make()
+                                                            ->schema([
+                                                                TextInput::make('answer'),
+                                                                Checkbox::make('correct')
+                                                                    ->inline(false),
+                                                                Checkbox::make('correct_in_pdf')
+                                                                    ->inline(false),
+                                                                Select::make('comments')
+                                                                    ->options(Performance::all()->pluck('answer', 'id'))
+                                                            ])
+                                                            ->columns(4)
+                                                    ])
+                                                    ->visible(fn (Get $get) => ($get('question_type') == 'Multiple choice with many answers'))
+                                            ]),
+                                    ])
+                            ])
+                    ])
+                    ->columnSpanFull(),
+
+                //sections de trainees
                 Repeater::make('sections')
+                    ->live()
+                    ->visible(fn (Get $get) => $get('type_of_training_id') && TypeOfTraining::find($get('type_of_training_id'))->name !== 'Candidate')
                     ->schema([
                         TextInput::make('title')
                             ->required(),
