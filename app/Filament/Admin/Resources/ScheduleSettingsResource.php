@@ -28,7 +28,7 @@ class ScheduleSettingsResource extends Resource
 
     protected static bool $hasTitleCaseModelLabel = false;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static ?string $navigationGroup = 'Schedule';
 
