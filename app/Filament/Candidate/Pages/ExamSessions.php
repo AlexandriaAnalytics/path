@@ -128,7 +128,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                     })
                     ->openUrlInNewTab(),
                 Action::make('access')
-                    /* ->visible(function (CandidateRecord $record) {
+                    ->visible(function (CandidateRecord $record) {
                         $this->record = $record;
                         $currentDate = date('Y-m-d H:i:s');
                         $exam = CandidateExam::where('candidate_id', $record->candidate_id)->first();
@@ -138,7 +138,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                             return $currentDate >= $scheduledDate && $currentDate <= $scheduledDate->modify('+' . $duration . ' minutes') && $record->can_access == 'can';
                         }
                         return false;
-                    }) */
+                    })
                     ->label('Access')
                     ->icon('heroicon-m-pencil-square')
                     ->color('warning')
