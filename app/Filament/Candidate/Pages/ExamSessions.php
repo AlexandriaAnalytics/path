@@ -183,7 +183,7 @@ class ExamSessions extends Page implements HasForms, HasTable
 
                                     $indice = 0;
                                     if ($activity['type'] == 'questions') {
-                                        dd($activity['data']);
+                                        dd($activity['data']['content']);
                                         foreach ($activity['data']['content'] as $preg) {
                                             $type = $preg['question_type'];
                                             $question = $preg['question'];
