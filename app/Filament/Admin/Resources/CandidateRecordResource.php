@@ -219,11 +219,14 @@ class CandidateRecordResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
                     BulkAction::make('refresh-status')
-                        ->label('Refresh status')
+                        ->label('Update access')
                         ->icon('heroicon-o-arrow-path')
-                        ->action(function (Collection $records) {
+                        ->form([
+                            Checkbox::make('can_access')
+                        ])
+                        ->action(function (Collection $records, $data) {
                             foreach ($records as $record) {
-                                $record->result = null;
+                                $record->can_access = $data['can_access'] ? 'can' : 'cant';
                                 $record->save();
                             }
                         })
@@ -240,6 +243,23 @@ class CandidateRecordResource extends Resource
                         ->action(function (Collection $records, $data) {
                             foreach ($records as $record) {
                                 $record->status_activity_id = $data['status_activity_id'];
+                                $record->save();
+                            }
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('attendance')
+                        ->label('Update attendance')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->form([
+                            Select::make('attendance')
+                                ->label('Attendance')
+                                ->options(['present' => 'Present', 'absent' => 'Absent'])
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, $data) {
+                            foreach ($records as $record) {
+                                $record->attendance = $data['attendance'];
+                                $record->can_access = 'can';
                                 $record->save();
                             }
                         })
