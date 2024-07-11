@@ -181,7 +181,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             ->live();
                                     }
 
-                                    if ($$activity['type'] == 'audio') {
+                                    if ($activity['type'] == 'audio') {
                                         $audioUrl = asset('storage/' . $activity['data']['content']);
                                         $schema[] = ViewField::make('field')
                                             ->hiddenLabel()
