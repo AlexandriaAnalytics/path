@@ -1,3 +1,6 @@
 <body>
-    <iframe src="<?php echo $url; ?>" allowfullscreen width="100%" height="500" frameborder="0"></iframe>
+    <audio controls>
+        <source src="<?php echo $url; ?>" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 </body>
