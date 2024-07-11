@@ -153,10 +153,10 @@ class ExamSessions extends Page implements HasForms, HasTable
                         $steps = [];
                         if ($activity) {
                             $stages = $activity->stages;
-                            foreach ($stages as $stage) {
+                            foreach ($stages as  $index => $stage) {
                                 $schema = [];
                                 $content = $stage['content'];
-                                foreach ($content as $index => $activity) {
+                                foreach ($content as $indice => $activity) {
 
                                     if ($activity['type'] == 'url') {
                                         $schema[] = ViewField::make('field' . $index)
@@ -182,21 +182,20 @@ class ExamSessions extends Page implements HasForms, HasTable
                                     }
 
 
-                                    $indice = 0;
+
                                     if ($activity['type'] == 'questions') {
                                         if (array_key_exists('content', $activity['data'])) {
                                             foreach ($activity['data']['content'] as $preg) {
                                                 $type = $preg['question_type'];
                                                 $question = $preg['question'];
                                                 if ($type == 'True or false') {
-                                                    $indice++;
                                                     $schema[] =
-                                                        TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                        TextInput::make('question-1' . '-vof' . '-' . $index . '-' . $indice)
                                                         ->readOnly()
                                                         ->hiddenLabel()
                                                         ->default($question);
                                                     $schema[] =
-                                                        Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                        Radio::make('answer-1' . '-vof' . '-' . $index . '-' . $indice)
                                                         ->hiddenLabel()
                                                         ->options([
                                                             1 => 'True',
@@ -217,13 +216,12 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 }
 
                                                 if ($type == 'True or false with justification') {
-                                                    $indice++;
                                                     $schema[] =
-                                                        TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                        TextInput::make('question-1' . '-vof-justify' . '-' . $index . '-' . $indice)
                                                         ->readOnly()
                                                         ->hiddenLabel()
                                                         ->default($question);
-                                                    $schema[] = Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                    $schema[] = Radio::make('answer-1' . '-vof-justify' . '-' . $index . '-' . $indice)
                                                         ->hiddenLabel()
                                                         ->options([
                                                             1 => 'True',
@@ -240,7 +238,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             return null;
                                                         })
                                                         ->columns(3);
-                                                    $schema[] = TextInput::make('justify' . $index . '-' . $indice)
+                                                    $schema[] = TextInput::make('justify-1' . '-vof-justify' . $index . '-' . $indice)
                                                         ->label('Justify the answer')->default(function (CandidateRecord $record) use ($preg) {
                                                             $candidateAnswer = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $preg)
                                                                 ->where('question_type', 'True or false with justification')
@@ -254,14 +252,13 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 }
 
                                                 if ($type == 'Multiple choice with one answer') {
-                                                    $indice++;
                                                     $schema[] =
-                                                        TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                        TextInput::make('question-1' . '-mcone' . '-' . $index . '-' . $indice)
                                                         ->readOnly()
                                                         ->hiddenLabel()
                                                         ->default($question);
                                                     $schema[] =
-                                                        Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                        Radio::make('answer-1' . '-mcone' . '-' . $index . '-' . $indice)
                                                         ->hiddenLabel()
                                                         ->options(function () use ($preg) {
                                                             $answers = [];
@@ -283,14 +280,13 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 }
 
                                                 if ($type == 'Multiple choice with many answers') {
-                                                    $indice++;
                                                     $schema[] =
-                                                        TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                        TextInput::make('question-1' . '-mcmany' . '-' . $index . '-' . $indice)
                                                         ->readOnly()
                                                         ->hiddenLabel()
                                                         ->default($question);
                                                     $schema[] =
-                                                        CheckboxList::make('answer' . '-' . $index . '-' . $indice)
+                                                        CheckboxList::make('answer-1' . '-mcmany' . '-' . $index . '-' . $indice)
                                                         ->hiddenLabel()
                                                         ->live()
                                                         ->reactive()
@@ -317,14 +313,13 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                 }
 
                                                 if ($type == 'Open answer') {
-                                                    $indice++;
                                                     $schema[] =
-                                                        TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                        TextInput::make('question-1' . '-open' . '-' . $index . '-' . $indice)
                                                         ->readOnly()
                                                         ->hiddenLabel()
                                                         ->default($question);
                                                     $schema[] =
-                                                        TextArea::make('answer' . '-' . $index . '-' . $indice)
+                                                        TextArea::make('answer-1' . '-open' . '-' . $index . '-' . $indice)
                                                         ->hiddenLabel()
                                                         ->extraAttributes(['onpaste' => 'return false'])
                                                         ->default(function (CandidateRecord $record) use ($preg) {
@@ -338,7 +333,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             return null;
                                                         });
                                                 }
-                                                $schema[] = ToggleButtons::make('button' . $index)
+                                                $schema[] = ToggleButtons::make('button-1' . '-' . $index . '-' . $indice)
                                                     ->live()
                                                     ->hiddenLabel()
                                                     ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question, $indice, $preg) {
@@ -351,7 +346,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                                 $answer->question_type = $type;
                                                                 $answer->candidate_id = $record->candidate->id;
                                                                 $answer->question = $preg;
-                                                                $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                                $answer->selected_option = $get('answer-1' . '-vof' . '-' . $index . '-' . $indice);
                                                                 $answer->save();
                                                             }
 
@@ -360,8 +355,8 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                                 $answer->question_type = $type;
                                                                 $answer->candidate_id = $record->candidate->id;
                                                                 $answer->question = $preg;
-                                                                $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
-                                                                $answer->answer_text = $get('justify' . $index . '-' . $indice);
+                                                                $answer->selected_option = $get('answer-1' . '-vof-justify' . '-' . $index . '-' . $indice);
+                                                                $answer->answer_text = $get('justify-1' . '-vof-justify' . $index . '-' . $indice);
                                                                 $answer->save();
                                                             }
 
@@ -370,7 +365,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                                 $answer->question_type = $type;
                                                                 $answer->candidate_id = $record->candidate->id;
                                                                 $answer->question = $preg;
-                                                                $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                                $answer->selected_option = $get('answer-1' . '-mcone' . '-' . $index . '-' . $indice);
                                                                 $answer->save();
                                                             }
 
@@ -380,7 +375,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                                 $answer->question_type = $type;
                                                                 $answer->candidate_id = $record->candidate->id;
                                                                 $answer->question = $preg;
-                                                                $answer->selected_option = implode(',', $get('answer' . '-' . $index . '-' . $indice));
+                                                                $answer->selected_option = implode(',', $get('answer-1' . '-mcmany' . '-' . $index . '-' . $indice));
                                                                 $answer->save();
                                                             }
 
@@ -389,7 +384,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                                 $answer->question_type = $type;
                                                                 $answer->candidate_id = $record->candidate->id;
                                                                 $answer->question = $preg;
-                                                                $answer->answer_text = $get('answer' . '-' . $index . '-' . $indice);
+                                                                $answer->answer_text = $get('answer-1' . '-open' . '-' . $index . '-' . $indice);
                                                                 $answer->save();
                                                             }
                                                         }
@@ -403,19 +398,19 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             if ($type == 'True or false') {
                                                 $indice++;
                                                 $schema[] =
-                                                    TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                    TextInput::make('question' . '-vof' . '-' . $index . '-' . $indice)
                                                     ->readOnly()
                                                     ->hiddenLabel()
                                                     ->default($question);
                                                 $schema[] =
-                                                    Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                    Radio::make('answer' . '-vof' . '-' . $index . '-' . $indice)
                                                     ->hiddenLabel()
                                                     ->options([
                                                         1 => 'True',
                                                         0 => 'False'
                                                     ])
                                                     ->default(function (CandidateRecord $record) use ($activity) {
-                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $activity['data'])
+                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                             ->where('question_type', 'True or false')
                                                             ->get();
                                                         $candidateAnswer = null;
@@ -434,18 +429,18 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             if ($type == 'True or false with justification') {
                                                 $indice++;
                                                 $schema[] =
-                                                    TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                    TextInput::make('question' . '-vof-justify' . '-' . $index . '-' . $indice)
                                                     ->readOnly()
                                                     ->hiddenLabel()
                                                     ->default($question);
-                                                $schema[] = Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                $schema[] = Radio::make('answer' . '-vof-justify' . '-' . $index . '-' . $indice)
                                                     ->hiddenLabel()
                                                     ->options([
                                                         1 => 'True',
                                                         0 => 'False'
                                                     ])
                                                     ->default(function (CandidateRecord $record) use ($activity) {
-                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $activity['data'])
+                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                             ->where('question_type', 'True or false with justification')
                                                             ->get();
                                                         $candidateAnswer = null;
@@ -460,9 +455,9 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                         return null;
                                                     })
                                                     ->columns(3);
-                                                $schema[] = TextInput::make('justify' . $index . '-' . $indice)
+                                                $schema[] = TextInput::make('justify' . '-vof-justify' . $index . '-' . $indice)
                                                     ->label('Justify the answer')->default(function (CandidateRecord $record) use ($activity) {
-                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $activity['data'])
+                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                             ->where('question_type', 'True or false with justification')
                                                             ->get();
                                                         $candidateAnswer = null;
@@ -480,12 +475,12 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             if ($type == 'Multiple choice with one answer') {
                                                 $indice++;
                                                 $schema[] =
-                                                    TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                    TextInput::make('question' . '-mcone' . '-' . $index . '-' . $indice)
                                                     ->readOnly()
                                                     ->hiddenLabel()
                                                     ->default($question);
                                                 $schema[] =
-                                                    Radio::make('answer' . '-' . $index . '-' . $indice)
+                                                    Radio::make('answer' . '-mcone' . '-' . $index . '-' . $indice)
                                                     ->hiddenLabel()
                                                     ->options(function () use ($activity) {
                                                         $answers = [];
@@ -495,7 +490,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                         return $answers;
                                                     })
                                                     ->default(function (CandidateRecord $record) use ($activity) {
-                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $activity['data'])
+                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                             ->where('question_type', 'Multiple choice with one answer')
                                                             ->get();
                                                         $candidateAnswer = null;
@@ -513,18 +508,18 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             if ($type == 'Multiple choice with many answers') {
                                                 $indice++;
                                                 $schema[] =
-                                                    TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                    TextInput::make('question' . '-mcmany' . '-open' . '-' . $index . '-' . $indice)
                                                     ->readOnly()
                                                     ->hiddenLabel()
                                                     ->default($question);
                                                 $schema[] =
-                                                    CheckboxList::make('answer' . '-' . $index . '-' . $indice)
+                                                    CheckboxList::make('answer' . '-mcmany' . '-open' . '-' . $index . '-' . $indice)
                                                     ->hiddenLabel()
                                                     ->live()
                                                     ->reactive()
                                                     ->options([])
                                                     ->default(function (CandidateRecord $record) use ($activity) {
-                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)->where('question', $activity['data'])
+                                                        $candidateAnswers = candidateAnswer::where('candidate_id', $record->candidate_id)
                                                             ->where('question_type', 'Multiple choice with many answers')
                                                             ->get();
                                                         $candidateAnswer = null;
@@ -545,12 +540,12 @@ class ExamSessions extends Page implements HasForms, HasTable
                                             if ($type == 'Open answer') {
                                                 $indice++;
                                                 $schema[] =
-                                                    TextInput::make('question' . '-' . $index . '-' . $indice)
+                                                    TextInput::make('question' . '-open' . '-' . $index . '-' . $indice)
                                                     ->readOnly()
                                                     ->hiddenLabel()
                                                     ->default($question);
                                                 $schema[] =
-                                                    TextArea::make('answer' . '-' . $index . '-' . $indice)
+                                                    TextArea::make('answer' . '-open' . '-' . $index . '-' . $indice)
                                                     ->hiddenLabel()
                                                     ->extraAttributes(['onpaste' => 'return false'])
                                                     ->default(function (CandidateRecord $record) use ($activity) {
@@ -569,11 +564,12 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                         return null;
                                                     });
                                             }
-                                            $schema[] = ToggleButtons::make('button' . $index)
+                                            $schema[] = ToggleButtons::make('button' . '-' . $index . '-' . $indice)
                                                 ->live()
                                                 ->hiddenLabel()
                                                 ->afterStateUpdated(function (Set $set, string $state, CandidateRecord $record, Get $get) use ($index, $question, $indice, $activity) {
                                                     $type = $activity['data']['question_type'];
+
                                                     if ($state === 'submit') {
                                                         //$set('visible_text_' . $index, true);
                                                         if ($type == 'True or false') {
@@ -581,17 +577,16 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             $answer->question_type = $type;
                                                             $answer->candidate_id = $record->candidate->id;
                                                             $answer->question = $activity['data'];
-                                                            $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                            $answer->selected_option = $get('answer' . '-vof' . '-' . $index . '-' . $indice);
                                                             $answer->save();
                                                         }
                                                         if ($type == 'True or false with justification') {
-                                                            dd($get);
                                                             $answer = new candidateAnswer();
                                                             $answer->question_type = $type;
                                                             $answer->candidate_id = $record->candidate->id;
                                                             $answer->question = $activity['data'];
-                                                            $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
-                                                            $answer->answer_text = $get('justify' . $index . '-' . $indice);
+                                                            $answer->selected_option = $get('answer' . '-vof-justify' . '-' . $index . '-' . $indice);
+                                                            $answer->answer_text = $get('justify' . '-vof-justify' . $index . '-' . $indice);
                                                             $answer->save();
                                                         }
                                                         if ($type == 'Multiple choice with one answer') {
@@ -599,7 +594,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             $answer->question_type = $type;
                                                             $answer->candidate_id = $record->candidate->id;
                                                             $answer->question = $activity['data'];
-                                                            $answer->selected_option = $get('answer' . '-' . $index . '-' . $indice);
+                                                            $answer->selected_option = $get('answer' . '-mcone' . '-' . $index . '-' . $indice);
                                                             $answer->save();
                                                         }
                                                         if ($type == 'Multiple choice with many answers') {
@@ -608,7 +603,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             $answer->question_type = $type;
                                                             $answer->candidate_id = $record->candidate->id;
                                                             $answer->question = $activity['data'];
-                                                            $answer->selected_option = implode(',', $get('answer' . '-' . $index . '-' . $indice));
+                                                            $answer->selected_option = implode(',', $get('answer' . '-mcmany' . '-' . $index . '-' . $indice));
                                                             $answer->save();
                                                         }
                                                         if ($type == 'Open answer') {
@@ -616,7 +611,7 @@ class ExamSessions extends Page implements HasForms, HasTable
                                                             $answer->question_type = $type;
                                                             $answer->candidate_id = $record->candidate->id;
                                                             $answer->question = $activity['data'];
-                                                            $answer->answer_text = $get('answer' . '-' . $index . '-' . $indice);
+                                                            $answer->answer_text = $get('answer' . '-open' . '-' . $index . '-' . $indice);
                                                             $answer->save();
                                                         }
                                                     }
