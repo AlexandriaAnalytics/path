@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\ExamResource\RelationManagers;
 
 use App\Filament\Admin\Resources\CandidateResource;
+use App\Models\Candidate;
 use App\Models\ExamModule;
 use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -12,6 +13,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CandidatesRelationManager extends RelationManager
 {
@@ -20,6 +22,7 @@ class CandidatesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+        ->modifyQueryUsing(fn () => Candidate::distinct()->whereHas('exams', fn ($query) => $query->where('exam_id', $this->getOwnerRecord()->id)))
             ->columns([
                 ...CandidateResource::getCandidateColumns(),
                 ...CandidateResource::getInstituteColumns(),

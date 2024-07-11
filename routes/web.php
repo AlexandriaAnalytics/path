@@ -8,6 +8,7 @@ use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WebHookPaymentsController;
+use App\Models\CandidateRecord;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,16 @@ Route::get('/candidate/logout', function () {
     session()->flush();
     return redirect()->route('candidate.login');
 })->name('candidate.logout');
+
+Route::get('/candidate/forze-logout/{id}', function ($id) {
+    //clean all session
+    $candidateRecord = CandidateRecord::find($id);
+    $candidateRecord->can_access = 'cant';
+    $candidateRecord->save();
+    session()->forget(['candidate']);
+    session()->flush();
+    return redirect()->route('candidate.login');
+})->name('candidate.forze-logout');
 
 Route::get('/pdf/candidate/{id}', function ($id) {
     $candidate = Candidate::find($id);

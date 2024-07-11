@@ -4,10 +4,12 @@ namespace App\Filament\Admin\Resources\ActivityResource\Pages;
 
 use App\Filament\Admin\Resources\ActivityResource;
 use App\Models\Activity;
+use App\Models\CandidateActivity;
 use App\Models\MultipleChoice;
 use App\Models\OpenAnswer;
 use App\Models\Question;
 use App\Models\TrueFalse;
+use App\Models\TypeOfTraining;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -24,52 +26,65 @@ class EditActivity extends EditRecord
         ];
     }
 
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $activity = CandidateActivity::where('section_id', $data['section_id'])->first();
+        $activity->stages = $data['stages'];
+        $activity->comment_at_the_end = $data['comment_at_the_end'];
+        $activity->section_id = $data['section_id'];
+        $activity->save();
+        return $data;
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $questions = Question::where('activity_id', $this->record->id)->get();
+        if (TypeOfTraining::find($data['type_of_training_id'])->name == 'Candidate') {
+            $data['stages'] = CandidateActivity::where('section_id', $data['section_id'])->first()->stages;
+        } else {
+            $questions = Question::where('activity_id', $this->record->id)->get();
 
-        $data['sections'] = $questions->map(function ($question) {
-            $questionData = $question->toArray();
-            $questionData['questions'] = [];
-            foreach ($question['question_type'] as $index => $type) {
-                $questionEdit = [];
-                if ($type == 'True or false' || $type == 'True or false with justification') {
-                    $trueFalse = TrueFalse::find($question['question_ids'][$index]);
-                    if ($trueFalse) {
-                        $questionEdit['question_type'] = $type;
-                        $questionEdit['question'] = $trueFalse->question;
-                        $questionEdit['true'] = $trueFalse->true;
-                        $questionEdit['comments_true'] = $trueFalse->comments[0] ?? null;
-                        $questionEdit['comments_false'] = $trueFalse->comments[1] ?? null;
+            $data['sections'] = $questions->map(function ($question) {
+                $questionData = $question->toArray();
+                $questionData['questions'] = [];
+                foreach ($question['question_type'] as $index => $type) {
+                    $questionEdit = [];
+                    if ($type == 'True or false' || $type == 'True or false with justification') {
+                        $trueFalse = TrueFalse::find($question['question_ids'][$index]);
+                        if ($trueFalse) {
+                            $questionEdit['question_type'] = $type;
+                            $questionEdit['question'] = $trueFalse->question;
+                            $questionEdit['true'] = $trueFalse->true;
+                            $questionEdit['comments_true'] = $trueFalse->comments[0] ?? null;
+                            $questionEdit['comments_false'] = $trueFalse->comments[1] ?? null;
+                        }
                     }
-                }
 
-                if ($type == 'Multiple choice with one answer' || $type == 'Multiple choice with many answers') {
-                    $multipleChoice = MultipleChoice::find($question['question_ids'][$index]);
-                    if ($multipleChoice) {
-                        $questionEdit['question_type'] = $type;
-                        $questionEdit['question'] = $multipleChoice->question;
-                        $questionEdit['multiplechoice'] = collect($multipleChoice->answers)->map(function ($answer, $index) use ($multipleChoice) {
-                            return [
-                                'answer' => $answer,
-                                'correct' => $multipleChoice->correct[$index] ?? false,
-                                'comments' => $multipleChoice->comments[$index] ?? null,
-                                'correct_in_pdf' => $multipleChoice->correct_in_pdf[$index] ?? false
-                            ];
-                        })->toArray();
+                    if ($type == 'Multiple choice with one answer' || $type == 'Multiple choice with many answers') {
+                        $multipleChoice = MultipleChoice::find($question['question_ids'][$index]);
+                        if ($multipleChoice) {
+                            $questionEdit['question_type'] = $type;
+                            $questionEdit['question'] = $multipleChoice->question;
+                            $questionEdit['multiplechoice'] = collect($multipleChoice->answers)->map(function ($answer, $index) use ($multipleChoice) {
+                                return [
+                                    'answer' => $answer,
+                                    'correct' => $multipleChoice->correct[$index] ?? false,
+                                    'comments' => $multipleChoice->comments[$index] ?? null,
+                                    'correct_in_pdf' => $multipleChoice->correct_in_pdf[$index] ?? false
+                                ];
+                            })->toArray();
+                        }
                     }
+
+                    if ($type == 'Open answer') {
+                        $openAnswer = OpenAnswer::find($question['question_ids'][$index]);
+                        $questionEdit['question'] = $openAnswer->question;
+                    }
+
+                    $questionData['questions'][] = $questionEdit;
                 }
-
-                if ($type == 'Open answer') {
-                    $openAnswer = OpenAnswer::find($question['question_ids'][$index]);
-                    $questionEdit['question'] = $openAnswer->question;
-                }
-
-                $questionData['questions'][] = $questionEdit;
-            }
-            return $questionData;
-        })->toArray();
-
+                return $questionData;
+            })->toArray();
+        }
         return $data;
     }
 
