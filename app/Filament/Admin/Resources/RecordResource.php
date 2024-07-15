@@ -146,6 +146,15 @@ class RecordResource extends Resource
                         false: fn (Builder $query) => $query->where('status_activity_id', 1),
                         blank: fn (Builder $query) => $query,
                     ),
+                TernaryFilter::make('result')
+                    ->placeholder('All records')
+                    ->trueLabel('Certified')
+                    ->falseLabel('To be reviewed')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('result', 'Certified'),
+                        false: fn (Builder $query) => $query->where('result', 'To be reviewed'),
+                        blank: fn (Builder $query) => $query,
+                    ),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
