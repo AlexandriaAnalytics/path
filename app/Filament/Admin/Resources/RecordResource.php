@@ -26,6 +26,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -135,6 +136,16 @@ class RecordResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                TernaryFilter::make('status_activity_id')
+                    ->label('Status section')
+                    ->placeholder('All records')
+                    ->trueLabel('Completed records')
+                    ->falseLabel('Pending records')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('status_activity_id', 2),
+                        false: fn (Builder $query) => $query->where('status_activity_id', 1),
+                        blank: fn (Builder $query) => $query,
+                    ),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
