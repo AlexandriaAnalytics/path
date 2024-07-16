@@ -157,7 +157,7 @@ class RecordResource extends Resource
                         false: fn (Builder $query) => $query->where('result', 'To be reviewed'),
                         blank: fn (Builder $query) => $query,
                     ),
-                SelectFilter::make('archived')
+                TernaryFilter::make('archived')
                     ->placeholder('All records')
                     ->trueLabel('Archived')
                     ->falseLabel('Not archived')
