@@ -17,6 +17,7 @@ use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
@@ -26,6 +27,7 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group as GroupingGroup;
 use Filament\Tables\Table;
@@ -155,6 +157,15 @@ class RecordResource extends Resource
                         false: fn (Builder $query) => $query->where('result', 'To be reviewed'),
                         blank: fn (Builder $query) => $query,
                     ),
+                SelectFilter::make('archived')
+                    ->placeholder('All records')
+                    ->trueLabel('Archived')
+                    ->falseLabel('Not archived')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('archived', 'true'),
+                        false: fn (Builder $query) => $query->whereNull('archived')->orWhere('archived', 'false'),
+                        blank: fn (Builder $query) => $query->whereNull('archived')->orWhere('archived', 'false'),
+                    ),
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
@@ -203,6 +214,20 @@ class RecordResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     Tables\Actions\ForceDeleteBulkAction::make(),
                     Tables\Actions\RestoreBulkAction::make(),
+                    BulkAction::make('archive')
+                        ->icon('heroicon-o-archive-box-arrow-down')
+
+                        ->action(function (Collection $records, $data) {
+                            foreach ($records as $record) {
+                                $record->archived = 'true';
+                                $record->save();
+                            }
+                            Notification::make()
+                                ->title('Records has been successfully archived')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                     BulkAction::make('refresh-status')
                         ->label('Refresh status')
                         ->icon('heroicon-o-arrow-path')
