@@ -52,6 +52,7 @@ class ExamResource extends Resource
                     ])
                     ->schema([
                         TextInput::make('session_id')
+                            ->label('Session ID')
                             ->required()
                             ->autofocus()
                             ->maxLength(255)
@@ -78,7 +79,6 @@ class ExamResource extends Resource
                                 'closed' => 'Closed',
                                 'finished' => 'Finished',
                                 'archived' => 'Archived'
-
                             ])
                             ->required()
                             ->autofocus()
@@ -94,6 +94,7 @@ class ExamResource extends Resource
                             ->required()
                             ->columnSpan(4),
                         Select::make('examiners')
+                            ->multiple()
                             ->options(function () {
                                 return User::select('users.name', 'users.id')
                                     ->join('trainees', 'users.id', '=', 'trainees.user_id')
@@ -106,6 +107,7 @@ class ExamResource extends Resource
                             })
                             ->columnSpan(4),
                         Select::make('supervisors')
+                            ->multiple()
                             ->options(function () {
                                 return User::select('users.name', 'users.id')
                                     ->join('trainees', 'users.id', '=', 'trainees.user_id')
@@ -125,6 +127,7 @@ class ExamResource extends Resource
                             ->multiple()
                             ->searchable()
                             ->preload()
+                            ->required()
                             ->suffixAction(
                                 Action::make('select-all')
                                     ->icon('heroicon-o-clipboard-document-list')
@@ -135,6 +138,7 @@ class ExamResource extends Resource
                                     }),
                             )->label('Exam'),
                         Repeater::make('examModules')
+                            ->label('Modules')
                             ->columnSpanFull()
                             ->columns(3)
                             ->relationship()
@@ -143,6 +147,7 @@ class ExamResource extends Resource
                                     ->relationship('module', 'name')
                                     ->native(false)
                                     ->searchable()
+                                    ->required()
                                     ->preload(),
                                 Forms\Components\Select::make('type')
                                     ->options(\App\Enums\ExamType::class)
