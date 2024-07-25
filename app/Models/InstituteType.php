@@ -22,4 +22,9 @@ class InstituteType extends Model
     {
         return $this->hasMany(Institute::class);
     }
+
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 }

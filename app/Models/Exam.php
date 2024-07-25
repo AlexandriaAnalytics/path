@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,7 +39,9 @@ class Exam extends Model
         'comments',
         'payment_deadline',
         'location',
-        'duration'
+        'duration',
+        'institute_type_id',
+        'status'
     ];
 
     protected $casts = [
@@ -82,6 +85,11 @@ class Exam extends Model
         return $this->belongsToMany(Candidate::class, 'candidate_exam', 'exam_id', 'candidate_id')
             ->withPivot('module_id')
             ->withTimestamps();
+    }
+
+    public function instituteType(): BelongsTo
+    {
+        return $this->belongsTo(InstituteType::class);
     }
 
     public function getIsAbleToPricePackAttribute(): bool
