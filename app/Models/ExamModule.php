@@ -17,7 +17,6 @@ class ExamModule extends Pivot
 
     protected $casts = [
         'scheduled_date' => 'datetime',
-        'type' => \App\Enums\ExamType::class,
     ];
 
     public function exam()

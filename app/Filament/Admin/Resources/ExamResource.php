@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\ExamResource\Pages;
 use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
+use App\Models\ExamModule;
 use App\Models\InstituteType;
 use App\Models\Level;
 use App\Models\Module;
@@ -20,8 +21,10 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -173,32 +176,68 @@ class ExamResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('session_id')
+                    ->label('Session ID')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'active' => Color::hex('#83A982'),
+                        'in review' => Color::hex('#D4AC71'),
+                        'closed' => Color::hex('#C94F40'),
+                        'finished' => Color::hex('#000000'),
+                        'archived' => Color::hex('#98A4A2')
+                    })
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('session_name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('scheduled_date')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('type')
-                    ->badge()
-                    ->alignCenter()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('modules.name')
+                Tables\Columns\TextColumn::make('levels.name')
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('maximum_number_of_students')
-                    ->label('Max. candidates')
-                    ->prefix(function ($record) {
-                        return $record->candidates->unique('id')->count() . ' / ';
+                Tables\Columns\TextColumn::make('modules')
+                    ->formatStateUsing(function (Exam $record) {
+                        $modules = $record->examModules;
+                        $return = "";
+                        foreach ($modules as $module) {
+                            $return = $return . $module->module->name . "<br>" . $module->type . "<br>" . $module->scheduled_date . "<br><br>";
+                        }
+                        return $return;
                     })
-                    ->numeric()
+                    ->html()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('location')
-                    ->default('-')
+                TextColumn::make('location')->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('installments')
+                    ->label('Maximum number of installments')
                     ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('instituteType.name')
+                    ->label('Membership')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('maximum_number_of_students')
+                    ->label('Maximum number of candidates')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('examiners.name')
+                    ->sortable()
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('supervisors.name')
+                    ->sortable()
+                    ->searchable()
+                    ->wrap()
                     ->toggleable(isToggledHiddenByDefault: false),
             ])
             ->filters([
