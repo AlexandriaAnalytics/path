@@ -73,9 +73,29 @@ class Exam extends Model
             ->withTimestamps();
     }
 
+    public function examiners(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'exam_examiners');
+    }
+
+    public function supervisors(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'exam_supervisors');
+    }
+
     public function examModules(): HasMany
     {
         return $this->hasMany(ExamModule::class);
+    }
+
+    public function examExaminer(): HasMany
+    {
+        return $this->hasMany(ExamExaminer::class);
+    }
+
+    public function examSupervisor(): HasMany
+    {
+        return $this->hasMany(ExamSupervisor::class);
     }
 
     public function students(): BelongsToMany

@@ -95,29 +95,33 @@ class ExamResource extends Resource
                             ->columnSpan(4),
                         Select::make('examiners')
                             ->multiple()
+                            ->relationship('examiners', 'name')
                             ->options(function () {
-                                return User::select('users.name', 'users.id')
-                                    ->join('trainees', 'users.id', '=', 'trainees.user_id')
-                                    ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
-                                    ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
-                                    ->where('type_of_trainings.name', 'Examiners')
+                                return User::whereHas('trainees', function ($query) {
+                                    $query->whereHas('typeOfTraining', function ($query) {
+                                        $query->where('name', 'Examiners');
+                                    });
+                                })
                                     ->distinct()
                                     ->get()
                                     ->pluck('name', 'id');
                             })
+                            ->preload()
                             ->columnSpan(4),
                         Select::make('supervisors')
                             ->multiple()
+                            ->relationship('supervisors', 'name')
                             ->options(function () {
-                                return User::select('users.name', 'users.id')
-                                    ->join('trainees', 'users.id', '=', 'trainees.user_id')
-                                    ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
-                                    ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
-                                    ->where('type_of_trainings.name', 'Supervisor')
+                                return User::whereHas('trainees', function ($query) {
+                                    $query->whereHas('typeOfTraining', function ($query) {
+                                        $query->where('name', 'Supervisor');
+                                    });
+                                })
                                     ->distinct()
                                     ->get()
                                     ->pluck('name', 'id');
                             })
+                            ->preload()
                             ->columnSpan(4),
 
                         Forms\Components\Select::make('levels')
