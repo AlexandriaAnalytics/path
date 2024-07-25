@@ -11,7 +11,8 @@ class ExamModule extends Pivot
     protected $fillable = [
         'exam_id',
         'module_id',
-        'scheduled_date'
+        'scheduled_date',
+        'type'
     ];
 
     public function exam()

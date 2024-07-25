@@ -5,10 +5,15 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\ExamResource\Pages;
 use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
+use App\Models\InstituteType;
 use App\Models\Level;
 use App\Models\Module;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -43,48 +48,72 @@ class ExamResource extends Resource
                 Forms\Components\Section::make('Details')
                     ->columns([
                         'sm' => 1,
-                        'xl' => 3
+                        'xl' => 12
                     ])
                     ->schema([
+                        TextInput::make('session_id')
+                            ->required()
+                            ->autofocus()
+                            ->maxLength(255)
+                            ->columnSpan(4),
                         Forms\Components\TextInput::make('session_name')
                             ->required()
                             ->autofocus()
                             ->maxLength(255)
-                            ->columnSpan([
-                                'sm' => 1,
-                                'xl' => 2,
-                            ]),
+                            ->columnSpan(4),
+                        Forms\Components\TextInput::make('location')
+                            ->required()
+                            ->autofocus()
+                            ->columnSpan(4),
+                        Select::make('institute_type_id')
+                            ->label('Membership')
+                            ->options(InstituteType::all()->pluck('name', 'id'))
+                            ->required()
+                            ->autofocus()
+                            ->columnSpan(4),
+                        Select::make('status')
+                            ->options([
+                                'active' => 'Active',
+                                'in review' => 'In review',
+                                'closed' => 'Closed',
+                                'finished' => 'Finished',
+                                'archived' => 'Archived'
+
+                            ])
+                            ->required()
+                            ->autofocus()
+                            ->columnSpan(4),
                         Forms\Components\TextInput::make('maximum_number_of_students')
                             ->numeric()
                             ->required()
-                            ->label('Maximum number of candidates'),
-                        Forms\Components\DateTimePicker::make('scheduled_date')
-                            ->seconds(false)
-                            ->required(),
-                        Forms\Components\DateTimePicker::make('payment_deadline')
-                            ->seconds(false)
-                            ->required(),
-                        Forms\Components\Select::make('type')
-                            ->options(\App\Enums\ExamType::class)
-                            ->native(false)
-                            ->required()
-                            ->live()
-                            ->enum(\App\Enums\ExamType::class),
-                        Forms\Components\TextInput::make('duration')
+                            ->label('Maximum number of candidates')
+                            ->columnSpan(4),
+                        TextInput::make('installments')
+                            ->label('Maximum number of installments')
                             ->numeric()
-                            ->visible(fn (Get $get) => $get('type') == 'online'),
-                        Forms\Components\TextInput::make('location')
-                            ->default('-')
-                            ->columnSpanFull(),
-                        Forms\Components\RichEditor::make('comments')
-                            ->columnSpanFull(),
-                    ]),
-                Forms\Components\Section::make('Exams and modules')
-                    ->collapsible()
-                    ->collapsed()
-                    ->columns(2)
-                    ->schema([
+                            ->required()
+                            ->columnSpan(4),
+                        Select::make('examiners')
+                            ->options(function () {
+                                return User::select('users.name')
+                                    ->join('trainees', 'users.id', '=', 'trainees.user_id')
+                                    ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
+                                    ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
+                                    ->where('type_of_trainings.name', 'Examiners')->distinct()->pluck('name');
+                            })
+                            ->columnSpan(4),
+                        Select::make('supervisors')
+                            ->options(function () {
+                                return User::select('users.name')
+                                    ->join('trainees', 'users.id', '=', 'trainees.user_id')
+                                    ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
+                                    ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
+                                    ->where('type_of_trainings.name', 'Supervisor')->distinct()->pluck('name');
+                            })
+                            ->columnSpan(4),
+
                         Forms\Components\Select::make('levels')
+                            ->columnSpan(6)
                             ->relationship(titleAttribute: 'name')
                             ->native(false)
                             ->multiple()
@@ -99,21 +128,37 @@ class ExamResource extends Resource
                                         $set('levels', Level::all()->pluck('id'));
                                     }),
                             )->label('Exam'),
-                        Forms\Components\Select::make('modules')
-                            ->relationship(name: 'modules', titleAttribute: 'name')
-                            ->native(false)
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
-                            ->suffixAction(
-                                Action::make('select-all')
-                                    ->icon('heroicon-o-clipboard-document-list')
-                                    ->label('Select All')
-                                    ->tooltip('Select all modules')
-                                    ->action(function (Set $set) {
-                                        $set('modules', Module::all()->pluck('id'));
-                                    }),
-                            )
+                        Repeater::make('modules')
+                            ->columnSpanFull()
+                            ->columns(3)
+                            ->schema([
+                                Forms\Components\Select::make('modules')
+                                    ->relationship(name: 'modules', titleAttribute: 'name')
+                                    ->native(false)
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->suffixAction(
+                                        Action::make('select-all')
+                                            ->icon('heroicon-o-clipboard-document-list')
+                                            ->label('Select All')
+                                            ->tooltip('Select all modules')
+                                            ->action(function (Set $set) {
+                                                $set('modules', Module::all()->pluck('id'));
+                                            }),
+                                    ),
+                                Forms\Components\Select::make('type')
+                                    ->options(\App\Enums\ExamType::class)
+                                    ->native(false)
+                                    ->required()
+                                    ->live()
+                                    ->enum(\App\Enums\ExamType::class),
+                                DateTimePicker::make('scheduled_date')
+                                    ->required()
+                                    ->seconds(false)
+                            ]),
+                        Forms\Components\RichEditor::make('comments')
+                            ->columnSpanFull(),
                     ])
             ]);
     }
@@ -164,26 +209,26 @@ class ExamResource extends Resource
                     Tables\Actions\ForceDeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     Tables\Actions\RestoreBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('extendDuration')
-                    ->icon('heroicon-o-clock')
-                    ->form([
-                        TextInput::make('duration')
-                        ->numeric()
-                        ->helperText('Extra minutes')
-                    ])
-                    ->action(function (Collection $records, array $data): void {
-                        $records->each(function ($record) use ($data) {
-                            $record->update([
-                                'duration' => $record->duration + $data['duration'],
-                            ]);
-                        });
-                    
+                        ->icon('heroicon-o-clock')
+                        ->form([
+                            TextInput::make('duration')
+                                ->numeric()
+                                ->helperText('Extra minutes')
+                        ])
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each(function ($record) use ($data) {
+                                $record->update([
+                                    'duration' => $record->duration + $data['duration'],
+                                ]);
+                            });
 
-                        Notification::make()
-                            ->title('Exam session extended successfully')
-                            ->success()
-                            ->send();
-                    })
-                    ->deselectRecordsAfterCompletion(),
+
+                            Notification::make()
+                                ->title('Exam session extended successfully')
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

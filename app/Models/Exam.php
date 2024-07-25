@@ -32,16 +32,17 @@ class Exam extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'session_id',
         'session_name',
         'scheduled_date',
-        'type',
         'maximum_number_of_students',
         'comments',
         'payment_deadline',
         'location',
         'duration',
         'institute_type_id',
-        'status'
+        'status',
+        'installments'
     ];
 
     protected $casts = [

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->timestamp('scheduled_date')->nullable()->change();
             $table->timestamp('payment_deadline')->nullable()->change();
             $table->foreignId('institute_type_id')->nullable()->constrained();
+            $table->integer('installments')->nullable();
             $table->string('status')->nullable();
+            $table->dropColumn('type');
         });
     }
 
@@ -31,6 +33,7 @@ return new class extends Migration
             $table->timestamp('payment_deadline')->nullable(false)->change();
             $table->dropForeign('exams_institute_type_id_foreign');
             $table->dropColumn('institute_type_id');
+            $table->dropColumn('installments');
             $table->dropColumn('status');
         });
     }

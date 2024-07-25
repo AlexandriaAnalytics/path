@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('exam_module', function (Blueprint $table) {
             $table->timestamp('scheduled_date')->nullable();
+            $table->string('type')->nullable();
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('exam_module', function (Blueprint $table) {
             $table->dropColumn('scheduled_date');
+            $table->dropColumn('type');
         });
     }
 };
