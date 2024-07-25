@@ -15,6 +15,11 @@ class ExamModule extends Pivot
         'type'
     ];
 
+    protected $casts = [
+        'scheduled_date' => 'datetime',
+        'type' => \App\Enums\ExamType::class,
+    ];
+
     public function exam()
     {
         return $this->belongsTo(Exam::class);

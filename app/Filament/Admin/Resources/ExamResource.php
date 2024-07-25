@@ -95,20 +95,26 @@ class ExamResource extends Resource
                             ->columnSpan(4),
                         Select::make('examiners')
                             ->options(function () {
-                                return User::select('users.name')
+                                return User::select('users.name', 'users.id')
                                     ->join('trainees', 'users.id', '=', 'trainees.user_id')
                                     ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
                                     ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
-                                    ->where('type_of_trainings.name', 'Examiners')->distinct()->pluck('name');
+                                    ->where('type_of_trainings.name', 'Examiners')
+                                    ->distinct()
+                                    ->get()
+                                    ->pluck('name', 'id');
                             })
                             ->columnSpan(4),
                         Select::make('supervisors')
                             ->options(function () {
-                                return User::select('users.name')
+                                return User::select('users.name', 'users.id')
                                     ->join('trainees', 'users.id', '=', 'trainees.user_id')
                                     ->join('trainee_training', 'trainees.id', '=', 'trainee_training.trainee_id')
                                     ->join('type_of_trainings', 'trainee_training.type_of_training_id', '=', 'type_of_trainings.id')
-                                    ->where('type_of_trainings.name', 'Supervisor')->distinct()->pluck('name');
+                                    ->where('type_of_trainings.name', 'Supervisor')
+                                    ->distinct()
+                                    ->get()
+                                    ->pluck('name', 'id');
                             })
                             ->columnSpan(4),
 
@@ -128,25 +134,16 @@ class ExamResource extends Resource
                                         $set('levels', Level::all()->pluck('id'));
                                     }),
                             )->label('Exam'),
-                        Repeater::make('modules')
+                        Repeater::make('examModules')
                             ->columnSpanFull()
                             ->columns(3)
+                            ->relationship()
                             ->schema([
-                                Forms\Components\Select::make('modules')
-                                    ->relationship(name: 'modules', titleAttribute: 'name')
+                                Forms\Components\Select::make('module_id')
+                                    ->relationship('module', 'name')
                                     ->native(false)
-                                    ->multiple()
                                     ->searchable()
-                                    ->preload()
-                                    ->suffixAction(
-                                        Action::make('select-all')
-                                            ->icon('heroicon-o-clipboard-document-list')
-                                            ->label('Select All')
-                                            ->tooltip('Select all modules')
-                                            ->action(function (Set $set) {
-                                                $set('modules', Module::all()->pluck('id'));
-                                            }),
-                                    ),
+                                    ->preload(),
                                 Forms\Components\Select::make('type')
                                     ->options(\App\Enums\ExamType::class)
                                     ->native(false)

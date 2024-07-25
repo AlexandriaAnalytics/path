@@ -60,4 +60,9 @@ class Module extends Model
     {
         return $this->hasMany(LevelCountryModule::class);
     }
+
+    public function examModules(): HasMany
+    {
+        return $this->hasMany(ExamModule::class);
+    }
 }
