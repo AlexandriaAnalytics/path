@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('exams', function (Blueprint $table) {
+            $table->string('session_id')->nullable();
             $table->timestamp('scheduled_date')->nullable()->change();
             $table->timestamp('payment_deadline')->nullable()->change();
             $table->foreignId('institute_type_id')->nullable()->constrained();
@@ -25,6 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('exams', function (Blueprint $table) {
+            $table->dropColumn('session_id');
             $table->timestamp('scheduled_date')->nullable(false)->change();
             $table->timestamp('payment_deadline')->nullable(false)->change();
             $table->dropForeign('exams_institute_type_id_foreign');
