@@ -42,7 +42,11 @@ class Exam extends Model
         'duration',
         'institute_type_id',
         'status',
-        'installments'
+        'installments',
+        'timetable_id',
+        'exam_package_id',
+        'logistic_id',
+        'payment_to_team_id',
     ];
 
     protected $casts = [

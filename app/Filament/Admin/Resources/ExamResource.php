@@ -6,9 +6,13 @@ use App\Filament\Admin\Resources\ExamResource\Pages;
 use App\Filament\Admin\Resources\ExamResource\RelationManagers;
 use App\Models\Exam;
 use App\Models\ExamModule;
+use App\Models\ExamPackage;
 use App\Models\InstituteType;
 use App\Models\Level;
+use App\Models\Logistic;
 use App\Models\Module;
+use App\Models\PaymentToTeam;
+use App\Models\Timetable;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Actions\Action;
@@ -24,6 +28,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -235,6 +240,27 @@ class ExamResource extends Resource
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('supervisors.name')
+                    ->sortable()
+                    ->searchable()
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                SelectColumn::make('timetable_id')
+                    ->label('Timetable')
+                    ->options(fn () => Timetable::all()->pluck('value', 'id'))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                SelectColumn::make('exam_package_id')
+                    ->label('Exam package')
+                    ->options(fn () => ExamPackage::all()->pluck('value', 'id'))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                SelectColumn::make('logistic_id')
+                    ->label('Logistic')
+                    ->options(fn () => Logistic::all()->pluck('value', 'id'))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                SelectColumn::make('payment_to_team_id')
+                    ->label('Payment to team')
+                    ->options(fn () => PaymentToTeam::all()->pluck('value', 'id'))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('comments')
                     ->sortable()
                     ->searchable()
                     ->wrap()
