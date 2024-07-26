@@ -47,6 +47,8 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Settings'),
                 NavigationGroup::make()
+                    ->label('Exam sessions settings'),
+                NavigationGroup::make()
                     ->label('Training settings')
 
             ])
