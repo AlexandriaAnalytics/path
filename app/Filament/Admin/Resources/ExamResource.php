@@ -265,6 +265,31 @@ class ExamResource extends Resource
                     ->searchable()
                     ->wrap()
                     ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('minutes_of_session')
+                    ->badge()
+                    ->formatStateUsing(function (Exam $state) {
+                        $text = 'generate';
+                        return $text;
+                    })
+                    ->action(function (Exam $record): void {
+                        dd($record);
+                    }),
+                TextColumn::make('tags')
+                    ->badge()
+                    ->formatStateUsing(function () {
+                        return 'Generate';
+                    })
+                    ->action(function (Exam $record): void {
+                        dd($record);
+                    }),
+                TextColumn::make('schedule')
+                    ->badge()
+                    ->formatStateUsing(function () {
+                        return 'Generate';
+                    })
+                    ->action(function (Exam $record): void {
+                        dd($record);
+                    }),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
