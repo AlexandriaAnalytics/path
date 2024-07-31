@@ -23,6 +23,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Facades\Http;
 
 class Payments extends Page implements HasForms
 {
@@ -155,6 +156,76 @@ class Payments extends Page implements HasForms
             ->hidden(!$hidde);
     }
 
+    private function renderRebillFinancing()
+    {
+        $data = [
+            "name" => "Examen de prueba",
+            "description" => "Test",
+            "type" => "fixed",
+            "frequency" => [
+                "type" => "months",
+                "quantity" => 1
+            ],
+            "currencies" => [
+                [
+                    "currency" => "ARS",
+                    "amount" => 1500.00
+                ]
+            ],
+            "repetitions" => null,
+            "metadata" => [],
+            "debitDay" => null,
+            "debitType" => null
+        ];
+
+        return
+            Action::make('rebill_financing')
+            ->action(function () use ($data) {
+                $planResponse = Http::withHeaders([
+                    'Accept' => '*/*',
+                    'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
+                    'Authorization' => 'Bearer ' . config('rebill.private_key'),
+                ])
+                    ->post('https://api.rebill.com/v2/plans', $data);
+                $plan_id = json_decode($planResponse)->plan->id;
+
+
+                $linkData = [
+                    "planId" => $plan_id,
+                    "privateDescription" => "Payment link for Plan",
+                    "customFields" => [
+                        "PHONE_NUMBER",
+                        "PERSONAL_ID",
+                        "BILLING_ADDRESS",
+                        "DISCOUNT_CODE"
+                    ],
+                    "paymentMethods" => [
+                        [
+                            "currency" => "ARS",
+                            "methods" => [
+                                "CARD",
+                                "CASH",
+                            ]
+                        ]
+                    ],
+                    "successUrl" => "https://yourdomain.com/payment-success",
+                    "expiration" => "2024-12-31T23:59:59.999Z"
+                ];
+
+
+
+                $linkResponse = Http::withHeaders([
+                    'Accept' => '*/*',
+                    'User-Agent' => 'Thunder Client (https://www.thunderclient.com)',
+                    'Authorization' => 'Bearer ' . config('rebill.private_key'),
+                ])
+                    ->post('https://api.rebill.com/v2/payment-links/plan', $linkData);
+                $paymentLink = json_decode($linkResponse)->link;
+
+                redirect()->to($paymentLink);
+            });
+    }
+
     protected function getActions(): array
     {
         //$paymentMethodsAvailable = ModelsCountry::all()->where('monetary_unit', $this->candidate->currency)->first()->pyMethods()->get()->pluck('slug')->toArray();
@@ -175,6 +246,7 @@ class Payments extends Page implements HasForms
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
+            $this->renderRebillFinancing(),
             $this->renderMercadoPagoFinancing(
                 in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
                     && ($this->candidate->paymentStatus == 'unpaid' || ($this->candidate->paymentStatus == 'paying' && $this->candidate->granted_discount > 0))
