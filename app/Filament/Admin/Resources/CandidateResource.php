@@ -152,6 +152,9 @@ class CandidateResource extends Resource
                     ->money(
                         currency: fn (Candidate $record) => $record->currency,
                     ),
+                TextColumn::make('granted_discount')
+                    ->label('Scholarship')
+                    ->suffix(' %'),
                 TextColumn::make('student.personal_educational_needs')
                     ->label('Educational needs')
                     ->badge()
@@ -205,6 +208,13 @@ class CandidateResource extends Resource
                         false: fn (Builder $query) => $query->whereHas('pendingModules'),
                     )
                     ->native(false),
+                TernaryFilter::make('scholarship')
+                    ->trueLabel('Yes')
+                    ->falseLabel('No')
+                    ->queries(
+                        true: fn (Builder $query) => $query->where('granted_discount', '>', 0),
+                        false: fn (Builder $query) => $query->where('granted_discount', 0)
+                    )
             ])
             ->actions([
                 ActionGroup::make([
