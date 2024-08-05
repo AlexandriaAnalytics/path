@@ -207,7 +207,7 @@ class InstituteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
 
                 Tables\Columns\TextColumn::make('owner.name')
-                    ->url(fn (Institute $institute) => route('filament.admin.resources.users.view', $institute->owner->id))
+                    ->url(fn (Institute $institute) => $institute->owner ? route('filament.admin.resources.users.view', $institute->owner->id) : null)
                     ->placeholder('(no owner)')
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('email')
@@ -295,10 +295,9 @@ class InstituteResource extends Resource
                         ])
                         ->action(function ($records, $data) {
                             foreach ($records as $institute) {
-                                if($data['can_add_candidates']) {
+                                if ($data['can_add_candidates']) {
                                     $institute->can_add_candidates = 1;
-                                }
-                                else {
+                                } else {
                                     $institute->can_add_candidates = 0;
                                 }
                                 $institute->save();
