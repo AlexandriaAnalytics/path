@@ -23,7 +23,7 @@ class CandidatePanelProvider extends PanelProvider
     {
         return $panel
             ->id('candidate')
-            ->path('candidate')
+            ->path('candidates')
             ->colors([
                 'primary' => '#22526d',
             ])
