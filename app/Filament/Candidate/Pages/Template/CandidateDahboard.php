@@ -22,7 +22,7 @@ class CandidateDahboard extends Dashboard  //implements HasTable
 
     // use InteractsWithTable;
 
-    protected static ?int $navigationSort = -2;
+
     protected static string $view = 'filament.candidate.pages.template.candidate-dahboard';
 
     public static function canAccess(): bool
@@ -60,7 +60,7 @@ class CandidateDahboard extends Dashboard  //implements HasTable
                 ->badge(),
             Action::make('Logout')
                 ->color('danger')
-                ->url('/candidate/logout'),
+                ->url('/candidates/logout'),
         ];
     }
 }

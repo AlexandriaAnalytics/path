@@ -42,16 +42,16 @@ Route::get('/members-excel', [ExcelController::class, 'exportAllMembers']);
 Route::get('/excel/{id}', [ExcelController::class, 'exportById']);
 
 Route::get('/', [\App\Http\Controllers\WebController::class, 'index']);
-Route::get('/candidate/login', LoginCandidate::class)->name('candidate.login');
+Route::get('/candidates/login', LoginCandidate::class)->name('candidate.login');
 
-Route::get('/candidate/logout', function () {
+Route::get('/candidates/logout', function () {
     //clean all session
     session()->forget(['candidate']);
     session()->flush();
     return redirect()->route('candidate.login');
 })->name('candidate.logout');
 
-Route::get('/candidate/forze-logout/{id}', function ($id) {
+Route::get('/candidates/forze-logout/{id}', function ($id) {
     //clean all session
     $candidateRecord = CandidateRecord::find($id);
     $candidateRecord->can_access = 'cant';
