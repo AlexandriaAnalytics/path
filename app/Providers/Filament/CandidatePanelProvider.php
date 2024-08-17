@@ -8,6 +8,8 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use App\Filament\Candidate\Pages\Template\CandidateDahboard;
+use App\Models\Candidate;
+use Filament\Navigation\NavigationItem;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;

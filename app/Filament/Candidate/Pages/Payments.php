@@ -7,6 +7,7 @@ use App\Enums\UserStatus;
 use App\Models\Candidate;
 use App\Models\CandidateExam;
 use App\Models\Country as ModelsCountry;
+use App\Models\Installment;
 use App\Models\Payment;
 use App\Models\PaymentMethod as ModelsPaymentMethod;
 use App\Modules\Payments\MercadoPago\Data\SubscriptionData as MercadoPagoSubscriptionData;
@@ -15,18 +16,24 @@ use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use DateTime;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Http;
 
 class Payments extends Page implements HasForms
 {
+    use InteractsWithForms;
+
     public $candidate;
     public $candidate_payment_methods = [];
     public ?string $monetariUnitSymbol;
@@ -40,6 +47,11 @@ class Payments extends Page implements HasForms
     public $modules = [];
     public bool $showTransferForm = false;
     public $bankData = null;
+
+    public float $made = 0;
+    public float $pending;
+
+    public int $payingInstallments;
 
 
     public function __construct()
@@ -64,6 +76,15 @@ class Payments extends Page implements HasForms
 
         $this->installment_number = $this->candidate->installmentAttribute;
 
+        $payments = Payment::where('candidate_id', $this->candidate->id)->where('status', 'approved')->get();
+        $made = 0;
+        foreach ($payments as $payment) {
+            $made = $made + $payment->amount;
+        }
+        $this->made = $made;
+        $this->pending = $this->total_amount - $this->made;
+
+        $this->payingInstallments = $payments->count();
 
         /* usar este metodo si la devuelve la cantidad en meses hasta el ultimo examen
             puede devolver null si no existen mesas de examen o si la fecha del examen es negativa (esto no deberia pasar...)
@@ -75,10 +96,10 @@ class Payments extends Page implements HasForms
     protected static string $view = 'filament.candidate.pages.payments';
 
 
-
     public static function canAccess(): bool
     {
-        return isset(session('candidate')->id);
+        return !Candidate::find(session('candidate')->id)->student->institute->internal_payment_administration
+            || (!Candidate::find(session('candidate')->id)->student->institute->internal_payment_administration && !Candidate::find(session('candidate')->id)->student->institute->installment_plans);
     }
 
     public function mount()
@@ -111,7 +132,7 @@ class Payments extends Page implements HasForms
             Action::make('paypal_financing')
             ->label('Financing with PayPal (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
-            ->action(fn () => $this->paypalFinaciament())
+            ->action(fn() => $this->paypalFinaciament())
             ->visible($hidde);
     }
 
@@ -152,7 +173,7 @@ class Payments extends Page implements HasForms
             Action::make('stripe_financing')
             ->label('Financing with stripe (' . $this->installment_number . ' installments)')
             ->icon('heroicon-o-currency-dollar')
-            ->action(fn () => $this->strypeFinanciament())
+            ->action(fn() => $this->strypeFinanciament())
             ->hidden(!$hidde);
     }
 
@@ -246,7 +267,7 @@ class Payments extends Page implements HasForms
                     && $this->candidate->student->institute->installment_plans
                     && !$this->candidate->student->institute->internal_payment_administration
             ),
-            $this->renderRebillFinancing(),
+            //$this->renderRebillFinancing(),
             $this->renderMercadoPagoFinancing(
                 in_array(PaymentMethod::MERCADO_PAGO->value, $paymentMethodsAvailable)
                     && ($this->candidate->paymentStatus == 'unpaid' || ($this->candidate->paymentStatus == 'paying' && $this->candidate->granted_discount > 0))
@@ -261,7 +282,24 @@ class Payments extends Page implements HasForms
     {
         return $form
             ->schema([
-                Select::make('payment_method')
+                Select::make('installments')
+                    ->label('Interest-free installments')
+                    ->native(false)
+                    ->live()
+                    ->reactive()
+                    ->options(function () {
+                        $installments = [];
+                        foreach (range(1, $this->candidate->installmentAttribute) as $installment) {
+                            $installments[$installment] = $installment;
+                        }
+                        return $installments;
+                    })
+                    ->visible(fn() => $this->candidate->paymentStatus == 'unpaid'),
+                Checkbox::make('terms')
+                    ->label('I have read and accept the terms and conditions of purchase')
+                    ->columnSpanFull()
+
+                /* Select::make('payment_method')
                     ->label('Payment method')
                     ->placeholder('Select a payment method')
                     ->native(false)
@@ -281,8 +319,8 @@ class Payments extends Page implements HasForms
                     ->disableAllToolbarButtons()
                     ->visible(function (callable $get) {
                         return $get('payment_method');
-                    })
-            ])->columns(2);
+                    }) */
+            ])->columns(3);
     }
 
     public function getForms(): array
