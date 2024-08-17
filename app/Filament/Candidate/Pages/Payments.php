@@ -294,7 +294,17 @@ class Payments extends Page implements HasForms
                         }
                         return $installments;
                     })
-                    ->visible(fn() => $this->candidate->paymentStatus == 'unpaid'),
+                    ->visible(fn() => $this->candidate->student->institute->installment_plan),
+                Select::make('payment_method')
+                    ->label('Payment method')
+                    ->placeholder('Select a payment method')
+                    ->native(false)
+                    ->reactive()
+                    ->options(function () {
+                        $options = $this->candidate->student->region->paymentMethods()->pluck('name', 'slug')->toArray();
+                        return $options;
+                    })
+                    ->visible(fn() => !$this->candidate->student->institute->installment_plan),
                 Checkbox::make('terms')
                     ->label('I have read and accept the terms and conditions of purchase')
                     ->columnSpanFull()

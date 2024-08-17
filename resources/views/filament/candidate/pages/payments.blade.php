@@ -11,11 +11,9 @@ use Carbon\Carbon;
     @endif
 
     <div>
-        @if ($candidate->status == 'paid')
-        <h2>Exam Paid</h2>
-        @elseif ($candidate->status == 'processing payment')
+        @if ($candidate->status == 'processing payment')
         <h2>Payment in process</h2>
-        @elseif ($candidate->status == 'paying' && $candidate->granted_discount == 0 && !$candidate->student->institute->internal_payment_administration && $candidate->student->institute->installment_plans)
+        @elseif ($candidate->status == 'paying' && $candidate->granted_discount == 0 && !$candidate->student->institute->internal_payment_administration && $candidate->student->institute->installment_plans || $this->candidate->paymentStatus == 'paid')
         <div>
             <div style="display: flex;">
                 <div style="width: 25%; margin-right: 10px">
@@ -68,6 +66,7 @@ use Carbon\Carbon;
                 @php
                 $pendingInstallments = $this->candidate->installmentAttribute - $this->payingInstallments;
                 @endphp
+                @if ($this->candidate->paymentStatus != 'paid')
                 @foreach(range($this->payingInstallments + 1 ,$this->candidate->installmentAttribute) as $month => $id)
                 <div style="display: flex; margin-bottom: 10px;">
                     <p style="padding: 0.5%;">Installment {{$id}}</p>
@@ -75,6 +74,9 @@ use Carbon\Carbon;
                     <p style="padding: 0.5%;">Will be automatically processed on {{Carbon::parse(Payment::where('candidate_id', $this->candidate->id)->where('status','approved')->first()->updated_at)->addMonth($month)}}</p>
                 </div>
                 @endforeach
+                @else
+                <p style="width: 20%; padding: 0.5%;">There are no outstanding payments</p>
+                @endif
             </div>
 
         </div>
