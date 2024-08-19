@@ -7,6 +7,8 @@ use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
@@ -15,12 +17,12 @@ class ListPayments extends ListRecords
     protected function getHeaderActions(): array
     {
 
-        return !Filament::getTenant()->can_view_registration_fee 
+        return !Filament::getTenant()->can_view_registration_fee
             ||
             Filament::getTenant()->can_view_registration_fee && Filament::getTenant()->candidates->count() > 30 ? //TODO: sacar este numero magico
             [
-                Actions\CreateAction::make()->hidden(fn()=> !Filament::getTenant()->internal_payment_administration),
-            ]:
+                Actions\CreateAction::make()->hidden(fn() => !Filament::getTenant()->internal_payment_administration),
+            ] :
             [];
     }
 }

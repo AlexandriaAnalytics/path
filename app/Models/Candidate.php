@@ -93,11 +93,11 @@ class Candidate extends Model
         return $this
             ->modules()
             ->where(
-                fn (Builder $query) => $query->whereDoesntHave(
+                fn(Builder $query) => $query->whereDoesntHave(
                     'exams',
-                    fn (Builder $query) => $query->whereHas(
+                    fn(Builder $query) => $query->whereHas(
                         'candidates',
-                        fn (Builder $query) => $query->where('candidates.id', $this->id)
+                        fn(Builder $query) => $query->where('candidates.id', $this->id)
                             ->whereColumn('module_id', 'modules.id'),
                     ),
                 ),
@@ -175,13 +175,13 @@ class Candidate extends Model
     public function tag(): Attribute
     {
         return new Attribute(
-            get: fn () =>  $this->id . '-' . $this->student->name . ' ' . $this->student->surname
+            get: fn() =>  $this->id . '-' . $this->student->name . ' ' . $this->student->surname
         );
     }
 
     public function getExamSessionsAttribute()
     {
-        return $this->candidateExam()->get()->map(fn ($ce) => $ce->exam);
+        return $this->candidateExam()->get()->map(fn($ce) => $ce->exam);
     }
 
     public function getInstallmentsAvailableAttribute()
@@ -286,6 +286,188 @@ class Candidate extends Model
                 $this->saveQuietly();
 
                 return $installments;
+            }
+        );
+    }
+
+    public function examCost(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                foreach (Concept::where('candidate_id', $this->id)->where('type', 'exam')->get() as $concept) {
+                    $amount = $amount + $concept->amount;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function registrationFee(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                foreach (Concept::where('candidate_id', $this->id)->where('type', 'registration_fee')->get() as $concept) {
+                    $amount = $amount + $concept->amount;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment1(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 1) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment2(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 2) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment3(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 3) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment4(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 4) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment5(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 5) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment6(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 6) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment7(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 7) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment8(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 8) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment9(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 9) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment10(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 10) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment11(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 11) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
+            }
+        );
+    }
+
+    public function installment12(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = 0;
+                if ($this->installments >= 12) {
+                    $amount = $this->total_amount / $this->installments;
+                }
+                return $amount;
             }
         );
     }
