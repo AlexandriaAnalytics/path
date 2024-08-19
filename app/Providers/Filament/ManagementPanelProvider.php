@@ -32,15 +32,15 @@ class ManagementPanelProvider extends PanelProvider
             ->default()
             ->id('management')
             ->path('management')
-            ->brandLogo(asset('images/logo/01-regular.png'))
+            //->brandLogo(asset('images/logo/01-regular.png'))
             ->brandLogoHeight('4rem')
             ->login(
                 \App\Filament\Management\Pages\Auth\Login::class
             )
             ->renderHook(
                 'panels::auth.login.form.after',
-                fn (): View => view('filament.management.login_management')
-                )
+                fn(): View => view('filament.management.login_management')
+            )
             ->colors([
                 'primary' => '#22526d',
             ])
@@ -58,13 +58,13 @@ class ManagementPanelProvider extends PanelProvider
                 NavigationItem::make()
                     ->label('My files')
                     ->icon('heroicon-o-folder')
-                    ->url(fn () => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
-                    ->visible(fn () => Filament::getTenant()->files_url != null),
+                    ->url(fn() => Filament::getTenant()->files_url, shouldOpenInNewTab: true)
+                    ->visible(fn() => Filament::getTenant()->files_url != null),
                 NavigationItem::make()
                     ->label('General files')
                     ->icon('heroicon-o-folder')
-                    ->url(fn () => Filament::getTenant()->instituteType->files_url, shouldOpenInNewTab: true)
-                    ->visible(fn () => Filament::getTenant()->instituteType->files_url != null),
+                    ->url(fn() => Filament::getTenant()->instituteType->files_url, shouldOpenInNewTab: true)
+                    ->visible(fn() => Filament::getTenant()->instituteType->files_url != null),
             ])
             ->middleware([
                 EncryptCookies::class,

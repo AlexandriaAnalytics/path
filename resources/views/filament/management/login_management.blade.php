@@ -1,7 +1,7 @@
 <body>
     <div class="title-container">
         <h1 class="title">Welcome</h1>
-        <h2 class="subtitle">Sinapsis ™</h2>
+        <!-- <h2 class="subtitle">Sinapsis ™</h2> -->
     </div>
 </body>
 
@@ -16,7 +16,7 @@
         font-family: "skolar-sans-latin", sans-serif;
         font-weight: 400;
         font-style: normal;
-        background: url('../images/fondo-login-filtro.jpg') center/cover no-repeat;
+        /* background: url('../images/fondo-login-filtro.jpg') center/cover no-repeat; */
         overflow: hidden;
     }
 
@@ -43,7 +43,7 @@
     }
 
     .title {
-        color: #fff;
+        color: #000;
         font-size: 4.5rem;
         border-bottom: 1px solid #fff;
         margin-bottom: 6%;
@@ -87,7 +87,7 @@
         body {
             justify-content: center;
             padding-right: 0%;
-            background: url('../images/fondo-login.jpg') 15% no-repeat;
+            /* background: url('../images/fondo-login.jpg') 15% no-repeat; */
             background-size: cover;
         }
 

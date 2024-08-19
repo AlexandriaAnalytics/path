@@ -19,7 +19,7 @@
             font-family: "skolar-sans-latin", sans-serif;
             font-weight: 400;
             font-style: normal;
-            background: url('../images/fondo-login.jpg') center/cover no-repeat;
+            /*  background: url('../images/fondo-login.jpg') center/cover no-repeat; */
         }
 
         .container {
@@ -99,7 +99,7 @@
         }
 
         .title {
-            color: #fff;
+            color: #000;
             font-size: 4.5rem;
             border-bottom: 1px solid #fff;
             margin-bottom: 6%;
@@ -136,7 +136,7 @@
             body {
                 justify-content: center;
                 padding-right: 0%;
-                background: url('../images/fondo-login.jpg') 15% no-repeat;
+                /* background: url('../images/fondo-login.jpg') 15% no-repeat; */
                 background-size: cover;
             }
 
@@ -167,24 +167,23 @@
         <div class="container">
             <div class="title-container">
                 <h1 class="title">Welcome</h1>
-                <h2 class="subtitle">Sinapsis ™</h2>
             </div>
             <div class="container-formulario">
                 <div class="filtro-formulario"></div>
                 <div class="image-container">
-                    <img src="{{ asset('images/logo/01-regular.png') }}" alt="" class="image">
+                    <!-- <img src="{{ asset('images/logo/01-regular.png') }}" alt="" class="image"> -->
                 </div>
                 <div class="formulario">
                     <div class="error">
                         @if (session('error'))
-                            <p style="color: red;">{{ session('error') }}</p>
+                        <p style="color: red;">{{ session('error') }}</p>
                         @endif
                     </div>
                     <form wire:submit.prevent="handleLoginCandidate" style="display: flex; flex-direction:column;">
                         <input type="number" wire:model="id" id="id" placeholder="Enter your candidate number"
                             class="input-number">
                         @error('id')
-                            <span style="color: red;">{{ $message }}</span>
+                        <span style="color: red;">{{ $message }}</span>
                         @enderror
                         <button type="submit" class="submit">Login</button>
                     </form>

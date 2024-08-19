@@ -32,12 +32,12 @@ class TraineePanelProvider extends PanelProvider
         return $panel
             ->id('trainee')
             ->path('trainee')
-            ->brandLogo(asset('images/logo/01-regular.png'))
+            //->brandLogo(asset('images/logo/01-regular.png'))
             ->brandLogoHeight('4rem')
             ->login()
             ->renderHook(
                 'panels::auth.login.form.after',
-                fn (): View => view('filament.management.login_management')
+                fn(): View => view('filament.management.login_management')
             )
             ->colors([
                 'primary' => '#22526d',
@@ -56,8 +56,8 @@ class TraineePanelProvider extends PanelProvider
                 NavigationItem::make()
                     ->label('My files')
                     ->icon('heroicon-o-folder')
-                    ->url(fn () => Trainee::where('user_id', auth()->user()->id)->first()->files, shouldOpenInNewTab: true)
-                    ->visible(fn () => Trainee::where('user_id', auth()->user()->id)->first()->files),
+                    ->url(fn() => Trainee::where('user_id', auth()->user()->id)->first()->files, shouldOpenInNewTab: true)
+                    ->visible(fn() => Trainee::where('user_id', auth()->user()->id)->first()->files),
                 NavigationItem::make()
                     ->label('General files')
                     ->icon('heroicon-o-folder')
