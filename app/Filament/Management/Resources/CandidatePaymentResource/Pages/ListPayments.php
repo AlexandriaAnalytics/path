@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Management\Resources\PaymentResource\Pages;
+namespace App\Filament\Management\Resources\CandidatePaymentResource\Pages;
 
-use App\Filament\Management\Resources\PaymentResource;
+use App\Filament\Management\Resources\CandidatePaymentResource;
 use Filament\Actions;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
 {
-    protected static string $resource = PaymentResource::class;
+    protected static string $resource = CandidatePaymentResource::class;
 
     protected function getHeaderActions(): array
     {

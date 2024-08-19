@@ -3,7 +3,7 @@
 namespace App\Filament\Management\Resources;
 
 use App\Enums\UserStatus;
-use App\Filament\Management\Resources\PaymentResource\Pages;
+use App\Filament\Management\Resources\CandidatePaymentResource\Pages;
 use App\Models\Candidate;
 use App\Models\Concept;
 use App\Models\Payment;
@@ -23,10 +23,18 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class PaymentResource extends Resource
+class CandidatePaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationLabel = 'Candidate payments';
+
+    protected static bool $hasTitleCaseModelLabel = false;
+
+    protected static ?string $modelLabel = 'Candidate payment';
+
+    protected static ?string $pluralModelLabel = 'Candidate payments';
 
 
     public static function form(Form $form): Form
