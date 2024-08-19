@@ -464,10 +464,10 @@ class ActivityResource extends Resource
                         return [
                             Wizard::make($steps)
                                 ->nextAction(
-                                    fn (WizardAction $action) => $action->label('Next stage'),
+                                    fn(WizardAction $action) => $action->label('Next stage'),
                                 )
                                 ->previousAction(
-                                    fn (WizardAction $action) => $action->label('Previous stage'),
+                                    fn(WizardAction $action) => $action->label('Previous stage'),
                                 )
                                 ->submitAction(
                                     new HtmlString('<button>Close</button>')
@@ -564,7 +564,7 @@ class ActivityResource extends Resource
 
 
                             $record->result = $correct ? 'Certified' : 'To be reviewed';
-
+                            $record->status_activity_id = 2;
                             $record->save();
                         }
                     })
