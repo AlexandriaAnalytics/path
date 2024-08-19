@@ -316,6 +316,28 @@ class Candidate extends Model
         );
     }
 
+
+    public function pendingPayment(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $amount = $this->totalAmount - Payment::where('candidate_id', $this->id)->where('status', 'approved')->sum('amount');
+                return $amount;
+            }
+        );
+    }
+
+    public function pendingInstallments(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                $installments = 0;
+                $installments = $this->installmentAttribute - Payment::where('candidate_id', $this->id)->where('status', 'approved')->count();
+                return $installments;
+            }
+        );
+    }
+
     public function installment1(): Attribute
     {
         return Attribute::make(
