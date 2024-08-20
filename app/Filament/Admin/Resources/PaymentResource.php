@@ -119,7 +119,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -153,7 +155,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -187,7 +191,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -221,7 +227,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -255,7 +263,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -288,7 +298,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -321,7 +333,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -354,7 +368,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -388,7 +404,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -422,7 +440,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -456,7 +476,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
@@ -490,7 +512,9 @@ class PaymentResource extends Resource
                             $query->where('institute_id', $record->id);
                         })->get();
                         foreach ($candidates as $candidate) {
-                            $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            if ($candidate->pendingInstallments != 0) {
+                                $payments = $payments + ($candidate->pendingPayment / $candidate->pendingInstallments);
+                            }
                         }
                         return $payments;
                     })
