@@ -70,7 +70,9 @@ class ListPayments extends ListRecords
                     ->required(),
                 Select::make('candidate_id')
                     ->label('Candidate')
-                    ->options(Candidate::all()->pluck('student.name', 'id'))
+                    ->options(Candidate::all()->mapWithKeys(fn(Candidate $candidate) => [
+                        $candidate->id => "{$candidate->id} - {$candidate->student->name} {$candidate->student->surname}"
+                    ]))
                     ->required()
                     ->live()
                     ->afterStateUpdated(function (Set $set, string $state) {
