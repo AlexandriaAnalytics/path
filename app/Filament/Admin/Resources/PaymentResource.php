@@ -609,8 +609,8 @@ class PaymentResource extends Resource
                             $p->update(['status' => 'approved']);
                         });
                     }),
-                Tables\Actions\Action::make('edit')
-                    ->form([])
+                /* Tables\Actions\Action::make('edit')
+                    ->form([]) */
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
