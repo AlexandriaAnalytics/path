@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo/01-regular.png'))
             ->brandLogoHeight('4rem')
             ->login(\App\Filament\Admin\Pages\Auth\Login::class)
+            ->profile(isSimple: false)
             ->colors([
                 'primary' => '#22526d',
             ])
