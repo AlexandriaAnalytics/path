@@ -22,6 +22,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components;
+use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
@@ -40,6 +41,16 @@ class ListPayments extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->simplePayments())
         ];
     } */
+
+    public function getTabs(): array
+    {
+        return [
+            'By institute' => Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 1)),
+            'By candidate' => Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 0)),
+        ];
+    }
 
     protected function getHeaderActions(): array
     {

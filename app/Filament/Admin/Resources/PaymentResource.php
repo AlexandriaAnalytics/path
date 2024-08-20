@@ -30,14 +30,14 @@ use Illuminate\Database\Eloquent\Builder;
 class PaymentResource extends Resource
 {
     protected static ?string $model = Institute::class;
-    protected static ?string $navigationLabel = 'Payment by institution';
+    protected static ?string $navigationLabel = 'Payment';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
-    protected static ?string $modelLabel = 'Payment by institution';
+    protected static ?string $modelLabel = 'Payment';
 
-    protected static ?string $pluralModelLabel = 'Payments by institution';
+    protected static ?string $pluralModelLabel = 'Payments';
 
 
     public static function form(Form $form): Form
