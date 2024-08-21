@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\PaymentResource\Pages;
 
 use App\Filament\Admin\Resources\PaymentResource;
+use App\Filament\Admin\Resources\PaymentResource\Widgets\PaymentsWidgets;
 use App\Models\Candidate;
 use App\Models\Payment;
 use App\Models\Shop\Product;
@@ -25,6 +26,16 @@ class PaymentsByInstitute extends ListRecords implements HasTable
     protected static string $resource = PaymentResource::class;
 
     protected static string $view = 'filament.admin.pages.payments-by-institutes';
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PaymentsWidgets::make([
+                'record' => request('record')
+            ]),
+        ];
+    }
+
 
     public function table(Table $table): Table
     {
