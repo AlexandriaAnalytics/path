@@ -46,9 +46,9 @@ class ListPayments extends ListRecords
     {
         return [
             'By institute' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 1)),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 1)->where('archive', 0)),
             'By candidate' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 0)),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 0)->where('archive', 0)),
         ];
     }
 

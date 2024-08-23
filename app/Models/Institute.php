@@ -45,6 +45,7 @@ class Institute extends Model
         'mora',
         'expiration_day_inferior',
         'expiration_day_superior',
+        'archive'
     ];
 
     protected $attributes = [
@@ -56,6 +57,10 @@ class Institute extends Model
         'rigth_exam_diferencial' => 100,
     ];
 
+    protected $casts = [
+        'archive' => 'boolean',
+    ];
+
     public static function boot(): void
     {
         parent::boot();
@@ -64,7 +69,7 @@ class Institute extends Model
             $query->addSelect([
                 'institutes.*',
                 'remaining_discount' => Candidate::query()
-                    ->whereHas('student', fn (Builder $query) => $query->whereColumn('institute_id', 'institutes.id'))
+                    ->whereHas('student', fn(Builder $query) => $query->whereColumn('institute_id', 'institutes.id'))
                     ->select(DB::raw('maximum_cumulative_discount - coalesce(sum(granted_discount), 0)'))
             ]);
         });
@@ -134,12 +139,13 @@ class Institute extends Model
         return $this->instituteLevels->where('level.name', $levelName)->first();
     }
 
-    public function country():BelongsTo
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
 
-    public function getCurrencyAttribute(){
+    public function getCurrencyAttribute()
+    {
         return Country::find($this->country)->monetary_unit;
     }
 
@@ -152,7 +158,8 @@ class Institute extends Model
         );
     }
 
-    public function financings() {
+    public function financings()
+    {
         return $this->hasMany(Financing::class);
     }
 }

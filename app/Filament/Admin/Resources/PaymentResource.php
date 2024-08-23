@@ -535,6 +535,21 @@ class PaymentResource extends Resource
                             return 'warning';
                         }
                     }),
+                TextColumn::make('pending_installments')
+                    ->default(function (Institute $record) {
+                        $candidates = $record->candidates;
+                        foreach ($candidates as $candidate) {
+                            if ($candidate->pendingInstallments > 0) {
+                                return 'Yes';
+                            }
+                        }
+                        return 'No';
+                    })
+                    ->badge()
+                    ->color(fn(string $state) => match ($state) {
+                        'Yes' => 'warning',
+                        'No' => 'success'
+                    })
                 /* Tables\Columns\TextColumn::make('payment_method')
                     ->searchable()
                     ->sortable(),
@@ -614,8 +629,19 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 ViewAction::make()
+                    ->icon(false)
                     ->label('Access'),
-                Tables\Actions\Action::make('Update state')
+                Action::make('archive')
+                    ->visible(function (Institute $record) {
+                        $candidates = $record->candidates;
+                        foreach ($candidates as $candidate) {
+                            if ($candidate->pendingInstallments > 0) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                /* Tables\Actions\Action::make('Update state')
                     ->form([
                         Select::make('status')
                             ->options([
@@ -632,7 +658,7 @@ class PaymentResource extends Resource
                             $p->financing->update(['state' => 'complete']);
                             $p->update(['status' => 'approved']);
                         });
-                    }),
+                    }), */
                 /* Tables\Actions\Action::make('edit')
                     ->form([]) */
             ])
