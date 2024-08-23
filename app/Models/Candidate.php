@@ -219,6 +219,9 @@ class Candidate extends Model
                 $installments = $this->installmentAttribute;
                 $installmentsPaid = Payment::query()->where('candidate_id', $this->id)->where('status', 'approved')->count();
                 $status = $this->status;
+                if ($status == 'cancelled') {
+                    return $status;
+                }
                 if ($installments - $installmentsPaid == 0) {
                     $status = 'paid';
                 }
