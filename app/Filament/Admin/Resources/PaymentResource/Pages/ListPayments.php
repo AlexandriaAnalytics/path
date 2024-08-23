@@ -6,6 +6,7 @@ use App\Enums\ConceptType;
 use App\Enums\StatusEnum;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\PaymentResource;
+use App\Filament\Exports\InstitutesExporter;
 use App\Models\Candidate;
 use App\Models\Concept;
 use App\Models\Country;
@@ -23,6 +24,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Components;
 use Filament\Resources\Components\Tab;
+use Filament\Support\Colors\Color;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListPayments extends ListRecords
@@ -49,6 +51,8 @@ class ListPayments extends ListRecords
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 1)->where('archive', 0)),
             'By candidate' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('internal_payment_administration', 0)->where('archive', 0)),
+            'Archived institutes' => Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('archive', 1)),
         ];
     }
 
@@ -57,6 +61,11 @@ class ListPayments extends ListRecords
         return [
             $this->createInstitutePaymentAction(),
             $this->createPaymentCandidateAction(),
+            Actions\ExportAction::make()
+                ->label('Export institutes')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color(Color::hex('#83a982'))
+                ->exporter(InstitutesExporter::class),
         ];
     }
 

@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\PaymentMethod;
 use App\Filament\Admin\Resources\PaymentResource\Pages;
+use App\Filament\Exports\InstitutesExporter;
 use App\Models\Candidate;
 use App\Models\Concept;
 use App\Models\Institute;
@@ -19,6 +20,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -592,37 +594,26 @@ class PaymentResource extends Resource
                     ->falseLabel('No')
                     ->queries(
                         true: function (Builder $query) {
-                            $institutes = [];
-                            foreach (Institute::all() as $institute) {
-                                $candidates = Candidate::whereHas('student', function (Builder $query) use ($institute) {
-                                    $query->where('institute_id', $institute->id);
-                                })->get();
-                                foreach ($candidates as $candidate) {
-                                    if ($candidate->pendingInstallments > 0) {
-                                        if (!isset($institutes[$institute->id])) {
-                                            $institutes[$institute->id] = $institute;
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            return $institutes;
+                            $query->whereHas(
+                                'students',
+                                fn(Builder $query) =>
+                                $query->whereHas(
+                                    'candidates',
+                                    fn(Builder $query) =>
+                                    $query->where('status', '!=', 'paid')
+                                )
+                            );
                         },
                         false: function (Builder $query) {
-                            $institutes = [];
-                            foreach (Institute::all() as $institute) {
-                                $candidates = Candidate::whereHas('student', function (Builder $query) use ($institute) {
-                                    $query->where('institute_id', $institute->id);
-                                })->get();
-                                $allHaveZeroPendingInstallments = $candidates->every(function ($candidate) {
-                                    return $candidate->pendingInstallments == 0;
-                                });
-
-                                if ($allHaveZeroPendingInstallments) {
-                                    $institutes[] = $institute;
-                                }
-                            }
-                            return $institutes;
+                            $query->whereHas(
+                                'students',
+                                fn(Builder $query) =>
+                                $query->whereHas(
+                                    'candidates',
+                                    fn(Builder $query) =>
+                                    $query->where('status', 'paid')
+                                )
+                            );
                         }
                     )
                     ->native(false),
@@ -664,6 +655,8 @@ class PaymentResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(InstitutesExporter::class)->deselectRecordsAfterCompletion(),
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
                     BulkAction::make('update_state')
                         ->icon('heroicon-o-arrows-right-left')
