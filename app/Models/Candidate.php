@@ -44,6 +44,11 @@ class Candidate extends Model
         'type_of_certificate',
         'granted_discount',
         'payment_ticket_link',
+        'archive'
+    ];
+
+    protected $casts = [
+        'archive' => 'boolean',
     ];
 
     protected $attributes = [

@@ -35,7 +35,7 @@ class InstitutesExporter extends Exporter
                 ->default(function (Institute $record) {
                     return Payment::where('institute_id', $record->id)->where('status', 'approved')->sum('amount');
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Pending payments')
@@ -46,7 +46,7 @@ class InstitutesExporter extends Exporter
                         });
                     })->sum('amount');
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_1')
@@ -68,7 +68,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_2')
@@ -90,7 +90,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_3')
@@ -112,7 +112,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_4')
@@ -134,7 +134,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_5')
@@ -156,7 +156,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_6')
@@ -178,7 +178,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_7')
@@ -200,7 +200,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_8')
@@ -222,7 +222,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_9')
@@ -244,7 +244,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_10')
@@ -266,7 +266,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_11')
@@ -288,7 +288,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('Payment_12')
@@ -310,7 +310,7 @@ class InstitutesExporter extends Exporter
                     }
                     return $payments;
                 })
-                ->suffix(
+                ->prefix(
                     fn(Institute $record) => $record->currency,
                 ),
             ExportColumn::make('pending_installments')
