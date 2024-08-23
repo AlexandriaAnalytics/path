@@ -632,6 +632,10 @@ class PaymentResource extends Resource
                         }
                         return true;
                     })
+                    ->action(function (Institute $record) {
+                        $record->archive = 1;
+                        $record->save();
+                    })
                 /* Tables\Actions\Action::make('Update state')
                     ->form([
                         Select::make('status')
