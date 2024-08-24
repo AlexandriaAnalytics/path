@@ -28,6 +28,8 @@ class PaymentsByInstitute extends ListRecords implements HasTable
 
     protected static string $resource = PaymentResource::class;
 
+    protected static ?string $model = Candidate::class;
+
     protected static string $view = 'filament.admin.pages.payments-by-institutes';
 
     protected function getHeaderWidgets(): array
@@ -41,9 +43,17 @@ class PaymentsByInstitute extends ListRecords implements HasTable
 
     protected function getTableQuery(): Builder
     {
-        return Candidate::whereHas('student', function (Builder $query) {
-            $query->where('institute_id', request('record'));
+        $path = request()->path();
+        $segments = explode('/', $path);
+        $instituteId = end($segments);
+
+        $query = Candidate::whereHas('student', function (Builder $query) use ($instituteId) {
+            $query->where('institute_id', $instituteId);
         });
+
+        //dd($query->toSql(), $query->getBindings());
+
+        return $query;
     }
 
     protected function getTableColumns(): array
@@ -356,6 +366,16 @@ class PaymentsByInstitute extends ListRecords implements HasTable
                 })
         ];
     }
+
+    protected int $cambio;
+
+    public function mount(): void
+    {
+        $this->cambio = 456;
+        if (!isset($_COOKIE['filtro'])) {
+            setcookie('filtro', 'all', time() + 3600, '/livewire');
+        }
+    }
     protected function getTableFilters(): array
     {
         return [
@@ -365,28 +385,46 @@ class PaymentsByInstitute extends ListRecords implements HasTable
                 ->trueLabel('Archived candidates')
                 ->falseLabel('Unarchived candidates')
                 ->queries(
-                    true: fn(Builder $query) => $query->where('archive', true),
-                    false: fn(Builder $query) => $query->where('archive', false),
-                    blank: fn(Builder $query) => $query,
+                    true: function (Builder $query) {
+                        $this->cambio = 1;
+                        $path = request()->path();
+                        $segments = explode('/', $path);
+                        $instituteId = end($segments);
+                        return $query->whereHas('student', function (Builder $query) use ($instituteId) {
+                            $query->where('institute_id', $instituteId);
+                        })->where('archive', true);
+                    },
+                    false: function (Builder $query) {
+
+                        $this->cambio = 0;
+                        $path = request()->path();
+                        $segments = explode('/', $path);
+                        $instituteId = end($segments);
+
+                        return $query->whereHas('student', function (Builder $query) use ($instituteId) {
+                            $query->where('institute_id', $instituteId);
+                        })->where('archive', false);
+                    },
+                    blank: function (Builder $query) {
+                        $this->cambio = 1000;
+                        $path = request()->path();
+                        $segments = explode('/', $path);
+                        $instituteId = end($segments);
+
+                        return $query->whereHas('student', function (Builder $query) use ($instituteId) {
+                            $query->where('institute_id', $instituteId);
+                        });
+                    },
                 )
         ];
     }
-    /* public function table(Table $table): Table
+
+    public function table(Table $table): Table
     {
+
         return $table
-
-
-            ->filters([
-                TernaryFilter::make('archive')
-                    ->label('Archived candidates')
-                    ->placeholder('All candidates')
-                    ->trueLabel('Archived candidates')
-                    ->falseLabel('Unarchived candidates')
-                    ->queries(
-                        true: fn(Builder $query) => $query->where('archive', true),
-                        false: fn(Builder $query) => $query->where('archive', false),
-                        blank: fn(Builder $query) => $query,
-                    )
-            ]);
-    } */
+            ->query(fn() => $this->getTableQuery())
+            ->columns($this->getTableColumns())
+            ->filters($this->getTableFilters());
+    }
 }
