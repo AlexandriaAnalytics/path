@@ -3,6 +3,7 @@
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\OtherPaymentDetailController;
 use App\Livewire\LoginCandidate;
 use App\Models\Candidate;
 use Illuminate\Support\Facades\Route;
@@ -85,3 +86,5 @@ Route::get('/payment/webhook/mp', [PaymentController::class, 'mercadopagoNotific
 Route::post('/payment/webhook/mp', [WebHookPaymentsController::class, 'mercadopagoWebhook'])->name('payment.mercadopago.webhook');
 Route::post('/payment/webhook/paypal', [WebHookPaymentsController::class, 'paypalWebhook'])->name('payment.paypal.webhook');
 Route::post('/payment/webhook/stripe', [WebHookPaymentsController::class, 'stripeWebhook'])->name('payment.stripe.webhook');
+
+Route::get('/other-payment-detail/{id}', [OtherPaymentDetailController::class, 'destroy'])->name('other_payment_detail.destroy');

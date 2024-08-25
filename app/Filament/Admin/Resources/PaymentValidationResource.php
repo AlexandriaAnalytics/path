@@ -12,6 +12,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -45,7 +46,7 @@ class PaymentValidationResource extends Resource
         return $table
 
             ->columns([
-                //
+                TextColumn::make('id')
             ])
             ->filters([
                 //
