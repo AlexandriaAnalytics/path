@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\PaymentResource\Pages;
 
 use App\Filament\Admin\Resources\PaymentResource;
 use App\Filament\Admin\Resources\PaymentResource\Widgets\PaymentsWidgets;
+use App\Filament\Exports\PaymentsByInstituteExporter;
 use App\Models\Candidate;
 use App\Models\Payment;
 use App\Models\Shop\Product;
@@ -11,8 +12,10 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Actions\Contracts\HasRecord;
+use Filament\Actions\ExportAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Contracts\HasExtraItemActions;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,6 +26,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\Page;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn\IconColumnSize;
@@ -75,6 +79,8 @@ class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions
             ]),
         ];
     }
+
+
 
     protected function getTableQuery(): Builder
     {

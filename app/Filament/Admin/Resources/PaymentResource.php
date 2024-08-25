@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\PaymentMethod;
 use App\Filament\Admin\Resources\PaymentResource\Pages;
 use App\Filament\Exports\InstitutesExporter;
+use App\Filament\Exports\PaymentsByInstituteExporter;
 use App\Models\Candidate;
 use App\Models\Concept;
 use App\Models\Institute;
@@ -18,8 +19,10 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -635,7 +638,15 @@ class PaymentResource extends Resource
                     ->action(function (Institute $record) {
                         $record->archive = 1;
                         $record->save();
-                    })
+                    }),
+                ExportAction::make()
+                    ->label('Export candidates')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color(Color::hex('#83a982'))
+                    ->exporter(PaymentsByInstituteExporter::class)
+                    ->modifyQueryUsing(fn(Builder $query, Institute $record) => Candidate::query()->whereHas('student', function (Builder $query) use ($record) {
+                        $query->where('institute_id', $record->id);
+                    }))
                 /* Tables\Actions\Action::make('Update state')
                     ->form([
                         Select::make('status')
