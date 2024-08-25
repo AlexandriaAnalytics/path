@@ -7,30 +7,65 @@ use App\Filament\Admin\Resources\PaymentResource\Widgets\PaymentsWidgets;
 use App\Models\Candidate;
 use App\Models\Payment;
 use App\Models\Shop\Product;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Concerns\InteractsWithRecord;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\Contracts\HasRecord;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Pages\Page;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\Page;
+use Filament\Support\Enums\IconSize;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\IconColumn\IconColumnSize;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
+use Filament\Tables;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\Concerns\InteractsWithRecords;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Illuminate\Database\Eloquent\Collection;
+use Livewire\Livewire;
 
-class PaymentsByInstitute extends ListRecords implements HasTable
+class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions, HasRecord
 {
     use InteractsWithTable;
+    use InteractsWithActions;
+    use InteractsWithForms;
+    use InteractsWithRecord;
+
+    protected string $path;
+
+    public function mount(): void
+    {
+        $this->cambio = 456;
+        $this->path = request()->path();
+    }
+
+    public function getModel(): string
+    {
+        return Candidate::class; // Example return value, adjust according to your needs
+    }
 
     protected static string $resource = PaymentResource::class;
 
-    protected static ?string $model = Candidate::class;
+    //protected static ?string $model = Candidate::class;
 
     protected static string $view = 'filament.admin.pages.payments-by-institutes';
+
 
     protected function getHeaderWidgets(): array
     {
@@ -369,13 +404,6 @@ class PaymentsByInstitute extends ListRecords implements HasTable
 
     protected int $cambio;
 
-    public function mount(): void
-    {
-        $this->cambio = 456;
-        if (!isset($_COOKIE['filtro'])) {
-            setcookie('filtro', 'all', time() + 3600, '/livewire');
-        }
-    }
     protected function getTableFilters(): array
     {
         return [
@@ -425,6 +453,129 @@ class PaymentsByInstitute extends ListRecords implements HasTable
         return $table
             ->query(fn() => $this->getTableQuery())
             ->columns($this->getTableColumns())
-            ->filters($this->getTableFilters());
+            ->filters($this->getTableFilters())
+            ->bulkActions($this->getTableActions());
+    }
+
+    protected function getTableActions(): array
+    {
+        return [
+            Tables\Actions\BulkActionGroup::make([
+                BulkAction::make('accredit')
+                    ->icon('heroicon-o-arrow-up-circle')
+                    ->iconSize(IconSize::Large)
+                    ->form(
+                        [
+                            TextInput::make('total_to_pay')
+                                ->disabled()
+                                ->default(function ($livewire) {
+                                    $total = 0;
+                                    foreach ($livewire->selectedTableRecords as $id) {
+                                        $candidate = Candidate::find($id);
+                                        if ($candidate->pendingInstallments > 0) {
+                                            $total = $total + ($candidate->totalAmount / $candidate->installmentAttribute);
+                                        }
+                                    }
+                                    return $total;
+                                }),
+                            TextInput::make('amount_paid')
+                                ->live()
+                                ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                    $set('difference', $get('total_to_pay') - $state);
+                                }),
+                            TextInput::make('difference')
+                                ->disabled(),
+                            TextInput::make('concept')
+                                ->required(),
+                            TextInput::make('link_to_ticket')
+                                ->required()
+                        ]
+                    )
+                    ->action(
+                        function (Collection $records, $data, $livewire) {
+                            $instituteId = Candidate::find($livewire->selectedTableRecords[0])->student->institute_id;
+                            return redirect()->to('/admin/payments/institute/' . $instituteId);
+                        }
+
+                        //dd($livewire->selectedTableRecords, $data)
+                    )
+                    ->closeModalByClickingAway(false)
+                    ->deselectRecordsAfterCompletion(),
+                BulkAction::make('discount_or_surcharge')
+                    ->form([
+                        Radio::make('type')
+                            ->options([
+                                'discount' => 'Discount',
+                                'surcharge' => 'Surcharge'
+                            ])
+                            ->inline()
+                            ->label(''),
+                        TextInput::make('amount'),
+                        CheckboxList::make('installments')
+                            ->options(function ($livewire) {
+                                $min = 0;
+                                $max = 12;
+                                foreach ($livewire->selectedTableRecords as $id) {
+                                    $candidate = Candidate::find($id);
+                                    if ($candidate->pendingInstallments > 0) {
+                                        $prox = $candidate->installmentAttribute - $candidate->pendingInstallments + 1;
+                                        $min = $min < $prox ? $prox : $min;
+                                        $max = $max > $candidate->installmentAttribute ? $candidate->installmentAttribute : $max;
+                                    }
+                                }
+                                return range($min, $max, 1);
+                            }),
+                        TextInput::make('concept')
+                    ])
+                    ->action(
+                        function (Collection $records, $data, $livewire) {
+                            $instituteId = Candidate::find($livewire->selectedTableRecords[0])->student->institute_id;
+                            return redirect()->to('/admin/payments/institute/' . $instituteId);
+                        }
+
+                        //dd($livewire->selectedTableRecords, $data)
+                    )
+                    ->closeModalByClickingAway(false)
+                    ->deselectRecordsAfterCompletion(),
+                BulkAction::make('remove_payment')
+                    ->form([
+                        CheckboxList::make('installments')
+                            ->options(function ($livewire) {
+                                $max = 12;
+                                foreach ($livewire->selectedTableRecords as $id) {
+                                    $candidate = Candidate::find($id);
+                                    if ($candidate->pendingInstallments > 0) {
+                                        $paid = $candidate->installmentAttribute - $candidate->pendingInstallments;
+                                        $max = $max > $paid ? $paid : $max;
+                                    }
+                                }
+                                return $max == 0 ? [] : range(1, $max, 1);
+                            })
+                            ->live()
+                            ->afterStateUpdated(function (Get $get, Set $set, $state, $livewire) {
+                                $total = 0;
+                                foreach ($state as $installment) {
+                                    foreach ($livewire->selectedTableRecords as $id) {
+                                        $candidate = Candidate::find($id);
+                                        $total = $total + ($candidate->totalAmount / $candidate->installmentAttribute);
+                                    }
+                                }
+                                $set('total', $total);
+                            }),
+                        TextInput::make('total')
+                            ->disabled()
+                    ])
+                    ->action(
+                        function (Collection $records, $data, $livewire) {
+                            $instituteId = Candidate::find($livewire->selectedTableRecords[0])->student->institute_id;
+                            return redirect()->to('/admin/payments/institute/' . $instituteId);
+                        }
+
+                        //dd($livewire->selectedTableRecords, $data)
+                    )
+                    ->closeModalByClickingAway(false)
+                    ->deselectRecordsAfterCompletion(),
+            ])
+        ];
     }
 }
