@@ -3,6 +3,7 @@
 namespace App\Filament\Management\Resources;
 
 use App\Enums\UserStatus;
+use App\Filament\Exports\PaymentsByInstituteExporter;
 use App\Filament\Management\Resources\CandidatePaymentResource\Pages;
 use App\Models\Candidate;
 use App\Models\Concept;
@@ -16,7 +17,10 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -463,7 +467,12 @@ class CandidatePaymentResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()->deselectRecordsAfterCompletion(),
-                ]),
+                    ExportBulkAction::make()
+                        ->label('Export candidates')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color(Color::hex('#83a982'))
+                        ->exporter(PaymentsByInstituteExporter::class)
+                ])
 
             ]);
     }
