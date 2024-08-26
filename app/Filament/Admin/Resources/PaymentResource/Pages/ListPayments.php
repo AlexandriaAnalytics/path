@@ -59,8 +59,8 @@ class ListPayments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            $this->createInstitutePaymentAction(),
-            $this->createPaymentCandidateAction(),
+            /*  $this->createInstitutePaymentAction(),
+            $this->createPaymentCandidateAction(), */
             Actions\ExportAction::make()
                 ->label('Export institutes')
                 ->icon('heroicon-o-document-arrow-down')

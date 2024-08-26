@@ -6,8 +6,12 @@ use App\Filament\Admin\Resources\PaymentResource;
 use App\Filament\Admin\Resources\PaymentResource\Widgets\PaymentsWidgets;
 use App\Filament\Exports\PaymentsByInstituteExporter;
 use App\Models\Candidate;
+use App\Models\Country;
+use App\Models\Difference;
+use App\Models\Institute;
 use App\Models\Payment;
 use App\Models\Shop\Product;
+use Carbon\Carbon;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Concerns\InteractsWithRecord;
 use Filament\Actions\Contracts\HasActions;
@@ -473,7 +477,7 @@ class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions
                     ->form(
                         [
                             TextInput::make('total_to_pay')
-                                ->disabled()
+                                ->readOnly()
                                 ->default(function ($livewire) {
                                     $total = 0;
                                     foreach ($livewire->selectedTableRecords as $id) {
@@ -490,7 +494,7 @@ class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions
                                     $set('difference', $get('total_to_pay') - $state);
                                 }),
                             TextInput::make('difference')
-                                ->disabled(),
+                                ->readOnly(),
                             TextInput::make('concept')
                                 ->required(),
                             TextInput::make('link_to_ticket')
@@ -499,6 +503,30 @@ class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions
                     )
                     ->action(
                         function (Collection $records, $data, $livewire) {
+
+                            foreach ($livewire->selectedTableRecords as $candidateId) {
+                                $payment = new Payment();
+                                $payment->payment_method = 'financing by associated';
+                                $payment->payment_id = 'd' . Carbon::now()->timestamp . rand(1000, 9000);
+                                $payment->currency = Country::find(Institute::find(Candidate::find($candidateId)->student->institute_id)->country)->monetary_unit;
+                                $payment->amount = $data['total_to_pay'];
+                                $payment->status = 'pending';
+                                $payment->candidate_id = $candidateId;
+                                $payment->current_period = Carbon::now()->day(1);
+                                $payment->link_to_ticket = $data['link_to_ticket'];
+                                $payment->institute_id = Candidate::find($candidateId)->student->institute_id;
+                                $payment->user_id = auth()->user()->id;
+
+                                $payment->save();
+
+                                $difference = new Difference();
+                                $difference->total_amount = $data['total_to_pay'];
+                                $difference->paid_amount = $data['amount_paid'];
+                                $difference->solved = $data['difference'] != 0 ? false : true;
+                                $difference->payment_id = $payment->payment_id;
+
+                                $difference->save();
+                            }
                             $instituteId = Candidate::find($livewire->selectedTableRecords[0])->student->institute_id;
                             return redirect()->to('/admin/payments/institute/' . $instituteId);
                         }

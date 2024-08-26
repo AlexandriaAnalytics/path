@@ -45,7 +45,7 @@ class Payment extends Model
     protected function counter(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => ($attributes['installment_number'] == null ? 'complete' : 'partial')
+            get: fn($value, $attributes) => ($attributes['installment_number'] == null ? 'complete' : 'partial')
         );
     }
 
@@ -79,6 +79,11 @@ class Payment extends Model
     public function candidate(): BelongsTo
     {
         return $this->belongsTo(Candidate::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeSubscriptions(Builder $query)

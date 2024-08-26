@@ -28,14 +28,4 @@ class ListPaymentValidations extends ListRecords
             //Actions\CreateAction::make(),
         ];
     }
-
-    public function getTabs(): array
-    {
-        return [
-            'Exam payments' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => Payment::query()),
-            'Other payments' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => Candidate::query()),
-        ];
-    }
 }

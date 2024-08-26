@@ -12,6 +12,7 @@ class PaymentValidationWidgets extends BaseWidget
     {
         return [
             Stat::make('Total payments to be validated', '$' . Payment::where('status', '!=', 'approved')->sum('amount')),
+            Stat::make('Total validated payments', '$ ' . Payment::where('status', 'approved')->sum('amount'))
         ];
     }
 }
