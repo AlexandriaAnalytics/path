@@ -33,13 +33,13 @@ class OtherPaymentValidationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'Payment validations';
+    protected static ?string $navigationLabel = 'Other payment validations';
 
     protected static bool $hasTitleCaseModelLabel = false;
 
-    protected static ?string $modelLabel = 'Payment validation';
+    protected static ?string $modelLabel = 'Other payment validation';
 
-    protected static ?string $pluralModelLabel = 'Payment validations';
+    protected static ?string $pluralModelLabel = 'Other payment validations';
 
     public static function form(Form $form): Form
     {
