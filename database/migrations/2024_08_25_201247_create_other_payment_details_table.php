@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('link_to_ticket');
             $table->foreignId('user_id')->constrained();
-            $table->string('status')->default('not valideted');
+            $table->string('status')->default('pending');
             $table->timestamp('validated_at')->nullable();
             $table->string('comments')->nullable();
             $table->softDeletes();

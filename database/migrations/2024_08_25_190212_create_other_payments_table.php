@@ -33,6 +33,7 @@ return new class extends Migration
             $table->foreignId('candidate_id')->nullable()->constrained();
             $table->string('comments')->nullable();
             $table->boolean('archived')->default(false);
+            $table->string('status')->default('pending');
             $table->softDeletes();
             $table->timestamps();
         });

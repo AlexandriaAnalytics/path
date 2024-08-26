@@ -11,7 +11,7 @@ class OtherPayment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['id', 'names', 'surnames', 'birth_date', 'personal_ID', 'amount_to_be_paid', 'amount_paid', 'currency', 'limit_date', 'link_to_ticket', 'institute_id', 'candidate_id', 'comments', 'archived'];
+    protected $fillable = ['id', 'names', 'surnames', 'birth_date', 'personal_ID', 'amount_to_be_paid', 'amount_paid', 'currency', 'limit_date', 'link_to_ticket', 'institute_id', 'candidate_id', 'comments', 'archived', 'status'];
 
     public function conceptPayments()
     {
