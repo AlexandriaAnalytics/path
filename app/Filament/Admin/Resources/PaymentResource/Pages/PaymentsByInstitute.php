@@ -504,10 +504,11 @@ class PaymentsByInstitute extends Page implements HasTable, HasForms, HasActions
                     ->action(
                         function (Collection $records, $data, $livewire) {
 
+                            $paymentId = 'd' . Carbon::now()->timestamp . rand(1000, 9000);
                             foreach ($livewire->selectedTableRecords as $candidateId) {
                                 $payment = new Payment();
+                                $payment->payment_id = $paymentId;
                                 $payment->payment_method = 'financing by associated';
-                                $payment->payment_id = 'd' . Carbon::now()->timestamp . rand(1000, 9000);
                                 $payment->currency = Country::find(Institute::find(Candidate::find($candidateId)->student->institute_id)->country)->monetary_unit;
                                 $payment->amount = $data['total_to_pay'];
                                 $payment->status = 'pending';

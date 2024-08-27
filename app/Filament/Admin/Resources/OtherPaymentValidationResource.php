@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\PaymentValidationResource\Pages;
+use App\Filament\Admin\Resources\OtherPaymentValidationResource\Pages;
 use App\Filament\Admin\Resources\PaymentValidationResource\RelationManagers;
 use App\Filament\Admin\Resources\PaymentValidationResource\Widgets\PaymentValidationWidgets;
 use App\Filament\Candidate\Pages\Payments;
@@ -114,9 +114,9 @@ class OtherPaymentValidationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPaymentValidations::route('/'),
-            'create' => Pages\CreatePaymentValidation::route('/create'),
-            'edit' => Pages\EditPaymentValidation::route('/{record}/edit'),
+            'index' => Pages\ListOtherPaymentValidations::route('/'),
+            'create' => Pages\CreateOtherPaymentValidation::route('/create'),
+            'edit' => Pages\EditOtherPaymentValidation::route('/{record}/edit'),
         ];
     }
 }
